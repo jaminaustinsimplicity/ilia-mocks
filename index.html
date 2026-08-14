@@ -1,0 +1,260 @@
+<title>Support Agent on AWS</title>
+<style>
+  :root{
+    --bg:#F4F6FB; --surface:#FFFFFF; --surface-2:#EDF1F8; --ink:#17202E; --ink-2:#54627A;
+    --border:#D7DFEC; --border-strong:#C3CEDE;
+    --accent:#3671ED; --accent-ink:#254FC4; --accent-soft:#E7EEFD;
+    --good:#1C9A6A; --good-ink:#127A53; --good-soft:#E2F4EC;
+    --amber:#C2760E; --amber-ink:#8A5806; --amber-soft:#FBF0D9;
+    --danger:#CB3E3E; --danger-soft:#FBE7E7;
+    --mono-bg:#EEF2F9;
+    --shadow:0 1px 2px rgba(23,32,46,.06), 0 8px 24px -12px rgba(23,32,46,.18);
+    --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0D1420; --surface:#161F30; --surface-2:#1D2739; --ink:#E9EEF8; --ink-2:#9AA8BF;
+      --border:#28344B; --border-strong:#33425E;
+      --accent:#5E8CF6; --accent-ink:#93B2F9; --accent-soft:#182339;
+      --good:#34C48C; --good-ink:#5BD3A5; --good-soft:#12301F;
+      --amber:#E0A54B; --amber-ink:#EBBE76; --amber-soft:#2E2510;
+      --danger:#E86D6D; --danger-soft:#331C1C;
+      --mono-bg:#101A2A;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0D1420; --surface:#161F30; --surface-2:#1D2739; --ink:#E9EEF8; --ink-2:#9AA8BF;
+    --border:#28344B; --border-strong:#33425E;
+    --accent:#5E8CF6; --accent-ink:#93B2F9; --accent-soft:#182339;
+    --good:#34C48C; --good-ink:#5BD3A5; --good-soft:#12301F;
+    --amber:#E0A54B; --amber-ink:#EBBE76; --amber-soft:#2E2510;
+    --danger:#E86D6D; --danger-soft:#331C1C;
+    --mono-bg:#101A2A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased;font-size:16px}
+  .wrap{max-width:940px;margin:0 auto;padding:44px 22px 72px}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--accent-ink)}
+  h1{font-size:clamp(1.9rem,4.4vw,2.5rem);line-height:1.1;margin:.35em 0 .3em;letter-spacing:-.02em;text-wrap:balance;font-weight:800}
+  .lede{font-size:1.12rem;color:var(--ink-2);max-width:62ch;text-wrap:pretty;margin:0}
+  h2{font-size:1.16rem;letter-spacing:-.01em;margin:0 0 .2em;font-weight:750}
+  .sec{margin-top:44px}
+  .sec-head{margin-bottom:16px}
+  .sec-head .k{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+  p{margin:.5em 0}
+  code{font-family:var(--mono);font-size:.86em;background:var(--mono-bg);padding:.1em .4em;border-radius:5px;
+    border:1px solid var(--border);white-space:nowrap}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 18px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 .3em;font-size:1rem;display:flex;align-items:center;gap:8px}
+  .card p{margin:.2em 0 0;color:var(--ink-2);font-size:.94rem}
+  .tag{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;padding:3px 9px;border-radius:999px}
+  .tag.no{background:var(--danger-soft);color:var(--danger)}
+  .tag.yes{background:var(--good-soft);color:var(--good-ink)}
+
+  /* ---- architecture diagram ---- */
+  .diagram-panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .diagram-scroll{overflow-x:auto;padding:6px 2px}
+  .diagram{min-width:880px}
+  .stage{display:flex;align-items:center;gap:0}
+  .box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 13px;
+    text-align:center;min-width:118px;box-shadow:var(--shadow)}
+  .box b{display:block;font-size:.88rem;color:var(--ink);line-height:1.2}
+  .box i{display:block;font-style:normal;font-size:.72rem;color:var(--ink-2);margin-top:3px;line-height:1.3}
+  .box-user{border-color:color-mix(in srgb,var(--accent) 48%,var(--border));background:var(--accent-soft)}
+  .box-user b{color:var(--accent-ink)}
+  .box-bedrock{border:1.5px solid color-mix(in srgb,var(--good) 55%,var(--border));background:var(--good-soft);min-width:150px}
+  .box-bedrock b{color:var(--good-ink)}
+  .conn{display:flex;flex-direction:column;gap:7px;padding:0 11px;color:var(--ink-2);font-size:.71rem;
+    white-space:nowrap;align-items:center;line-height:1.25}
+  .conn .ar.dim{opacity:.65}
+  .conn em{font-style:normal;font-size:.64rem;opacity:.85}
+  .aws{border:1.4px dashed color-mix(in srgb,var(--ink-2) 50%,transparent);border-radius:16px;
+    padding:26px 15px 15px;position:relative}
+  .aws-label{position:absolute;top:-9px;left:16px;background:var(--surface);padding:0 8px;font-size:.66rem;
+    font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
+  .aws-inner{display:flex;align-items:center;gap:0}
+  .center{display:flex;flex-direction:column;align-items:center;gap:0}
+  .feeders{display:flex;gap:22px;justify-content:center}
+  .feed{display:flex;flex-direction:column;align-items:center}
+  .feed .box{min-width:132px;padding:8px 11px}
+  .feed .box b{font-size:.8rem}
+  .vdown{display:flex;flex-direction:column;align-items:center;color:var(--ink-2);font-size:.66rem;line-height:1}
+  .vdown span{font-size:.95rem;margin-top:1px}
+  .box-lambda{border:1.6px solid var(--amber);background:var(--surface);border-radius:14px;padding:0;
+    min-width:298px;overflow:hidden;text-align:left;box-shadow:var(--shadow)}
+  .lh{background:color-mix(in srgb,var(--amber-soft) 65%,var(--surface));color:var(--amber-ink);font-weight:750;
+    font-size:.85rem;padding:9px 12px;border-bottom:1px solid color-mix(in srgb,var(--amber) 32%,var(--border))}
+  .lh em{font-style:normal;font-weight:600;color:var(--ink-2);font-size:.72rem}
+  .steps{display:flex;flex-direction:column;gap:7px;padding:11px 11px 8px}
+  .step{border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:.82rem;color:var(--ink);
+    display:flex;align-items:center;gap:8px;background:var(--surface)}
+  .step .sn{flex:none;width:17px;height:17px;border-radius:5px;background:var(--surface-2);color:var(--ink-2);
+    font-size:.66rem;font-weight:700;display:grid;place-items:center}
+  .step em{font-style:normal;color:var(--ink-2);font-size:.73rem}
+  .step.rail{background:var(--amber-soft);border-color:color-mix(in srgb,var(--amber) 42%,var(--border))}
+  .step.rail .sn{background:var(--amber);color:#fff}
+  .step.ask{border-color:color-mix(in srgb,var(--accent) 45%,var(--border))}
+  .lgd{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 11px 11px;font-size:.67rem;color:var(--ink-2)}
+  .lgd .sw{width:14px;height:11px;border-radius:3px;background:var(--amber-soft);
+    border:1px solid var(--amber);display:inline-block}
+  .lgd .dl{width:16px;border-top:2px dashed var(--ink-2);display:inline-block;margin-left:8px}
+  .cap{font-size:.9rem;color:var(--ink-2);margin:16px 2px 0;max-width:none;line-height:1.55}
+  .cap b{color:var(--ink)}
+
+  /* setup */
+  .setup{background:var(--amber-soft);border:1px solid color-mix(in srgb,var(--amber) 35%,var(--border));
+    border-radius:16px;padding:20px 20px}
+  .setup h2{color:var(--amber-ink)}
+  ol.steps2{list-style:none;counter-reset:s;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+  ol.steps2 li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;font-size:.96rem}
+  ol.steps2 li::before{content:counter(s);flex:none;width:23px;height:23px;border-radius:7px;background:var(--amber);
+    color:#fff;font-weight:800;font-size:.82rem;display:grid;place-items:center;margin-top:1px}
+  .ret{background:var(--surface);border:1px dashed var(--amber);border-radius:10px;padding:10px 13px;margin-top:14px;font-size:.9rem}
+  .ret b{color:var(--amber-ink)}
+  .guarantee{background:linear-gradient(180deg,var(--good-soft),transparent 130%);
+    border:1px solid color-mix(in srgb,var(--good) 32%,var(--border));border-radius:16px;padding:22px}
+  .guarantee h2{color:var(--good-ink);display:flex;gap:9px;align-items:center}
+  .rails{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .rail-pill{font-size:.85rem;background:var(--surface);border:1px solid var(--border);border-radius:999px;
+    padding:6px 13px;display:inline-flex;gap:7px;align-items:center}
+  .rail-pill .d{width:7px;height:7px;border-radius:50%;background:var(--good)}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--ink-2);font-size:.86rem}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--surface-2);border:1px solid var(--border);
+    border-radius:999px;padding:5px 12px;font-size:.8rem;font-weight:600}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px var(--good-soft)}
+  a{color:var(--accent-ink)}
+  @media (max-width:560px){ .wrap{padding:32px 16px 56px} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ILIA Support Agent · NIWD-2270</div>
+    <h1>How the Support Agent runs on AWS</h1>
+    <p class="lede">The Support Agent's "brain" is Claude. In production it runs Claude through <b>Amazon Bedrock inside NIW's own AWS</b> — so client data never leaves our environment and never reaches Anthropic.</p>
+    <div style="margin-top:16px"><span class="pill"><span class="dot"></span> The agent is built &amp; tested — this is the connection change that clears the security gate</span></div>
+  </header>
+
+  <!-- WHY -->
+  <section class="sec">
+    <div class="sec-head"><span class="k">Why the change</span></div>
+    <div class="grid2">
+      <div class="card">
+        <h3><span class="tag no">Testing only</span></h3>
+        <p style="margin-top:8px"><b>ILIA → Anthropic's API.</b> Simple, but Anthropic retains inputs &amp; outputs for 30 days (no Zero-Data-Retention on our plan). Fine for knowledge / PII-free testing — <b>not</b> for real client data.</p>
+      </div>
+      <div class="card" style="border-color:color-mix(in srgb,var(--good) 30%,var(--border))">
+        <h3><span class="tag yes">Production</span></h3>
+        <p style="margin-top:8px"><b>Our AWS → Bedrock.</b> Same Claude models, but the call runs inside NIW's AWS account under our data terms. Client data stays in-house — <b>real client data is fine.</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIAGRAM -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>The plan — one request, start to finish</h2>
+      <span class="k">how the pieces fit together on AWS</span>
+    </div>
+    <div class="diagram-panel">
+      <div class="diagram-scroll">
+        <div class="diagram">
+          <div class="stage">
+            <!-- user (outside AWS) -->
+            <div class="box box-user"><b>Support user</b><i>support console (SSO)</i></div>
+            <div class="conn">
+              <div class="ar">request →</div>
+              <div class="ar dim">← answer</div>
+            </div>
+            <!-- AWS boundary -->
+            <div class="aws">
+              <span class="aws-label">AWS Cloud · NIW account</span>
+              <div class="aws-inner">
+                <div class="box"><b>HTTPS entry</b><i>API / Function URL</i></div>
+                <div class="conn"><div class="ar">→</div></div>
+                <div class="center">
+                  <div class="feeders">
+                    <div class="feed">
+                      <div class="box"><b>Secrets Manager</b><i>credentials</i></div>
+                      <div class="vdown"><span>▼</span>creds</div>
+                    </div>
+                    <div class="feed">
+                      <div class="box"><b>Client records + docs</b><i>S3 / system of record</i></div>
+                      <div class="vdown"><span>▼</span>read · scrubbed</div>
+                    </div>
+                  </div>
+                  <div class="box-lambda">
+                    <div class="lh">AWS Lambda — Support Agent backend <em>· our code</em></div>
+                    <div class="steps">
+                      <div class="step"><span class="sn">1</span> Check access</div>
+                      <div class="step rail"><span class="sn">2</span> Strip client PII 🔒</div>
+                      <div class="step"><span class="sn">3</span> Build the question <em>(+ records, documents)</em></div>
+                      <div class="step ask"><span class="sn">4</span> Ask Claude →</div>
+                      <div class="step rail"><span class="sn">5</span> Check &amp; shape answer <em>(fixed format)</em> ✓</div>
+                      <div class="step rail"><span class="sn">6</span> Take action (reply / update) — GATED 🔒</div>
+                    </div>
+                    <div class="lgd"><span class="sw"></span> Guardrail — where we control the output <span class="dl"></span> Context (read)</div>
+                  </div>
+                </div>
+                <div class="conn">
+                  <div class="ar">prompt · no PII<br><em>IAM role · no key</em> →</div>
+                  <div class="ar dim">← answer</div>
+                </div>
+                <div class="box box-bedrock"><b>Amazon Bedrock</b><i>Claude — runs in-AWS</i><i>no data to Anthropic</i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="cap">Left→right: a support user asks → our Lambda <b>strips PII</b>, builds the question from records &amp; documents, and asks <b>Claude on Bedrock</b> → the answer comes back in a <b>fixed format</b>. Claude runs inside AWS via an <b>IAM role — no key, no data to Anthropic.</b> The three shaded steps are our guardrails.</p>
+    </div>
+    <div style="margin-top:12px;font-size:.85rem;color:var(--ink-2);border-left:3px solid var(--border-strong);padding:2px 0 2px 12px">Anthropic's own API stays connected too — but only for <b>PII-free / knowledge testing</b>, never production client data.</div>
+  </section>
+
+  <!-- WHAT MOHIT SETS UP -->
+  <section class="sec">
+    <div class="setup">
+      <h2>⚙️ What Mohit sets up on AWS <span style="font-weight:600;font-size:.8rem;color:var(--amber-ink)">— NIWD-2270</span></h2>
+      <p style="margin:.4em 0 0;color:var(--amber-ink);font-size:.94rem">A one-time enablement. No Anthropic key and no AWS access key in the code — access is the IAM role alone.</p>
+      <ol class="steps2">
+        <li><span>Enable <b>Amazon Bedrock</b> + <b>Claude model access</b> in <code>us-east-1</code>.</span></li>
+        <li><span>Create an <b>IAM role</b> scoped to <code>bedrock:InvokeModel</code> for the backend to assume — no keys issued.</span></li>
+        <li><span>Host the Support Agent <b>backend</b> and expose an <b>HTTPS endpoint</b>.</span></li>
+      </ol>
+      <div class="ret">Then hand back three values: <b>endpoint URL · region · model id.</b> That's all the dev side needs to wire it in.</div>
+    </div>
+  </section>
+
+  <!-- GUARANTEE -->
+  <section class="sec">
+    <div class="guarantee">
+      <h2>🔒 The guarantee</h2>
+      <p style="margin:.3em 0 14px;color:var(--ink-2)">Because the model runs in NIW's AWS via an IAM role, <b>client PII never reaches Anthropic</b> — exactly what the security review requires. The agent's guardrails carry over:</p>
+      <div class="rails">
+        <span class="rail-pill"><span class="d"></span> Strips PII before the model</span>
+        <span class="rail-pill"><span class="d"></span> Confirms <b>which</b> person first</span>
+        <span class="rail-pill"><span class="d"></span> Read-only — never edits ILIA</span>
+        <span class="rail-pill"><span class="d"></span> Draft-only — never sends</span>
+        <span class="rail-pill"><span class="d"></span> Fixed, validated output</span>
+        <span class="rail-pill"><span class="d"></span> Says so when unsure</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEXT -->
+  <section class="sec">
+    <div class="sec-head"><span class="k">What happens next</span></div>
+    <div class="card">
+      <p style="margin:0"><b>When Mohit returns endpoint · region · model id →</b> the dev side makes a <b>small connection swap</b> (point the agent at Bedrock instead of the Anthropic API — everything else, prompts and tools and guardrails, stays the same), then runs a <b>zero-PII smoke test</b> through Bedrock to confirm it behaves identically. After that: real-data validation, then the security review.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>✅ The Bedrock path is already proven — a reference test in the PM-portal project returned <b>"Bedrock is working."</b> We reuse that same enablement; nothing experimental. &nbsp;·&nbsp; Tracked in <b>NIWD-2270</b>.</p>
+  </footer>
+</div>
