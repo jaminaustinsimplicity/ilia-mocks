@@ -373,7 +373,7 @@
               <div class="lab">Docs in the package <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--faint)">· Ben's automation</span></div>
               <ul class="fd-list">
                 <li><span class="tick">✓</span><div><b>DBR election doc</b> — the form the client signs <span class="always">always</span></div></li>
-                <li><span class="tick pend">?</span><div><b>3 in-force illustrations</b> — Full / Half / No reduction — + comparison summary. Ben auto-prepares <span class="pill">if “everything”</span></div></li>
+                <li><span class="tick">✓</span><div><b>3 in-force illustrations</b> — Full / Half / No reduction — + comparison summary. Ben auto-prepares <span class="always">in the notice</span></div></li>
                 <li><span class="tick bank">→</span><div><b>Low point</b> → the bank uses <b>these same 120/90/60 illustrations</b> (no re-run). On election, ILIA writes the chosen option's low point into the <b>Low Point field in Case Details</b> → Chris runs the bank report <span class="always">always</span></div></li>
                 <li><span class="tick" style="background:var(--faint)">–</span><div><b>Custom amount:</b> handled <b>offline</b> (MVP) — no ILIA automation</div></li>
               </ul>
@@ -396,7 +396,7 @@
               <ul class="list plain">
                 <li><span class="ic">→</span>Sends the DBR notice at 120, 90 &amp; 60 days (until the client submits their signed form)</li>
                 <li><span class="ic">→</span>Sets the client's DBR status in Tranche Management</li>
-                <li><span class="ic">→</span>Assembles the package — Ben's tool auto-pulls the <b>3 illustrations</b> (Full / Half / None) &amp; scrapes the comparison (under “everything”)</li>
+                <li><span class="ic">→</span>Assembles the package — Ben's tool auto-pulls the <b>3 illustrations</b> (Full / Half / None) &amp; scrapes the comparison (all in one envelope)</li>
                 <li><span class="ic">→</span>Logs each send (audit)</li>
               </ul>
             </div>
@@ -455,6 +455,7 @@
             <div class="cfm sec">
               <div class="lab">Confirmed by Judy (Aug 19)</div>
               <ul>
+                <li><b>Everything ships in one envelope</b> — the 3 illustrations + comparison ride in the notice (not “lean”/on-request).</li>
                 <li>The bank uses the <b>illustrations we create at 120/90/60</b> — <b>no re-run</b>. The same 3 illustrations serve Full / Half / No reduction.</li>
                 <li>On election, ILIA <b>stores the chosen option's low point in the elected year</b> → the <b>Low Point field in Case Details</b> → Chris runs the bank report.</li>
                 <li><b>Custom amounts are handled offline</b> (MVP) — not automated in ILIA.</li>
@@ -469,7 +470,6 @@
                 <li><b>New DBR form — 3-illustration pick + custom</b> — Marissa is rebuilding the election form: pick one of Full / Half / No reduction, plus a custom-amount field. <b>(Pending)</b></li>
                 <li><b>Ben's illustration + scraping automation</b> — auto-pull the <b>3 illustrations</b> (Full / Half / None) from the carrier + scrape the comparison; run the low point on the final elected illustration. <b>Linchpin.</b> <span style="color:var(--faint)">Also: confirm what "Half" is measured against (half the reduction $).</span></li>
                 <li><b>Clean DBR data in ILIA</b> — validated, populated DBR amounts for all <b>settlor = insured</b> accounts (Phase 1). The send fires off this data. <b>(B1)</b> <span style="color:var(--faint)">Depends on NIWD-2299 (illustrated-DB recalc, Yr 10–14) — reconcile the 10–14 vs 11–15 window with Kyle.</span></li>
-                <li><b>“Lean vs. everything” decision</b> — Judy to confirm whether the 3 illustrations + comparison ride in the doc or go on request. Gates the final notice contents.</li>
                 <li><b>DBR amount formulas (cumulative) — Paul</b> — how the reduction is calculated each year and how amounts <b>carry/stack</b> when a year is declined. ILIA holds the per-year DB-drop amounts; need Paul's formulas. Ties to NIWD-2299.</li>
               </ul>
             </div>
@@ -480,7 +480,7 @@
                 <li><span class="jt">1</span><div><b>Validate &amp; populate DBR data — settlor = insured</b> <span style="color:var(--faint);font-weight:400">· data team</span><span class="jd">(B1) Validate DBR amounts vs. the carrier source of truth and populate them for all settlor = insured accounts. Prerequisite — the trigger fires off this data.</span></div></li>
                 <li><span class="jt">2</span><div><b>DBR eligibility &amp; trigger scheduler</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Daily job: find eligible policies (in the DBR window — Yr 10 or 11 start by cohort, through Yr 15 · Kai-Zen · settlor = insured · not excluded · not health-declined), calc the deadline from the tranche funding date + the DBR amount from the original design/illustration, and schedule the 120/90/60 sends. Start-year rule pending Judy.</span></div></li>
                 <li><span class="jt">3</span><div><b>Illustration auto-pull (3 scenarios) + data scrape</b> <span style="color:var(--faint);font-weight:400">· Ben</span><span class="jd">Auto-request the 3 in-force illustrations (Full / Half / None) from the carrier; scrape the client comparison. Run the low point only on the elected/final illustration (Admin, per NIWD-2300). Confirm the "Half" basis. The linchpin.</span></div></li>
-                <li><span class="jt">4</span><div><b>Assemble &amp; send the DBR package (DocuSign)</b> <span style="color:var(--faint);font-weight:400">· ILIA dev + Chris (DocuSign send)</span><span class="jd">Bundle the election form + the 3 illustrations + comparison into one DocuSign envelope (“everything”); send at 120/90/60; stop reminders once the signed form is in; log each send. Needs Marissa's form/copy + task 3.</span></div></li>
+                <li><span class="jt">4</span><div><b>Assemble &amp; send the DBR package (DocuSign)</b> <span style="color:var(--faint);font-weight:400">· ILIA dev + Chris (DocuSign send)</span><span class="jd">Bundle the election form + the 3 illustrations + comparison into one DocuSign envelope (all-in-one, confirmed by Judy); send at 120/90/60; stop reminders once the signed form is in; log each send. Needs Marissa's form/copy + task 3.</span></div></li>
                 <li><span class="jt">5</span><div><b>DBR status in Tranche Management</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Add the DBR Status field to the Workflow tab and drive its states, starting with “Notice sent — awaiting response.”</span></div></li>
               </ul>
             </div>
@@ -808,8 +808,8 @@
         <p class="att-lead">Everything the client receives in the DocuSign packet. Click a doc to see what it is and a sample of what the client would see.</p>
         <div class="att-list">
           <button class="att-doc" data-doc="election"><span class="att-ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 1.5h5L12.5 5v9.5h-8.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 1.5V5h3.5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span><div><b>DBR Election Form</b><span class="att-sub">The form the client signs</span><span class="wait">⏳ Waiting on Marissa</span></div></button>
-          <button class="att-doc" data-doc="comparison"><span class="att-ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="8" width="3" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="6.5" y="5" width="3" height="9" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="2.5" width="3" height="11.5" stroke="currentColor" stroke-width="1.2"/></svg></span><div><b>Comparison Summary</b><span class="att-sub">Before vs. after <span class="pill">if “everything”</span></span><span class="wait">⏳ Waiting on Ben</span></div></button>
-          <button class="att-doc" data-doc="illustration"><span class="att-ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 12l4-4 3 2 5-6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>3 In-Force Illustrations</b><span class="att-sub">Full / Half / None <span class="pill">if “everything”</span></span><span class="wait">⏳ Waiting on Ben</span></div></button>
+          <button class="att-doc" data-doc="comparison"><span class="att-ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="8" width="3" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="6.5" y="5" width="3" height="9" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="2.5" width="3" height="11.5" stroke="currentColor" stroke-width="1.2"/></svg></span><div><b>Comparison Summary</b><span class="att-sub">Before vs. after <span class="always">in the notice</span></span><span class="wait">⏳ Waiting on Ben</span></div></button>
+          <button class="att-doc" data-doc="illustration"><span class="att-ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 12l4-4 3 2 5-6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>3 In-Force Illustrations</b><span class="att-sub">Full / Half / None <span class="always">in the notice</span></span><span class="wait">⏳ Waiting on Ben</span></div></button>
         </div>
       </div>
       </div>
@@ -841,11 +841,11 @@
           <p class="fd-lead">ILIA assembles &amp; sends these with the DBR doc — auto-prepared by Ben's tool, no manual pulling.</p>
           <ul class="fd-list">
             <li><span class="tick">✓</span><div><b>DBR election doc</b> — the form the client signs (this page) <span class="always">always</span></div></li>
-            <li><span class="tick pend">?</span><div><b>3 in-force illustrations</b> — Full / Half / No reduction — Ben auto-pulls from carrier <span class="pill">if “everything”</span></div></li>
-            <li><span class="tick pend">?</span><div><b>Comparison summary</b> (before vs. after) — Ben auto-generates <span class="pill">if “everything”</span></div></li>
+            <li><span class="tick">✓</span><div><b>3 in-force illustrations</b> — Full / Half / No reduction — Ben auto-pulls from carrier <span class="always">in the notice</span></div></li>
+            <li><span class="tick">✓</span><div><b>Comparison summary</b> (before vs. after) — Ben auto-generates <span class="always">in the notice</span></div></li>
             <li><span class="tick bank">→</span><div><b>Low point</b> → the bank uses the <b>120/90/60 illustration</b> (no re-run); on election ILIA writes it to the <b>Low Point field in Case Details</b> → Chris's bank report <span class="always">always</span></div></li>
           </ul>
-          <p class="fd-note">Pending Judy's lean-vs-everything call — if “lean,” the 3 illustrations &amp; comparison go out <b>only on request</b> instead of in the doc. Low point confirmed required (NIWD-2053), reused from the 120/90/60 illustration (no re-run).</p>
+          <p class="fd-note"><b>Confirmed by Judy:</b> everything ships in <b>one envelope</b> — the 3 illustrations &amp; comparison ride in the notice. Low point confirmed required (NIWD-2053), reused from the 120/90/60 illustration (no re-run).</p>
           <div class="fd-partial">
             <div class="fd-h">If the client writes a Custom amount → handled offline (MVP)</div>
             <ul class="fd-list">
@@ -873,7 +873,7 @@
         <div class="e-body">
           <div class="e-top"><b class="e-name">DBR Notice — initial</b><span class="e-tag">Event 1 · 120 days out</span></div>
           <div class="e-meta"><b>To:</b> Client (routed via the agent, Janine)</div>
-          <div class="e-meta"><b>Includes:</b> the DBR election form (Full / Half / None + custom) + 3 illustrations + comparison summary (under “everything”)</div>
+          <div class="e-meta"><b>Includes:</b> the DBR election form (Full / Half / None + custom) + 3 illustrations + comparison summary — all in one envelope</div>
           <div class="e-note">⏳ Copy — Marissa is building the new notice. (Pending)</div>
         </div>
       </div>
@@ -1026,7 +1026,6 @@ document.getElementById('tabBlockers').addEventListener('click',()=>showTab('blo
 const CHECK=[
  {group:"Decisions & confirmations to unblock",items:[
    {t:"DBR start-year rule — early cohorts Yr 10 vs later Yr 11",d:"Auto-send must key off each cohort's actual DBR schedule, not a fixed Yr 11.",tags:[["Judy","own"],["Blocker","block"],["Card 1","card"]]},
-   {t:"Lean vs. everything",d:"Do the 3 illustrations + comparison ride in the notice, or go on request?",tags:[["Judy","own"],["Blocker","block"],["Card 1","card"]]},
    {t:"“Half” definition / basis",d:"Is Half exactly half the reduction amount, and Ben's tool computes it?",tags:[["Ben","own"],["Pending","pending"],["Cards 1 & 3","card"]]},
    {t:"DBR amount formulas — cumulative / stacking across years",d:"How the reduction is calc'd each year and how amounts carry when a year is declined. Ties to NIWD-2299.",tags:[["Paul","own"],["Blocker","block"],["Card 1","card"]]},
    {t:"Final email copy (Full / Half / None + custom)",d:"Notice + reminder wording, incl. the health prompt on No reduction.",tags:[["Marissa","own"],["Pending","pending"],["Card 1 · Emails","card"]]},
@@ -1158,7 +1157,7 @@ const UX={1:{
 2:{
   title:"Client experience — responding & signing",
   intro:"The client got the notice packet (Event 1). Here's what they do to respond.",
-  receive:"They open the DocuSign packet — the election form plus (assuming 'everything') the 3 illustrations and comparison, all in one place.",
+  receive:"They open the DocuSign packet — the election form plus the 3 illustrations and comparison, all in one envelope.",
   docs:[
     ["3 illustrations + comparison","They compare Full / Half / No-reduction side by side to decide."],
     ["Election form","They check one box — Full, Half, or No reduction — or write a custom amount."],
