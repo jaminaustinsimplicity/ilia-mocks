@@ -1,0 +1,1391 @@
+<title>DBR Automation Requirements</title>
+<style>
+  :root{
+    --bg:#eef1f6;--surface:#fff;--surface-2:#f5f7fb;--border:#dde3ec;--border-strong:#c5cddb;
+    --ink:#151c2a;--muted:#5b6675;--faint:#8b95a5;
+    --ilia:#2f6beb;--ilia-soft:#e7effd;--ok:#0e9c69;--warn:#c07a12;--warn-soft:#fbf1e0;--marissa:#2f45c5;
+    --awaiting:#c07a12;--accepted:#0e9c69;--declined:#7a4fd6;--partial:#d1487a;--exc:#c0392b;
+    --radius:14px;--shadow:0 1px 2px rgba(17,24,39,.06),0 10px 30px rgba(17,24,39,.07);
+    --ff:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--fm:ui-monospace,SFMono-Regular,Consolas,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#0c121c;--surface:#141d29;--surface-2:#0f1722;--border:#27313f;--border-strong:#3a4757;
+    --ink:#e8edf4;--muted:#9aa6b6;--faint:#6b7686;
+    --ilia:#5a8cf5;--ilia-soft:#16243c;--ok:#31c48d;--warn:#e0a23a;--warn-soft:#2a2110;--marissa:#6d84ff;
+    --awaiting:#e0a23a;--accepted:#31c48d;--declined:#a888ee;--partial:#ec7aa4;--exc:#f0736f;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.4);
+  }}
+  :root[data-theme="light"]{--bg:#eef1f6;--surface:#fff;--surface-2:#f5f7fb;--border:#dde3ec;--border-strong:#c5cddb;--ink:#151c2a;--muted:#5b6675;--faint:#8b95a5;--ilia:#2f6beb;--ilia-soft:#e7effd;--ok:#0e9c69;--warn:#c07a12;--warn-soft:#fbf1e0;--marissa:#2f45c5;--awaiting:#c07a12;--accepted:#0e9c69;--declined:#7a4fd6;--partial:#d1487a;--exc:#c0392b}
+  :root[data-theme="dark"]{--bg:#0c121c;--surface:#141d29;--surface-2:#0f1722;--border:#27313f;--border-strong:#3a4757;--ink:#e8edf4;--muted:#9aa6b6;--faint:#6b7686;--ilia:#5a8cf5;--ilia-soft:#16243c;--ok:#31c48d;--warn:#e0a23a;--warn-soft:#2a2110;--marissa:#6d84ff;--awaiting:#e0a23a;--accepted:#31c48d;--declined:#a888ee;--partial:#ec7aa4;--exc:#f0736f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);line-height:1.45;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px 20px 60px}
+  header.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:14px}
+  h1{font-size:23px;margin:0 0 6px;letter-spacing:-.01em}
+  .desc{margin:0;color:var(--muted);font-size:13.5px;max-width:88ch}
+  .desc b{color:var(--ink)}
+  button{font-family:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);font-size:13px;padding:8px 12px}
+  .tabs{display:flex;gap:2px;margin:18px 0 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .tabs button{border:none;background:none;border-bottom:2px solid transparent;border-radius:0;padding:11px 15px;font-weight:600;color:var(--muted);font-size:13.5px}
+  .tabs button:hover{color:var(--ink)}
+  .tabs button.active{color:var(--ink);border-bottom-color:var(--marissa)}
+  [hidden]{display:none!important}
+  .hint{font-size:11.5px;color:var(--faint);margin:16px 2px 8px;display:flex;align-items:center;gap:6px}
+  .jump{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin:12px 2px 6px;padding-bottom:3px}
+  .jump-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);border-radius:20px;padding:6px 13px 6px 7px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;flex:none}
+  .jump-btn:hover{border-color:var(--ilia);color:var(--ilia)}
+  .jump-btn .jn{width:20px;height:20px;border-radius:50%;background:var(--ilia);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;flex:none}
+  .top-scroll{overflow-x:scroll;overflow-y:hidden;margin:2px 2px 10px;height:16px}
+  .top-scroll #topScrollInner{height:1px}
+  .top-scroll::-webkit-scrollbar{height:14px}
+  .top-scroll::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:7px;min-width:44px}
+  .top-scroll::-webkit-scrollbar-thumb:hover{background:var(--faint)}
+  .top-scroll::-webkit-scrollbar-track{background:var(--surface-2);border-radius:7px}
+
+  .track-outer{overflow-x:auto;padding:6px 2px 18px}
+  .track{display:flex;gap:20px;align-items:stretch;min-width:min-content}
+  .ecard{flex:0 0 380px;width:380px;background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--ilia);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+  .ec-head{padding:16px 18px 12px}
+  .ec-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+  .ec-num{width:30px;height:30px;border-radius:50%;background:var(--ilia);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;flex:none}
+  .ec-own{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ilia);background:var(--ilia-soft);padding:3px 9px;border-radius:20px}
+  .ec-draft{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);border:1px solid var(--warn);border-radius:20px;padding:2px 8px}
+  .ec-head h2{margin:0;font-size:18px;letter-spacing:-.01em}
+  .ec-head .lead{margin:5px 0 0;font-size:12.5px;color:var(--muted)}
+  .ec-body{padding:4px 18px 18px;display:flex;flex-direction:column;gap:14px}
+  .sec .lab{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .sec p{margin:0;font-size:13px}
+  .fire{font-size:14px;font-weight:600;color:var(--ilia)}
+  ul.list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+  ul.list li{font-size:12.5px;display:flex;gap:8px;align-items:flex-start}
+  ul.list li .ic{flex:none;margin-top:1px;color:var(--ok)}
+  ul.list.plain li .ic{color:var(--ilia)}
+  .oqs{background:var(--warn-soft);border:1px solid var(--warn);border-radius:10px;padding:11px 12px}
+  .oqs .lab{color:var(--warn)}
+  .oqs ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:6px}
+  .oqs li{font-size:12px;color:var(--ink)}
+  .cfm{background:color-mix(in srgb,var(--ok) 8%,transparent);border:1px solid var(--ok);border-radius:10px;padding:11px 12px}
+  .cfm .lab{color:var(--ok)}
+  .cfm ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:6px}
+  .cfm li{font-size:12px;color:var(--ink)}
+  .jira{border:1px solid var(--border-strong);border-radius:10px;padding:12px 13px;background:var(--surface-2)}
+  .jira .lab{color:var(--ink)}
+  .jira-hint{font-weight:400;text-transform:none;letter-spacing:0;color:var(--faint);font-size:10px}
+  ul.jlist{list-style:none;margin:9px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+  ul.jlist>li{display:flex;gap:9px;align-items:flex-start}
+  ul.jlist .jt{flex:none;width:20px;height:20px;border-radius:5px;background:var(--marissa);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;margin-top:1px}
+  ul.jlist b{font-size:12.5px;display:block}
+  ul.jlist .jd{font-size:11.5px;color:var(--muted);display:block;margin-top:2px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:11px;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:20px;padding:3px 9px;color:var(--muted)}
+  .tm-sec{background:color-mix(in srgb,var(--marissa) 7%,transparent);border:1px solid var(--marissa);border-radius:10px;padding:11px 12px}
+  .tm-sec .lab{color:var(--marissa)}
+  .tm-link{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;color:#fff;background:var(--marissa);border:1px solid var(--marissa);border-radius:8px;padding:6px 11px;cursor:pointer}
+  .tm-link:hover{filter:brightness(1.07)}
+  .ux-sec-card{background:color-mix(in srgb,var(--ok) 7%,transparent);border:1px solid var(--ok);border-radius:10px;padding:11px 12px}
+  .ux-sec-card .lab{color:var(--ok)}
+  .ux-link{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12.5px;font-weight:700;color:#fff;background:var(--ok);border:1px solid var(--ok);border-radius:8px;padding:7px 12px;cursor:pointer}
+  .ux-link:hover{filter:brightness(1.06)}
+  #uxModal,#docPreview{border:1px solid var(--border-strong);border-radius:var(--radius);padding:0;background:var(--surface);color:var(--ink);max-width:640px;width:94vw;box-shadow:var(--shadow)}
+  #uxModal::backdrop,#docPreview::backdrop{background:rgba(6,10,18,.55)}
+  .fleft{display:flex;flex-direction:column;gap:20px;min-width:0}
+  .wait{display:inline-block;font-size:10px;font-weight:700;color:var(--warn);border:1px solid var(--warn);border-radius:20px;padding:1px 7px;margin-top:6px}
+  .attached{margin-top:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+  .attached h3{margin:0 0 3px;font-size:13px;letter-spacing:.02em}
+  .attached h3 span{font-weight:400;color:var(--faint);font-size:11.5px}
+  .att-lead{margin:0 0 12px;font-size:12px;color:var(--muted)}
+  .att-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+  .att-doc{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid var(--border-strong);border-radius:10px;padding:11px 12px;background:var(--surface-2);cursor:pointer;font-family:inherit}
+  .att-doc:hover{border-color:var(--ilia)}
+  .att-doc .att-ic{flex:none;color:var(--ilia);margin-top:1px}
+  .att-doc b{display:block;font-size:12.5px;color:var(--ink)}
+  .att-doc .att-sub{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+  .samp-what{font-size:12.5px;color:var(--muted);margin:0 0 14px;line-height:1.5}
+  .samp-box{border:1px solid var(--border);border-radius:10px;background:var(--surface-2);padding:14px}
+  .samp-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);margin-bottom:10px}
+  table.samp{width:100%;border-collapse:collapse;font-size:12.5px}
+  .samp td,.samp th{padding:7px 10px;border-bottom:1px solid var(--border);text-align:left}
+  .samp tr:last-child td{border-bottom:none}
+  .samp th{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--faint)}
+  .samp td:first-child{font-weight:600;color:var(--ink)}
+  .samp-opt{display:flex;gap:8px;align-items:flex-start;font-size:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+  .samp-opt .box{flex:none;width:16px;height:16px;border:1.5px solid var(--border-strong);border-radius:4px;margin-top:1px}
+  .samp-opt b{color:var(--ink)}
+  .samp-sig{margin-top:12px;font-size:11px;color:var(--faint);border-top:1px dashed var(--border-strong);padding-top:10px}
+  .samp-note{font-size:10.5px;color:var(--faint);margin-top:10px;font-style:italic}
+  .ux-hd{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--border)}
+  .ux-hd h3{margin:0;font-size:16px}
+  .ux-hd button{border:none;background:none;font-size:16px;cursor:pointer;color:var(--muted);font-family:inherit}
+  .ux-bd{padding:16px 18px;max-height:70vh;overflow:auto}
+  .ux-intro{margin:0 0 14px;font-size:13px;color:var(--muted);line-height:1.5}
+  .ux-sec{margin-bottom:16px}
+  .ux-sec .ux-lab{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+  .ux-sec>p{margin:0;font-size:13px;line-height:1.5}
+  table.ux-table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .ux-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  .ux-table tr:last-child td{border-bottom:none}
+  .ux-table td:first-child{font-weight:600;color:var(--ink);width:40%}
+  .ux-table td:last-child{color:var(--muted)}
+  .ux-choose{display:flex;flex-direction:column;gap:8px}
+  .ux-choose .c{font-size:12.5px;line-height:1.5}.ux-choose .c b{color:var(--ink)}
+  .ux-ft{display:flex;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--border)}
+  .btn-primary{background:var(--marissa);color:#fff;border:1px solid var(--marissa);border-radius:8px;padding:8px 14px;font-weight:600;font-family:inherit;cursor:pointer}
+  .blockers{background:color-mix(in srgb,#d64545 8%,transparent);border:1px solid #d64545;border-radius:10px;padding:11px 12px}
+  .blockers .lab{color:#d64545}
+  .blockers ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:6px}
+  .blockers li{font-size:12px;color:var(--ink)}.blockers b{color:var(--ink)}
+  .ecard.e-sign{border-top-color:var(--ok)}
+  .ecard.e-sign .ec-num{background:var(--ok)}
+  .ecard.e-sign .ec-own{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+  .ec-body code{font-family:var(--fm);font-size:11px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:0 4px}
+  .routes{display:flex;flex-direction:column;gap:8px}
+  .rrow{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.4}
+  .rbadge{flex:none;min-width:38px;text-align:center;font-size:10px;font-weight:800;letter-spacing:.03em;color:#fff;border-radius:5px;padding:4px 5px;margin-top:1px}
+  .r-accept .rbadge{background:var(--ok)}
+  .r-decline .rbadge{background:var(--faint)}
+  .r-partial .rbadge{background:var(--warn)}
+  .r-none .rbadge{background:var(--border-strong);color:var(--muted)}
+  .r-full .rbadge{background:var(--ok)}
+  .r-half .rbadge{background:var(--ilia)}
+  .r-noreduce .rbadge{background:var(--faint)}
+  .r-custom .rbadge{background:var(--exc)}
+  .rrow b{color:var(--ink)}
+  .rnext{display:block;color:var(--muted);font-size:11px;margin-top:1px}
+  .seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:9px;overflow:hidden;margin-bottom:12px}
+  .seg-btn{border:none;background:var(--surface);color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;cursor:pointer;border-right:1px solid var(--border-strong)}
+  .seg-btn:last-child{border-right:none}
+  .seg-btn.active{background:var(--ilia);color:#fff}
+  .flab{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:12px 0 6px}
+  .seg-body .flab:first-child{margin-top:0}
+  .fp{margin:0;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .ghost{flex:0 0 260px;width:260px;border:2px dashed var(--border-strong);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--faint);text-align:center;padding:20px}
+  .ghost .g-num{width:34px;height:34px;border-radius:50%;border:2px dashed var(--border-strong);display:grid;place-items:center;font-weight:700}
+  .ghost p{margin:0;font-size:12.5px}
+
+  /* Tranche Management view */
+  .tm-intro{margin:16px 0 12px;padding:12px 14px;border:1px solid var(--border);border-left:3px solid var(--marissa);border-radius:var(--radius);background:var(--surface);font-size:13px;color:var(--muted)}
+  .tm-intro b{color:var(--ink)}
+  .tm{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .tm-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .tm-bar h2{font-size:18px;margin:0}
+  .concept-tag{font-size:10px;font-weight:800;letter-spacing:.05em;color:var(--warn);border:1px solid var(--warn);border-radius:20px;padding:2px 8px;margin-left:8px}
+  .status-sel{font-size:12px;color:var(--muted);border:1px solid var(--border-strong);border-radius:8px;padding:6px 12px;background:var(--surface-2)}
+  .tm-meta{display:flex;flex-wrap:wrap;gap:16px;padding:10px 18px;background:var(--surface-2);border-bottom:1px solid var(--border);font-size:12px;color:var(--muted)}
+  .tm-meta b{color:var(--ink)}
+  .tm-tabs{display:flex;gap:0;padding:0 10px;border-bottom:1px solid var(--border);overflow-x:auto}
+  .tm-tabs span{padding:12px 13px;font-size:11.5px;font-weight:700;letter-spacing:.03em;color:var(--faint);white-space:nowrap;border-bottom:2px solid transparent;text-transform:uppercase}
+  .tm-tabs span.act{color:var(--marissa);border-bottom-color:var(--marissa)}
+  .tm-key{display:flex;flex-wrap:wrap;gap:7px 10px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);background:var(--surface-2)}
+  .tm-key b{font-size:11px;color:var(--ink)}
+  .tm-scroll{overflow-x:auto}
+  table.tmt{width:100%;border-collapse:collapse;font-size:12.5px;min-width:760px}
+  .tmt th{text-align:left;padding:10px 12px;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--border);white-space:nowrap;background:var(--surface-2)}
+  .tmt td{padding:11px 12px;border-bottom:1px solid var(--border);white-space:nowrap;vertical-align:top}
+  .tmt tr:last-child td{border-bottom:none}
+  .tmt .nm{font-weight:600;color:var(--ink)}
+  .tmt th.hl,.tmt td.hl{background:color-mix(in srgb,var(--marissa) 7%,transparent)}
+  .st{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid}
+  .st-notdue{color:var(--faint);border-color:var(--border-strong)}
+  .st-illus{color:var(--ilia);border-color:var(--ilia);background:var(--ilia-soft)}
+  .st-awaiting{color:var(--awaiting);border-color:var(--awaiting)}
+  .st-accepted{color:var(--accepted);border-color:var(--accepted)}
+  .st-declined{color:var(--declined);border-color:var(--declined)}
+  .st-partial{color:var(--partial);border-color:var(--partial)}
+  .st-none{color:var(--faint);border-color:var(--border-strong)}
+  .st-applied{color:#fff;border-color:var(--accepted);background:var(--accepted)}
+  .newtag{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.04em;background:rgba(255,255,255,.28);border-radius:20px;padding:0 5px;margin-left:3px;vertical-align:middle}
+  .st-exception{color:var(--exc);border-color:var(--exc)}
+  .st-fulfill{color:var(--ilia);border-color:var(--ilia);background:var(--ilia-soft)}
+  .dbrcell{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:172px;white-space:normal}
+  .dbr-l1{font-size:11px;color:var(--muted)}
+  .dbr-sub{font-size:10.5px;color:var(--faint)}
+  .tm-act{font-size:11.5px;font-weight:600;color:var(--marissa);border:1px solid var(--border-strong);border-radius:7px;padding:4px 10px;background:var(--surface);cursor:default}
+  tr.flash{animation:flash 2.2s ease}
+  @keyframes flash{0%,100%{background:transparent}18%{background:color-mix(in srgb,var(--marissa) 22%,transparent)}}
+  @media (prefers-reduced-motion:reduce){tr.flash{animation:none;background:color-mix(in srgb,var(--marissa) 14%,transparent)}}
+  .fgrid{display:grid;grid-template-columns:1fr 340px;gap:20px;margin-top:16px;align-items:start}
+  @media (max-width:860px){.fgrid{grid-template-columns:1fr}}
+  .paper{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 26px;position:relative}
+  .doc-tag{position:absolute;top:14px;right:16px;font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--faint);border:1px solid var(--border-strong);border-radius:20px;padding:2px 9px}
+  .doc-h{font-size:17px;font-weight:700;margin:0 0 3px;letter-spacing:-.01em}
+  .doc-meta{font-size:12px;color:var(--muted);margin:0 0 16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+  .prompt{font-size:13.5px;margin:0 0 14px}.prompt b{color:var(--ink)}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--border-strong);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .12s,background .12s;background:var(--surface)}
+  .opt:hover{border-color:var(--marissa)}
+  .opt.sel{border-color:var(--marissa);background:color-mix(in srgb,var(--marissa) 7%,transparent)}
+  .radio{flex:none;width:20px;height:20px;border-radius:5px;border:2px solid var(--border-strong);margin-top:1px;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:800;line-height:1}
+  .opt.sel .radio{border-color:var(--marissa);background:var(--marissa)}
+  .opt.sel .radio::after{content:"✓"}
+  .opt .ot{font-size:14px;font-weight:600}
+  .opt .od{font-size:12px;color:var(--muted);margin-top:2px}
+  .opt .amt{font-size:12px;font-weight:700;color:var(--ok);margin-top:5px}
+  .exp{margin-top:8px;font-size:11.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:7px 9px;line-height:1.45}.exp b{color:var(--ink)}
+  .partial-field{margin-top:10px;display:block}
+  .partial-field label{font-size:11.5px;font-weight:600;color:var(--warn);display:block;margin-bottom:5px}
+  .amt-in{display:inline-flex;align-items:baseline;gap:4px;border-bottom:2px solid var(--warn);padding:2px 6px 3px}
+  .amt-in>span{font-weight:700;color:var(--warn)}
+  .amt-in input{border:none;background:transparent;color:var(--ink);font-family:var(--fm);font-size:15px;width:130px;outline:none}
+  .sig{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .sig .fld{font-size:11px;color:var(--faint)}
+  .sig .line{height:34px;border:1px dashed var(--border-strong);border-radius:8px;margin-top:5px;background:var(--surface-2);display:flex;align-items:center;padding:0 10px;font-size:12px;color:var(--faint);font-style:italic}
+  .req{color:#c0392b;font-weight:700}
+  .fside{display:flex;flex-direction:column;gap:16px}
+  .cap{background:#0f1722;border:1px solid var(--border-strong);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .cap-h{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.08);font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+  .cap-h .cdot{width:9px;height:9px;border-radius:50%;background:#31c48d}
+  .cap-b{padding:14px;font-family:var(--fm);font-size:12.5px;color:#d7e2f2;line-height:1.7}
+  .cap-b .k{color:#7fa8e6}.cap-b .v{color:#fff;font-weight:600}.cap-b .none{color:#7d8aa0;font-style:italic}
+  .route{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-family:var(--ff);font-size:12px;color:#d7e2f2}
+  .route .rv{display:block;margin-top:5px;font-weight:700;font-size:13px}
+  .rv.accept{color:#31c48d}.rv.decline{color:#9aa6b6}.rv.partial{color:#e0a23a}.rv.none{color:#7d8aa0}
+  .fnotes{background:var(--surface);border:1px solid var(--marissa);border-left:4px solid var(--marissa);border-radius:var(--radius);box-shadow:var(--shadow);padding:15px 16px}
+  .fnotes h3{margin:0 0 10px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--marissa)}
+  .fnotes ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px}
+  .fnotes li{font-size:12.5px;line-height:1.5}.fnotes li b{color:var(--ink)}
+  .fnotes code{font-family:var(--fm);font-size:11.5px;background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+  .fdocs{background:var(--surface);border:1px solid var(--ilia);border-left:4px solid var(--ilia);border-radius:var(--radius);box-shadow:var(--shadow);padding:15px 16px}
+  .fdocs h3{margin:0 0 3px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ilia)}
+  .fdocs h3 span{font-weight:600;color:var(--faint);text-transform:none;letter-spacing:0}
+  .fd-lead{margin:0 0 11px;font-size:11.5px;color:var(--muted)}
+  ul.fd-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  ul.fd-list>li{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.45}
+  ul.fd-list b{color:var(--ink)}
+  .tick{flex:none;width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;background:var(--ok);margin-top:1px}
+  .tick.pend{background:var(--warn)}.tick.bank{background:var(--faint)}.tick.amber{background:var(--warn)}
+  .pill{display:inline-block;font-size:9.5px;font-weight:700;color:var(--warn);border:1px solid var(--warn);border-radius:20px;padding:1px 6px;margin-left:4px;vertical-align:middle}
+  .always{display:inline-block;font-size:9.5px;font-weight:700;color:var(--ok);border:1px solid var(--ok);border-radius:20px;padding:1px 6px;margin-left:4px;vertical-align:middle}
+  .fd-partial{margin-top:12px;padding-top:11px;border-top:1px solid var(--border)}
+  .fd-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--warn);margin-bottom:8px}
+  .fd-note{margin:9px 0 0;font-size:11px;color:var(--faint);line-height:1.45}.fd-note b{color:var(--ink)}
+  .email-list{display:flex;flex-direction:column;gap:12px;max-width:840px;margin-top:14px}
+  .email-item{display:flex;gap:14px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--em);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px}
+  .type-notice{--em:var(--ilia)}.type-partial{--em:var(--warn)}.type-confirm{--em:var(--ok)}
+  .e-num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--em);color:#fff;font-weight:700;font-size:13px;display:grid;place-items:center}
+  .e-body{flex:1;min-width:0}
+  .e-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:baseline}
+  .e-name{font-size:14.5px;letter-spacing:-.01em}
+  .e-tag{font-size:11px;font-weight:700;color:var(--em);background:color-mix(in srgb,var(--em) 12%,transparent);padding:2px 9px;border-radius:20px;white-space:nowrap}
+  .e-meta{font-size:12.5px;color:var(--muted);margin-top:5px}.e-meta b{color:var(--ink)}
+  .e-note{font-size:11.5px;color:var(--warn);margin-top:6px}
+  .email-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:14px 2px 0}
+  .email-legend .lg{display:inline-flex;align-items:center;gap:6px}
+  .email-legend .d{width:11px;height:11px;border-radius:50%}
+  .email-item{cursor:pointer;transition:border-color .12s}
+  .email-item:hover{border-color:var(--em)}
+  .e-more{font-size:11px;font-weight:700;color:var(--em);margin-top:8px}
+  #emailModal{border:1px solid var(--border-strong);border-radius:var(--radius);padding:0;background:var(--surface);color:var(--ink);max-width:660px;width:94vw;box-shadow:var(--shadow)}
+  #emailModal::backdrop{background:rgba(6,10,18,.55)}
+  .em-sub{font-family:var(--fm);font-size:12.5px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;line-height:1.45}
+  .em-body{font-size:12.5px;white-space:pre-wrap;line-height:1.55;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:12px}
+  .mf{font-family:var(--fm);font-size:11.5px;color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent);border-radius:4px;padding:0 4px}
+  .em-att{margin:0;padding-left:18px;font-size:12.5px;color:var(--muted)}
+  .em-att li{margin-bottom:4px}
+  .bl-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 4px}
+  .bl-prog{font-size:12.5px;color:var(--muted)}.bl-prog b{color:var(--ink)}
+  .bl-bar{height:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;overflow:hidden;max-width:220px;flex:1;min-width:140px}
+  .bl-bar-fill{height:100%;background:var(--ok);width:0;transition:width .2s}
+  .bl-wrap{max-width:920px;margin:12px 0 0}
+  .bl-group{margin-bottom:22px}
+  .bl-group h3{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);margin:0 0 10px;border-bottom:1px solid var(--border);padding-bottom:6px}
+  .bl-item{padding:11px 13px;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:8px;transition:border-color .12s}
+  .bl-item:hover{border-color:var(--border-strong)}
+  .bl-top{display:flex;gap:11px;align-items:flex-start;cursor:pointer}
+  .bl-box{flex:none;width:18px;height:18px;border-radius:5px;border:2px solid var(--border-strong);margin-top:1px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800;line-height:1}
+  .bl-item.done .bl-box{background:var(--ok);border-color:var(--ok)}
+  .bl-item.done .bl-box::after{content:"✓"}
+  .bl-item.done .bl-t{text-decoration:line-through;color:var(--faint)}
+  .bl-t{font-size:13px;font-weight:600;color:var(--ink)}
+  .bl-d{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+  .bl-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .bl-tag{font-size:9.5px;font-weight:700;border-radius:20px;padding:1px 8px;border:1px solid;white-space:nowrap}
+  .bl-own{color:var(--marissa);border-color:var(--marissa)}
+  .bl-block{color:#d64545;border-color:#d64545}
+  .bl-pending{color:var(--warn);border-color:var(--warn)}
+  .bl-dep{color:var(--ilia);border-color:var(--ilia)}
+  .bl-card{color:var(--faint);border-color:var(--border-strong)}
+  .bl-nlab{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--marissa);margin:11px 0 4px}
+  .bl-note{width:100%;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:12.5px;padding:8px 10px;resize:vertical;line-height:1.5;min-height:42px}
+  .bl-note:focus{outline:none;border-color:var(--marissa);background:var(--surface)}
+  .bl-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+  .bl-btn{font-size:12px;font-weight:600;border:1px solid var(--marissa);color:#fff;background:var(--marissa);border-radius:8px;padding:7px 12px;cursor:pointer;font-family:inherit}
+  .bl-btn.ghost{background:var(--surface);color:var(--marissa)}
+  .bl-btn:hover{filter:brightness(1.05)}
+  .bl-saved{font-size:11.5px;font-weight:600;color:var(--ok);opacity:0;transition:opacity .2s}
+  .bl-saved.show{opacity:1}
+  @media (max-width:640px){.wrap{padding:16px 12px 50px}h1{font-size:20px}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>DBR Automation Requirements</h1>
+      <p class="desc">Automating the <b>Death Benefit Reduction (DBR)</b> process for Kai-Zen IUL policies in Policy Years 11–15. Today it's run manually by ops; this project makes <b>ILIA</b> proactively detect eligible policies, notify clients on a schedule, collect their election — the client picks one of <b>3 ready illustrations (Full / Half / No reduction)</b> or a custom amount — via DocuSign, and let <b>Marissa manage every case from Tranche Management</b>. This page is the living requirements — built event by event.</p>
+    </div>
+    <button id="themeBtn">Theme</button>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button id="tabCards" class="active">DBR workflow event cards</button>
+    <button id="tabTm">DBR in Tranche Management</button>
+    <button id="tabForms">New DBR forms</button>
+    <button id="tabEmails">ILIA DBR emails</button>
+    <button id="tabBlockers">Blockers checklist</button>
+  </nav>
+
+  <!-- ============ TAB 1: EVENT CARDS ============ -->
+  <section id="view-cards">
+    <div class="hint">
+      <svg width="15" height="12" viewBox="0 0 15 12" fill="none" aria-hidden="true"><path d="M9 1l5 5-5 5M14 6H1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      What we're building — one card per event, left to right. We fully define &amp; confirm each card before adding the next.
+    </div>
+    <div class="jump" id="jump"></div>
+    <div class="top-scroll" id="topScroll"><div id="topScrollInner"></div></div>
+    <div class="track-outer">
+      <div class="track">
+
+        <div class="ecard">
+          <div class="ec-head">
+            <div class="ec-top">
+              <span class="ec-num">1</span>
+              <span class="ec-own">ILIA · automated</span>
+              <span class="ec-draft">Draft · confirm</span>
+            </div>
+            <h2>DBR Trigger</h2>
+            <p class="lead"><b>How ILIA knows when to send:</b> it scans daily for eligible Kai-Zen policies approaching their DBR deadline (window starts Yr 10 or 11 by cohort, through Yr 15), then auto-sends the DBR notice on a set schedule — no manual kickoff.</p>
+          </div>
+          <div class="ec-body">
+            <div class="sec">
+              <div class="lab">When the notices go out</div>
+              <p class="fire">120, 90 &amp; 60 days before the deadline</p>
+              <p style="margin-top:4px;color:var(--muted);font-size:12px">An initial notice + two reminders, measured from the <b>tranche funding date</b> (its anniversary in the eligible year). <b>(Confirmed by Marissa.)</b></p>
+              <p style="margin:6px 0 0;font-size:11.5px;color:var(--warn)">⏳ The <b>first DBR year varies by cohort</b> — DBRs were calculated at <b>Yr 10</b> for early cohorts and <b>Yr 11</b> for later ones. The auto-send must key off each cohort's actual DBR schedule, not a fixed Yr 11. <b>(Waiting on Judy.)</b></p>
+            </div>
+
+            <div class="sec">
+              <div class="lab">Each notice includes</div>
+              <p style="margin:0;font-size:12.5px">The DBR document — the client picks <b>one of 3 ready illustrations</b>: <b>Full reduction</b> (yes) · <b>Half reduction</b> · <b>No reduction</b> (no) — plus a <b>custom amount</b> field if they want a different number.</p>
+              <p style="margin:6px 0 0;font-size:12px;color:var(--warn)">⏳ Marissa is building the updated notice with these options — she'll share it. <b>(Pending)</b></p>
+              <p style="margin:6px 0 0;font-size:11.5px;color:var(--faint)">Judy's model (Aug 19): most clients pick Full / Half / None, so pre-compute those three; custom stays for the rare exception.</p>
+            </div>
+
+            <div class="sec">
+              <div class="lab">Docs in the package <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--faint)">· Ben's automation</span></div>
+              <ul class="fd-list">
+                <li><span class="tick">✓</span><div><b>DBR election doc</b> — the form the client signs <span class="always">always</span></div></li>
+                <li><span class="tick pend">?</span><div><b>3 in-force illustrations</b> — Full / Half / No reduction — + comparison summary. Ben auto-prepares <span class="pill">if “everything”</span></div></li>
+                <li><span class="tick bank">→</span><div><b>Low point</b> → the bank uses <b>these same 120/90/60 illustrations</b> (no re-run). On election, ILIA writes the chosen option's low point into the <b>Low Point field in Case Details</b> → Chris runs the bank report <span class="always">always</span></div></li>
+                <li><span class="tick" style="background:var(--faint)">–</span><div><b>Custom amount:</b> handled <b>offline</b> (MVP) — no ILIA automation</div></li>
+              </ul>
+              <p style="margin:8px 0 0;font-size:11px;color:var(--faint)">Low point confirmed required (NIWD-2053); reuses the low-point mapping in NIWD-2185. Ben re-runs only for a custom amount (which is offline). <b>Todd</b> is also building a separate informational page comparing each option (Ben's tool), alongside the elections.</p>
+            </div>
+
+            <div class="sec">
+              <div class="lab">Eligibility — all must be true</div>
+              <ul class="list">
+                <li><span class="ic">✓</span>Product = Kai-Zen IUL</li>
+                <li><span class="ic">✓</span>In the DBR window — <b>early cohorts start Yr 10</b>, later cohorts <b>Yr 11</b>; through Yr 15 <span style="color:var(--warn)">· waiting on Judy</span></li>
+                <li><span class="ic">✓</span>Settlor = insured (Phase 1 scope)</li>
+                <li><span class="ic">✓</span>Has not already completed a DBR (exclusion list)</li>
+                <li><span class="ic">✓</span>Did not previously decline for “Health”</li>
+              </ul>
+            </div>
+
+            <div class="sec">
+              <div class="lab">What it does when it fires</div>
+              <ul class="list plain">
+                <li><span class="ic">→</span>Sends the DBR notice at 120, 90 &amp; 60 days (until the client submits their signed form)</li>
+                <li><span class="ic">→</span>Sets the client's DBR status in Tranche Management</li>
+                <li><span class="ic">→</span>Assembles the package — Ben's tool auto-pulls the <b>3 illustrations</b> (Full / Half / None) &amp; scrapes the comparison (under “everything”)</li>
+                <li><span class="ic">→</span>Logs each send (audit)</li>
+              </ul>
+            </div>
+
+            <div class="sec tm-sec">
+              <div class="lab">In Tranche Management</div>
+              <p style="margin:0 0 8px;font-size:12.5px">This event sets the client's DBR status to:</p>
+              <button class="tm-link" id="card1TmLink">Notice sent — awaiting response
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <p style="margin:8px 0 0;font-size:11.5px;color:var(--faint)">Click to see it live in the DBR Tranche Management view.</p>
+            </div>
+
+            <div class="sec ux-sec-card">
+              <div class="lab">User experience</div>
+              <p style="margin:0 0 8px;font-size:12.5px">What the client goes through for this event.</p>
+              <button class="ux-link" data-ux="1">See the client's experience
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+
+            <div class="sec">
+              <div class="lab">Re-offer</div>
+              <p style="font-size:12.5px;color:var(--muted)">If the client declines (not for Health), the trigger re-fires at the next anniversary — each year through Year 15.</p>
+            </div>
+
+            <div class="sec">
+              <div class="lab">Systems</div>
+              <div class="chips"><span class="chip">ILIA scheduler — daily scan for the notice dates + eligibility</span></div>
+            </div>
+
+            <div class="sec">
+              <div class="lab">Data it needs</div>
+              <div class="chips">
+                <span class="chip">Tranche funding date (deadline basis)</span>
+                <span class="chip">Policy year</span>
+                <span class="chip">Product type</span>
+                <span class="chip">Settlor relation</span>
+                <span class="chip">Original design + illustration (full DBR amount)</span>
+                <span class="chip">Half-reduction amount (Ben's tool)</span>
+                <span class="chip">DBR / exclusion status</span>
+                <span class="chip">Prior decline reason</span>
+                <span class="chip">Signed-form status (stops reminders)</span>
+              </div>
+            </div>
+
+            <div class="cfm sec">
+              <div class="lab">Confirmed by Marissa</div>
+              <ul>
+                <li>Deadline is based on the <b>tranche funding date</b> (its anniversary in the eligible year).</li>
+                <li>DBR amount comes from the <b>original design + original illustration</b> (a fixed, known value) — not an ad-hoc “amount &gt; $0.” Resolves Kyle’s flag.</li>
+                <li>Reminders <b>stop once the client submits their signed form</b>.</li>
+              </ul>
+            </div>
+
+            <div class="cfm sec">
+              <div class="lab">Confirmed by Judy (Aug 19)</div>
+              <ul>
+                <li>The bank uses the <b>illustrations we create at 120/90/60</b> — <b>no re-run</b>. The same 3 illustrations serve Full / Half / No reduction.</li>
+                <li>On election, ILIA <b>stores the chosen option's low point in the elected year</b> → the <b>Low Point field in Case Details</b> → Chris runs the bank report.</li>
+                <li><b>Custom amounts are handled offline</b> (MVP) — not automated in ILIA.</li>
+              </ul>
+            </div>
+
+            <div class="sec blockers">
+              <div class="lab">Blockers</div>
+              <ul>
+                <li><b>DBR start year varies by cohort</b> — early cohorts had DBRs calculated at <b>Yr 10</b>, later cohorts at <b>Yr 11</b>. The auto-send logic must use each cohort's actual DBR schedule (not a hardcoded Yr 11). Ties to NIWD-2299's Yr 10–14 window. <b>(Waiting on Judy.)</b></li>
+                <li><b>Email copy for the notices</b> — the final notice wording (Full / Half / None + custom) isn't ready. Marissa is building it. <b>(Pending)</b></li>
+                <li><b>New DBR form — 3-illustration pick + custom</b> — Marissa is rebuilding the election form: pick one of Full / Half / No reduction, plus a custom-amount field. <b>(Pending)</b></li>
+                <li><b>Ben's illustration + scraping automation</b> — auto-pull the <b>3 illustrations</b> (Full / Half / None) from the carrier + scrape the comparison; run the low point on the final elected illustration. <b>Linchpin.</b> <span style="color:var(--faint)">Also: confirm what "Half" is measured against (half the reduction $).</span></li>
+                <li><b>Clean DBR data in ILIA</b> — validated, populated DBR amounts for all <b>settlor = insured</b> accounts (Phase 1). The send fires off this data. <b>(B1)</b> <span style="color:var(--faint)">Depends on NIWD-2299 (illustrated-DB recalc, Yr 10–14) — reconcile the 10–14 vs 11–15 window with Kyle.</span></li>
+                <li><b>“Lean vs. everything” decision</b> — Judy to confirm whether the 3 illustrations + comparison ride in the doc or go on request. Gates the final notice contents.</li>
+                <li><b>DBR amount formulas (cumulative) — Paul</b> — how the reduction is calculated each year and how amounts <b>carry/stack</b> when a year is declined. ILIA holds the per-year DB-drop amounts; need Paul's formulas. Ties to NIWD-2299.</li>
+              </ul>
+            </div>
+
+            <div class="jira sec">
+              <div class="lab">Suggested JIRA tasks <span class="jira-hint">titles only — not created in Jira</span></div>
+              <ul class="jlist">
+                <li><span class="jt">1</span><div><b>Validate &amp; populate DBR data — settlor = insured</b> <span style="color:var(--faint);font-weight:400">· data team</span><span class="jd">(B1) Validate DBR amounts vs. the carrier source of truth and populate them for all settlor = insured accounts. Prerequisite — the trigger fires off this data.</span></div></li>
+                <li><span class="jt">2</span><div><b>DBR eligibility &amp; trigger scheduler</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Daily job: find eligible policies (in the DBR window — Yr 10 or 11 start by cohort, through Yr 15 · Kai-Zen · settlor = insured · not excluded · not health-declined), calc the deadline from the tranche funding date + the DBR amount from the original design/illustration, and schedule the 120/90/60 sends. Start-year rule pending Judy.</span></div></li>
+                <li><span class="jt">3</span><div><b>Illustration auto-pull (3 scenarios) + data scrape</b> <span style="color:var(--faint);font-weight:400">· Ben</span><span class="jd">Auto-request the 3 in-force illustrations (Full / Half / None) from the carrier; scrape the client comparison. Run the low point only on the elected/final illustration (Admin, per NIWD-2300). Confirm the "Half" basis. The linchpin.</span></div></li>
+                <li><span class="jt">4</span><div><b>Assemble &amp; send the DBR package (DocuSign)</b> <span style="color:var(--faint);font-weight:400">· ILIA dev + Chris (DocuSign send)</span><span class="jd">Bundle the election form + the 3 illustrations + comparison into one DocuSign envelope (“everything”); send at 120/90/60; stop reminders once the signed form is in; log each send. Needs Marissa's form/copy + task 3.</span></div></li>
+                <li><span class="jt">5</span><div><b>DBR status in Tranche Management</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Add the DBR Status field to the Workflow tab and drive its states, starting with “Notice sent — awaiting response.”</span></div></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="ecard e-sign">
+          <div class="ec-head">
+            <div class="ec-top">
+              <span class="ec-num">2</span>
+              <span class="ec-own">Client → ILIA · DocuSign</span>
+              <span class="ec-draft">Draft · confirm</span>
+            </div>
+            <h2>Client Responds &amp; Elects</h2>
+            <p class="lead">The client opens the DocuSign packet, picks one option, and signs. ILIA reads the choice and routes it automatically.</p>
+          </div>
+          <div class="ec-body">
+            <div class="sec">
+              <div class="lab">How ILIA reads the response</div>
+              <ul class="list plain">
+                <li><span class="ic">→</span>DocuSign completion webhook fires when the client signs</li>
+                <li><span class="ic">→</span>ILIA reads <code>dbr_election</code> = <code>full</code> / <code>half</code> / <code>none</code> (+ <code>requested_amount</code> if custom)</li>
+                <li><span class="ic">→</span>Stops the 90 / 60-day reminders</li>
+                <li><span class="ic">→</span>Updates the DBR status in Tranche Management</li>
+              </ul>
+            </div>
+
+            <div class="sec">
+              <div class="lab">The routes — 3 picks + custom (+ no response)</div>
+              <div class="routes">
+                <div class="rrow r-full"><span class="rbadge">FULL</span><div><b>Full reduction</b> — apply the full amount<span class="rnext">→ Accepted → Applied (Event 3)</span></div></div>
+                <div class="rrow r-half"><span class="rbadge">HALF</span><div><b>Half reduction</b> — apply the ~50% amount<span class="rnext">→ Accepted → Applied (Event 3)</span></div></div>
+                <div class="rrow r-noreduce"><span class="rbadge">NONE</span><div><b>No reduction</b> — no change this year<span class="rnext">→ Declined — re-offer (through Yr 15)</span></div></div>
+                <div class="rrow r-custom"><span class="rbadge">CUST</span><div><b>Custom amount</b> — a different number<span class="rnext">→ Flagged for NIW · handled offline (MVP)</span></div></div>
+                <div class="rrow r-none"><span class="rbadge">—</span><div><b>No response</b> by the deadline<span class="rnext">→ No response · re-offer next year</span></div></div>
+              </div>
+              <p style="margin:8px 0 0;font-size:11px;color:var(--faint)">Full / Half / No reduction are pre-computed — one envelope, one signature. Custom is rare, so it's handled offline (no ILIA automation).</p>
+            </div>
+
+            <div class="sec tm-sec">
+              <div class="lab">In Tranche Management — impact per response</div>
+              <p style="margin:0 0 8px;font-size:11.5px;color:var(--muted)">Using only the defined labels — the elected option is a detail; the status stays in the known set.</p>
+              <ul class="fd-list" style="margin-bottom:10px">
+                <li><span class="tick">F</span><div><b>Full reduction</b> → <b>“Accepted”</b> → fulfillment (Event 4)</div></li>
+                <li><span class="tick">H</span><div><b>Half reduction</b> → <b>“Accepted”</b> → fulfillment (Event 4)</div></li>
+                <li><span class="tick bank">N</span><div><b>No reduction</b> → <b>“Declined — re-offer”</b></div></li>
+                <li><span class="tick" style="background:var(--faint)">C</span><div><b>Custom amount</b> → flagged, <b>handled offline (MVP)</b> — not an automated TM status</div></li>
+                <li><span class="tick" style="background:var(--border-strong);color:var(--muted)">—</span><div><b>No response</b> → <b>“No response”</b></div></li>
+              </ul>
+              <button class="tm-link" data-tmlink="1">Open the DBR Tranche Management view
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+
+            <div class="sec ux-sec-card">
+              <div class="lab">User experience</div>
+              <p style="margin:0 0 8px;font-size:12.5px">What the client goes through for this event.</p>
+              <button class="ux-link" data-ux="2">See the client's experience
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+
+            <div class="sec">
+              <div class="lab">Systems</div>
+              <div class="chips"><span class="chip">DocuSign (completion webhook) ↔ ILIA</span></div>
+            </div>
+
+            <div class="sec blockers">
+              <div class="lab">Blockers</div>
+              <ul>
+                <li><b>DocuSign completion callback (B3)</b> — Chris Lane to confirm <b>webhook vs polling</b> and the field mapping (<code>dbr_election</code> = full/half/none, <code>requested_amount</code> for custom).</li>
+                <li><b>2nd envelope only for custom</b> — Full / Half / None finish in one envelope; only the custom exception needs a follow-up envelope (see Event 3).</li>
+              </ul>
+            </div>
+
+            <div class="jira sec">
+              <div class="lab">Suggested JIRA tasks <span class="jira-hint">titles only — not created in Jira</span></div>
+              <ul class="jlist">
+                <li><span class="jt">1</span><div><b>DocuSign response capture (integration)</b> <span style="color:var(--faint);font-weight:400">· Chris Lane (B3)</span><span class="jd">The key unknown for devs: confirm &amp; build how ILIA receives the completed envelope (webhook vs polling — with Chris Lane) and reads the field values — <code>dbr_election</code> = full/half/none, <code>requested_amount</code> for custom — plus the signed PDF. This is B3.</span></div></li>
+                <li><span class="jt">2</span><div><b>Election routing + status update</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">On capture: stop the reminders, set the DBR status, and route — Full/Half → apply, None → re-offer, Custom → sub-flow, no-response → re-offer.</span></div></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="ecard">
+          <div class="ec-head">
+            <div class="ec-top">
+              <span class="ec-num">3</span>
+              <span class="ec-own">ILIA · automated</span>
+              <span class="ec-draft">Draft · confirm</span>
+            </div>
+            <h2>Election Outcomes</h2>
+            <p class="lead">What ILIA does after it reads the client's choice — one flow per outcome. Pick a flow below.</p>
+          </div>
+          <div class="ec-body">
+            <div class="sec">
+              <div class="lab">Outcome flow</div>
+              <div class="seg" id="seg3">
+                <button class="seg-btn active" data-seg="full">Full</button>
+                <button class="seg-btn" data-seg="half">Half</button>
+                <button class="seg-btn" data-seg="none">No reduction</button>
+                <button class="seg-btn" data-seg="custom">Custom</button>
+              </div>
+              <div class="seg-body" id="segBody"></div>
+            </div>
+
+            <div class="sec tm-sec">
+              <div class="lab">In Tranche Management</div>
+              <p style="margin:0 0 8px;font-size:12.5px">Statuses this event sets (the fulfillment ladder continues in Event 4):</p>
+              <div class="chips" style="margin-bottom:8px">
+                <span class="st st-accepted">Accepted</span>
+                <span class="st st-declined">Declined — re-offer</span>
+                <span class="st st-none">No response</span>
+              </div>
+              <p style="margin:0 0 10px;font-size:11.5px;color:var(--faint)">Then Event 4 drives: Sent to trustee → Trustee signed → Sent to carrier → Carrier confirmed.</p>
+              <button class="tm-link" data-tmlink="1">Open the DBR Tranche Management view
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+
+            <div class="sec ux-sec-card">
+              <div class="lab">User experience</div>
+              <p style="margin:0 0 8px;font-size:12.5px">What the client experiences for the <b>selected</b> outcome (matches the flow above).</p>
+              <button class="ux-link" id="ev3ux" data-ux="3-full">See the client's experience
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+
+            <div class="sec">
+              <div class="lab">Systems</div>
+              <div class="chips"><span class="chip">ILIA (apply + re-offer)</span><span class="chip">Case Details (Low Point field)</span><span class="chip">Fulfillment → Event 4 (trustee · carrier)</span></div>
+            </div>
+
+            <div class="sec blockers">
+              <div class="lab">Blockers</div>
+              <ul>
+                <li style="list-style:none;margin-left:-16px;color:var(--muted)"><i>Full, Half &amp; No reduction have <b>no blockers here</b> — one envelope each. The trustee → carrier fulfillment is now <b>Event 4</b>.</i></li>
+                <li><b>Custom is handled offline (MVP)</b> — its automation is out of scope, so no blocker in ILIA.</li>
+              </ul>
+            </div>
+
+            <div class="jira sec">
+              <div class="lab">Suggested JIRA tasks <span class="jira-hint">titles only — not created in Jira</span></div>
+              <ul class="jlist">
+                <li><span class="jt">1</span><div><b>Apply reduction (Full / Half) + write low point</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">On Full or Half: apply the elected reduction, pull the low point from the 120/90/60 illustration into the Low Point field in Case Details (Chris's bank report), store the signed election/PDF, set status “Accepted” → “Applied,” then hand to fulfillment (Event 4).</span></div></li>
+                <li><span class="jt">2</span><div><b>No-reduction / no-response re-offer scheduler</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Record the No-reduction (or no-response), set the status, and schedule the re-offer for next anniversary through Yr 15 (skip if Health).</span></div></li>
+                <li><span class="jt">3</span><div><b>Flag custom for offline handling</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">On Custom: capture the flag (+ optional requested amount) and mark the case for NIW to handle offline. No automated illustration or 2nd envelope (MVP).</span></div></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="ecard">
+          <div class="ec-head">
+            <div class="ec-top">
+              <span class="ec-num">4</span>
+              <span class="ec-own">ILIA · DocuSign · Carrier</span>
+              <span class="ec-draft">Draft · confirm</span>
+            </div>
+            <h2>Fulfillment — Trustee &amp; Carrier</h2>
+            <p class="lead">After a Full or Half election, ILIA drives the signed reduction through the trustee and on to the carrier — every step visible in Tranche Management. <b>(New scope, Judy Aug 19.)</b></p>
+          </div>
+          <div class="ec-body">
+            <div class="sec">
+              <div class="lab">The document journey</div>
+              <ul class="list plain">
+                <li><span class="ic">→</span><b>Carrier forms filled</b> with the elected reduction amount — they ride in the same envelope but only surface to the carrier at their step</li>
+                <li><span class="ic">→</span>Envelope routes to the <b>Trustee / Trust first</b></li>
+                <li><span class="ic">→</span>The <b>trust signs the change form</b> (sign-off)</li>
+                <li><span class="ic">→</span>Packet is released to the <b>Carrier</b></li>
+                <li><span class="ic">→</span><b>Confirm the carrier received</b> the final forms (via feeds, if available)</li>
+              </ul>
+              <p style="margin:8px 0 0;font-size:11.5px;color:var(--faint)">The amount the client picked must pull into the carrier forms — either auto-populated from the selection or entered by admin (open question below).</p>
+            </div>
+
+            <div class="sec tm-sec">
+              <div class="lab">In Tranche Management — new statuses</div>
+              <p style="margin:0 0 8px;font-size:12.5px">Each step shows as a status so Marissa/admin can see exactly where a case is:</p>
+              <div class="chips" style="margin-bottom:10px">
+                <span class="st st-fulfill">Sent to trustee</span>
+                <span class="st st-fulfill">Trustee signed</span>
+                <span class="st st-fulfill">Sent to carrier</span>
+                <span class="st st-fulfill">Carrier confirmed</span>
+                <span class="st st-applied">Complete</span>
+              </div>
+              <button class="tm-link" data-tmlink="1">Open the DBR Tranche Management view
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+
+            <div class="sec ux-sec-card">
+              <div class="lab">User experience</div>
+              <p style="margin:0 0 8px;font-size:12.5px">What the client, trustee, and admin go through for this event.</p>
+              <button class="ux-link" data-ux="4">See the experience
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+
+            <div class="sec">
+              <div class="lab">Systems</div>
+              <div class="chips"><span class="chip">DocuSign (sequential routing: trust → carrier)</span><span class="chip">Carrier (receipt confirmation / feeds)</span><span class="chip">ILIA (status + record)</span></div>
+            </div>
+
+            <div class="sec oqs">
+              <div class="lab">Open questions (from Judy, Aug 19)</div>
+              <ul>
+                <li><b>Carrier forms:</b> auto-populate from the client's selection, or admin inputs the reduction amount?</li>
+                <li><b>Trustee step:</b> is a trust/trustee always in the chain (Phase 1 settlor = insured), and is the order always trust → carrier? Who signs the change form?</li>
+                <li><b>Carrier confirmation:</b> what “feeds” exist to confirm receipt — or is it a manual check for MVP?</li>
+              </ul>
+            </div>
+
+            <div class="sec blockers">
+              <div class="lab">Blockers</div>
+              <ul>
+                <li><b>Carrier-form population <span style="color:var(--faint);font-weight:400">(Chris / ILIA dev)</span></b> — get the elected reduction amount to pull into the carrier forms (auto or admin-entered).</li>
+                <li><b>Trustee routing + change form <span style="color:var(--faint);font-weight:400">(Chris Lane · DocuSign)</span></b> — sequential envelope: trust signs first, then carrier. Design the recipient routing + the change form.</li>
+                <li><b>Carrier receipt confirmation <span style="color:var(--faint);font-weight:400">(ILIA dev / carrier)</span></b> — a way to confirm the carrier received the final forms (feeds vs manual).</li>
+              </ul>
+            </div>
+
+            <div class="jira sec">
+              <div class="lab">Suggested JIRA tasks <span class="jira-hint">titles only — not created in Jira</span></div>
+              <ul class="jlist">
+                <li><span class="jt">1</span><div><b>Carrier form population</b> <span style="color:var(--faint);font-weight:400">· ILIA dev + Chris</span><span class="jd">Pull the elected reduction amount into the carrier forms in the envelope (auto from selection, or an admin-input path).</span></div></li>
+                <li><span class="jt">2</span><div><b>Sequential envelope routing (trust → carrier)</b> <span style="color:var(--faint);font-weight:400">· Chris Lane (DocuSign)</span><span class="jd">Route the envelope to the trustee first for the change-form signature, then release the packet to the carrier.</span></div></li>
+                <li><span class="jt">3</span><div><b>Carrier receipt confirmation</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Confirm the carrier received the final forms (feed integration if available; otherwise a manual mark) and update the case.</span></div></li>
+                <li><span class="jt">4</span><div><b>Fulfillment statuses in Tranche Management</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Add and drive the new statuses: Sent to trustee → Trustee signed → Sent to carrier → Carrier confirmed → Complete.</span></div></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="ghost">
+          <div class="g-num">5</div>
+          <p><b>Event 5 — next</b><br>Post-MVP (e.g. reporting, trustee edge cases). We'll define it when Events 1–4 are confirmed.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 2: DBR IN TRANCHE MANAGEMENT ============ -->
+  <section id="view-tm" hidden>
+    <div class="tm-intro">
+      <b>How Marissa sees &amp; manages DBR.</b> A new <b>DBR Status</b> column inside the Workflow tab shows every client's state per line — the same defined statuses the event cards set. The <b>elected option (Full / Half / None / Custom)</b> shows as a detail on the line, while the status stays in the known set. Statuses &amp; data are illustrative (design track #2). The row Card 1 links to is highlighted when you arrive.
+    </div>
+    <div class="tm">
+      <div class="tm-bar">
+        <h2>Manage Tranche <span class="concept-tag">DBR CONCEPT</span></h2>
+        <span class="status-sel">Tranche Status: Open ▾</span>
+      </div>
+      <div class="tm-meta">
+        <span><b>Tranche:</b> 26</span><span><b>Master Trust Date:</b> 05/13/2019</span><span><b>Projected Funding:</b> 08/26/2019</span><span><b>Bank:</b> wintrust</span>
+      </div>
+      <div class="tm-tabs">
+        <span>Edit Tranche</span><span class="act">Workflow</span><span>Prospects</span><span>Tranche Documents</span><span>Tranche Notes</span>
+      </div>
+      <div class="tm-key">
+        <b>DBR Status key <span style="font-weight:400;color:var(--faint)">· defined so far (Cards 1–4)</span>:</b>
+        <span class="st st-awaiting">Notice sent — awaiting response</span>
+        <span class="st st-accepted">Accepted</span>
+        <span class="st st-declined">Declined — re-offer</span>
+        <span class="st st-none">No response</span>
+        <span class="st st-fulfill">Sent to trustee</span>
+        <span class="st st-fulfill">Trustee signed</span>
+        <span class="st st-fulfill">Sent to carrier</span>
+        <span class="st st-applied">Carrier confirmed — complete</span>
+      </div>
+      <div class="tm-scroll">
+        <table class="tmt">
+          <thead>
+            <tr><th>First Name</th><th>Last Name</th><th>Insured Type</th><th>Product</th><th>Account Status</th><th class="hl">DBR Status</th><th>Policy Status</th><th>IMO</th></tr>
+          </thead>
+          <tbody id="tmRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 3: NEW DBR FORMS ============ -->
+  <section id="view-forms" hidden>
+    <p class="hint" style="margin-top:16px">How Marissa should build the election in DocuSign so ILIA can log the response &amp; route. The client picks one of <b>3 ready illustrations</b> — Full / Half / No reduction — or writes a <b>custom amount</b>. Static form — check one box (or fill the custom amount). Check a box to see what ILIA captures.</p>
+    <div class="fgrid">
+      <div class="fleft">
+      <div class="paper">
+        <span class="doc-tag">DocuSign · client view</span>
+        <p class="doc-h">Death Benefit Reduction — Your Election</p>
+        <p class="doc-meta">Policy #KZ-100482 · Policy Year 11 · Trust: The Song Ma Trust</p>
+        <p class="prompt">Your Kai-Zen plan has reached its death benefit reduction window for <b>Year 11</b>. Please <b>check one box</b> below — each option's illustration is attached (or write a custom amount) — and sign. <span class="req">*required</span></p>
+        <div class="opts" id="fopts">
+          <div class="opt" data-v="FULL"><span class="radio"></span><div>
+            <div class="ot">Full reduction</div>
+            <div class="od">Apply the full death benefit reduction to my policy for this year.</div>
+            <div class="amt">Reduction amount: $182,400</div>
+            <div class="exp"><b>What this means:</b> your death benefit is lowered by the full amount going forward — the planned adjustment for this stage of your Kai-Zen plan. See the <b>Full</b> illustration attached.</div>
+          </div></div>
+          <div class="opt" data-v="HALF"><span class="radio"></span><div>
+            <div class="ot">Half reduction</div>
+            <div class="od">Apply about half of the reduction to my policy for this year.</div>
+            <div class="amt">Reduction amount: $91,200</div>
+            <div class="exp"><b>What this means:</b> your death benefit is lowered by roughly half the full amount. See the <b>Half</b> illustration attached.</div>
+          </div></div>
+          <div class="opt" data-v="NONE"><span class="radio"></span><div>
+            <div class="ot">No reduction</div>
+            <div class="od">Keep my death benefit unchanged this year. (I may choose to reduce in a future year, through Year 15.)</div>
+            <div class="exp"><b>What this means:</b> nothing changes this year — your death benefit stays the same. You'll have the option again next year, through Year 15. See the <b>No-reduction</b> illustration attached.<br><b>If your health has changed, choose No reduction</b> — you may want to keep a higher death benefit for your heirs.</div>
+          </div></div>
+          <div class="opt" data-v="CUSTOM"><span class="radio"></span><div>
+            <div class="ot">A different (custom) amount</div>
+            <div class="od">I'd like a reduction amount other than the three above.</div>
+            <div class="exp"><b>What this means:</b> select this and <b>reach out to us</b> — we'll work out a custom amount with you directly. (Handled offline; optionally note the amount you have in mind below.)</div>
+            <div class="partial-field"><label>Amount you have in mind (optional)</label><span class="amt-in"><span>$</span><input id="famtInput" inputmode="numeric" placeholder="0" aria-label="Amount you have in mind"></span></div>
+          </div></div>
+        </div>
+        <div class="sig">
+          <div class="fld">Client signature <span class="req">*</span><div class="line">DocuSign signature</div></div>
+          <div class="fld">Date<div class="line">auto-filled</div></div>
+        </div>
+      </div>
+
+      <div class="attached">
+        <h3>Attached docs — sent with the notice <span>· click any to preview a sample</span></h3>
+        <p class="att-lead">Everything the client receives in the DocuSign packet. Click a doc to see what it is and a sample of what the client would see.</p>
+        <div class="att-list">
+          <button class="att-doc" data-doc="election"><span class="att-ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 1.5h5L12.5 5v9.5h-8.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 1.5V5h3.5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span><div><b>DBR Election Form</b><span class="att-sub">The form the client signs</span><span class="wait">⏳ Waiting on Marissa</span></div></button>
+          <button class="att-doc" data-doc="comparison"><span class="att-ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="8" width="3" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="6.5" y="5" width="3" height="9" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="2.5" width="3" height="11.5" stroke="currentColor" stroke-width="1.2"/></svg></span><div><b>Comparison Summary</b><span class="att-sub">Before vs. after <span class="pill">if “everything”</span></span><span class="wait">⏳ Waiting on Ben</span></div></button>
+          <button class="att-doc" data-doc="illustration"><span class="att-ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 12l4-4 3 2 5-6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>3 In-Force Illustrations</b><span class="att-sub">Full / Half / None <span class="pill">if “everything”</span></span><span class="wait">⏳ Waiting on Ben</span></div></button>
+        </div>
+      </div>
+      </div>
+
+      <div class="fside">
+        <div class="cap">
+          <div class="cap-h"><span class="cdot"></span>What ILIA captures</div>
+          <div class="cap-b">
+            <div><span class="k">dbr_election</span>: <span id="fcapElection" class="none">— not chosen</span></div>
+            <div><span class="k">requested_amount</span>: <span id="fcapAmount" class="none">—</span></div>
+            <div class="route">→ ILIA routes to:<span id="fcapRoute" class="rv none">choose an option</span></div>
+          </div>
+        </div>
+        <div class="fnotes">
+          <h3>Build notes for Marissa</h3>
+          <ol>
+            <li><b>One required radio group</b> — <code>dbr_election</code> = <code>FULL</code> / <code>HALF</code> / <code>NONE</code> / <code>CUSTOM</code>.</li>
+            <li><b>Custom → optional amount field</b> <code>requested_amount</code> + a “we'll follow up” note (custom is handled offline).</li>
+            <li><b>Make the election required</b> — no “signed but no answer.”</li>
+            <li><b>Use real DocuSign fields, not a checkbox drawn on the PDF</b> — only field tabs come back as data ILIA can read.</li>
+            <li><b>Plain labels + a one-line explainer per option</b> (final client wording is Marissa/Judy’s to approve).</li>
+            <li><b>Lock the field names</b> and hand to Chris Lane for the webhook mapping.</li>
+            <li><b>Custom is handled offline (MVP):</b> the form just captures the flag (+ optional amount) and tells the client NIW will follow up — no 2nd illustration/envelope in ILIA. Full / Half / None finish in one envelope.</li>
+          </ol>
+        </div>
+
+        <div class="fdocs">
+          <h3>Docs in the package <span>· powered by Ben's automation</span></h3>
+          <p class="fd-lead">ILIA assembles &amp; sends these with the DBR doc — auto-prepared by Ben's tool, no manual pulling.</p>
+          <ul class="fd-list">
+            <li><span class="tick">✓</span><div><b>DBR election doc</b> — the form the client signs (this page) <span class="always">always</span></div></li>
+            <li><span class="tick pend">?</span><div><b>3 in-force illustrations</b> — Full / Half / No reduction — Ben auto-pulls from carrier <span class="pill">if “everything”</span></div></li>
+            <li><span class="tick pend">?</span><div><b>Comparison summary</b> (before vs. after) — Ben auto-generates <span class="pill">if “everything”</span></div></li>
+            <li><span class="tick bank">→</span><div><b>Low point</b> → the bank uses the <b>120/90/60 illustration</b> (no re-run); on election ILIA writes it to the <b>Low Point field in Case Details</b> → Chris's bank report <span class="always">always</span></div></li>
+          </ul>
+          <p class="fd-note">Pending Judy's lean-vs-everything call — if “lean,” the 3 illustrations &amp; comparison go out <b>only on request</b> instead of in the doc. Low point confirmed required (NIWD-2053), reused from the 120/90/60 illustration (no re-run).</p>
+          <div class="fd-partial">
+            <div class="fd-h">If the client writes a Custom amount → handled offline (MVP)</div>
+            <ul class="fd-list">
+              <li><span class="tick" style="background:var(--faint)">–</span><div>No auto illustration or 2nd envelope in ILIA</div></li>
+              <li><span class="tick" style="background:var(--faint)">–</span><div>NIW contacts the client and processes the custom amount offline</div></li>
+            </ul>
+            <p class="fd-note">MVP decision (Judy, Aug 19) — customs are rare. Revisit in Phase 2.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-emails" hidden>
+    <p class="hint" style="margin-top:16px">Every email ILIA auto-sends across the DBR sequence, in order. <b>Click any email</b> for a suggested subject + draft copy + attachments. This list grows as we build each event card; all copy is Marissa/Judy's to finalize.</p>
+    <div class="email-legend">
+      <span class="lg"><span class="d" style="background:var(--ilia)"></span>Notice</span>
+      <span class="lg"><span class="d" style="background:var(--warn)"></span>Partial</span>
+      <span class="lg"><span class="d" style="background:var(--ok)"></span>Confirmation</span>
+    </div>
+    <div class="email-list">
+
+      <div class="email-item type-notice">
+        <span class="e-num">1</span>
+        <div class="e-body">
+          <div class="e-top"><b class="e-name">DBR Notice — initial</b><span class="e-tag">Event 1 · 120 days out</span></div>
+          <div class="e-meta"><b>To:</b> Client (routed via the agent, Janine)</div>
+          <div class="e-meta"><b>Includes:</b> the DBR election form (Full / Half / None + custom) + 3 illustrations + comparison summary (under “everything”)</div>
+          <div class="e-note">⏳ Copy — Marissa is building the new notice. (Pending)</div>
+        </div>
+      </div>
+
+      <div class="email-item type-notice">
+        <span class="e-num">2</span>
+        <div class="e-body">
+          <div class="e-top"><b class="e-name">DBR Notice — reminder</b><span class="e-tag">Event 1 · 90 days out</span></div>
+          <div class="e-meta"><b>To:</b> Client (via agent) &nbsp;·&nbsp; <b>Same content</b> as the initial notice</div>
+          <div class="e-note">Reminder — stops once the client submits their signed form.</div>
+        </div>
+      </div>
+
+      <div class="email-item type-notice">
+        <span class="e-num">3</span>
+        <div class="e-body">
+          <div class="e-top"><b class="e-name">DBR Notice — final reminder</b><span class="e-tag">Event 1 · 60 days out</span></div>
+          <div class="e-meta"><b>To:</b> Client (via agent) &nbsp;·&nbsp; <b>Same content</b>, last reminder before the deadline</div>
+          <div class="e-note">Reminder — stops once the client submits their signed form.</div>
+        </div>
+      </div>
+
+      <div class="email-item type-partial">
+        <span class="e-num">4</span>
+        <div class="e-body">
+          <div class="e-top"><b class="e-name">Revised DBR — review &amp; sign</b><span class="e-tag">Custom · offline (MVP)</span></div>
+          <div class="e-meta"><b>Fires when:</b> a client wants a custom amount — handled offline; sent manually by NIW if needed, not auto by ILIA</div>
+          <div class="e-meta"><b>To:</b> Client + agent &nbsp;·&nbsp; <b>Includes:</b> new in-force illustration + revised comparison + revised election (prepared offline)</div>
+          <div class="e-note">Custom is handled offline for MVP — this draft is a starting point if the team sends it manually.</div>
+        </div>
+      </div>
+
+      <div class="email-item type-confirm">
+        <span class="e-num">5</span>
+        <div class="e-body">
+          <div class="e-top"><b class="e-name">Confirmation — DBR applied</b><span class="e-tag">Event 3 · Accept / Partial signed</span></div>
+          <div class="e-meta"><b>Fires when:</b> the reduction is applied to the policy</div>
+          <div class="e-meta"><b>To:</b> Client &nbsp;·&nbsp; <b>Includes:</b> confirmation the reduction was applied</div>
+          <div class="e-note">Optional confirmation — confirm with the team whether it's sent.</div>
+        </div>
+      </div>
+
+      <div class="email-item type-confirm">
+        <span class="e-num">6</span>
+        <div class="e-body">
+          <div class="e-top"><b class="e-name">Confirmation — no change this year</b><span class="e-tag">Event 3 · Decline / No response</span></div>
+          <div class="e-meta"><b>Fires when:</b> the client declines, or the deadline passes with no response</div>
+          <div class="e-meta"><b>To:</b> Client &nbsp;·&nbsp; <b>Includes:</b> note that no change was made; ILIA re-offers next year</div>
+          <div class="e-note">Optional confirmation — confirm with the team whether it's sent.</div>
+        </div>
+      </div>
+
+    </div>
+    <p class="hint" style="margin-top:14px">Not emails: after the client elects, ILIA writes the chosen option's <b>low point to Case Details</b> (Chris's bank report), then drives the signed reduction <b>trustee → carrier</b> (Event 4) — each step a TM status. (Trustee/carrier signature requests are DocuSign-generated, not ILIA copy.)</p>
+  </section>
+
+  <!-- ============ TAB 5: BLOCKERS CHECKLIST ============ -->
+  <section id="view-blockers" hidden>
+    <div class="bl-head">
+      <p class="hint" style="margin:0">Everything we need done or answered to build this in JIRA — pulled from every card. Click an item's row to check it off, and add <b>Judy's notes</b> under any item. <b>Notes save in this browser</b> — when done, click <b>Copy all notes</b> to send them back. <b>Nothing is created in Jira yet.</b></p>
+    </div>
+    <div class="bl-head">
+      <div class="bl-prog"><b id="blDone">0</b> of <b id="blTotal">0</b> checked</div>
+      <div class="bl-bar"><div class="bl-bar-fill" id="blFill"></div></div>
+      <div class="bl-actions">
+        <span class="bl-saved" id="blSaved">saved ✓</span>
+        <button class="bl-btn ghost" id="blCopy">📋 Copy all notes</button>
+      </div>
+    </div>
+    <div class="bl-wrap" id="blList"></div>
+  </section>
+</div>
+
+<dialog id="uxModal">
+  <div class="ux-hd"><h3 id="uxTitle">Client experience</h3><button id="uxClose" aria-label="Close">✕</button></div>
+  <div class="ux-bd">
+    <p id="uxIntro" class="ux-intro"></p>
+    <div class="ux-sec"><div class="ux-lab" id="uxLab1">What they receive</div><p id="uxReceive"></p></div>
+    <div class="ux-sec"><div class="ux-lab" id="uxLab2">What they see &amp; what each doc is for</div><table class="ux-table"><tbody id="uxDocs"></tbody></table></div>
+    <div class="ux-sec"><div class="ux-lab" id="uxLab3">How they choose</div><div class="ux-choose" id="uxChoose"></div></div>
+    <div class="ux-sec"><div class="ux-lab" id="uxLab4">Then they sign</div><p id="uxSign"></p></div>
+  </div>
+  <div class="ux-ft"><button id="uxOk" class="btn-primary">Got it</button></div>
+</dialog>
+
+<dialog id="docPreview">
+  <div class="ux-hd"><h3 id="docTitle">Document</h3><button id="docClose" aria-label="Close">✕</button></div>
+  <div class="ux-bd">
+    <p id="docWhat" class="samp-what"></p>
+    <div class="samp-box"><div class="samp-title" id="docSampTitle">Sample</div><div id="docSampBody"></div></div>
+    <p class="samp-note">Illustrative sample — numbers are placeholders for the real document.</p>
+  </div>
+  <div class="ux-ft"><button id="docOk" class="btn-primary">Got it</button></div>
+</dialog>
+
+<dialog id="emailModal">
+  <div class="ux-hd"><h3 id="emName">Email</h3><button id="emClose" aria-label="Close">✕</button></div>
+  <div class="ux-bd">
+    <div class="ux-sec"><div class="ux-lab">Suggested subject</div><div id="emSub" class="em-sub"></div></div>
+    <div class="ux-sec"><div class="ux-lab">Suggested copy (draft)</div><div id="emBody" class="em-body"></div></div>
+    <div class="ux-sec"><div class="ux-lab">Attachments</div><ul id="emAtt" class="em-att"></ul></div>
+    <p class="samp-note">Draft starter copy — final wording is Marissa/Judy's to finalize. The <span class="mf">{merge fields}</span> are placeholders ILIA fills in per client.</p>
+  </div>
+  <div class="ux-ft"><button id="emOk" class="btn-primary">Got it</button></div>
+</dialog>
+
+<script>
+const TM_ROWS=[
+ {f:'Carey',l:'Finn',imo:'The CFS Group',dbr:{k:'awaiting',l1:'Reminder 2 of 3 · 90-day sent',label:'Notice sent — awaiting response',act:'Resend',hl:true}},
+ {f:'Christina',l:'Kwon',imo:'Orphan IMO',dbr:{k:'accepted',l1:'Full reduction · signed Jul 20',label:'Accepted',act:'View'}},
+ {f:'Marcus',l:'Bell',imo:'The CFS Group',dbr:{k:'fulfill',l1:'Full · envelope out to trust',label:'Sent to trustee',act:'View'}},
+ {f:'Keum',l:'Ko',imo:'Orphan IMO',dbr:{k:'fulfill',l1:'Half · trustee signed',label:'Sent to carrier',act:'View'}},
+ {f:'Alan',l:'Reed',imo:'Orphan IMO',dbr:{k:'declined',l1:'No reduction · Jun 30',label:'Declined — re-offer',act:'View'}},
+ {f:'Dana',l:'Cole',imo:'BQ of New York',dbr:{k:'none',l1:'Deadline passed',label:'No response',act:'Resend'}},
+ {f:'Grace',l:'Lin',imo:'The CFS Group',dbr:{k:'applied',l1:'Half · carrier confirmed Jul 22',label:'Carrier confirmed — complete',act:'View'}}
+];
+const tmRows=document.getElementById('tmRows');
+TM_ROWS.forEach(r=>{
+  const d=r.dbr;
+  let cell='<div class="dbrcell">';
+  if(d.l1)cell+='<span class="dbr-l1">'+d.l1+'</span>';
+  cell+='<span class="st st-'+d.k+'">'+d.label+'</span>';
+  if(d.sub)cell+='<span class="dbr-sub">'+d.sub+'</span>';
+  if(d.act)cell+='<button class="tm-act">'+d.act+'</button>';
+  cell+='</div>';
+  const tr=document.createElement('tr');
+  if(d.hl)tr.id='tm-awaiting';
+  tr.innerHTML='<td class="nm">'+r.f+'</td><td class="nm">'+r.l+'</td><td>Individual</td><td>Kai-Zen</td><td>InForce</td><td class="hl">'+cell+'</td><td>Policy Issued</td><td>'+r.imo+'</td>';
+  tmRows.appendChild(tr);
+});
+
+function showTab(which){
+  document.getElementById('view-cards').hidden=which!=='cards';
+  document.getElementById('view-tm').hidden=which!=='tm';
+  document.getElementById('view-forms').hidden=which!=='forms';
+  document.getElementById('view-emails').hidden=which!=='emails';
+  document.getElementById('view-blockers').hidden=which!=='blockers';
+  document.getElementById('tabCards').classList.toggle('active',which==='cards');
+  document.getElementById('tabTm').classList.toggle('active',which==='tm');
+  document.getElementById('tabForms').classList.toggle('active',which==='forms');
+  document.getElementById('tabEmails').classList.toggle('active',which==='emails');
+  document.getElementById('tabBlockers').classList.toggle('active',which==='blockers');
+}
+document.getElementById('tabCards').addEventListener('click',()=>showTab('cards'));
+document.getElementById('tabTm').addEventListener('click',()=>showTab('tm'));
+document.getElementById('tabForms').addEventListener('click',()=>showTab('forms'));
+document.getElementById('tabEmails').addEventListener('click',()=>showTab('emails'));
+document.getElementById('tabBlockers').addEventListener('click',()=>showTab('blockers'));
+
+const CHECK=[
+ {group:"Decisions & confirmations to unblock",items:[
+   {t:"DBR start-year rule — early cohorts Yr 10 vs later Yr 11",d:"Auto-send must key off each cohort's actual DBR schedule, not a fixed Yr 11.",tags:[["Judy","own"],["Blocker","block"],["Card 1","card"]]},
+   {t:"Lean vs. everything",d:"Do the 3 illustrations + comparison ride in the notice, or go on request?",tags:[["Judy","own"],["Blocker","block"],["Card 1","card"]]},
+   {t:"“Half” definition / basis",d:"Is Half exactly half the reduction amount, and Ben's tool computes it?",tags:[["Ben","own"],["Pending","pending"],["Cards 1 & 3","card"]]},
+   {t:"DBR amount formulas — cumulative / stacking across years",d:"How the reduction is calc'd each year and how amounts carry when a year is declined. Ties to NIWD-2299.",tags:[["Paul","own"],["Blocker","block"],["Card 1","card"]]},
+   {t:"Final email copy (Full / Half / None + custom)",d:"Notice + reminder wording, incl. the health prompt on No reduction.",tags:[["Marissa","own"],["Pending","pending"],["Card 1 · Emails","card"]]},
+   {t:"New DBR election form (3-pick + custom)",d:"The DocuSign form Marissa builds so ILIA can capture & route.",tags:[["Marissa","own"],["Pending","pending"],["Card 1 · Forms","card"]]},
+   {t:"“Why” for each option (for descriptions)",d:"Judy will send the rationale to drop into each option's explainer.",tags:[["Judy","own"],["Pending","pending"],["Forms","card"]]},
+   {t:"Todd's option-comparison informational page",d:"Separate page explaining/comparing each option, using Ben's tool.",tags:[["Todd","own"],["Dependency","dep"],["Card 1","card"]]},
+   {t:"Reconcile NIWD-2299 window (Yr 10–14 vs 11–15)",d:"Illustrated-DB recalc; confirm indexing so boundary years are right.",tags:[["Kyle","own"],["Dependency","dep"],["Card 1","card"]]},
+   {t:"Carrier forms — auto-populate vs admin input",d:"How the elected reduction amount gets into the carrier forms.",tags:[["Judy / Chris","own"],["Open Q","block"],["Card 4","card"]]},
+   {t:"Trustee step — always in chain? order? change form",d:"Is trust → carrier always the order (Phase 1), and who signs the change form?",tags:[["Judy / Chris","own"],["Open Q","block"],["Card 4","card"]]},
+   {t:"Carrier receipt confirmation (feeds vs manual)",d:"How ILIA confirms the carrier received the final forms.",tags:[["Judy / dev","own"],["Open Q","block"],["Card 4","card"]]}
+ ]},
+ {group:"Data prerequisites",items:[
+   {t:"Clean DBR data — settlor = insured (B1)",d:"Validated, populated DBR amounts for all Phase-1 accounts. NIWD-1767.",tags:[["Data team","own"],["Blocker","block"],["Card 1","card"]]},
+   {t:"Low-point mapping per carrier",d:"NLG 13-month low point / ALZ guaranteed SV → PolicyBreakDowns.lowPoint. NIWD-2185 (in progress).",tags:[["Dev","own"],["Dependency","dep"],["Cards 1 & 3","card"]]}
+ ]},
+ {group:"Build tasks to create in JIRA",items:[
+   {t:"DBR eligibility & trigger scheduler (120/90/60)",d:"Daily scan; cohort start-year aware; calc deadline off tranche funding date.",tags:[["ILIA dev","own"],["Card 1","card"]]},
+   {t:"Illustration auto-pull (3 scenarios) + data scrape",d:"Full / Half / None from carrier; scrape comparison; low point on elected illustration. Linchpin.",tags:[["Ben","own"],["Card 1","card"]]},
+   {t:"Assemble & send DBR package (DocuSign)",d:"Bundle election + 3 illustrations + comparison into one envelope; 120/90/60; stop on signed.",tags:[["ILIA dev + Chris","own"],["Card 1","card"]]},
+   {t:"DBR status field in Tranche Management",d:"Add the DBR Status column + drive the defined statuses.",tags:[["ILIA dev","own"],["Card 1","card"]]},
+   {t:"DocuSign response capture (B3)",d:"Webhook vs polling; read dbr_election = full/half/none (+ requested_amount) + signed PDF.",tags:[["Chris Lane","own"],["Card 2","card"]]},
+   {t:"Election routing + status update",d:"Full/Half → apply, None → re-offer, Custom → offline flag, no-response → re-offer.",tags:[["ILIA dev","own"],["Card 2","card"]]},
+   {t:"Apply reduction (Full/Half) + write low point",d:"Apply the reduction; write the option's low point to Case Details (Chris's bank report); hand to fulfillment.",tags:[["ILIA dev","own"],["Card 3","card"]]},
+   {t:"No-reduction / no-response re-offer scheduler",d:"Set status; schedule the re-offer through Yr 15 (skip if Health).",tags:[["ILIA dev","own"],["Card 3","card"]]},
+   {t:"Flag custom for offline handling",d:"Capture flag + optional amount; mark for NIW to work offline. No automation (MVP).",tags:[["ILIA dev","own"],["Card 3","card"]]},
+   {t:"Carrier form population",d:"Pull the elected reduction amount into the carrier forms (auto or admin-input).",tags:[["ILIA dev + Chris","own"],["Card 4","card"]]},
+   {t:"Sequential envelope routing (trust → carrier)",d:"Route to trustee first for the change-form signature, then release to the carrier.",tags:[["Chris Lane","own"],["Card 4","card"]]},
+   {t:"Carrier receipt confirmation",d:"Confirm the carrier received the final forms (feed or manual) + update the case.",tags:[["ILIA dev","own"],["Card 4","card"]]},
+   {t:"Fulfillment statuses in Tranche Management",d:"Sent to trustee → Trustee signed → Sent to carrier → Carrier confirmed.",tags:[["ILIA dev","own"],["Card 4","card"]]}
+ ]}
+];
+(function(){
+  const list=document.getElementById('blList');
+  let total=0;
+  const TAGCLS={own:'bl-own',block:'bl-block',pending:'bl-pending',dep:'bl-dep',card:'bl-card'};
+  const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60);
+  const notes=[];
+  const savedEl=document.getElementById('blSaved');let savedT;
+  function flashSaved(){if(!savedEl)return;savedEl.classList.add('show');clearTimeout(savedT);savedT=setTimeout(()=>savedEl.classList.remove('show'),1200);}
+  function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+  function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+  CHECK.forEach(g=>{
+    const gd=document.createElement('div');gd.className='bl-group';
+    const h=document.createElement('h3');h.textContent=g.group;gd.appendChild(h);
+    g.items.forEach(it=>{
+      total++;
+      const row=document.createElement('div');row.className='bl-item';
+      const top=document.createElement('div');top.className='bl-top';
+      const box=document.createElement('span');box.className='bl-box';
+      const body=document.createElement('div');
+      const t=document.createElement('div');t.className='bl-t';t.textContent=it.t;
+      const d=document.createElement('div');d.className='bl-d';d.textContent=it.d;
+      const tags=document.createElement('div');tags.className='bl-tags';
+      it.tags.forEach(tg=>{const s=document.createElement('span');s.className='bl-tag '+(TAGCLS[tg[1]]||'bl-card');s.textContent=tg[0];tags.appendChild(s);});
+      body.append(t,d,tags);top.append(box,body);
+      const dkey='dbrdone:'+slug(it.t);
+      if(lsGet(dkey)==='1')row.classList.add('done');
+      top.addEventListener('click',()=>{row.classList.toggle('done');lsSet(dkey,row.classList.contains('done')?'1':'0');updateProg();});
+      const nlab=document.createElement('div');nlab.className='bl-nlab';nlab.textContent="Judy's notes";
+      const note=document.createElement('textarea');note.className='bl-note';note.rows=2;note.placeholder='Add notes / clarification for this item…';
+      const nkey='dbrnote:'+slug(it.t);
+      const sv=lsGet(nkey);if(sv)note.value=sv;
+      note.addEventListener('input',()=>{lsSet(nkey,note.value);flashSaved();});
+      notes.push({group:g.group,title:it.t,el:note});
+      row.append(top,nlab,note);
+      gd.appendChild(row);
+    });
+    list.appendChild(gd);
+  });
+  document.getElementById('blTotal').textContent=total;
+  function updateProg(){
+    const done=list.querySelectorAll('.bl-item.done').length;
+    document.getElementById('blDone').textContent=done;
+    document.getElementById('blFill').style.width=(total?Math.round(done/total*100):0)+'%';
+  }
+  updateProg();
+  const copyBtn=document.getElementById('blCopy');
+  if(copyBtn)copyBtn.addEventListener('click',()=>{
+    const lines=["DBR Blockers — Judy's notes"];
+    try{lines.push('Exported '+new Date().toLocaleString());}catch(e){}
+    let last='',any=false;
+    notes.forEach(n=>{const v=(n.el.value||'').trim();if(!v)return;any=true;if(n.group!==last){lines.push('');lines.push('== '+n.group+' ==');last=n.group;}lines.push('• '+n.title);lines.push('    '+v.replace(/\n/g,'\n    '));});
+    if(!any)lines.push('','(No notes entered yet.)');
+    const text=lines.join('\n');
+    const done=()=>{copyBtn.textContent='✓ Copied — paste into an email to Jamin';setTimeout(()=>copyBtn.textContent='📋 Copy all notes',2600);};
+    function fallback(){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){alert('Copy failed — please select and copy manually.');}document.body.removeChild(ta);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(fallback);}else fallback();
+  });
+})();
+
+const FROUTES={FULL:{cls:'accept',txt:'Apply the full reduction → Accepted → Applied'},HALF:{cls:'accept',txt:'Apply the ~50% reduction → Accepted → Applied'},NONE:{cls:'decline',txt:'No change this year · re-offer next year (thru Yr 15)'},CUSTOM:{cls:'partial',txt:'Flagged for NIW — handled offline (MVP)'}};
+let fsel=null;
+const fopts=document.querySelectorAll('#fopts .opt');
+const fcapE=document.getElementById('fcapElection'),fcapA=document.getElementById('fcapAmount'),fcapR=document.getElementById('fcapRoute'),famt=document.getElementById('famtInput');
+function frender(){
+  if(!fsel){fcapE.textContent='— not chosen';fcapE.className='none';fcapA.textContent='—';fcapA.className='none';fcapR.textContent='choose an option';fcapR.className='rv none';return;}
+  fcapE.textContent=fsel;fcapE.className='v';
+  if(fsel==='CUSTOM'){const a=(famt.value||'').trim();fcapA.textContent=a?'$'+a:'(awaiting amount)';fcapA.className=a?'v':'none';}else{fcapA.textContent='—';fcapA.className='none';}
+  const r=FROUTES[fsel];fcapR.textContent=r.txt;fcapR.className='rv '+r.cls;
+}
+fopts.forEach(o=>o.addEventListener('click',()=>{fsel=o.dataset.v;fopts.forEach(x=>x.classList.toggle('sel',x===o));if(fsel==='CUSTOM')setTimeout(()=>famt.focus(),60);frender();}));
+famt.addEventListener('input',frender);
+famt.addEventListener('click',e=>e.stopPropagation());
+frender();
+
+document.getElementById('card1TmLink').addEventListener('click',()=>{
+  showTab('tm');
+  const row=document.getElementById('tm-awaiting');
+  if(row){window.scrollTo({top:0,behavior:'smooth'});row.classList.remove('flash');void row.offsetWidth;row.classList.add('flash');}
+});
+
+const UX={1:{
+  title:"Client experience — the DBR notice",
+  intro:"A Year-11 client (insured = settlor) has been flagged for a DBR. Here's what they go through when the notice arrives.",
+  receive:"An email / DocuSign notice, routed through their agent (Janine): a decision is needed — review and choose by the due date. One click opens the packet.",
+  docs:[
+    ["Election form (the DBR doc)","Where they make & sign their choice — shows policy info, the Full / Half / No-reduction options (+ a custom field), and a plain 'what this means' under each."],
+    ["3 in-force illustrations (Full / Half / None)","One projection per option, pre-computed — so they compare the actual outcome of each choice side by side."],
+    ["Comparison summary (Ben auto-builds)","The at-a-glance before-vs-after that sits on top of the three illustrations."]
+  ],
+  choose:[
+    ["Full reduction","Take the full planned reduction — its illustration is right there in the packet."],
+    ["Half reduction","Take the ~50% reduction — its illustration is also in the packet."],
+    ["No reduction","Keep the death benefit unchanged this year — revisit next year, through Year 15."],
+    ["Custom amount","Want a different number? Write it in; ILIA prepares a new illustration for it (a short second round)."]
+  ],
+  close:"They check one box, sign in DocuSign — done. ILIA reads the choice and routes it. No phone tag, no chasing documents."
+},
+2:{
+  title:"Client experience — responding & signing",
+  intro:"The client got the notice packet (Event 1). Here's what they do to respond.",
+  receive:"They open the DocuSign packet — the election form plus (assuming 'everything') the 3 illustrations and comparison, all in one place.",
+  docs:[
+    ["3 illustrations + comparison","They compare Full / Half / No-reduction side by side to decide."],
+    ["Election form","They check one box — Full, Half, or No reduction — or write a custom amount."],
+    ["Signature","They e-sign; DocuSign timestamps it and returns the choice to ILIA."]
+  ],
+  choose:[
+    ["Full / Half","Pick the option and sign — one click, done. ILIA applies that reduction."],
+    ["No reduction","One click — nothing changes; they're asked again next year."],
+    ["Custom amount","They enter a number and sign the request; ILIA comes back with a new illustration to review and sign (the exception path)."]
+  ],
+  close:"For Full / Half / No reduction it's truly one-and-done. Only a custom amount needs a short second round (the new illustration) before it's final."
+},
+4:{
+  title:"Experience — fulfillment (trustee & carrier)",
+  labels:{receive:"What happens",docs:"Who signs what",choose:"The parties",sign:"Bottom line"},
+  intro:"The client already elected Full or Half and signed. This is the behind-the-scenes journey that makes the reduction official.",
+  receive:"ILIA fills the carrier forms with the elected amount and routes the envelope to the trustee first, then releases it to the carrier.",
+  docs:[
+    ["Carrier forms","Pre-filled with the elected reduction amount; only shown to the carrier at their step."],
+    ["Trust change form","The trustee signs off to authorize the change."],
+    ["Carrier packet","The completed forms sent to the carrier to process."]
+  ],
+  choose:[
+    ["Client","Usually nothing more to do — they already signed the election."],
+    ["Trustee","Signs the change form to authorize the reduction."],
+    ["Admin (Marissa)","Watches each step's status in Tranche Management."]
+  ],
+  close:"The reduction becomes official once the trustee signs and the carrier confirms receipt — each step visible in TM."
+},
+"3-full":{
+  title:"Client experience — Full reduction",
+  labels:{receive:"What happens",docs:"What they see",choose:"Emails / DocuSign",sign:"Bottom line"},
+  intro:"The client chose the Full reduction — a one-and-done path.",
+  receive:"They already signed the election taking the full reduction — its illustration was in the packet. ILIA applies it to the policy — no further action from them.",
+  docs:[
+    ["Confirmation","A confirmation that the full reduction was applied to their policy."],
+    ["Nothing to sign","No additional documents or signatures."]
+  ],
+  choose:[
+    ["Email","Optional confirmation email — no action required."],
+    ["DocuSign","None — already signed on the first form."]
+  ],
+  close:"Done. Their death benefit is reduced by the full amount for this policy year."
+},
+"3-half":{
+  title:"Client experience — Half reduction",
+  labels:{receive:"What happens",docs:"What they see",choose:"Emails / DocuSign",sign:"Bottom line"},
+  intro:"The client chose the Half reduction — the same one-and-done path as Full.",
+  receive:"They already signed the election taking the ~50% reduction — its illustration was pre-computed and in the packet. ILIA applies it — no further action from them.",
+  docs:[
+    ["Confirmation","A confirmation that the half reduction was applied to their policy."],
+    ["Nothing to sign","No additional documents or signatures."]
+  ],
+  choose:[
+    ["Email","Optional confirmation email — no action required."],
+    ["DocuSign","None — already signed on the first form."]
+  ],
+  close:"Done — no second round. The Half option was one of the three ready illustrations, so it applies just like Full."
+},
+"3-none":{
+  title:"Client experience — No reduction",
+  labels:{receive:"What happens",docs:"What they see",choose:"Emails / DocuSign",sign:"Bottom line"},
+  intro:"The client chose No reduction — nothing changes this year.",
+  receive:"They signed declining any reduction. Their death benefit stays the same; ILIA will re-offer next year.",
+  docs:[
+    ["Confirmation","A note that no change was made this year."],
+    ["Nothing to sign","No additional documents."]
+  ],
+  choose:[
+    ["Email","Optional confirmation — no action required."],
+    ["DocuSign","None — already signed on the first form."]
+  ],
+  close:"They'll get a fresh DBR notice next anniversary, through Year 15."
+},
+"3-custom":{
+  title:"Client experience — Custom amount (offline, MVP)",
+  labels:{receive:"What happens next",docs:"What they see",choose:"How it's handled",sign:"Bottom line"},
+  intro:"The client wrote a custom amount (not one of the three ready options) — the rare exception, handled offline for MVP.",
+  receive:"ILIA records their interest + optional requested amount and flags the case. NIW reaches out to the client directly to work the custom amount offline.",
+  docs:[
+    ["A note that NIW will follow up","No automated 2nd illustration or envelope in ILIA for MVP."],
+    ["Offline handling","NIW prepares the revised illustration and paperwork outside ILIA."]
+  ],
+  choose:[
+    ["Client selects ‘different amount’","And reaches out to NIW — that's all the form does."],
+    ["NIW handles offline","Revised illustration + signature done manually, off-platform (MVP)."]
+  ],
+  close:"MVP decision (Judy, Aug 19): customs are rare, so no automation — the client is contacted and it's processed offline. Revisit automating this in Phase 2."
+}};
+const uxModal=document.getElementById('uxModal');
+function openUX(n){
+  const u=UX[n];if(!u)return;
+  const L=u.labels||{};
+  document.getElementById('uxLab1').textContent=L.receive||'What they receive';
+  document.getElementById('uxLab2').textContent=L.docs||'What they see & what each doc is for';
+  document.getElementById('uxLab3').textContent=L.choose||'How they choose';
+  document.getElementById('uxLab4').textContent=L.sign||'Then they sign';
+  document.getElementById('uxTitle').textContent=u.title;
+  document.getElementById('uxIntro').textContent=u.intro;
+  document.getElementById('uxReceive').textContent=u.receive;
+  const tb=document.getElementById('uxDocs');tb.innerHTML='';
+  u.docs.forEach(d=>{const tr=document.createElement('tr');const a=document.createElement('td');a.textContent=d[0];const b=document.createElement('td');b.textContent=d[1];tr.append(a,b);tb.appendChild(tr);});
+  const cc=document.getElementById('uxChoose');cc.innerHTML='';
+  u.choose.forEach(c=>{const div=document.createElement('div');div.className='c';const bb=document.createElement('b');bb.textContent=c[0];div.append(bb,document.createTextNode(' — '+c[1]));cc.appendChild(div);});
+  document.getElementById('uxSign').textContent=u.close;
+  if(typeof uxModal.showModal==='function')uxModal.showModal();else alert(u.title);
+}
+document.querySelectorAll('.ux-link').forEach(b=>b.addEventListener('click',()=>openUX(b.dataset.ux)));
+document.querySelectorAll('[data-tmlink]').forEach(b=>b.addEventListener('click',()=>showTab('tm')));
+
+const DOCP={
+ election:{name:"DBR Election Form",what:"The one-page form the client checks a box on and signs — the form shown on this tab.",kind:"election"},
+ comparison:{name:"Comparison Summary — the 3 options",what:"A plain one-pager Ben's tool builds: the client's key values under each option, so they see the impact of Full / Half / No reduction at a glance.",kind:"table",title:"Sample — side by side",head:["","No reduction","Half","Full"],rows:[["Death benefit","$1,000,000","$908,800","$817,600"],["Cash surrender value","$182,400","$182,400","$182,400"],["Est. loan repayment","$0","$0","$0"]]},
+ illustration:{name:"3 In-Force Illustrations (Full / Half / None)",what:"One carrier projection per option, pre-computed — so the client compares the death benefit under each choice side by side. (Sample shows death benefit by year.)",kind:"table",title:"Sample — death benefit by option",head:["Policy Year","Full","Half","No reduction"],rows:[["11","$817,600","$908,800","$1,000,000"],["12","$817,600","$908,800","$1,000,000"],["13","$817,600","$908,800","$1,000,000"],["14","$817,600","$908,800","$1,000,000"],["15","$817,600","$908,800","$1,000,000"]]}
+};
+const docPreview=document.getElementById('docPreview');
+function openDoc(k){
+ const d=DOCP[k];if(!d)return;
+ document.getElementById('docTitle').textContent=d.name;
+ document.getElementById('docWhat').textContent=d.what;
+ const body=document.getElementById('docSampBody');body.innerHTML='';
+ if(d.kind==='election'){
+   document.getElementById('docSampTitle').textContent='Sample — what the client fills in';
+   [["Full reduction","Reduction: $182,400"],["Half reduction","Reduction: $91,200"],["No reduction","No change this year"],["A different (custom) amount","Custom amount: $ ______"]].forEach(o=>{const row=document.createElement('div');row.className='samp-opt';const box=document.createElement('span');box.className='box';const txt=document.createElement('div');const b=document.createElement('b');b.textContent=o[0];const sub=document.createElement('div');sub.style.cssText='font-size:11px;color:var(--muted)';sub.textContent=o[1];txt.append(b,sub);row.append(box,txt);body.appendChild(row);});
+   const sig=document.createElement('div');sig.className='samp-sig';sig.textContent='Client signature: ____________     Date: ________';body.appendChild(sig);
+ } else {
+   document.getElementById('docSampTitle').textContent=d.title;
+   const t=document.createElement('table');t.className='samp';
+   const thead=document.createElement('thead');const htr=document.createElement('tr');d.head.forEach(h=>{const th=document.createElement('th');th.textContent=h;htr.appendChild(th);});thead.appendChild(htr);t.appendChild(thead);
+   const tb=document.createElement('tbody');d.rows.forEach(r=>{const tr=document.createElement('tr');r.forEach(c=>{const td=document.createElement('td');td.textContent=c;tr.appendChild(td);});tb.appendChild(tr);});t.appendChild(tb);
+   body.appendChild(t);
+ }
+ if(typeof docPreview.showModal==='function')docPreview.showModal();else alert(d.name);
+}
+document.querySelectorAll('.att-doc').forEach(b=>b.addEventListener('click',()=>openDoc(b.dataset.doc)));
+document.getElementById('docClose').addEventListener('click',()=>docPreview.close());
+document.getElementById('docOk').addEventListener('click',()=>docPreview.close());
+
+const SEG3={
+ full:{handle:["Applies the FULL death benefit reduction to the policy for the elected year","Pulls the low point from the 120/90/60 illustration (no re-run) → writes it to the Low Point field in Case Details (Chris runs the bank report)","Stores the signed election + PDF on the case record","Hands off to fulfillment — trustee → carrier (Event 4)"],status:{cls:"accepted",label:"Accepted → fulfillment (Event 4)"},reoffer:"None — the election is complete; fulfillment continues in Event 4.",extra:"One envelope, one signature — the elected illustration was already in the notice."},
+ half:{handle:["Applies the HALF reduction (~50%) to the policy for the elected year","Pulls the low point from the 120/90/60 illustration (no re-run) → writes it to the Low Point field in Case Details (Chris runs the bank report)","Stores the signed election + PDF on the case record","Hands off to fulfillment — trustee → carrier (Event 4)"],status:{cls:"accepted",label:"Accepted → fulfillment (Event 4)"},reoffer:"None — the election is complete; fulfillment continues in Event 4.",extra:"Same one-envelope path as Full — the Half illustration was pre-computed and in the notice. Confirm the “Half” basis with Ben."},
+ none:{handle:["Records the No-reduction choice — no change to the death benefit this year","Schedules the re-offer for the next anniversary"],status:{cls:"declined",label:"Declined — re-offer"},reoffer:"Re-offers next anniversary, each year through Year 15 (unless declined for Health). No response by the deadline works the same way, but shows the “No response” status.",extra:null},
+ custom:{handle:["Client picked ‘a different amount’ and reached out","ILIA flags the case for NIW to handle the custom amount OFFLINE (MVP)","No automated illustration or 2nd envelope in ILIA"],status:{cls:"none",label:"Flagged — handled offline (MVP)"},reoffer:"n/a — NIW contacts the client and processes the custom amount offline.",extra:"MVP decision (Judy, Aug 19): customs are rare, so no automation — client selects ‘different amount’, reaches out, and NIW handles it offline. Revisit for Phase 2."}
+};
+function renderSeg(k){
+ const d=SEG3[k];if(!d)return;
+ let h='<div class="flab">How ILIA handles it</div><ul class="list plain">';
+ h+=d.handle.map(x=>'<li><span class="ic">→</span>'+x+'</li>').join('');
+ h+='</ul>';
+ h+='<div class="flab">TM status set</div><span class="st st-'+d.status.cls+'">'+d.status.label+'</span>';
+ h+='<div class="flab">Re-offer / resend</div><p class="fp">'+d.reoffer+'</p>';
+ if(d.extra)h+='<div class="flab">Extra steps</div><p class="fp">'+d.extra+'</p>';
+ document.getElementById('segBody').innerHTML=h;
+}
+const seg3=document.getElementById('seg3');
+if(seg3){const ev3ux=document.getElementById('ev3ux');seg3.querySelectorAll('.seg-btn').forEach(b=>b.addEventListener('click',()=>{seg3.querySelectorAll('.seg-btn').forEach(x=>x.classList.toggle('active',x===b));renderSeg(b.dataset.seg);if(ev3ux)ev3ux.dataset.ux='3-'+b.dataset.seg;}));renderSeg('full');}
+document.getElementById('uxClose').addEventListener('click',()=>uxModal.close());
+document.getElementById('uxOk').addEventListener('click',()=>uxModal.close());
+
+const jumpNav=document.getElementById('jump');
+const trackEl=document.querySelector('.track');
+if(jumpNav&&trackEl){
+  trackEl.querySelectorAll('.ecard').forEach((card,i)=>{
+    const numEl=card.querySelector('.ec-num');const num=numEl?numEl.textContent:(i+1);
+    const h=card.querySelector('h2');const title=h?h.textContent:('Event '+(i+1));
+    const b=document.createElement('button');b.className='jump-btn';
+    const sp=document.createElement('span');sp.className='jn';sp.textContent=num;
+    b.appendChild(sp);b.appendChild(document.createTextNode(title));
+    b.addEventListener('click',()=>card.scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'}));
+    jumpNav.appendChild(b);
+  });
+}
+const topScroll=document.getElementById('topScroll');
+const topInner=document.getElementById('topScrollInner');
+const trackOuter=document.querySelector('.track-outer');
+if(topScroll&&topInner&&trackOuter){
+  const syncW=()=>{topInner.style.width=trackOuter.scrollWidth+'px';};
+  syncW();setTimeout(syncW,150);setTimeout(syncW,600);window.addEventListener('resize',syncW);
+  let lk=false;
+  topScroll.addEventListener('scroll',()=>{if(lk)return;lk=true;trackOuter.scrollLeft=topScroll.scrollLeft;lk=false;});
+  trackOuter.addEventListener('scroll',()=>{if(lk)return;lk=true;topScroll.scrollLeft=trackOuter.scrollLeft;lk=false;});
+}
+
+const EMAILS=[
+ {name:"DBR Notice — initial",
+  subject:"URGENT: Important Notice from Kai-Zen Plan Servicing — Next Steps, Year {policy_year} — {client_name}",
+  body:"Dear {client_name},\n\nYour Kai-Zen plan has reached its {policy_year}th year. At this stage you can choose how to handle the death benefit reduction for this year.\n\nPlease review the attached documents with your agent and choose one of three options — Full reduction, Half reduction, or No reduction (each option's illustration is attached) — or write in a custom amount. Then sign electronically via DocuSign.\n\nPlease complete your DocuSign by {due_date}. If no response is received by {due_date}, no change will be made to your policy for year {policy_year}, and you'll have the option again next year (through year 15).\n\nYour estimated loan repayment amount is {loan_amount}.\n\nPolicy Year {policy_year}\nActual — Cash Surrender: {actual_csv} · Death Benefit: {actual_db}\nIllustrated — Cash Value: {illus_cv} · Death Benefit: {illus_db}\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
+  att:["DBR election form (DocuSign — Full/Half/None + custom)","3 in-force illustrations (Full / Half / No reduction)","Comparison summary (the 3 options side by side)"]},
+ {name:"DBR Notice — reminder (90 days)",
+  subject:"Reminder: action needed on your Kai-Zen death benefit reduction — due {due_date}",
+  body:"Dear {client_name},\n\nA friendly reminder that your death benefit reduction election for year {policy_year} is still open. Please review and sign via DocuSign by {due_date}.\n\nIf we don't hear from you, no change will be made to your policy this year.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
+  att:["Same as the initial notice (DocuSign link)"]},
+ {name:"DBR Notice — final reminder (60 days)",
+  subject:"Final reminder: your Kai-Zen death benefit reduction — due {due_date}",
+  body:"Dear {client_name},\n\nThis is your final reminder — the deadline to make your death benefit reduction election for year {policy_year} is {due_date}. Please sign via DocuSign before then.\n\nIf no response is received by {due_date}, no change will be made this year.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
+  att:["Same as the initial notice (DocuSign link)"]},
+ {name:"Revised DBR — review & sign (Partial)",
+  subject:"Your revised Death Benefit Reduction — review & sign — {client_name}",
+  body:"Dear {client_name},\n\nThank you — based on your request, we've prepared a new illustration reflecting your requested reduction amount of {requested_amount}.\n\nPlease review the attached with your agent and sign via DocuSign to confirm. If you'd like a different amount, just let us know.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
+  att:["New in-force illustration (your requested amount)","Revised comparison (before vs. after)","Revised DocuSign election (2nd envelope)"]},
+ {name:"Confirmation — DBR applied",
+  subject:"Confirmed: your death benefit reduction has been applied — {client_name}",
+  body:"Dear {client_name},\n\nThis confirms that your death benefit reduction for year {policy_year} has been applied to your policy. Your updated death benefit is {new_db_amount}.\n\nNo further action is needed.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
+  att:["None (optional: signed confirmation PDF)"]},
+ {name:"Confirmation — no change this year",
+  subject:"No change to your policy this year — {client_name}",
+  body:"Dear {client_name},\n\nThis confirms that no death benefit reduction was made to your policy for year {policy_year}. You'll have the option again next year (through year 15).\n\nNo action is needed.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
+  att:["None"]}
+];
+function hlMerge(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\{[^}]+\}/g,m=>'<span class="mf">'+m+'</span>');}
+function openEmail(i){
+  const e=EMAILS[i];if(!e)return;
+  document.getElementById('emName').textContent=e.name;
+  document.getElementById('emSub').innerHTML=hlMerge(e.subject);
+  document.getElementById('emBody').innerHTML=hlMerge(e.body);
+  const att=document.getElementById('emAtt');att.innerHTML='';
+  e.att.forEach(a=>{const li=document.createElement('li');li.textContent=a;att.appendChild(li);});
+  const m=document.getElementById('emailModal');if(typeof m.showModal==='function')m.showModal();else alert(e.name);
+}
+document.querySelectorAll('.email-item').forEach((el,i)=>{
+  el.addEventListener('click',()=>openEmail(i));
+  const body=el.querySelector('.e-body');
+  if(body){const more=document.createElement('div');more.className='e-more';more.textContent='View suggested copy →';body.appendChild(more);}
+});
+document.getElementById('emClose').addEventListener('click',()=>document.getElementById('emailModal').close());
+document.getElementById('emOk').addEventListener('click',()=>document.getElementById('emailModal').close());
+
+const root=document.documentElement;
+document.getElementById('themeBtn').addEventListener('click',()=>{const c=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');root.setAttribute('data-theme',c==='dark'?'light':'dark');});
+</script>
