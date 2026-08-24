@@ -313,6 +313,33 @@
   .bl-btn:hover{filter:brightness(1.05)}
   .bl-saved{font-size:11.5px;font-weight:600;color:var(--ok);opacity:0;transition:opacity .2s}
   .bl-saved.show{opacity:1}
+  /* Envelope & routing */
+  .env-wrap{margin:16px 0 6px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--ilia);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px 18px}
+  .env-hd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .env-ic{font-size:20px}
+  .env-hd h3{margin:0;font-size:16px;letter-spacing:-.01em}
+  .env-badge{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ilia);background:var(--ilia-soft);border-radius:20px;padding:3px 9px}
+  .env-sub{font-size:12.5px;color:var(--muted);margin:8px 0 14px;line-height:1.5;max-width:80ch}.env-sub b{color:var(--ink)}
+  .env-flow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
+  .env-box{flex:none;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;min-width:120px;border:1.5px dashed var(--ilia);border-radius:12px;padding:12px 14px;background:var(--ilia-soft);color:var(--ilia);text-align:center}
+  .env-box .eb-ic{font-size:22px}.env-box b{font-size:12px;color:var(--ink)}.env-box span{font-size:10.5px;color:var(--muted)}
+  .route-step{flex:1;min-width:150px;text-align:left;border:1px solid var(--border-strong);border-radius:12px;padding:12px 13px;background:var(--surface);cursor:pointer;font-family:inherit;display:flex;flex-direction:column;gap:3px;transition:border-color .12s,box-shadow .12s}
+  .route-step:hover{border-color:var(--ilia);box-shadow:var(--shadow)}
+  .rs-top{display:flex;align-items:center;gap:8px}
+  .rs-num{flex:none;width:22px;height:22px;border-radius:50%;background:var(--ilia);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center}
+  .rs-who{font-size:13px;font-weight:700;color:var(--ink)}
+  .rs-role{font-size:11px;color:var(--muted)}
+  .rs-more{font-size:11px;font-weight:700;color:var(--ilia);margin-top:4px}
+  .route-arrow{flex:none;align-self:center;display:flex;flex-direction:column;align-items:center;color:var(--faint);font-size:16px;font-weight:800;min-width:64px;text-align:center}
+  .route-arrow small{font-size:9px;font-weight:600;color:var(--faint);line-height:1.2;margin-top:2px}
+  @media (max-width:720px){.route-arrow{transform:rotate(90deg);min-width:0;margin:2px 0}}
+  #envModal{border:1px solid var(--border-strong);border-radius:var(--radius);padding:0;background:var(--surface);color:var(--ink);max-width:640px;width:94vw;box-shadow:var(--shadow)}
+  #envModal::backdrop{background:rgba(6,10,18,.55)}
+  .env-when{font-size:12px;color:var(--ilia);font-weight:600;margin:0 0 14px}
+  .env-inc{margin:0;padding-left:18px;font-size:12.5px;color:var(--muted)}.env-inc li{margin-bottom:5px}.env-inc b{color:var(--ink)}
+  .env-hh{margin-top:12px;font-size:11.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--warn);border-radius:8px;padding:10px 12px;line-height:1.5}.env-hh b{color:var(--ink)}
+  .form-step-lab{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ilia);margin:18px 2px 2px;display:flex;align-items:center;gap:7px}
+  .form-step-lab .fsl-n{width:20px;height:20px;border-radius:50%;background:var(--ilia);color:#fff;display:grid;place-items:center;font-size:11px}
   @media (max-width:640px){.wrap{padding:16px 12px 50px}h1{font-size:20px}}
 </style>
 
@@ -328,7 +355,7 @@
   <nav class="tabs" role="tablist">
     <button id="tabCards" class="active">DBR workflow event cards</button>
     <button id="tabTm">DBR in Tranche Management</button>
-    <button id="tabForms">New DBR forms</button>
+    <button id="tabForms">DBR envelope &amp; routing</button>
     <button id="tabEmails">ILIA DBR emails</button>
     <button id="tabBlockers">Blockers checklist</button>
   </nav>
@@ -764,7 +791,18 @@
 
   <!-- ============ TAB 3: NEW DBR FORMS ============ -->
   <section id="view-forms" hidden>
-    <p class="hint" style="margin-top:16px">How Marissa should build the election in DocuSign so ILIA can log the response &amp; route. The client picks one of <b>3 ready illustrations</b> — Full / Half / No reduction — or writes a <b>custom amount</b>. Static form — check one box (or fill the custom amount). Check a box to see what ILIA captures.</p>
+    <p class="hint" style="margin-top:16px">The full DBR package travels in <b>one DocuSign envelope</b>, routed to each signer in turn. Below: the envelope's routing, then the client's election form (interaction point 1). All copy/fields are Marissa/Judy's to finalize.</p>
+    <div class="env-wrap">
+      <div class="env-hd">
+        <span class="env-ic">📦</span>
+        <h3>One envelope, signed in order</h3>
+        <span class="env-badge">DocuSign signing order</span>
+      </div>
+      <p class="env-sub">Everything travels in a <b>single DocuSign envelope</b> — the notice, the 3 illustrations, the comparison, the election, the Hold Harmless, and the carrier change form. It routes to each person <b>in sequence</b>: the next signer only receives it once the previous one finishes. There's <b>no second envelope</b> — just the next person's turn. Click a step to see what they get and sign.</p>
+      <div class="env-flow" id="envFlow"></div>
+    </div>
+
+    <div class="form-step-lab"><span class="fsl-n">1</span> Client's view — the election form (interaction point 1)</div>
     <div class="fgrid">
       <div class="fleft">
       <div class="paper">
@@ -978,6 +1016,18 @@
     <p class="samp-note">Draft starter copy — final wording is Marissa/Judy's to finalize. The <span class="mf">{merge fields}</span> are placeholders ILIA fills in per client.</p>
   </div>
   <div class="ux-ft"><button id="emOk" class="btn-primary">Got it</button></div>
+</dialog>
+
+<dialog id="envModal">
+  <div class="ux-hd"><h3 id="envName">Interaction point</h3><button id="envClose" aria-label="Close">✕</button></div>
+  <div class="ux-bd">
+    <p class="env-when" id="envWhen"></p>
+    <div class="ux-sec"><div class="ux-lab">What they see</div><p id="envSees" style="margin:0;font-size:13px;line-height:1.5"></p></div>
+    <div class="ux-sec"><div class="ux-lab">What they do</div><p id="envDoes" style="margin:0;font-size:13px;line-height:1.5"></p></div>
+    <div class="ux-sec"><div class="ux-lab">What's included for them</div><ul class="env-inc" id="envInc"></ul></div>
+    <div id="envHH" class="env-hh" hidden></div>
+  </div>
+  <div class="ux-ft"><button id="envOk" class="btn-primary">Got it</button></div>
 </dialog>
 
 <script>
@@ -1384,6 +1434,50 @@ document.querySelectorAll('.email-item').forEach((el,i)=>{
 });
 document.getElementById('emClose').addEventListener('click',()=>document.getElementById('emailModal').close());
 document.getElementById('emOk').addEventListener('click',()=>document.getElementById('emailModal').close());
+
+const ROUTE=[
+ {who:"Client / Settlor",role:"insured · elects + signs",when:"Step 1 — the envelope starts here.",
+  sees:"The DBR notice (year, reduction amount, respond-by date), the 3 illustrations (Full / Half / No reduction) + comparison, the election, and the Hold Harmless.",
+  does:"Reviews the options, makes the election (Full / Half / No reduction, or a custom amount), signs the election — and signs the Hold Harmless as the Settlor.",
+  inc:["DBR notice — policy #, year, reduction amount, respond-by date","3 in-force illustrations — Full / Half / No reduction","Comparison summary","Election (Full / Half / None + custom)","Hold Harmless & Indemnification (Settlor signs)"]},
+ {who:"Trustee — Provident Trust Group, LLC",role:"trustee · authorizes",when:"Step 2 — DocuSign auto-routes here once the client finishes.",
+  sees:"The client's completed election plus the carrier change form to authorize.",
+  does:"Executes / signs the carrier change form as directed by the settlor (per the Hold Harmless the client signed).",
+  inc:["Client's completed election","Carrier change form (NLG per-state / MNL / ALZ)","Reference: the signed Hold Harmless"],
+  note:"<b>From the real form:</b> the Hold Harmless directs Provident Trust Group (trustee) to execute the change, and the <b>Settlor</b> releases &amp; indemnifies Provident for the reduction. The trustee then signs the carrier change form to authorize it."},
+ {who:"Carrier",role:"National Life / Allianz · processes",when:"Step 3 — the completed packet reaches the carrier.",
+  sees:"The fully-signed change form(s).",
+  does:"Processes the death benefit reduction on the policy.",
+  inc:["Signed carrier change form(s)","Confirmation of receipt"],
+  note:"<b>Open question (Event 4):</b> whether the carrier is an actual DocuSign recipient or receives the finished packet out-of-band, and how receipt is confirmed (feeds vs manual)."}
+];
+(function(){
+  const flow=document.getElementById('envFlow');if(!flow)return;
+  const box=document.createElement('div');box.className='env-box';box.innerHTML='<span class="eb-ic">📦</span><b>1 DBR envelope</b><span>all docs inside</span>';
+  flow.appendChild(box);
+  const a0=document.createElement('span');a0.className='route-arrow';a0.innerHTML='→<small>routes to…</small>';flow.appendChild(a0);
+  ROUTE.forEach((r,i)=>{
+    const b=document.createElement('button');b.className='route-step';b.type='button';
+    b.innerHTML='<span class="rs-top"><span class="rs-num">'+(i+1)+'</span><span class="rs-who">'+r.who+'</span></span><span class="rs-role">'+r.role+'</span><span class="rs-more">See what they get →</span>';
+    b.addEventListener('click',()=>openEnv(i));
+    flow.appendChild(b);
+    if(i<ROUTE.length-1){const a=document.createElement('span');a.className='route-arrow';a.innerHTML='→<small>auto-routes when signed</small>';flow.appendChild(a);}
+  });
+})();
+function openEnv(i){
+  const r=ROUTE[i];if(!r)return;
+  document.getElementById('envName').textContent=r.who;
+  document.getElementById('envWhen').textContent=r.when;
+  document.getElementById('envSees').textContent=r.sees;
+  document.getElementById('envDoes').textContent=r.does;
+  const inc=document.getElementById('envInc');inc.innerHTML='';
+  r.inc.forEach(x=>{const li=document.createElement('li');li.textContent=x;inc.appendChild(li);});
+  const hh=document.getElementById('envHH');
+  if(r.note){hh.innerHTML=r.note;hh.hidden=false;}else{hh.hidden=true;hh.innerHTML='';}
+  const m=document.getElementById('envModal');if(typeof m.showModal==='function')m.showModal();else alert(r.who);
+}
+document.getElementById('envClose').addEventListener('click',()=>document.getElementById('envModal').close());
+document.getElementById('envOk').addEventListener('click',()=>document.getElementById('envModal').close());
 
 const root=document.documentElement;
 document.getElementById('themeBtn').addEventListener('click',()=>{const c=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');root.setAttribute('data-theme',c==='dark'?'light':'dark');});
