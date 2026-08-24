@@ -340,6 +340,25 @@
   .env-hh{margin-top:12px;font-size:11.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--warn);border-radius:8px;padding:10px 12px;line-height:1.5}.env-hh b{color:var(--ink)}
   .form-step-lab{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ilia);margin:18px 2px 2px;display:flex;align-items:center;gap:7px}
   .form-step-lab .fsl-n{width:20px;height:20px;border-radius:50%;background:var(--ilia);color:#fff;display:grid;place-items:center;font-size:11px}
+  .route-step,.env-box{position:relative}
+  .route-step.sel{border-color:var(--ilia);background:var(--ilia-soft);box-shadow:0 0 0 2px color-mix(in srgb,var(--ilia) 28%,transparent)}
+  .env-box.sel{box-shadow:0 0 0 2px color-mix(in srgb,var(--ilia) 40%,transparent)}
+  #envPanel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin:14px 0 16px}
+  .ep-who{font-size:16px;font-weight:700;letter-spacing:-.01em}
+  .ep-role{font-size:12px;color:var(--muted);margin-top:2px}
+  .ep-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 0;border-bottom:1px solid var(--border)}
+  .ep-tab{border:1px solid var(--border-strong);border-bottom:none;background:var(--surface-2);color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;padding:8px 13px;border-radius:8px 8px 0 0;cursor:pointer;margin-bottom:-1px}
+  .ep-tab:hover{color:var(--ink)}
+  .ep-tab.act{background:var(--surface);color:var(--ilia);border-color:var(--border);border-bottom:1px solid var(--surface)}
+  .ep-detail{padding-top:14px}
+  .ep-sec{margin-bottom:14px}
+  .ep-lab{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .ep-none{margin:0;font-size:12.5px;color:var(--faint);font-style:italic}
+  .att-chips{display:flex;flex-direction:column;gap:8px}
+  .att-chip{text-align:left;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:12.5px;font-weight:600;padding:10px 12px;cursor:pointer}
+  .att-chip:hover{border-color:var(--ilia)}
+  .att-chip .ac-view{font-weight:700;color:var(--ilia);font-size:11px;margin-left:4px}
+  .att-chip:disabled{cursor:default;opacity:.7}
   @media (max-width:640px){.wrap{padding:16px 12px 50px}h1{font-size:20px}}
 </style>
 
@@ -791,18 +810,25 @@
 
   <!-- ============ TAB 3: NEW DBR FORMS ============ -->
   <section id="view-forms" hidden>
-    <p class="hint" style="margin-top:16px">The full DBR package travels in <b>one DocuSign envelope</b>, routed to each signer in turn. Below: the envelope's routing, then the client's election form (interaction point 1). All copy/fields are Marissa/Judy's to finalize.</p>
+    <p class="hint" style="margin-top:16px">The full DBR package travels in <b>one DocuSign envelope</b>, routed to each signer in turn. <b>Click a step</b> to see the emails it sends and the documents inside — each attachment opens a preview. All copy/fields are Marissa/Judy's to finalize.</p>
     <div class="env-wrap">
       <div class="env-hd">
         <span class="env-ic">📦</span>
         <h3>One envelope, signed in order</h3>
         <span class="env-badge">DocuSign signing order</span>
       </div>
-      <p class="env-sub">Everything travels in a <b>single DocuSign envelope</b> — the notice, the 3 illustrations, the comparison, the election, the Hold Harmless, and the carrier change form. It routes to each person <b>in sequence</b>: the next signer only receives it once the previous one finishes. There's <b>no second envelope</b> — just the next person's turn. Click a step to see what they get and sign.</p>
+      <p class="env-sub">Everything travels in a <b>single DocuSign envelope</b> — the notice, the 3 illustrations, the comparison, the election, the Hold Harmless, and the carrier change form. It routes to each person <b>in sequence</b>: the next signer only receives it once the previous one finishes. There's <b>no second envelope</b> — just the next person's turn. <b>Click a step</b> to see the emails it sends and the documents inside.</p>
       <div class="env-flow" id="envFlow"></div>
     </div>
 
-    <div class="form-step-lab"><span class="fsl-n">1</span> Client's view — the election form (interaction point 1)</div>
+    <div id="envPanel">
+      <div class="ep-head" id="epHead"></div>
+      <div class="ep-tabs" id="epTabs"></div>
+      <div class="ep-detail" id="epDetail"></div>
+    </div>
+
+    <div id="clientForm" hidden>
+    <div class="form-step-lab"><span class="fsl-n">1</span> Client's DocuSign view — the election form</div>
     <div class="fgrid">
       <div class="fleft">
       <div class="paper">
@@ -853,14 +879,6 @@
       </div>
 
       <div class="fside">
-        <div class="cap">
-          <div class="cap-h"><span class="cdot"></span>What ILIA captures</div>
-          <div class="cap-b">
-            <div><span class="k">dbr_election</span>: <span id="fcapElection" class="none">— not chosen</span></div>
-            <div><span class="k">requested_amount</span>: <span id="fcapAmount" class="none">—</span></div>
-            <div class="route">→ ILIA routes to:<span id="fcapRoute" class="rv none">choose an option</span></div>
-          </div>
-        </div>
         <div class="fnotes">
           <h3>Build notes for Marissa</h3>
           <ol>
@@ -894,6 +912,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
   </section>
 
@@ -1171,6 +1190,7 @@ let fsel=null;
 const fopts=document.querySelectorAll('#fopts .opt');
 const fcapE=document.getElementById('fcapElection'),fcapA=document.getElementById('fcapAmount'),fcapR=document.getElementById('fcapRoute'),famt=document.getElementById('famtInput');
 function frender(){
+  if(!fcapE)return;
   if(!fsel){fcapE.textContent='— not chosen';fcapE.className='none';fcapA.textContent='—';fcapA.className='none';fcapR.textContent='choose an option';fcapR.className='rv none';return;}
   fcapE.textContent=fsel;fcapE.className='v';
   if(fsel==='CUSTOM'){const a=(famt.value||'').trim();fcapA.textContent=a?'$'+a:'(awaiting amount)';fcapA.className=a?'v':'none';}else{fcapA.textContent='—';fcapA.className='none';}
@@ -1321,7 +1341,9 @@ document.querySelectorAll('[data-tmlink]').forEach(b=>b.addEventListener('click'
 const DOCP={
  election:{name:"DBR Election Form",what:"The one-page form the client checks a box on and signs — the form shown on this tab.",kind:"election"},
  comparison:{name:"Comparison Summary — the 3 options",what:"A plain one-pager Ben's tool builds: the client's key values under each option, so they see the impact of Full / Half / No reduction at a glance.",kind:"table",title:"Sample — side by side",head:["","No reduction","Half","Full"],rows:[["Death benefit","$1,000,000","$908,800","$817,600"],["Cash surrender value","$182,400","$182,400","$182,400"],["Est. loan repayment","$0","$0","$0"]]},
- illustration:{name:"3 In-Force Illustrations (Full / Half / None)",what:"One carrier projection per option, pre-computed — so the client compares the death benefit under each choice side by side. (Sample shows death benefit by year.)",kind:"table",title:"Sample — death benefit by option",head:["Policy Year","Full","Half","No reduction"],rows:[["11","$817,600","$908,800","$1,000,000"],["12","$817,600","$908,800","$1,000,000"],["13","$817,600","$908,800","$1,000,000"],["14","$817,600","$908,800","$1,000,000"],["15","$817,600","$908,800","$1,000,000"]]}
+ illustration:{name:"3 In-Force Illustrations (Full / Half / None)",what:"One carrier projection per option, pre-computed — so the client compares the death benefit under each choice side by side. (Sample shows death benefit by year.)",kind:"table",title:"Sample — death benefit by option",head:["Policy Year","Full","Half","No reduction"],rows:[["11","$817,600","$908,800","$1,000,000"],["12","$817,600","$908,800","$1,000,000"],["13","$817,600","$908,800","$1,000,000"],["14","$817,600","$908,800","$1,000,000"],["15","$817,600","$908,800","$1,000,000"]]},
+ holdharmless:{name:"Hold Harmless & Indemnification",what:"From the real DBR form — the Settlor directs & indemnifies the trustee (Provident Trust Group) for the reduction.",kind:"text",title:"Excerpt — from the real form",body:"HOLD HARMLESS & INDEMNIFICATION AS TO PROVIDENT TRUST GROUP, LLC\n\nProvident Trust Group, LLC (“Provident”), as trustee of the Insurance Trust, has been directed by [Settlor] to execute documents to reduce the death benefit.\n\nSettlor acknowledges the reduction was contemplated as part of the original investment strategy; agrees Provident is not responsible for suitability or effect; releases and indemnifies Provident (and its affiliates) from any liability arising from the reduction; and directs Provident to execute the necessary documents.\n\nSettlor Signature: ____________    Printed Name: ____________    Date: ________"},
+ carrierchange:{name:"Carrier Policy Change Form",what:"The carrier's change application that authorizes the reduction on the policy — signed by the trustee.",kind:"text",title:"What it is",body:"Carrier change application (National Life / MNL / Allianz).\n\nFields: policy #, insured name, new (reduced) death benefit amount, effective date, owner/trustee signature.\n\nNational Life has state-specific versions (ND · NY · SD · FL · CA & DE · 1441); Allianz embeds the change within its illustration. Signed by the trustee (Provident) to authorize the reduction, then sent to the carrier to process."}
 };
 const docPreview=document.getElementById('docPreview');
 function openDoc(k){
@@ -1333,6 +1355,9 @@ function openDoc(k){
    document.getElementById('docSampTitle').textContent='Sample — what the client fills in';
    [["Full reduction","Reduction: $182,400"],["Half reduction","Reduction: $91,200"],["No reduction","No change this year"],["A different (custom) amount","Custom amount: $ ______"]].forEach(o=>{const row=document.createElement('div');row.className='samp-opt';const box=document.createElement('span');box.className='box';const txt=document.createElement('div');const b=document.createElement('b');b.textContent=o[0];const sub=document.createElement('div');sub.style.cssText='font-size:11px;color:var(--muted)';sub.textContent=o[1];txt.append(b,sub);row.append(box,txt);body.appendChild(row);});
    const sig=document.createElement('div');sig.className='samp-sig';sig.textContent='Client signature: ____________     Date: ________';body.appendChild(sig);
+ } else if(d.kind==='text'){
+   document.getElementById('docSampTitle').textContent=d.title||'Sample';
+   const p=document.createElement('div');p.style.cssText='white-space:pre-wrap;font-size:12.5px;line-height:1.6;color:var(--ink)';p.textContent=d.body;body.appendChild(p);
  } else {
    document.getElementById('docSampTitle').textContent=d.title;
    const t=document.createElement('table');t.className='samp';
@@ -1451,33 +1476,70 @@ const ROUTE=[
   inc:["Signed carrier change form(s)","Confirmation of receipt"],
   note:"<b>Open question (Event 4):</b> whether the carrier is an actual DocuSign recipient or receives the finished packet out-of-band, and how receipt is confirmed (feeds vs manual)."}
 ];
+const RKEYS=['client','trustee','carrier'];
 (function(){
   const flow=document.getElementById('envFlow');if(!flow)return;
-  const box=document.createElement('div');box.className='env-box';box.innerHTML='<span class="eb-ic">📦</span><b>1 DBR envelope</b><span>all docs inside</span>';
+  const box=document.createElement('button');box.className='env-box';box.type='button';box.dataset.step='envelope';box.innerHTML='<span class="eb-ic">📦</span><b>1 DBR envelope</b><span>all docs inside</span>';
+  box.addEventListener('click',()=>selectStep('envelope'));
   flow.appendChild(box);
   const a0=document.createElement('span');a0.className='route-arrow';a0.innerHTML='→<small>routes to…</small>';flow.appendChild(a0);
   ROUTE.forEach((r,i)=>{
-    const b=document.createElement('button');b.className='route-step';b.type='button';
-    b.innerHTML='<span class="rs-top"><span class="rs-num">'+(i+1)+'</span><span class="rs-who">'+r.who+'</span></span><span class="rs-role">'+r.role+'</span><span class="rs-more">See what they get →</span>';
-    b.addEventListener('click',()=>openEnv(i));
+    const b=document.createElement('button');b.className='route-step';b.type='button';b.dataset.step=RKEYS[i];
+    b.innerHTML='<span class="rs-top"><span class="rs-num">'+(i+1)+'</span><span class="rs-who">'+r.who+'</span></span><span class="rs-role">'+r.role+'</span>';
+    b.addEventListener('click',()=>selectStep(RKEYS[i]));
     flow.appendChild(b);
     if(i<ROUTE.length-1){const a=document.createElement('span');a.className='route-arrow';a.innerHTML='→<small>auto-routes when signed</small>';flow.appendChild(a);}
   });
 })();
-function openEnv(i){
-  const r=ROUTE[i];if(!r)return;
-  document.getElementById('envName').textContent=r.who;
-  document.getElementById('envWhen').textContent=r.when;
-  document.getElementById('envSees').textContent=r.sees;
-  document.getElementById('envDoes').textContent=r.does;
-  const inc=document.getElementById('envInc');inc.innerHTML='';
-  r.inc.forEach(x=>{const li=document.createElement('li');li.textContent=x;inc.appendChild(li);});
-  const hh=document.getElementById('envHH');
-  if(r.note){hh.innerHTML=r.note;hh.hidden=false;}else{hh.hidden=true;hh.innerHTML='';}
-  const m=document.getElementById('envModal');if(typeof m.showModal==='function')m.showModal();else alert(r.who);
+
+const CLIENT_ATTS=[
+  {name:"DBR Election Form",key:"election"},
+  {name:"3 In-Force Illustrations (Full / Half / None)",key:"illustration"},
+  {name:"Comparison Summary",key:"comparison"},
+  {name:"Hold Harmless &amp; Indemnification",key:"holdharmless"}
+];
+const NOTICE_EMAILS=[
+  {tab:"120-day notice",ei:0,atts:CLIENT_ATTS},
+  {tab:"90-day reminder",ei:1,atts:CLIENT_ATTS},
+  {tab:"60-day reminder",ei:2,atts:CLIENT_ATTS}
+];
+const CONFIRM_EMAILS=[
+  {tab:"Confirmation — applied",ei:4,atts:[]},
+  {tab:"Confirmation — no change",ei:5,atts:[]}
+];
+const TRUSTEE_EMAIL={tab:"DocuSign sign request",title:"DocuSign: Signature requested — Kai-Zen DB reduction · Policy {policy_no}",copy:"Provident Trust Group — a Kai-Zen death benefit reduction for {client_name} is ready for your signature. Please review the carrier change form and the client's signed election, then sign to authorize the change.",atts:[{name:"Carrier change form (NLG / MNL / ALZ)",key:"carrierchange"},{name:"Client's completed election",key:"election"},{name:"Signed Hold Harmless",key:"holdharmless"}]};
+const CARRIER_EMAIL={tab:"Carrier delivery",title:"Kai-Zen DB reduction — completed change forms · Policy {policy_no}",copy:"Enclosed are the fully-signed change forms authorizing the death benefit reduction for {client_name}, Policy {policy_no}. Please process the reduction and confirm receipt.",atts:[{name:"Signed carrier change form(s)",key:"carrierchange"}]};
+const STEP_DATA={
+ envelope:{who:"📦 Envelope — overview",role:"the whole package · routed Client → Trustee → Carrier",emails:NOTICE_EMAILS.concat(CONFIRM_EMAILS,[TRUSTEE_EMAIL,CARRIER_EMAIL])},
+ client:{who:"1 · Client / Settlor",role:"insured · elects + signs · Step 1 (the envelope starts here)",emails:NOTICE_EMAILS.concat(CONFIRM_EMAILS)},
+ trustee:{who:"2 · Trustee — Provident Trust Group, LLC",role:"trustee · authorizes · Step 2 (auto-routes here after the client signs)",emails:[TRUSTEE_EMAIL]},
+ carrier:{who:"3 · Carrier",role:"National Life / Allianz · processes · Step 3",emails:[CARRIER_EMAIL]}
+};
+function selectStep(key){
+  const s=STEP_DATA[key];if(!s)return;
+  document.querySelectorAll('#envFlow [data-step]').forEach(el=>el.classList.toggle('sel',el.dataset.step===key));
+  document.getElementById('epHead').innerHTML='<div class="ep-who">'+s.who+'</div><div class="ep-role">'+s.role+'</div>';
+  const tabs=document.getElementById('epTabs');tabs.innerHTML='';
+  s.emails.forEach((em,i)=>{const b=document.createElement('button');b.className='ep-tab'+(i===0?' act':'');b.textContent=em.tab;b.addEventListener('click',()=>{tabs.querySelectorAll('.ep-tab').forEach(x=>x.classList.remove('act'));b.classList.add('act');renderEmail(key,i);});tabs.appendChild(b);});
+  renderEmail(key,0);
+  const cf=document.getElementById('clientForm');if(cf)cf.hidden=(key!=='client');
 }
-document.getElementById('envClose').addEventListener('click',()=>document.getElementById('envModal').close());
-document.getElementById('envOk').addEventListener('click',()=>document.getElementById('envModal').close());
+function renderEmail(key,i){
+  const em=STEP_DATA[key].emails[i];if(!em)return;
+  const src=(em.ei!=null)?EMAILS[em.ei]:null;
+  const title=em.title||(src?src.subject:'');
+  const copy=em.copy||(src?src.body:'');
+  let h='<div class="ep-sec"><div class="ep-lab">Email — title</div><div class="em-sub">'+hlMerge(title)+'</div></div>';
+  h+='<div class="ep-sec"><div class="ep-lab">Email — copy</div><div class="em-body">'+hlMerge(copy)+'</div></div>';
+  h+='<div class="ep-sec"><div class="ep-lab">Email attachments</div>';
+  const atts=em.atts||[];
+  if(atts.length){h+='<div class="att-chips">'+atts.map((a,ai)=>'<button class="att-chip" data-k="'+(a.key||'')+'">'+(ai+1)+'. '+a.name+(a.key?' <span class="ac-view">preview →</span>':'')+'</button>').join('')+'</div>';}
+  else{h+='<p class="ep-none">No attachments for this email.</p>';}
+  h+='</div>';
+  const d=document.getElementById('epDetail');d.innerHTML=h;
+  d.querySelectorAll('.att-chip').forEach(b=>{const k=b.dataset.k;if(k){b.addEventListener('click',()=>openDoc(k));}else{b.disabled=true;}});
+}
+selectStep('client');
 
 const root=document.documentElement;
 document.getElementById('themeBtn').addEventListener('click',()=>{const c=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');root.setAttribute('data-theme',c==='dark'?'light':'dark');});
