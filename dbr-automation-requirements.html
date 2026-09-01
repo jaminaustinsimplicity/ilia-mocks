@@ -423,7 +423,7 @@
                 <li><span class="tick bank">→</span><div><b>Low point</b> → the bank uses <b>these same 120/90/60 illustrations</b> (no re-run). On election, ILIA writes the chosen option's low point into the <b>Low Point field in Case Details</b> → Chris runs the bank report <span class="always">always</span></div></li>
                 <li><span class="tick" style="background:var(--faint)">–</span><div><b>Custom amount:</b> handled <b>offline</b> (MVP) — no ILIA automation</div></li>
               </ul>
-              <p style="margin:8px 0 0;font-size:11px;color:var(--faint)">Low point confirmed required (NIWD-2053); reuses the low-point mapping in NIWD-2185. Ben re-runs only for a custom amount (which is offline). <b>Todd</b> is also building a separate informational page comparing each option (Ben's tool), alongside the elections.</p>
+              <p style="margin:8px 0 0;font-size:11px;color:var(--faint)">Low point confirmed required (NIWD-2053); reuses the low-point mapping in NIWD-2185. Ben re-runs only for a custom amount (which is offline). <b>Judy provided the client comparison/education doc</b> ("Your Kai-Zen Policy…") — the source for the option copy + the strategy comparison (Cash Value · Suppl. Income · DB at 90). Todd's info page builds on it.</p>
             </div>
 
             <div class="sec">
@@ -514,7 +514,7 @@
                 <li><b>DBR start year varies by cohort</b> — early cohorts had DBRs calculated at <b>Yr 10</b>, later cohorts at <b>Yr 11</b>. The auto-send logic must use each cohort's actual DBR schedule (not a hardcoded Yr 11). Ties to NIWD-2299's Yr 10–14 window. <b>(Waiting on Judy.)</b></li>
                 <li><b>Email copy for the notices</b> — the final notice wording (Full / Half / None + custom) isn't ready. Marissa is building it. <b>(Pending)</b></li>
                 <li><b>New DBR form — 3-illustration pick + custom</b> — Marissa is rebuilding the election form: pick one of Full / Half / No reduction, plus a custom-amount field. <b>(Pending)</b></li>
-                <li><b>Ben's illustration + scraping automation</b> — auto-pull the <b>3 illustrations</b> (Full / Half / None) from the carrier + scrape the comparison; run the low point on the final elected illustration. <b>Linchpin.</b> <span style="color:var(--faint)">Also: confirm what "Half" is measured against (half the reduction $).</span></li>
+                <li><b>Ben's illustration + scraping automation</b> — auto-pull the <b>3 illustrations</b> (Full / Half / None) from the carrier + scrape the comparison; run the low point on the final elected illustration. <b>Linchpin.</b> <span style="color:var(--faint)">"Half" = ~50% of the planned term reduction (confirmed via Judy's comparison doc).</span></li>
                 <li><b>Clean DBR data in ILIA</b> — validated, populated DBR amounts for all <b>settlor = insured</b> accounts (Phase 1). The send fires off this data. <b>(B1)</b> <span style="color:var(--faint)">Depends on NIWD-2299 (illustrated-DB recalc, Yr 10–14) — reconcile the 10–14 vs 11–15 window with Kyle.</span></li>
                 <li><b>DBR amount formulas (cumulative) — Paul</b> — how the reduction is calculated each year and how amounts <b>carry/stack</b> when a year is declined. ILIA holds the per-year DB-drop amounts; need Paul's formulas. Ties to NIWD-2299.</li>
               </ul>
@@ -525,7 +525,7 @@
               <ul class="jlist">
                 <li><span class="jt">1</span><div><b>Validate &amp; populate DBR data — settlor = insured</b> <span style="color:var(--faint);font-weight:400">· data team</span><span class="jd">(B1) Validate DBR amounts vs. the carrier source of truth and populate them for all settlor = insured accounts. Prerequisite — the trigger fires off this data.</span></div></li>
                 <li><span class="jt">2</span><div><b>DBR eligibility &amp; trigger scheduler</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Daily job: find eligible policies (in the DBR window — Yr 10 or 11 start by cohort, through Yr 15 · Kai-Zen · settlor = insured · not excluded · not health-declined), calc the deadline from the tranche funding date + the DBR amount from the original design/illustration, and schedule the 120/90/60 sends. Start-year rule pending Judy.</span></div></li>
-                <li><span class="jt">3</span><div><b>Illustration auto-pull (3 scenarios) + data scrape</b> <span style="color:var(--faint);font-weight:400">· Ben</span><span class="jd">Auto-request the 3 in-force illustrations (Full / Half / None) from the carrier; scrape the client comparison. Run the low point only on the elected/final illustration (Admin, per NIWD-2300). Confirm the "Half" basis. The linchpin.</span></div></li>
+                <li><span class="jt">3</span><div><b>Illustration auto-pull (3 scenarios) + data scrape</b> <span style="color:var(--faint);font-weight:400">· Ben</span><span class="jd">Auto-request the 3 in-force illustrations (Full / Half / None) from the carrier; scrape the client comparison. Run the low point only on the elected/final illustration (Admin, per NIWD-2300). Half = ~50% of the planned term reduction (Judy's doc). The linchpin.</span></div></li>
                 <li><span class="jt">4</span><div><b>Assemble &amp; send the DBR package (DocuSign)</b> <span style="color:var(--faint);font-weight:400">· ILIA dev + Chris (DocuSign send)</span><span class="jd">Bundle the election form + the 3 illustrations + comparison into one DocuSign envelope (all-in-one, confirmed by Judy); send at 120/90/60; stop reminders once the signed form is in; log each send. Needs Marissa's form/copy + task 3.</span></div></li>
                 <li><span class="jt">5</span><div><b>DBR status in Tranche Management</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Add the DBR Status field to the Workflow tab and drive its states, starting with “Notice sent — awaiting response.”</span></div></li>
               </ul>
@@ -835,24 +835,24 @@
         <span class="doc-tag">DocuSign · client view</span>
         <p class="doc-h">Death Benefit Reduction — Your Election</p>
         <p class="doc-meta">Policy #KZ-100482 · Policy Year 11 · Trust: The Song Ma Trust</p>
-        <p class="prompt">Your Kai-Zen plan has reached its death benefit reduction window for <b>Year 11</b>. Please <b>check one box</b> below — each option's illustration is attached (or write a custom amount) — and sign. <span class="req">*required</span></p>
+        <p class="prompt">Your Kai-Zen plan is entering its <b>eleventh year</b> — the phase where the planned <b>term-rider death benefit reduction</b> takes effect. Please <b>choose one option</b> below (each option's illustration is attached, or write a custom amount) and sign. <span class="req">*required</span></p>
         <div class="opts" id="fopts">
           <div class="opt" data-v="FULL"><span class="radio"></span><div>
-            <div class="ot">Full reduction</div>
-            <div class="od">Apply the full death benefit reduction to my policy for this year.</div>
-            <div class="amt">Reduction amount: $182,400</div>
-            <div class="exp"><b>What this means:</b> your death benefit is lowered by the full amount going forward — the planned adjustment for this stage of your Kai-Zen plan. See the <b>Full</b> illustration attached.</div>
+            <div class="ot">Full Planned Reduction</div>
+            <div class="od">Follow the original plan beginning in Policy Year 11.</div>
+            <div class="amt">Term reduction: $182,400</div>
+            <div class="exp"><b>What this means:</b> the greatest focus on <b>cash-value growth</b> and potential <b>supplemental retirement income</b>. See the <b>Full</b> illustration attached.</div>
           </div></div>
           <div class="opt" data-v="HALF"><span class="radio"></span><div>
-            <div class="ot">Half reduction</div>
-            <div class="od">Apply about half of the reduction to my policy for this year.</div>
-            <div class="amt">Reduction amount: $91,200</div>
-            <div class="exp"><b>What this means:</b> your death benefit is lowered by roughly half the full amount. See the <b>Half</b> illustration attached.</div>
+            <div class="ot">Half Planned Reduction</div>
+            <div class="od">Reduce about 50% of the planned term reduction.</div>
+            <div class="amt">Term reduction: $91,200 (≈50%)</div>
+            <div class="exp"><b>What this means:</b> a <b>balance</b> between cash-value accumulation and death-benefit protection. See the <b>Half</b> illustration attached.</div>
           </div></div>
           <div class="opt" data-v="NONE"><span class="radio"></span><div>
-            <div class="ot">No reduction</div>
-            <div class="od">Keep my death benefit unchanged this year. (I may choose to reduce in a future year, through Year 15.)</div>
-            <div class="exp"><b>What this means:</b> nothing changes this year — your death benefit stays the same. You'll have the option again next year, through Year 15. See the <b>No-reduction</b> illustration attached.<br><b>If your health has changed, choose No reduction</b> — you may want to keep a higher death benefit for your heirs.</div>
+            <div class="ot">No Term Reduction</div>
+            <div class="od">Keep my existing term coverage this year. (I may choose to reduce in a future year, through Year 15.)</div>
+            <div class="exp"><b>What this means:</b> the greatest emphasis on <b>death-benefit protection</b> — the term coverage stays in place. You'll have the option again next year, through Year 15.<br><b>If your health has changed, choose No Term Reduction</b> — you may want to keep a higher death benefit for your heirs.</div>
           </div></div>
           <div class="opt" data-v="CUSTOM"><span class="radio"></span><div>
             <div class="ot">A different (custom) amount</div>
@@ -861,6 +861,7 @@
             <div class="partial-field"><label>Amount you have in mind (optional)</label><span class="amt-in"><span>$</span><input id="famtInput" inputmode="numeric" placeholder="0" aria-label="Amount you have in mind"></span></div>
           </div></div>
         </div>
+        <p style="font-size:11px;color:var(--muted);line-height:1.5;margin:2px 0 0"><b>Important:</b> once the term rider is reduced it generally can't be restored (may require new underwriting). Because the policy is premium-financed, keeping more term coverage can raise future cost and lapse risk.</p>
         <div class="sig">
           <div class="fld">Client signature <span class="req">*</span><div class="line">DocuSign signature</div></div>
           <div class="fld">Date<div class="line">auto-filled</div></div>
@@ -1095,12 +1096,12 @@ document.getElementById('tabBlockers').addEventListener('click',()=>showTab('blo
 const CHECK=[
  {group:"Decisions & confirmations to unblock",items:[
    {t:"DBR start-year rule — early cohorts Yr 10 vs later Yr 11",d:"Auto-send must key off each cohort's actual DBR schedule, not a fixed Yr 11.",tags:[["Judy","own"],["Blocker","block"],["Card 1","card"]]},
-   {t:"“Half” definition / basis",d:"Is Half exactly half the reduction amount, and Ben's tool computes it?",tags:[["Ben","own"],["Pending","pending"],["Cards 1 & 3","card"]]},
+   {t:"“Half” definition — confirmed (build the calc)",d:"Half ≈ 50% of the planned term reduction (Judy's comparison doc). Remaining: Ben's tool computes the 50% amount + illustration.",tags:[["Ben","own"],["Confirmed","dep"],["Cards 1 & 3","card"]]},
    {t:"DBR amount formulas — cumulative / stacking across years",d:"How the reduction is calc'd each year and how amounts carry when a year is declined. Ties to NIWD-2299.",tags:[["Paul","own"],["Blocker","block"],["Card 1","card"]]},
    {t:"Final email copy (Full / Half / None + custom)",d:"Notice + reminder wording, incl. the health prompt on No reduction.",tags:[["Marissa","own"],["Pending","pending"],["Card 1 · Emails","card"]]},
    {t:"New DBR election form (3-pick + custom)",d:"The DocuSign form Marissa builds so ILIA can capture & route.",tags:[["Marissa","own"],["Pending","pending"],["Card 1 · Forms","card"]]},
    {t:"“Why” for each option (for descriptions)",d:"Judy will send the rationale to drop into each option's explainer.",tags:[["Judy","own"],["Pending","pending"],["Forms","card"]]},
-   {t:"Todd's option-comparison informational page",d:"Separate page explaining/comparing each option, using Ben's tool.",tags:[["Todd","own"],["Dependency","dep"],["Card 1","card"]]},
+   {t:"Client comparison/education doc — Judy provided",d:"Judy's 'Your Kai-Zen Policy' comparison (3 strategies: Cash Value · Suppl. Income · DB at 90) is the option copy source. Remaining: Todd's polished info page from it.",tags:[["Judy / Todd","own"],["Confirmed","dep"],["Card 1","card"]]},
    {t:"Reconcile NIWD-2299 window (Yr 10–14 vs 11–15)",d:"Illustrated-DB recalc; confirm indexing so boundary years are right.",tags:[["Kyle","own"],["Dependency","dep"],["Card 1","card"]]},
    {t:"Carrier forms — auto-populate vs admin input",d:"How the elected reduction amount gets into the carrier forms.",tags:[["Judy / Chris","own"],["Open Q","block"],["Card 4","card"]]},
    {t:"Trustee step — always in chain? order? change form",d:"Is trust → carrier always the order (Phase 1), and who signs the change form?",tags:[["Judy / Chris","own"],["Open Q","block"],["Card 4","card"]]},
@@ -1340,7 +1341,7 @@ document.querySelectorAll('[data-tmlink]').forEach(b=>b.addEventListener('click'
 
 const DOCP={
  election:{name:"DBR Election Form",what:"The one-page form the client checks a box on and signs — the form shown on this tab.",kind:"election"},
- comparison:{name:"Comparison Summary — the 3 options",what:"A plain one-pager Ben's tool builds: the client's key values under each option, so they see the impact of Full / Half / No reduction at a glance.",kind:"table",title:"Sample — side by side",head:["","No reduction","Half","Full"],rows:[["Death benefit","$1,000,000","$908,800","$817,600"],["Cash surrender value","$182,400","$182,400","$182,400"],["Est. loan repayment","$0","$0","$0"]]},
+ comparison:{name:"Strategy Comparison (client-facing)",what:"Judy's comparison doc — the client's key values under each strategy: cash value, supplemental retirement income, and death benefit at age 90. Assumptions: original crediting rate 6.91% vs current in-force 5.98%. Figures are projections, not guarantees.",kind:"table",title:"Sample — strategy comparison",head:["Strategy","Cash Value","Suppl. income / yr","DB at age 90"],rows:[["Original Illustration","$1,150,000","$92,000","$1,000,000"],["Full Planned Reduction","$1,290,000","$110,000","$817,600"],["Half Planned Reduction","$1,220,000","$101,000","$908,800"],["No Term Reduction","$1,150,000","$92,000","$1,000,000"]]},
  illustration:{name:"3 In-Force Illustrations (Full / Half / None)",what:"One carrier projection per option, pre-computed — so the client compares the death benefit under each choice side by side. (Sample shows death benefit by year.)",kind:"table",title:"Sample — death benefit by option",head:["Policy Year","Full","Half","No reduction"],rows:[["11","$817,600","$908,800","$1,000,000"],["12","$817,600","$908,800","$1,000,000"],["13","$817,600","$908,800","$1,000,000"],["14","$817,600","$908,800","$1,000,000"],["15","$817,600","$908,800","$1,000,000"]]},
  holdharmless:{name:"Hold Harmless & Indemnification",what:"From the real DBR form — the Settlor directs & indemnifies the trustee (Provident Trust Group) for the reduction.",kind:"text",title:"Excerpt — from the real form",body:"HOLD HARMLESS & INDEMNIFICATION AS TO PROVIDENT TRUST GROUP, LLC\n\nProvident Trust Group, LLC (“Provident”), as trustee of the Insurance Trust, has been directed by [Settlor] to execute documents to reduce the death benefit.\n\nSettlor acknowledges the reduction was contemplated as part of the original investment strategy; agrees Provident is not responsible for suitability or effect; releases and indemnifies Provident (and its affiliates) from any liability arising from the reduction; and directs Provident to execute the necessary documents.\n\nSettlor Signature: ____________    Printed Name: ____________    Date: ________"},
  carrierchange:{name:"Carrier Policy Change Form",what:"The carrier's change application that authorizes the reduction on the policy — signed by the trustee.",kind:"text",title:"What it is",body:"Carrier change application (National Life / MNL / Allianz).\n\nFields: policy #, insured name, new (reduced) death benefit amount, effective date, owner/trustee signature.\n\nNational Life has state-specific versions (ND · NY · SD · FL · CA & DE · 1441); Allianz embeds the change within its illustration. Signed by the trustee (Provident) to authorize the reduction, then sent to the carrier to process."}
@@ -1373,7 +1374,7 @@ document.getElementById('docOk').addEventListener('click',()=>docPreview.close()
 
 const SEG3={
  full:{handle:["Applies the FULL death benefit reduction to the policy for the elected year","Pulls the low point from the 120/90/60 illustration (no re-run) → writes it to the Low Point field in Case Details (Chris runs the bank report)","Stores the signed election + PDF on the case record","Hands off to fulfillment — trustee → carrier (Event 4)"],status:{cls:"accepted",label:"Accepted → fulfillment (Event 4)"},reoffer:"None — the election is complete; fulfillment continues in Event 4.",extra:"One envelope, one signature — the elected illustration was already in the notice."},
- half:{handle:["Applies the HALF reduction (~50%) to the policy for the elected year","Pulls the low point from the 120/90/60 illustration (no re-run) → writes it to the Low Point field in Case Details (Chris runs the bank report)","Stores the signed election + PDF on the case record","Hands off to fulfillment — trustee → carrier (Event 4)"],status:{cls:"accepted",label:"Accepted → fulfillment (Event 4)"},reoffer:"None — the election is complete; fulfillment continues in Event 4.",extra:"Same one-envelope path as Full — the Half illustration was pre-computed and in the notice. Confirm the “Half” basis with Ben."},
+ half:{handle:["Applies the HALF reduction (~50%) to the policy for the elected year","Pulls the low point from the 120/90/60 illustration (no re-run) → writes it to the Low Point field in Case Details (Chris runs the bank report)","Stores the signed election + PDF on the case record","Hands off to fulfillment — trustee → carrier (Event 4)"],status:{cls:"accepted",label:"Accepted → fulfillment (Event 4)"},reoffer:"None — the election is complete; fulfillment continues in Event 4.",extra:"Same one-envelope path as Full — the Half illustration was pre-computed and in the notice. Half ≈ 50% of the planned term reduction (Judy's comparison doc)."},
  none:{handle:["Records the No-reduction choice — no change to the death benefit this year","Schedules the re-offer for the next anniversary"],status:{cls:"declined",label:"Declined — re-offer"},reoffer:"Re-offers next anniversary, each year through Year 15 (unless declined for Health). No response by the deadline works the same way, but shows the “No response” status.",extra:null},
  custom:{handle:["Client picked ‘a different amount’ and reached out","ILIA flags the case for NIW to handle the custom amount OFFLINE (MVP)","No automated illustration or 2nd envelope in ILIA"],status:{cls:"none",label:"Flagged — handled offline (MVP)"},reoffer:"n/a — NIW contacts the client and processes the custom amount offline.",extra:"MVP decision (Judy, Aug 19): customs are rare, so no automation — client selects ‘different amount’, reaches out, and NIW handles it offline. Revisit for Phase 2."}
 };
