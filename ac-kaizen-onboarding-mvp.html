@@ -2585,17 +2585,39 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
       'If nothing opened, use <b>Copy instead</b> and paste it into an email or Teams.');
   });
 
+  /* older execCommand path — works where the async clipboard is refused */
+  function legacyCopy(txt){
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, txt.length);
+      var ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch (e) { return false; }
+  }
+
+  function copied(){ say('ok', '<b>Copied.</b> Paste it into an email or Teams to Jamin.'); }
+  function copyFailed(){
+    elM.focus();
+    elM.select();
+    say('err', '<b>Your note is selected above</b> — press Ctrl+C (or ⌘C) to copy it, then paste it to Jamin.');
+  }
+
   copy.addEventListener('click', function(){
     var p = gather();
     if(!p) return;
     var txt = asText(p);
     if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(txt).then(
-        function(){ say('ok', '<b>Copied.</b> Paste it into an email or Teams to Jamin.'); },
-        function(){ say('err', '<b>Couldn’t copy automatically.</b> Select your note above and copy it manually.'); }
-      );
+      navigator.clipboard.writeText(txt).then(copied, function(){
+        legacyCopy(txt) ? copied() : copyFailed();
+      });
     } else {
-      say('err', '<b>Clipboard unavailable in this browser.</b> Select your note above and copy it manually.');
+      legacyCopy(txt) ? copied() : copyFailed();
     }
   });
 
