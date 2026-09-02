@@ -234,14 +234,26 @@ body.notes-off .toggle .dot{ background: #B6C0CC; box-shadow: 0 0 0 3px #E4E9EF;
   font-family: var(--mono); font-size: 10px; font-weight: 600;
   letter-spacing: .05em; color: var(--ac-muted);
 }
+.scard .sh-right{ margin-left: auto; display: flex; align-items: center; gap: 10px; flex: none; }
 .scard .sh .st{
-  margin-left: auto; flex: none;
+  flex: none;
   font-family: var(--mono); font-size: 9px; font-weight: 600;
   letter-spacing: .09em; text-transform: uppercase;
   padding: 4px 9px; border-radius: 3px;
 }
 .scard .sh .st.todo{ background: #EDF2F7; color: #5A6A7A; }
 .scard .sh .st.ok{ background: var(--kz-teal); color: #FFFFFF; }
+.tech-badge{
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: #FFFFFF; background: #1B3D6D;
+  border: 0; border-radius: 3px; padding: 4px 9px;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+}
+.tech-badge:hover{ background: #10395a; }
+.tech-badge:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.tech-badge .cv2{ font-size: 10px; line-height: 1; }
+
 .scard .sb{ padding: 18px; display: flex; flex-direction: column; gap: 15px; }
 .scard .sb > p{ margin: 0; font-size: 13.5px; line-height: 1.62; color: var(--ac-body); max-width: 74ch; }
 
@@ -2667,10 +2679,12 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
   var LAST = CHAPTERS.length - 1;
   var chapter = 0;
 
-  function card(title, state, inner, note){
+  function card(title, state, inner, note, action){
     return '<div class="scard"><div class="sh"><b>' + title + '</b>' +
       (note ? '<span class="nt">' + note + '</span>' : '') +
-      '<span class="st ' + (state ? 'ok' : 'todo') + '">' + (state ? 'Complete' : 'Required') + '</span></div>' +
+      '<span class="sh-right">' + (action || '') +
+        '<span class="st ' + (state ? 'ok' : 'todo') + '">' + (state ? 'Complete' : 'Required') + '</span>' +
+      '</span></div>' +
       '<div class="sb">' + inner + '</div></div>';
   }
 
@@ -2685,6 +2699,25 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
   }
 
   var CERT_NOTE = '(Rahim KZ Cert Mocks)';
+  var techOpen = false;
+
+  function techBadge(){
+    return '<button type="button" class="tech-badge" data-tech aria-expanded="' + (techOpen ? 'true' : 'false') + '">' +
+      '<span class="cv2" aria-hidden="true">' + (techOpen ? '▾' : '▸') + '</span>Tech note</button>';
+  }
+
+  function techNote(){
+    if(!techOpen) return '';
+    return '<div class="tech">' +
+      '<div class="th"><span class="flag">Tech note</span><span>Build the certification engine as a shared micro-service</span></div>' +
+      '<ul>' +
+        '<li><b>Don’t build the certification inside the Agent Center.</b> It should be a <b>standalone micro-service</b> that any front end can call — AC is one consumer of it, not its owner.</li>' +
+        '<li><b>NIW calls the same service.</b> The agent onboarding requirement flow on <b>niwcorp.com</b> hits the same engine, so a <b>non-Simplicity agent</b> who registers to sell Kai-Zen through the NIW registration flow completes the <b>identical certification</b> — same content, same pass mark.</li>' +
+        '<li><b>One engine, one record.</b> Wherever the agent came from, there is a single completion record and a single certificate — no second version of the training to keep in step, and no agent certified twice.</li>' +
+        '<li><b>What it needs to expose:</b> enrol an agent, track module progress, record the pass, and return a completion status plus certificate reference that either portal can read back.</li>' +
+      '</ul>' +
+    '</div>';
+  }
 
   function courseView(){
     var ch = CHAPTERS[chapter];
@@ -2712,8 +2745,9 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
           (isFinal ? 'Complete certification' : 'Next') + '</button>' +
       '</div></div>';
 
-    return card('Kai-Zen Certification', false, '', CERT_NOTE).replace('<div class="sb"></div>',
-      '<div class="sb" style="padding:0"><div class="course">' + rail + main + '</div></div>');
+    return card('Kai-Zen Certification', false, '', CERT_NOTE, techBadge()).replace('<div class="sb"></div>',
+      '<div class="sb"' + (techOpen ? '' : ' style="padding:0"') + '>' + techNote() +
+        '<div class="course">' + rail + main + '</div></div>');
   }
 
   function stepCert(){
@@ -2723,7 +2757,8 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
           '<span class="cb"><b>You’re now certified to sell Kai-Zen</b>' +
             '<span>Completed 05/09/2026 · certificate on file</span>' +
             '<button type="button" class="lnk" data-certdoc>View certificate</button></span></div>' +
-        '<button type="button" class="undo" data-act="cert">Retake certification</button>', CERT_NOTE);
+        '<button type="button" class="undo" data-act="cert">Retake certification</button>' + techNote(),
+        CERT_NOTE, techBadge());
     }
     return courseView();
   }
@@ -2797,6 +2832,10 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
       });
     });
 
+    elBody.querySelectorAll('[data-tech]').forEach(function(el){
+      el.addEventListener('click', function(){ techOpen = !techOpen; paint(); });
+    });
+
     elBody.querySelectorAll('[data-certdoc]').forEach(function(el){
       el.addEventListener('click', function(){ openCertDoc(); });
     });
@@ -2831,7 +2870,7 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
   function open(){
     idx = 0; submitted = false;
     done = { nv: false, cert: false, sign: false };
-    chapter = 0;
+    chapter = 0; techOpen = false;
     lastFocus = document.activeElement;
     elTag.textContent = 'Agent Center · Kai-Zen onboarding';
     elTtl.textContent = 'Get Kai-Zen Certified';
