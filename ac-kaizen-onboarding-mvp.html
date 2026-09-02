@@ -702,6 +702,90 @@ body.q-on .q-mark::after{
   background: var(--q-wash);
 }
 
+/* ---------- feedback layer ---------- */
+.fb-btn{
+  align-self: center;
+  font-family: var(--note-sans);
+  font-size: 13.5px; font-weight: 700;
+  color: #FFFFFF; background: var(--q);
+  border: 1.5px solid var(--q); border-radius: 6px;
+  padding: 10px 18px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 9px;
+  white-space: nowrap;
+}
+.fb-btn:hover{ background: var(--q-deep); border-color: var(--q-deep); }
+.fb-btn:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.fb-btn .ic{ font-size: 14px; line-height: 1; }
+
+.fb-panel{
+  position: fixed; z-index: 80;
+  right: 20px; bottom: 20px;
+  width: 390px; max-width: calc(100vw - 32px);
+  max-height: min(86vh, 720px);
+  background: #FFFFFF;
+  border: 1px solid var(--q-line);
+  border-radius: 10px;
+  box-shadow: 0 26px 64px -20px rgba(46, 16, 56, .55);
+  display: none; flex-direction: column; overflow: hidden;
+  font-family: var(--note-sans);
+}
+.fb-panel.open{ display: flex; }
+.fb-h{
+  background: var(--q); color: #FFFFFF;
+  padding: 14px 16px; display: flex; align-items: center; gap: 10px;
+}
+.fb-h b{ font-size: 14.5px; font-weight: 700; }
+.fb-h button{
+  margin-left: auto; background: transparent; border: 0;
+  color: #E8D6F0; font-size: 19px; line-height: 1; cursor: pointer; padding: 0 2px;
+}
+.fb-h button:hover{ color: #FFFFFF; }
+.fb-h button:focus-visible{ outline: 2px solid #FFFFFF; outline-offset: 2px; }
+.fb-b{ padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 13px; }
+.fb-b > p{ margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--doc-ink-soft); }
+.fb-f{ display: flex; flex-direction: column; gap: 5px; }
+.fb-f label{
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--q);
+}
+.fb-f input, .fb-f select, .fb-f textarea{
+  font-family: var(--note-sans); font-size: 13.5px; color: var(--doc-ink);
+  background: #FFFFFF; border: 1.5px solid var(--doc-line);
+  border-radius: 5px; padding: 10px 11px; width: 100%;
+}
+.fb-f textarea{ min-height: 108px; resize: vertical; line-height: 1.5; }
+.fb-f input:focus, .fb-f select:focus, .fb-f textarea:focus{
+  outline: none; border-color: var(--q);
+}
+.fb-send{
+  font-family: var(--note-sans); font-size: 13.5px; font-weight: 700;
+  color: #FFFFFF; background: var(--q); border: 0;
+  border-radius: 6px; padding: 11px 20px; cursor: pointer;
+}
+.fb-send:hover{ background: var(--q-deep); }
+.fb-send[disabled]{ opacity: .55; cursor: default; }
+.fb-send:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.fb-msg{
+  font-size: 12.5px; line-height: 1.55; border-radius: 5px;
+  padding: 11px 13px; display: none;
+}
+.fb-msg.show{ display: block; }
+.fb-msg.ok{ background: var(--kz-wash); border: 1px solid var(--kz-wash-line); color: #14514F; }
+.fb-msg.err{ background: var(--note-wash); border: 1px solid var(--note-line); color: #5C3A08; }
+.fb-msg b{ font-weight: 700; }
+.fb-copy{
+  margin-top: 9px; font-family: var(--note-sans);
+  font-size: 12px; font-weight: 700; color: #6B3F02;
+  background: #FFFFFF; border: 1.5px solid var(--note-line);
+  border-radius: 5px; padding: 7px 12px; cursor: pointer;
+}
+.fb-foot{
+  border-top: 1px solid #EFE4F4; background: var(--q-wash);
+  padding: 10px 16px;
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--q);
+}
+
 /* ---------- section framing ---------- */
 .section{ display: flex; flex-direction: column; gap: 16px; }
 .section-head{ display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
@@ -1922,6 +2006,9 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
       <h1>Get Kai-Zen Certified on the Agent Center</h1>
       <p><strong>The MVP:</strong> LPL agents already known to the Agent Center see a <strong>Get Kai-Zen Certified</strong> button and complete onboarding without leaving AC — confirm their Nevada licence, complete certification, sign the agent agreement. Below are four candidate placements for that button; <strong>all four are live</strong>, so click any of them to walk the agent’s experience.</p>
     </div>
+    <button class="fb-btn" id="fb-btn" type="button" aria-expanded="false">
+      <span class="ic" aria-hidden="true">✎</span><span>Leave feedback</span>
+    </button>
   </header>
 
   <div id="view-main">
@@ -2171,6 +2258,44 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
 
 
 
+
+<!-- ================= FEEDBACK ================= -->
+<div class="fb-panel" id="fb-panel" role="dialog" aria-labelledby="fb-title">
+  <div class="fb-h">
+    <b id="fb-title">Feedback on this mock</b>
+    <button type="button" id="fb-x" aria-label="Close feedback">✕</button>
+  </div>
+  <div class="fb-b">
+    <p>Ideas, corrections, anything that looks wrong — it goes straight to Jamin. You can leave this open and add more as you click through.</p>
+
+    <div class="fb-f">
+      <label for="fb-where">What is this about?</label>
+      <select id="fb-where">
+        <option>Overall — the plan</option>
+        <option>Dashboard &amp; button placement</option>
+        <option>Onboarding modal — the three steps</option>
+        <option>Certification course</option>
+        <option>Certificate document</option>
+        <option>Something else</option>
+      </select>
+    </div>
+
+    <div class="fb-f">
+      <label for="fb-name">Your name <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+      <input id="fb-name" type="text" placeholder="So Jamin knows who to follow up with">
+    </div>
+
+    <div class="fb-f">
+      <label for="fb-msg">Your feedback</label>
+      <textarea id="fb-msg" placeholder="What would you change?"></textarea>
+    </div>
+
+    <button class="fb-send" id="fb-send" type="button">Send feedback</button>
+    <div class="fb-msg" id="fb-note"></div>
+  </div>
+  <div class="fb-foot">Concept mock · feedback is collected for review</div>
+</div>
+
 <!-- ================= CERTIFICATE DOCUMENT ================= -->
 <div class="cdoc-ov" id="certdoc" role="dialog" aria-modal="true" aria-label="Kai-Zen certification certificate">
   <div class="cdoc-wrap">
@@ -2376,6 +2501,97 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
   document.body.classList.add('q-on');
 })();
 
+
+/* ---- feedback: posts to the collector; honest fallback if it cannot ---- */
+(function(){
+  var ENDPOINT = 'https://ilia-mock-feedback.jamin-austin.workers.dev/feedback';
+
+  var btn   = document.getElementById('fb-btn');
+  var panel = document.getElementById('fb-panel');
+  var x     = document.getElementById('fb-x');
+  var send  = document.getElementById('fb-send');
+  var note  = document.getElementById('fb-note');
+  var elW   = document.getElementById('fb-where');
+  var elN   = document.getElementById('fb-name');
+  var elM   = document.getElementById('fb-msg');
+  if(!btn || !panel) return;
+
+  function open(){
+    panel.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    elM.focus();
+  }
+  function close(){
+    panel.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+  btn.addEventListener('click', function(){
+    panel.classList.contains('open') ? close() : open();
+  });
+  if(x) x.addEventListener('click', close);
+
+  function say(kind, html){
+    note.className = 'fb-msg show ' + kind;
+    note.innerHTML = html;
+  }
+
+  function plain(p){
+    return 'Kai-Zen mock feedback\n' +
+      'About: ' + p.where + '\n' +
+      'From: ' + (p.name || '(not given)') + '\n' +
+      'When: ' + p.ts + '\n\n' + p.message;
+  }
+
+  send.addEventListener('click', async function(){
+    var message = (elM.value || '').trim();
+    if(!message){
+      say('err', 'Add a note first — the feedback box is empty.');
+      elM.focus();
+      return;
+    }
+    var payload = {
+      where: elW.value,
+      name: (elN.value || '').trim(),
+      message: message.slice(0, 4000),
+      ts: new Date().toISOString(),
+      page: location.pathname
+    };
+
+    send.disabled = true;
+    send.textContent = 'Sending…';
+    note.className = 'fb-msg';
+
+    try {
+      var res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if(!res.ok) throw new Error('status ' + res.status);
+      say('ok', '<b>Thanks — sent.</b> Jamin will see it with the rest of the feedback. Add another any time.');
+      elM.value = '';
+    } catch (err) {
+      var txt = plain(payload);
+      say('err', '<b>Couldn’t reach the feedback store</b>, so nothing was saved. Copy your note and send it to Jamin directly.' +
+        '<br><button type="button" class="fb-copy" id="fb-copy">Copy my feedback</button>');
+      var c = document.getElementById('fb-copy');
+      if(c) c.addEventListener('click', function(){
+        if(navigator.clipboard){
+          navigator.clipboard.writeText(txt).then(function(){ c.textContent = 'Copied ✓'; },
+                                                  function(){ c.textContent = 'Select the text above instead'; });
+        } else { c.textContent = 'Clipboard unavailable'; }
+      });
+    } finally {
+      send.disabled = false;
+      send.textContent = 'Send feedback';
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && panel.classList.contains('open') &&
+       document.activeElement && panel.contains(document.activeElement)) close();
+  });
+})();
 
 /* ============================================================
    THE AC ONBOARDING MODAL — user experience only.
