@@ -764,6 +764,16 @@ body.q-on .q-mark::after{
 }
 .fb-send:hover{ background: var(--q-deep); }
 .fb-send[disabled]{ opacity: .55; cursor: default; }
+.fb-actions{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.fb-actions .fb-send{ flex: 1; }
+.fb-alt{
+  font-family: var(--note-sans); font-size: 12.5px; font-weight: 700;
+  color: var(--q-deep); background: #FFFFFF;
+  border: 1.5px solid var(--q-line); border-radius: 6px;
+  padding: 11px 15px; cursor: pointer; white-space: nowrap;
+}
+.fb-alt:hover{ background: var(--q-wash); border-color: var(--q); }
+.fb-alt:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
 .fb-send:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
 .fb-msg{
   font-size: 12.5px; line-height: 1.55; border-radius: 5px;
@@ -2266,7 +2276,7 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
     <button type="button" id="fb-x" aria-label="Close feedback">✕</button>
   </div>
   <div class="fb-b">
-    <p>Ideas, corrections, anything that looks wrong — it goes straight to Jamin. You can leave this open and add more as you click through.</p>
+    <p>Ideas, corrections, anything that looks wrong. Fill this in and <b>Send</b> opens an email to Jamin with your note ready to go — or copy it and send it however you like.</p>
 
     <div class="fb-f">
       <label for="fb-where">What is this about?</label>
@@ -2290,10 +2300,13 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
       <textarea id="fb-msg" placeholder="What would you change?"></textarea>
     </div>
 
-    <button class="fb-send" id="fb-send" type="button">Send feedback</button>
+    <div class="fb-actions">
+      <button class="fb-send" id="fb-send" type="button">Send by email</button>
+      <button class="fb-alt" id="fb-copy2" type="button">Copy instead</button>
+    </div>
     <div class="fb-msg" id="fb-note"></div>
   </div>
-  <div class="fb-foot">Concept mock · feedback is collected for review</div>
+  <div class="fb-foot">Concept mock · feedback goes to Jamin by email</div>
 </div>
 
 <!-- ================= CERTIFICATE DOCUMENT ================= -->
@@ -2502,14 +2515,16 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
 })();
 
 
-/* ---- feedback: posts to the collector; honest fallback if it cannot ---- */
+/* ---- feedback: composes an email. No backend, nothing to maintain. ---- */
 (function(){
-  var ENDPOINT = 'https://ilia-mock-feedback.jamin-austin.workers.dev/feedback';
+  /* assembled at runtime so scrapers don't lift it off a public page */
+  var TO = ['jamin.austin', 'simplicitygroup.com'].join('@');
 
   var btn   = document.getElementById('fb-btn');
   var panel = document.getElementById('fb-panel');
   var x     = document.getElementById('fb-x');
   var send  = document.getElementById('fb-send');
+  var copy  = document.getElementById('fb-copy2');
   var note  = document.getElementById('fb-note');
   var elW   = document.getElementById('fb-where');
   var elN   = document.getElementById('fb-name');
@@ -2535,55 +2550,52 @@ button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(1
     note.innerHTML = html;
   }
 
-  function plain(p){
-    return 'Kai-Zen mock feedback\n' +
-      'About: ' + p.where + '\n' +
-      'From: ' + (p.name || '(not given)') + '\n' +
-      'When: ' + p.ts + '\n\n' + p.message;
-  }
-
-  send.addEventListener('click', async function(){
+  function gather(){
     var message = (elM.value || '').trim();
     if(!message){
       say('err', 'Add a note first — the feedback box is empty.');
       elM.focus();
-      return;
+      return null;
     }
-    var payload = {
+    return {
       where: elW.value,
       name: (elN.value || '').trim(),
-      message: message.slice(0, 4000),
-      ts: new Date().toISOString(),
-      page: location.pathname
+      message: message
     };
+  }
 
-    send.disabled = true;
-    send.textContent = 'Sending…';
-    note.className = 'fb-msg';
+  function asText(p){
+    return 'Kai-Zen mock feedback\n' +
+      '----------------------\n' +
+      'About: ' + p.where + '\n' +
+      'From:  ' + (p.name || '(not given)') + '\n' +
+      'Page:  ' + location.href + '\n\n' +
+      p.message + '\n';
+  }
 
-    try {
-      var res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if(!res.ok) throw new Error('status ' + res.status);
-      say('ok', '<b>Thanks — sent.</b> Jamin will see it with the rest of the feedback. Add another any time.');
-      elM.value = '';
-    } catch (err) {
-      var txt = plain(payload);
-      say('err', '<b>Couldn’t reach the feedback store</b>, so nothing was saved. Copy your note and send it to Jamin directly.' +
-        '<br><button type="button" class="fb-copy" id="fb-copy">Copy my feedback</button>');
-      var c = document.getElementById('fb-copy');
-      if(c) c.addEventListener('click', function(){
-        if(navigator.clipboard){
-          navigator.clipboard.writeText(txt).then(function(){ c.textContent = 'Copied ✓'; },
-                                                  function(){ c.textContent = 'Select the text above instead'; });
-        } else { c.textContent = 'Clipboard unavailable'; }
-      });
-    } finally {
-      send.disabled = false;
-      send.textContent = 'Send feedback';
+  send.addEventListener('click', function(){
+    var p = gather();
+    if(!p) return;
+    var subject = 'Kai-Zen mock feedback — ' + p.where + (p.name ? ' (' + p.name + ')' : '');
+    var href = 'mailto:' + TO +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(asText(p));
+    window.location.href = href;
+    say('ok', '<b>Your email app should have opened</b> with the note ready to send — press send there and it reaches Jamin. ' +
+      'If nothing opened, use <b>Copy instead</b> and paste it into an email or Teams.');
+  });
+
+  copy.addEventListener('click', function(){
+    var p = gather();
+    if(!p) return;
+    var txt = asText(p);
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(
+        function(){ say('ok', '<b>Copied.</b> Paste it into an email or Teams to Jamin.'); },
+        function(){ say('err', '<b>Couldn’t copy automatically.</b> Select your note above and copy it manually.'); }
+      );
+    } else {
+      say('err', '<b>Clipboard unavailable in this browser.</b> Select your note above and copy it manually.');
     }
   });
 
