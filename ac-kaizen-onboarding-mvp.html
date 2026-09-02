@@ -1,0 +1,2797 @@
+<title>AC ⟷ ILIA Onboarding Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap">
+
+<style>
+/* ============================================================
+   Single-theme by intent: this is a recreation of a light-only
+   product UI. Every colour is painted explicitly so the page
+   holds on any host ground.
+   ============================================================ */
+:root{
+  /* Agent Center product palette (sampled from the live dashboard) */
+  --ac-navy:        #164B73;
+  --ac-navy-deep:   #10395a;
+  --ac-navy-lift:   #21618F;
+  --ac-banner:      #0C74BC;
+  --ac-heading:     #17456B;
+  --ac-link:        #1565A8;
+  --ac-page:        #EFF3F7;
+  --ac-card:        #FFFFFF;
+  --ac-line:        #DCE4EC;
+  --ac-line-soft:   #E8EEF4;
+  --ac-body:        #46535F;
+  --ac-muted:       #75838F;
+
+  /* Kai-Zen: a new product line, deliberately not AC blue */
+  --kz-teal:        #0E7C7B;
+  --kz-teal-deep:   #0A5E5D;
+  --kz-wash:        #EDF7F6;
+  --kz-wash-line:   #C7E3E1;
+
+  /* Open-questions layer — a third annotation channel, distinct from amber */
+  --q:        #7A3E8F;
+  --q-deep:   #5C2A6D;
+  --q-wash:   #F6EFF9;
+  --q-line:   #DFC8E8;
+
+  /* Annotation layer — reads as clearly not part of the product */
+  --note:           #B26A05;
+  --note-bright:    #E08A0C;
+  --note-wash:      #FDF4E3;
+  --note-line:      #EFD9AE;
+
+  /* Document chrome */
+  --doc-bg:         #E6EBF1;
+  --doc-panel:      #FFFFFF;
+  --doc-ink:        #1C2430;
+  --doc-ink-soft:   #55616F;
+  --doc-line:       #CFD8E2;
+
+  --sans: "Open Sans", "Segoe UI", system-ui, sans-serif;
+  --note-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+*{ box-sizing: border-box; }
+
+body{
+  margin: 0;
+  background: var(--doc-bg);
+  color: var(--doc-ink);
+  font-family: var(--note-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- document shell ---------- */
+.wrap{
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 40px 28px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
+.doc-head{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px 32px;
+  padding-bottom: 22px;
+  border-bottom: 2px solid var(--doc-line);
+}
+.doc-head .lede{ max-width: 62ch; display: flex; flex-direction: column; gap: 8px; }
+.eyebrow{
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--note);
+  margin: 0;
+}
+h1{
+  margin: 0;
+  font-size: clamp(26px, 3.4vw, 38px);
+  font-weight: 700;
+  letter-spacing: -.018em;
+  line-height: 1.1;
+  text-wrap: balance;
+  color: var(--doc-ink);
+}
+.doc-head p{ margin: 0; color: var(--doc-ink-soft); font-size: 15.5px; }
+.doc-head p strong{ color: var(--doc-ink); font-weight: 600; }
+
+.toggle{
+  font-family: var(--note-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--doc-ink);
+  background: var(--doc-panel);
+  border: 1.5px solid var(--doc-line);
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  transition: border-color .14s, background .14s;
+}
+.toggle:hover{ border-color: var(--note-bright); background: var(--note-wash); }
+.toggle:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.toggle .dot{
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--note-bright);
+  box-shadow: 0 0 0 3px var(--note-wash);
+}
+body.notes-off .toggle .dot{ background: #B6C0CC; box-shadow: 0 0 0 3px #E4E9EF; }
+
+/* ---------- header actions + the aggregator view ---------- */
+.head-actions{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.toggle.agg .ico{ font-size: 15px; line-height: 1; color: var(--kz-teal-deep); }
+.toggle.agg:hover{ border-color: var(--kz-teal); background: var(--kz-wash); }
+
+.agg-lede{
+  margin: 0; font-size: 15px; line-height: 1.65;
+  color: var(--doc-ink-soft); max-width: 78ch;
+}
+.agg-lede strong{ color: var(--doc-ink); font-weight: 700; }
+.agg-frame{
+  background: var(--doc-panel);
+  border: 1px solid var(--doc-line);
+  border-radius: 8px;
+  padding: 22px 20px 18px;
+  overflow-x: auto;
+}
+.agg-frame svg{ display: block; min-width: 940px; width: 100%; height: auto; }
+.agg-legend{
+  display: flex; gap: 26px; flex-wrap: wrap;
+  padding: 16px 2px 0;
+  margin-top: 16px;
+  border-top: 1px solid var(--doc-line);
+}
+.agg-legend span{ display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--doc-ink-soft); }
+.agg-legend i{ width: 28px; height: 15px; border-radius: 2px; display: block; flex: none; }
+.agg-legend i.exist{ background: #FFFFFF; border: 1.5px solid #2E6FA8; }
+.agg-legend i.newx{ background: #FDF4E3; border: 1.5px dashed #C77A0A; }
+.agg-legend i.rep{ background: #F4F7FA; border: 1.5px dashed #9AA8B5; }
+.agg-cap{
+  margin: 0; font-size: 14px; line-height: 1.62;
+  color: var(--doc-ink-soft); max-width: 90ch;
+}
+.tie{
+  background: var(--kz-wash);
+  border: 1px solid var(--kz-wash-line);
+  border-radius: 8px;
+  padding: 22px 26px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.tie h3{
+  margin: 0; font-size: 15px; font-weight: 700; color: var(--kz-teal-deep);
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.tie h3 .mono{
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+  text-transform: uppercase; font-weight: 600; color: var(--kz-teal);
+}
+.tie p{ margin: 0; font-size: 14px; line-height: 1.62; color: #14514F; max-width: 90ch; }
+.tie p strong{ font-weight: 700; color: var(--kz-teal-deep); }
+.backlink{
+  align-self: flex-start;
+  font-family: var(--note-sans);
+  font-size: 13.5px; font-weight: 700;
+  color: var(--doc-ink);
+  background: var(--doc-panel);
+  border: 1.5px solid var(--doc-line);
+  border-radius: 6px; padding: 10px 16px; cursor: pointer;
+}
+.backlink:hover{ border-color: var(--kz-teal); background: var(--kz-wash); }
+.backlink:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+
+/* ---------- the AC onboarding modal (user experience only) ---------- */
+.acid{
+  display: flex; align-items: center; gap: 13px; flex-wrap: wrap;
+  padding: 13px 24px;
+  background: #F4F8FB;
+  border-bottom: 1px solid var(--ac-line);
+  font-family: var(--sans);
+}
+.acid .av{
+  width: 34px; height: 34px; flex: none; border-radius: 50%;
+  background: var(--ac-navy); color: #FFFFFF;
+  display: grid; place-items: center;
+  font-size: 12.5px; font-weight: 700; letter-spacing: .02em;
+}
+.acid .who{ display: flex; flex-direction: column; line-height: 1.35; }
+.acid .who b{ font-size: 14px; font-weight: 700; color: var(--ac-heading); }
+.acid .who span{ font-size: 12.5px; color: var(--ac-body); }
+.acid .chk{
+  margin-left: auto; font-size: 12px; font-weight: 600; color: var(--kz-teal-deep);
+  background: var(--kz-wash); border: 1px solid var(--kz-wash-line);
+  border-radius: 20px; padding: 6px 13px; white-space: nowrap;
+}
+
+.scard{
+  border: 1px solid var(--ac-line);
+  border-radius: 5px;
+  overflow: hidden;
+  background: #FFFFFF;
+}
+.scard .sh{
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--ac-line-soft);
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: #FBFDFE;
+}
+.scard .sh b{ font-size: 15.5px; font-weight: 700; color: var(--ac-heading); letter-spacing: -.008em; }
+.scard .sh .nt{
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: .05em; color: var(--ac-muted);
+}
+.scard .sh .st{
+  margin-left: auto; flex: none;
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase;
+  padding: 4px 9px; border-radius: 3px;
+}
+.scard .sh .st.todo{ background: #EDF2F7; color: #5A6A7A; }
+.scard .sh .st.ok{ background: var(--kz-teal); color: #FFFFFF; }
+.scard .sb{ padding: 18px; display: flex; flex-direction: column; gap: 15px; }
+.scard .sb > p{ margin: 0; font-size: 13.5px; line-height: 1.62; color: var(--ac-body); max-width: 74ch; }
+
+.confirm{
+  display: flex; align-items: flex-start; gap: 12px;
+  border: 1.5px solid var(--ac-line); border-radius: 4px;
+  background: #FFFFFF; padding: 15px 16px;
+  cursor: pointer; text-align: left; width: 100%;
+  font-family: var(--sans);
+}
+.confirm:hover{ border-color: var(--kz-teal); background: #FBFEFE; }
+.confirm:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.confirm.on{ border-color: var(--kz-teal); background: var(--kz-wash); }
+.confirm .bx{
+  width: 20px; height: 20px; flex: none; border-radius: 3px;
+  border: 1.5px solid #9AA8B5; background: #FFFFFF;
+  display: grid; place-items: center;
+  font-size: 13px; font-weight: 700; color: #FFFFFF;
+}
+.confirm.on .bx{ background: var(--kz-teal); border-color: var(--kz-teal); }
+.confirm .cl{ font-size: 13.5px; font-weight: 600; color: var(--ac-heading); line-height: 1.5; }
+.confirm.on .cl{ color: var(--kz-teal-deep); }
+
+.pbar{ display: flex; flex-direction: column; gap: 7px; }
+.pbar .pt{ display: flex; align-items: baseline; gap: 10px; font-size: 12.5px; color: var(--ac-body); }
+.pbar .pt b{ font-size: 13px; color: var(--ac-heading); }
+.pbar .pt .pc{ margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--ac-muted); }
+.pbar .track{ height: 7px; border-radius: 4px; background: #E5ECF2; overflow: hidden; }
+.pbar .fill{ height: 100%; background: var(--kz-teal); border-radius: 4px; }
+
+.docbox{
+  border: 1px solid var(--ac-line); border-radius: 4px; overflow: hidden;
+}
+.docbox .dt{
+  background: #F4F8FB; border-bottom: 1px solid var(--ac-line);
+  padding: 10px 14px; font-size: 12.5px; font-weight: 700; color: var(--ac-heading);
+  display: flex; align-items: center; gap: 9px;
+}
+.docbox .dt .badge{
+  margin-left: auto; font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  background: var(--kz-teal); color: #FFFFFF; border-radius: 3px; padding: 3px 7px;
+}
+.docbox .dl2{ padding: 15px 16px; font-size: 13px; line-height: 1.6; color: var(--ac-body); }
+.docbox .dl2 .ln{ height: 8px; border-radius: 4px; background: #EDF2F7; margin-bottom: 8px; }
+.docbox .dl2 .ln.s{ width: 62%; }
+.docbox .dl2 .ln.m{ width: 84%; }
+
+.actbtn{
+  font-family: var(--sans); align-self: flex-start;
+  background: var(--kz-teal); color: #FFFFFF; border: 0;
+  border-radius: 22px; padding: 11px 26px;
+  font-size: 13.5px; font-weight: 700; cursor: pointer;
+}
+.actbtn.navy{ background: var(--ac-navy); }
+.actbtn:hover{ filter: brightness(1.1); }
+.actbtn:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.undo{
+  font-family: var(--note-sans); align-self: flex-start;
+  background: transparent; border: 0; cursor: pointer;
+  font-size: 12px; font-weight: 700; color: #1A5FA8; padding: 0;
+}
+
+.allset{ display: flex; flex-direction: column; gap: 17px; align-items: center; text-align: center; padding: 12px 0 4px; }
+.allset .big{
+  width: 62px; height: 62px; border-radius: 50%;
+  background: var(--kz-teal); color: #FFFFFF;
+  display: grid; place-items: center; font-size: 31px; font-weight: 700;
+}
+.allset h5{ margin: 0; font-size: 22px; }
+.allset p{ margin: 0; font-size: 14px; line-height: 1.62; color: var(--ac-body); max-width: 58ch; }
+.allset .nx{
+  width: 100%; background: #F4F8FB; border: 1px solid var(--ac-line);
+  border-radius: 5px; padding: 16px 18px; text-align: left;
+  display: flex; flex-direction: column; gap: 9px;
+}
+.allset .nx .l{
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .11em; text-transform: uppercase; color: var(--ac-muted);
+}
+.allset .nx ul{ margin: 0; padding-left: 19px; display: flex; flex-direction: column; gap: 6px; }
+.allset .nx li{ font-size: 13px; line-height: 1.55; color: var(--ac-body); }
+.allset .nx li::marker{ color: var(--kz-teal); }
+
+/* ---------- the certificate document ---------- */
+.cert-badge .cb button.lnk{
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font-family: var(--sans); font-size: 12.5px; font-weight: 700;
+  color: #1A5FA8; text-align: left;
+}
+.cert-badge .cb button.lnk:hover{ text-decoration: underline; }
+.cert-badge .cb button.lnk:focus-visible{ outline: 2px solid var(--note-bright); outline-offset: 2px; }
+
+.cdoc-ov{
+  position: fixed; inset: 0; z-index: 65;
+  background: rgba(9, 26, 43, .62);
+  display: none; align-items: flex-start; justify-content: center;
+  padding: 34px 20px; overflow-y: auto;
+}
+.cdoc-ov.open{ display: flex; }
+.cdoc-wrap{ width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 14px; }
+.cdoc-bar{ display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.cdoc-bar .t{
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .11em; text-transform: uppercase; color: #C6DEEE;
+}
+.cdoc-bar button{
+  font-family: var(--note-sans); font-size: 13px; font-weight: 700;
+  border-radius: 5px; padding: 9px 16px; cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,.4);
+  background: transparent; color: #FFFFFF;
+}
+.cdoc-bar button.dl{ background: #FFFFFF; border-color: #FFFFFF; color: var(--ac-heading); }
+.cdoc-bar button:hover{ border-color: #FFFFFF; }
+.cdoc-bar button:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.cdoc-bar .sp{ flex: 1; }
+
+.cdoc{
+  background: #FEFDFA;
+  border: 1px solid #D8CDB4;
+  box-shadow: 0 26px 60px -22px rgba(9, 26, 43, .6);
+  padding: 12px;
+}
+.cdoc-in{
+  border: 2px solid var(--ac-navy);
+  outline: 1px solid #C08A2E;
+  outline-offset: 4px;
+  padding: 40px 46px 34px;
+  display: flex; flex-direction: column; gap: 0;
+  text-align: center;
+  font-family: "Libre Baskerville", Georgia, serif;
+  color: #24313D;
+}
+.cdoc-org{
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--ac-navy);
+}
+.cdoc-rule{ height: 1px; background: #D8CDB4; margin: 16px auto 20px; width: 78%; }
+.cdoc-kind{
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: .24em; text-transform: uppercase; color: #A67C22;
+  margin-bottom: 10px;
+}
+.cdoc-h{
+  font-size: 33px; font-weight: 700; line-height: 1.14;
+  color: var(--ac-navy); letter-spacing: -.01em; margin: 0 0 22px;
+  text-wrap: balance;
+}
+.cdoc-lead{ font-size: 12.5px; font-style: italic; color: #6B7683; margin: 0 0 10px; }
+.cdoc-name{
+  font-size: 29px; font-weight: 700; color: #10293F;
+  margin: 0 0 8px; letter-spacing: -.005em;
+}
+.cdoc-firm{ font-size: 13px; color: #4A5768; margin: 0 0 22px; }
+.cdoc-firm .agg{ color: var(--kz-teal-deep); }
+.cdoc-body{
+  font-size: 13.5px; line-height: 1.85; color: #33414F;
+  margin: 0 auto 26px; max-width: 62ch;
+}
+.cdoc-body b{ font-weight: 700; color: #10293F; }
+
+.cdoc-meta{
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  gap: 24px; align-items: center; text-align: left;
+  border-top: 1px solid #E4DBC6; padding-top: 24px;
+}
+.cdoc-fld{ display: flex; flex-direction: column; gap: 4px; }
+.cdoc-fld .fl2{
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .13em; text-transform: uppercase; color: #94897A;
+}
+.cdoc-fld .fv{ font-size: 13px; font-weight: 700; color: #24313D; font-variant-numeric: tabular-nums; }
+.cdoc-fld.rt{ text-align: right; }
+.cdoc-seal{ width: 118px; height: 118px; flex: none; }
+.cdoc-seal svg{ display: block; width: 100%; height: 100%; }
+
+.cdoc-sign{
+  display: grid; grid-template-columns: 1fr 1fr; gap: 34px;
+  margin-top: 30px; text-align: left;
+}
+.cdoc-sign .sg{ display: flex; flex-direction: column; gap: 6px; }
+.cdoc-sign .sg .nm{
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-style: italic; font-size: 19px; color: #10293F; padding-left: 4px;
+}
+.cdoc-sign .sg .ln3{ height: 1px; background: #8E9AA6; }
+.cdoc-sign .sg .cap{
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: #7A8899;
+}
+.cdoc-foot{
+  font-family: var(--mono); font-size: 8.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: #A9A091;
+  margin-top: 26px;
+}
+
+@media (max-width: 660px){
+  .cdoc-in{ padding: 26px 20px; }
+  .cdoc-meta{ grid-template-columns: 1fr; text-align: center; }
+  .cdoc-fld.rt{ text-align: center; }
+  .cdoc-sign{ grid-template-columns: 1fr; }
+  .cdoc-seal{ margin: 0 auto; }
+}
+
+/* ---------- Kai-Zen certification course player ---------- */
+.course{
+  display: grid; grid-template-columns: 245px 1fr;
+  border: 1px solid var(--ac-line); border-radius: 5px;
+  overflow: hidden; background: #FFFFFF;
+}
+.course-rail{
+  background: #1478BE; color: #FFFFFF;
+  padding: 22px 18px 24px;
+  display: flex; flex-direction: column;
+}
+.course-rail .ct{
+  font-size: 20px; font-weight: 700; line-height: 1.14;
+  letter-spacing: -.01em; margin-bottom: 20px;
+}
+.course-rail ol{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.course-rail li{
+  display: grid; grid-template-columns: 17px 1fr; gap: 12px;
+  align-items: start; position: relative; padding-bottom: 17px;
+}
+.course-rail li:last-child{ padding-bottom: 0; }
+.course-rail li:not(:last-child)::before{
+  content: ''; position: absolute;
+  left: 8px; top: 18px; bottom: 0;
+  width: 1.5px; background: rgba(255, 255, 255, .38);
+}
+.course-rail .dot{
+  width: 17px; height: 17px; border-radius: 50%;
+  border: 2px solid #FFFFFF; background: transparent;
+  position: relative; z-index: 1; margin-top: 1px;
+  display: grid; place-items: center;
+  font-size: 9.5px; font-weight: 700; color: #1478BE; line-height: 1;
+}
+.course-rail li.did .dot,
+.course-rail li.on .dot{ background: #FFFFFF; }
+.course-rail .lb{
+  font-family: var(--sans); font-size: 12.5px; line-height: 1.35;
+  color: rgba(255, 255, 255, .86);
+  background: none; border: 0; padding: 0; text-align: left; cursor: pointer;
+}
+.course-rail li.on .lb{ color: #FFFFFF; font-weight: 700; }
+.course-rail .lb:hover{ color: #FFFFFF; text-decoration: underline; }
+.course-rail .lb:focus-visible{ outline: 2px solid #FFFFFF; outline-offset: 2px; }
+
+.course-main{ padding: 24px 26px 20px; display: flex; flex-direction: column; gap: 18px; }
+.course-main .cmh{
+  font-size: 21px; font-weight: 700; color: #1B5FA8;
+  text-align: center; letter-spacing: -.012em; text-wrap: balance;
+}
+.vid{ border: 3px solid #1B3D6D; border-radius: 10px; overflow: hidden; }
+.vid .screen{ height: 172px; display: grid; place-items: center; background: #FFFFFF; }
+.vid .play{
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 3px solid #1B3D6D; display: grid; place-items: center;
+  color: #1B3D6D; font-size: 20px; padding-left: 4px;
+}
+.vid .bar{
+  border-top: 3px solid #1B3D6D;
+  display: flex; align-items: center; gap: 13px; padding: 9px 13px;
+}
+.vid .bar .sq{
+  width: 22px; height: 22px; flex: none;
+  border: 2px solid #1B3D6D; border-radius: 2px;
+  display: grid; place-items: center; font-size: 9px; color: #1B3D6D; padding-left: 2px;
+}
+.vid .bar .tr{ flex: 1; height: 4px; background: #D6DEE7; border-radius: 2px; position: relative; }
+.vid .bar .tr .kn{
+  position: absolute; left: 5%; top: -4px;
+  width: 12px; height: 12px; border-radius: 50%; background: #1B3D6D;
+}
+.vid .bar .vol{ font-size: 17px; color: #1B3D6D; line-height: 1; flex: none; }
+
+.finalx{
+  border: 1px solid var(--kz-wash-line); background: var(--kz-wash);
+  border-radius: 6px; padding: 22px 24px;
+  display: flex; flex-direction: column; gap: 11px; align-items: center; text-align: center;
+}
+.finalx .bg2{
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--kz-teal); color: #FFFFFF;
+  display: grid; place-items: center; font-size: 22px; font-weight: 700;
+}
+.finalx b{ font-size: 16px; color: var(--kz-teal-deep); }
+.finalx p{ margin: 0; font-size: 13px; line-height: 1.6; color: #14514F; max-width: 52ch; }
+
+.course-foot{ display: flex; align-items: center; gap: 14px; margin-top: auto; padding-top: 4px; }
+.course-foot .cprog{
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--ac-muted);
+}
+.course-next{
+  margin-left: auto; font-family: var(--sans);
+  background: #1478BE; color: #FFFFFF; border: 0;
+  border-radius: 4px; padding: 10px 30px;
+  font-size: 13.5px; font-weight: 700; cursor: pointer;
+}
+.course-next.fin{ background: var(--kz-teal); }
+.course-next:hover{ filter: brightness(1.08); }
+.course-next:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+
+@media (max-width: 720px){
+  .course{ grid-template-columns: 1fr; }
+}
+
+/* ---------- AC → ILIA data mapping panel ---------- */
+.tagbtn{
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: #1B3D6D; background: #E4EDF5;
+  border: 1px solid #C3D2E0; border-radius: 3px;
+  padding: 5px 10px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.tagbtn:hover{ border-color: #2E6FA8; background: #D8E7F3; }
+.tagbtn:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.tagbtn .chev{ font-size: 11px; line-height: 1; }
+.section-head .tagbtn{ margin-left: auto; }
+
+.mapwrap{
+  border: 1px solid #C3D2E0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #F7FAFC;
+}
+.mapwrap .mh{
+  background: #E4EDF5;
+  border-bottom: 1px solid #C3D2E0;
+  padding: 10px 16px;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .11em; text-transform: uppercase; color: #1B3D6D;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.mapwrap .mh .flag{
+  font-family: var(--mono); letter-spacing: .08em;
+  background: #1B3D6D; color: #FFFFFF;
+  border-radius: 3px; padding: 2px 7px; font-size: 9.5px;
+}
+.mapwrap .mb{ padding: 17px 18px 19px; display: flex; flex-direction: column; gap: 15px; }
+.mapwrap .mb > p{ margin: 0; font-size: 13.5px; line-height: 1.62; color: var(--doc-ink-soft); max-width: 88ch; }
+.mapwrap .mb > p strong{ color: #1B3D6D; font-weight: 700; }
+.map-scroll{ overflow-x: auto; border: 1px solid #DCE5EE; border-radius: 4px; background: #FFFFFF; }
+.map-tbl{ width: 100%; min-width: 620px; border-collapse: collapse; table-layout: fixed; }
+.map-tbl th{
+  text-align: left; padding: 10px 13px;
+  background: #F2F6FA; border-bottom: 1px solid #DCE5EE;
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: #1B3D6D;
+  line-height: 1.5;
+}
+.map-tbl td{
+  padding: 9px 13px; border-bottom: 1px solid #EAF0F5;
+  font-size: 12.5px; color: var(--doc-ink-soft); vertical-align: top;
+}
+.map-tbl tr:last-child td{ border-bottom: 0; }
+.map-tbl td.acx{ color: #1B3D6D; font-weight: 600; }
+.map-tbl td.mono{ font-family: var(--mono); font-size: 11.5px; color: #35506B; overflow-wrap: anywhere; }
+.map-tbl tr.gap td{ background: var(--note-wash); }
+.map-tbl tr.gap td.acx{ color: #6B3F02; }
+.map-tbl tr.gap td.mono{ color: #7A4A05; }
+.map-tbl tr.gap td em{ font-style: normal; font-weight: 700; }
+.map-gaps{ display: flex; flex-direction: column; gap: 10px; }
+.map-gaps .g{
+  background: #FFFFFF; border: 1px solid #DCE5EE; border-left: 3px solid var(--note-bright);
+  border-radius: 4px; padding: 12px 15px;
+  font-size: 13px; line-height: 1.6; color: var(--doc-ink-soft);
+}
+.map-gaps .g b{ color: #1B3D6D; font-weight: 700; }
+.map-src{
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: #7A8899;
+  line-height: 1.7;
+}
+
+/* ---------- open-questions layer ---------- */
+.toggle.q .dot{ background: var(--q); box-shadow: 0 0 0 3px var(--q-wash); }
+.toggle.q:hover{ border-color: var(--q); background: var(--q-wash); }
+.toggle.q .n{
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  background: var(--q); color: #FFFFFF;
+  border-radius: 9px; padding: 1px 6px;
+}
+
+.q-mark{ position: relative; }
+body.q-on .q-mark{
+  outline: 2px dashed var(--q);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+body.q-on .q-mark::after{
+  content: attr(data-q);
+  position: absolute; top: -10px; right: -11px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--q); color: #FFFFFF;
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  display: grid; place-items: center;
+  box-shadow: 0 0 0 2px #FFFFFF;
+  z-index: 6;
+}
+
+.qdock{
+  background: #FFFFFF;
+  border: 1px solid var(--q-line);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--note-sans);
+}
+.qitem{ max-width: 92ch; }
+.qdock-h{
+  background: var(--q); color: #FFFFFF;
+  padding: 13px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.qdock-h b{ font-size: 14px; font-weight: 700; }
+.qdock-h .c{
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  background: rgba(255,255,255,.22); border-radius: 9px; padding: 2px 7px;
+}
+.qdock-h button{
+  margin-left: auto; background: transparent; border: 0;
+  color: #E8D6F0; font-size: 19px; line-height: 1; cursor: pointer; padding: 0 2px;
+}
+.qdock-h button:hover{ color: #FFFFFF; }
+.qdock-h button:focus-visible{ outline: 2px solid #FFFFFF; outline-offset: 2px; }
+.qdock-b{ padding: 4px 0 6px; overflow-y: auto; }
+.qitem{ padding: 15px 16px; border-bottom: 1px solid #EFE4F4; display: flex; gap: 12px; }
+.qitem:last-child{ border-bottom: 0; }
+.qitem .qn{
+  width: 22px; height: 22px; flex: none; border-radius: 50%;
+  background: var(--q); color: #FFFFFF;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  display: grid; place-items: center;
+}
+.qitem .qc{ display: flex; flex-direction: column; gap: 7px; }
+.qitem .qc b{ font-size: 13.5px; font-weight: 700; color: var(--q-deep); line-height: 1.4; }
+.qitem .qc p{ margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--doc-ink-soft); }
+.qitem .qc .lab{
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--q);
+}
+.qitem .qc ul{ margin: 0; padding-left: 17px; display: flex; flex-direction: column; gap: 4px; }
+.qitem .qc li{ font-size: 12.5px; line-height: 1.5; color: var(--doc-ink-soft); }
+.qitem .qc li::marker{ color: var(--q); }
+.qitem .qc .ask{
+  font-size: 12px; font-weight: 700; color: var(--q-deep);
+  background: var(--q-wash); border: 1px solid var(--q-line);
+  border-radius: 4px; padding: 6px 10px; align-self: flex-start;
+}
+.qdock-f{
+  border-top: 1px solid #EFE4F4; padding: 11px 16px;
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--q);
+  background: var(--q-wash);
+}
+
+/* ---------- section framing ---------- */
+.section{ display: flex; flex-direction: column; gap: 16px; }
+.section-head{ display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.section-head h2{
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: var(--doc-ink);
+}
+.section-head .tag{
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--doc-ink-soft);
+  border: 1px solid var(--doc-line);
+  border-radius: 3px;
+  padding: 3px 8px;
+  background: var(--doc-panel);
+}
+.section-head p{ margin: 0; color: var(--doc-ink-soft); font-size: 14px; }
+
+/* ---------- browser frame around the mock ---------- */
+.frame{
+  background: var(--doc-panel);
+  border: 1px solid var(--doc-line);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px -24px rgba(16, 40, 66, .38);
+}
+.frame-bar{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #F4F7FA;
+  border-bottom: 1px solid var(--doc-line);
+}
+.frame-bar .lights{ display: flex; gap: 6px; }
+.frame-bar .lights i{ width: 10px; height: 10px; border-radius: 50%; background: #CBD5DF; display: block; }
+.frame-bar .url{
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--doc-ink-soft);
+  background: #FFFFFF;
+  border: 1px solid var(--doc-line);
+  border-radius: 5px;
+  padding: 5px 11px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.frame-scroll{ overflow-x: auto; }
+
+/* ============================================================
+   AGENT CENTER RECREATION
+   ============================================================ */
+.ac{
+  position: relative;
+  width: 1400px;
+  display: grid;
+  grid-template-columns: 262px 1fr;
+  background: var(--ac-page);
+  font-family: var(--sans);
+  color: var(--ac-body);
+  font-size: 13px;
+}
+
+/* ---- sidebar ---- */
+.ac-side{
+  background: var(--ac-navy);
+  color: #FFFFFF;
+  padding: 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 940px;
+}
+.ac-brand{
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 22px 18px 20px;
+  position: relative;
+}
+.ac-brand .mark{
+  width: 42px; height: 42px; flex: none;
+  border-radius: 50%;
+  background: #FFFFFF;
+  display: grid;
+  place-items: center;
+}
+.ac-brand .mark svg{ display: block; }
+.ac-brand .name{ display: flex; flex-direction: column; line-height: 1.02; }
+.ac-brand .name b{ font-size: 21px; font-weight: 400; letter-spacing: .012em; }
+.ac-brand .name span{ font-size: 12.5px; font-weight: 600; letter-spacing: .30em; padding-left: 1px; }
+.ac-brand .collapse{ position: absolute; right: 16px; top: 26px; color: #A8C6DC; font-size: 15px; }
+
+.ac-search{ padding: 0 16px 16px; display: flex; }
+.ac-search input{
+  flex: 1;
+  background: #0F3F63;
+  border: 1px solid #2A648D;
+  border-right: 0;
+  border-radius: 4px 0 0 4px;
+  color: #FFFFFF;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  padding: 8px 11px;
+}
+.ac-search input::placeholder{ color: #8FB2CC; }
+.ac-search .btn{
+  width: 40px;
+  border: 1px solid #2A648D;
+  border-radius: 0 4px 4px 0;
+  background: #21618F;
+  display: grid;
+  place-items: center;
+  color: #FFFFFF;
+}
+
+.ac-nav{ display: flex; flex-direction: column; }
+.ac-nav a{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 18px;
+  color: #E3EEF6;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-left: 4px solid transparent;
+}
+.ac-nav a .ico{ width: 19px; flex: none; display: grid; place-items: center; opacity: .92; }
+.ac-nav a .chev{ margin-left: auto; color: #9CBDD5; font-size: 15px; line-height: 1; }
+.ac-nav a.on{
+  background: var(--ac-navy-lift);
+  border-left-color: #8CC8F0;
+  color: #FFFFFF;
+}
+.ac-nav .sub{
+  display: flex;
+  flex-direction: column;
+  background: #12405F;
+  border-left: 4px solid #2A648D;
+}
+.ac-nav .sub a{
+  padding: 9px 18px 9px 49px;
+  font-size: 13px;
+  font-weight: 600;
+  border-left: 0;
+  color: #CFE4F1;
+}
+.ac-nav .sub a.kz{ color: #FFFFFF; background: #0E4A6B; }
+.ac-nav .sub a .newpill{
+  margin-left: auto;
+  font-family: var(--sans);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  background: var(--kz-teal);
+  color: #FFFFFF;
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+.ac-user{
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px 4px;
+  border-top: 1px solid #2A648D;
+  font-size: 13px;
+  font-weight: 600;
+  color: #E3EEF6;
+}
+.ac-user .av{
+  width: 27px; height: 27px; flex: none;
+  border-radius: 4px;
+  background: #2A648D;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; color: #FFFFFF;
+}
+.ac-user .updown{ margin-left: auto; color: #9CBDD5; font-size: 13px; }
+
+/* ---- main column ---- */
+.ac-main{ padding: 22px 26px 44px; display: flex; flex-direction: column; gap: 18px; }
+
+.ac-welcome{
+  background: var(--ac-banner);
+  border-radius: 4px;
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  color: #FFFFFF;
+}
+.ac-welcome h2{ margin: 0; font-size: 27px; font-weight: 700; letter-spacing: -.01em; }
+.ac-welcome .wx{ display: flex; align-items: center; gap: 20px; }
+.ac-welcome .wx .deg{ font-size: 31px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ac-welcome .wx .sky{ font-size: 16px; font-weight: 400; }
+
+.ac-card{
+  background: var(--ac-card);
+  border-radius: 4px;
+  border: 1px solid var(--ac-line-soft);
+  padding: 20px 24px 24px;
+  box-shadow: 0 1px 2px rgba(23, 69, 107, .05);
+}
+
+.ac-card-top{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.ac-card-top h3{
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--ac-heading);
+  letter-spacing: -.01em;
+}
+.ac-card-top .stamp{ margin-left: auto; font-size: 12px; color: var(--ac-muted); }
+.ac-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--ac-line);
+  background: #FFFFFF;
+  color: var(--ac-heading);
+  white-space: nowrap;
+}
+.ac-btn.solid{ background: var(--ac-banner); border-color: var(--ac-banner); color: #FFFFFF; }
+
+.kpi-row{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.kpi{
+  border: 1px solid var(--ac-line);
+  border-radius: 4px;
+  padding: 16px 20px 18px;
+  text-align: center;
+}
+.kpi .lbl{ font-size: 14px; font-weight: 700; color: var(--ac-link); }
+.kpi .big{
+  margin-top: 8px;
+  font-size: 33px;
+  font-weight: 700;
+  color: var(--ac-heading);
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+  display: flex; align-items: baseline; justify-content: center; gap: 7px;
+}
+.kpi .big i{ font-style: normal; font-size: 13px; font-weight: 600; color: var(--ac-body); }
+.kpi .rule{ height: 1px; background: var(--ac-line); margin: 12px 22px; }
+.kpi .sub{
+  font-size: 19px; font-weight: 700; color: var(--ac-heading);
+  font-variant-numeric: tabular-nums;
+  display: flex; align-items: baseline; justify-content: center; gap: 6px;
+}
+.kpi .sub i{ font-style: normal; font-size: 12.5px; font-weight: 600; color: var(--ac-body); }
+
+.ql-grid{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.ql{
+  background: var(--ac-navy);
+  color: #FFFFFF;
+  border-radius: 4px;
+  padding: 13px 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+.ql.kz{
+  background: var(--kz-teal);
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+
+.news{ display: flex; flex-direction: column; gap: 22px; }
+.news-item{ display: flex; gap: 22px; }
+.news-item .thumb{
+  width: 158px; height: 104px; flex: none;
+  border: 1px solid var(--ac-line);
+  border-radius: 3px;
+  overflow: hidden;
+  background: #F7FAFC;
+}
+.news-item .thumb svg{ display: block; }
+.news-item .body{ display: flex; flex-direction: column; gap: 7px; }
+.news-item .body a.t{
+  font-size: 18px; font-weight: 700; color: var(--ac-link);
+  text-decoration: none; letter-spacing: -.01em;
+}
+.news-item .body p{ margin: 0; font-size: 13.5px; line-height: 1.62; max-width: 84ch; }
+.news-item .body .dl{ font-size: 13.5px; font-weight: 700; color: var(--ac-heading); }
+
+/* ---- the Kai-Zen promo card (placement 2) ---- */
+.kz-promo{
+  background: var(--kz-wash);
+  border: 1px solid var(--kz-wash-line);
+  border-radius: 4px;
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.kz-promo .kz-mark{
+  width: 60px; height: 60px; flex: none;
+  border-radius: 50%;
+  background: var(--kz-teal);
+  color: #FFFFFF;
+  display: grid; place-items: center;
+  font-size: 19px; font-weight: 700; letter-spacing: -.02em;
+}
+.kz-promo .kz-copy{ flex: 1 1 380px; display: flex; flex-direction: column; gap: 5px; }
+.kz-promo .kz-eyebrow{
+  font-size: 10.5px; font-weight: 700; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--kz-teal-deep);
+}
+.kz-promo h3{
+  margin: 0; font-size: 22px; font-weight: 700;
+  color: var(--ac-heading); letter-spacing: -.015em;
+}
+.kz-promo p{ margin: 0; font-size: 13.5px; max-width: 66ch; }
+.kz-cta{
+  flex: none;
+  display: inline-flex; align-items: center; gap: 9px;
+  background: var(--kz-teal);
+  color: #FFFFFF;
+  border-radius: 4px;
+  padding: 13px 24px;
+  font-size: 15px; font-weight: 700;
+  letter-spacing: -.005em;
+}
+.kz-promo .kz-side{ display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.kz-promo .kz-side .learn{ font-size: 12.5px; font-weight: 700; color: var(--kz-teal-deep); }
+
+/* ============================================================
+   ANNOTATION LAYER
+   ============================================================ */
+.pin{
+  position: absolute;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  transition: opacity .2s;
+}
+.pin .num{
+  width: 30px; height: 30px; flex: none;
+  border-radius: 50%;
+  background: var(--note-bright);
+  color: #FFFFFF;
+  font-family: var(--mono);
+  font-size: 14px; font-weight: 600;
+  display: grid; place-items: center;
+  box-shadow: 0 0 0 4px rgba(224, 138, 12, .28), 0 2px 6px rgba(0,0,0,.2);
+}
+.pin .stem{ height: 2px; width: 26px; background: var(--note-bright); flex: none; }
+.pin .txt{
+  font-family: var(--note-sans);
+  font-size: 12px; font-weight: 700;
+  color: #6B3F02;
+  background: var(--note-wash);
+  border: 1.5px solid var(--note-line);
+  border-radius: 4px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+.pin.rtl{ flex-direction: row-reverse; }
+
+.halo{
+  position: absolute;
+  z-index: 5;
+  border: 2.5px dashed var(--note-bright);
+  border-radius: 6px;
+  background: rgba(224, 138, 12, .07);
+  pointer-events: none;
+  transition: opacity .2s;
+}
+body.notes-off .pin,
+body.notes-off .halo{ opacity: 0; pointer-events: none; }
+
+/* ---------- placement key ---------- */
+.key{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 1px;
+  background: var(--doc-line);
+  border: 1px solid var(--doc-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.key > div{
+  background: var(--doc-panel);
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.key .n{
+  font-family: var(--mono);
+  font-size: 12px; font-weight: 600;
+  color: #FFFFFF;
+  background: var(--note-bright);
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+}
+.key h3{
+  margin: 0; font-size: 15px; font-weight: 700;
+  color: var(--doc-ink); letter-spacing: -.005em;
+}
+.key p{ margin: 0; font-size: 13.5px; color: var(--doc-ink-soft); line-height: 1.56; }
+.key .role{
+  font-family: var(--mono);
+  font-size: 10.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--note);
+}
+
+/* ---------- copy note ---------- */
+.copybox{
+  background: var(--doc-panel);
+  border: 1px solid var(--doc-line);
+  border-radius: 8px;
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.copybox h3{ margin: 0; font-size: 16px; font-weight: 700; }
+.copyrow{
+  display: grid;
+  grid-template-columns: 168px 1fr;
+  gap: 10px 22px;
+  align-items: start;
+  padding-top: 14px;
+  border-top: 1px solid var(--doc-line);
+}
+.copyrow:first-of-type{ border-top: 0; padding-top: 0; }
+.copyrow dt{
+  font-family: var(--mono);
+  font-size: 10.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--doc-ink-soft);
+  padding-top: 3px;
+}
+.copyrow dd{ margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.copyrow dd .v{
+  font-family: var(--sans);
+  font-size: 16px; font-weight: 700; color: var(--kz-teal-deep);
+}
+.copyrow dd .why{ font-size: 13.5px; color: var(--doc-ink-soft); }
+
+.decide{
+  background: var(--note-wash);
+  border: 1px solid var(--note-line);
+  border-radius: 8px;
+  padding: 22px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.decide h3{
+  margin: 0; font-size: 15px; font-weight: 700; color: #6B3F02;
+  display: flex; align-items: center; gap: 10px;
+}
+.decide h3 .mono{
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+  text-transform: uppercase; font-weight: 600; color: var(--note);
+}
+.decide p{ margin: 0; font-size: 14px; color: #5C3A08; max-width: 90ch; line-height: 1.6; }
+.decide p strong{ font-weight: 700; }
+
+.foot{
+  border-top: 1px solid var(--doc-line);
+  padding-top: 18px;
+  font-size: 12.5px;
+  color: var(--doc-ink-soft);
+  display: flex; flex-wrap: wrap; gap: 6px 18px;
+}
+.foot span.mono{ font-family: var(--mono); font-size: 11.5px; }
+
+/* ---------- the four entry points are live: all open the flow ---------- */
+button.kz-cta,
+button.ql.kz,
+.news-item .body button.dl{
+  font-family: var(--sans);
+  border: 0;
+  cursor: pointer;
+  transition: filter .14s, box-shadow .14s;
+}
+button.kz-cta:hover,
+button.ql.kz:hover{ filter: brightness(1.09); box-shadow: 0 3px 10px -3px rgba(14,124,123,.55); }
+.news-item .body button.dl{
+  background: none;
+  padding: 0;
+  align-self: flex-start;
+  text-align: left;
+}
+.news-item .body button.dl:hover{ text-decoration: underline; }
+.ac-nav .sub a.kz{ cursor: pointer; }
+.ac-nav .sub a.kz:hover{ background: #0B5A82; }
+[data-flow]:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+
+/* ---------- workflow modal ---------- */
+.ov{
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(14, 33, 51, .55);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 34px 20px;
+  overflow-y: auto;
+}
+.ov.open{ display: flex; }
+.dlg{
+  width: 100%;
+  max-width: 760px;
+  background: var(--doc-panel);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 30px 70px -20px rgba(9, 26, 43, .6);
+  font-family: var(--sans);
+}
+.dlg-head{
+  background: var(--ac-navy);
+  color: #FFFFFF;
+  padding: 18px 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.dlg-head .hb{ flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.dlg-head .opt-tag{
+  font-family: var(--mono);
+  font-size: 10.5px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: #9FD3F2;
+}
+.dlg-head h4{ margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+.dlg-head p{ margin: 0; font-size: 12.5px; color: #C6DEEE; }
+.dlg-x{
+  flex: none;
+  background: transparent; border: 0;
+  color: #C6DEEE; font-size: 22px; line-height: 1;
+  cursor: pointer; padding: 2px 4px; border-radius: 4px;
+}
+.dlg-x:hover{ color: #FFFFFF; }
+.dlg-x:focus-visible{ outline: 2px solid #9FD3F2; outline-offset: 2px; }
+
+.rail{
+  display: flex; flex-wrap: wrap; gap: 6px 8px;
+  padding: 13px 24px;
+  background: #F4F8FB;
+  border-bottom: 1px solid var(--ac-line);
+}
+.rail button{
+  font-family: var(--sans);
+  font-size: 11.5px; font-weight: 700;
+  border: 1.5px solid var(--ac-line);
+  background: #FFFFFF;
+  color: var(--ac-muted);
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.rail button .rn{
+  font-family: var(--mono); font-size: 10px;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: #E1E9F0; color: var(--ac-muted);
+  display: grid; place-items: center;
+}
+.rail button.done{ color: var(--kz-teal-deep); border-color: var(--kz-wash-line); }
+.rail button.done .rn{ background: var(--kz-teal); color: #FFFFFF; }
+.rail button.cur{ background: var(--ac-navy); border-color: var(--ac-navy); color: #FFFFFF; }
+.rail button.cur .rn{ background: #FFFFFF; color: var(--ac-navy); }
+.rail button:focus-visible{ outline: 2px solid var(--note-bright); outline-offset: 2px; }
+
+.dlg-body{ padding: 24px; display: flex; flex-direction: column; gap: 16px; color: var(--ac-body); }
+.dlg-body h5{
+  margin: 0; font-size: 18px; font-weight: 700;
+  color: var(--ac-heading); letter-spacing: -.012em;
+}
+.dlg-body > p{ margin: 0; font-size: 13.5px; line-height: 1.62; max-width: 70ch; }
+.dlg-body .hint{ font-size: 12.5px; color: var(--ac-muted); }
+
+.fgrid{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.fgrid .f{ display: flex; flex-direction: column; gap: 4px; }
+.fgrid .f.wide{ grid-column: 1 / -1; }
+.fgrid label{
+  font-size: 11px; font-weight: 700; color: var(--ac-heading);
+  letter-spacing: .02em; text-transform: uppercase;
+}
+.fgrid .inp{
+  border: 1.5px solid var(--ac-line);
+  border-radius: 4px;
+  background: #FBFDFE;
+  padding: 9px 11px;
+  font-size: 13px;
+  color: var(--ac-body);
+  min-height: 38px;
+}
+.fgrid .inp.pre{ background: var(--kz-wash); border-color: var(--kz-wash-line); color: var(--kz-teal-deep); font-weight: 600; }
+.fgrid .inp.sel::after{ content: '⌄'; float: right; color: var(--ac-muted); }
+
+.mods{ display: flex; flex-direction: column; gap: 9px; }
+.mod{
+  display: flex; align-items: center; gap: 13px;
+  border: 1.5px solid var(--ac-line);
+  border-radius: 4px;
+  padding: 11px 14px;
+  font-size: 13.5px;
+}
+.mod .tick{
+  width: 21px; height: 21px; flex: none; border-radius: 50%;
+  background: var(--kz-teal); color: #FFFFFF;
+  display: grid; place-items: center; font-size: 12px; font-weight: 700;
+}
+.mod .tick.todo{ background: #FFFFFF; border: 1.5px solid var(--ac-line); color: var(--ac-muted); }
+.mod b{ font-weight: 700; color: var(--ac-heading); }
+.mod .dur{ margin-left: auto; font-size: 11.5px; color: var(--ac-muted); font-variant-numeric: tabular-nums; }
+
+.steps-list{ display: flex; flex-direction: column; gap: 0; }
+.sl{
+  display: grid; grid-template-columns: 26px 1fr; gap: 14px;
+  padding-bottom: 16px;
+  position: relative;
+}
+.sl:not(:last-child)::before{
+  content: ''; position: absolute;
+  left: 12.5px; top: 26px; bottom: 0;
+  width: 1.5px; background: var(--ac-line);
+}
+.sl .dot{
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--ac-navy); color: #FFFFFF;
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  position: relative; z-index: 1;
+}
+.sl .dot.ilia{ background: var(--ac-banner); }
+.sl .dot.niw{ background: #7A5B12; }
+.sl .sb{ display: flex; flex-direction: column; gap: 3px; padding-top: 2px; }
+.sl .sb b{ font-size: 13.5px; font-weight: 700; color: var(--ac-heading); }
+.sl .sb span{ font-size: 13px; line-height: 1.55; }
+.sl .sb .where{
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ac-muted);
+}
+
+.tiles{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+.tiles .t{
+  border: 1.5px dashed #C9A75E;
+  background: #FFFBF1;
+  border-radius: 4px;
+  padding: 10px 11px;
+  font-size: 12px; font-weight: 700;
+  color: #6B4A05;
+}
+.cons{
+  border: 1px solid var(--ac-line);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.cons .ch{
+  background: #F4F8FB;
+  border-bottom: 1px solid var(--ac-line);
+  padding: 10px 15px;
+  font-family: var(--mono);
+  font-size: 10.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ac-heading);
+}
+.cons ul{
+  margin: 0;
+  padding: 14px 18px 15px 34px;
+  display: flex; flex-direction: column; gap: 8px;
+  font-size: 13px; line-height: 1.55;
+}
+.cons .cb{ padding: 15px 18px 2px; }
+.cons .cb > p{ margin: 0 0 15px; font-size: 13px; line-height: 1.6; max-width: 74ch; }
+.cons .cb > p strong{ color: var(--ac-heading); font-weight: 700; }
+.cons li::marker{ color: var(--kz-teal); }
+.cons li b{ font-weight: 700; color: var(--ac-heading); }
+
+.warn{
+  background: var(--note-wash);
+  border: 1px solid var(--note-line);
+  border-radius: 5px;
+  padding: 13px 16px;
+  font-size: 13px; line-height: 1.6;
+  color: #5C3A08;
+}
+.warn b{ font-weight: 700; }
+.leaving{
+  border: 1.5px solid var(--ac-line);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.leaving .lbar{
+  background: #F4F8FB; border-bottom: 1px solid var(--ac-line);
+  padding: 9px 14px;
+  font-family: var(--mono); font-size: 12px; color: var(--ac-body);
+  display: flex; align-items: center; gap: 9px;
+}
+.leaving .lbody{ padding: 16px 18px; font-size: 13.5px; line-height: 1.6; }
+.leaving .lbody strong{ color: var(--ac-heading); }
+
+/* ---------- "you have left AC" replica of niwcorp.com ---------- */
+.dlg.wide{ max-width: 1080px; }
+
+.proto-bar{
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: var(--note-wash);
+  border: 1px solid var(--note-line);
+  border-radius: 5px;
+  padding: 9px 12px;
+}
+.proto-bar > span{
+  font-family: var(--mono);
+  font-size: 10.5px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: #6B3F02;
+}
+.proto-bar button{
+  margin-left: auto;
+  font-family: var(--note-sans);
+  font-size: 12.5px; font-weight: 700;
+  background: #FFFFFF; color: #6B3F02;
+  border: 1.5px solid var(--note-line);
+  border-radius: 4px; padding: 7px 13px; cursor: pointer;
+  white-space: nowrap;
+}
+.proto-bar button:hover{ border-color: var(--note-bright); }
+.proto-bar button:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+
+/* ---------- engineering note ---------- */
+.tech{
+  border: 1px solid #C3D2E0;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #F7FAFC;
+}
+.tech .th{
+  background: #E4EDF5;
+  border-bottom: 1px solid #C3D2E0;
+  padding: 9px 15px;
+  font-family: var(--mono);
+  font-size: 10.5px; font-weight: 600;
+  letter-spacing: .11em; text-transform: uppercase;
+  color: #1B3D6D;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.tech .th .flag{
+  font-family: var(--mono);
+  letter-spacing: .08em;
+  background: #1B3D6D; color: #FFFFFF;
+  border-radius: 3px; padding: 2px 7px;
+  font-size: 9.5px;
+}
+.tech ul{
+  margin: 0;
+  padding: 14px 18px 15px 34px;
+  display: flex; flex-direction: column; gap: 9px;
+  font-size: 13px; line-height: 1.56;
+  color: var(--ac-body);
+}
+.tech li::marker{ color: #2E6FA8; }
+.tech li b{ font-weight: 700; color: #1B3D6D; }
+
+.nw{
+  position: relative;
+  border: 1px solid var(--ac-line);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #FFFFFF;
+  font-family: var(--sans);
+}
+.nw-top{
+  background: #16294A; color: #FFFFFF;
+  padding: 8px 22px;
+  display: flex; justify-content: flex-end; gap: 26px;
+  font-size: 12px; font-weight: 600;
+}
+.nw-head{
+  padding: 14px 22px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  border-bottom: 1px solid #EDF1F5;
+}
+.nw-logo{ display: flex; align-items: center; gap: 10px; }
+.nw-logo .nw-lg{ display: flex; flex-direction: column; line-height: 1.05; }
+.nw-logo .nw-lg b{ font-size: 25px; font-weight: 700; color: #1B3D6D; letter-spacing: .02em; }
+.nw-logo .nw-lg i{ font-style: normal; font-size: 8.5px; font-weight: 600; color: #7A8899; letter-spacing: .04em; }
+.nw-nav{ margin-left: auto; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.nw-nav a{
+  font-size: 13px; font-weight: 600; color: #3B4655;
+  text-decoration: none; padding-bottom: 20px; border-bottom: 3px solid transparent;
+  margin-bottom: -20px;
+}
+.nw-nav a.on{ color: #1B3D6D; border-bottom-color: #2D7BC0; }
+.nw-nav .nw-cta{
+  background: #14335C; color: #FFFFFF;
+  border-radius: 22px; padding: 10px 22px;
+  font-size: 13px; font-weight: 700;
+}
+.nw-hero{
+  height: 92px;
+  background:
+    linear-gradient(115deg, rgba(12,30,54,.86) 0 42%, rgba(24,58,96,.62) 68%, rgba(52,94,138,.5) 100%),
+    linear-gradient(#2C5478, #43708F);
+}
+/* ---------- niwcorp.com registration form (replicated) ---------- */
+.nwf{ display: flex; flex-direction: column; gap: 15px; }
+.nwf-intro{
+  margin: 0; font-size: 13.5px; line-height: 1.62;
+  color: var(--ac-body); max-width: 80ch;
+}
+.nwf-intro a{ color: #1A5FA8; font-weight: 600; text-decoration: none; }
+.nwf-sec{ font-size: 14.5px; font-weight: 700; color: #1B3D6D; margin-top: 6px; }
+.nwf-rows{ display: flex; flex-direction: column; gap: 14px; }
+.nwf-in{
+  position: relative;
+  border: 1px solid #C9D4DE;
+  border-radius: 3px;
+  padding: 16px 14px;
+  font-size: 14px;
+  color: #6C7A8A;
+  background: #FFFFFF;
+  min-height: 52px;
+}
+.nwf-in em{ font-style: normal; color: #D93025; }
+.nwf-in.sel::after{ content: '⌄'; float: right; color: #8494A5; font-size: 15px; line-height: 1; }
+.nwf-in.pre{
+  background: var(--kz-wash);
+  border-color: var(--kz-wash-line);
+  color: var(--kz-teal-deep);
+  font-weight: 600;
+}
+.nwf-in .fl{
+  position: absolute; top: -7px; left: 10px;
+  background: #FFFFFF; padding: 0 5px;
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: .03em;
+  color: var(--kz-teal-deep);
+}
+.nwf-2{ display: grid; gap: 14px; }
+.nwf-2.cs{ grid-template-columns: 1.9fr 1fr; }
+.nwf-2.zw{ grid-template-columns: 1fr 1.35fr; }
+.nwf-imo-head{ display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 8px; }
+.nwf-imo-head .t{ font-size: 14.5px; font-weight: 700; color: #1B3D6D; }
+.nwf-chk{ display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #1A5FA8; font-weight: 600; }
+.nwf-chk i{ width: 14px; height: 14px; border: 1.5px solid #8494A5; border-radius: 2px; display: block; flex: none; }
+.nwf-addimo{
+  margin-left: auto;
+  background: #1A4A7A; color: #FFFFFF;
+  border-radius: 22px; padding: 10px 22px;
+  font-size: 13px; font-weight: 700;
+}
+.nwf-tbl{ border: 1px solid #E1E8EF; border-radius: 3px; overflow: hidden; }
+.nwf-tbl .hd{
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  background: #F2F6FA; padding: 13px 16px;
+  font-size: 13px; font-weight: 700; color: #1B3D6D;
+}
+.nwf-tbl .empty{ padding: 17px 16px; text-align: center; font-size: 13px; color: var(--ac-body); }
+.nwf-tbl .empty a{ color: #1A5FA8; font-weight: 600; text-decoration: none; }
+.nwf-submit{
+  align-self: flex-start; margin-top: 8px;
+  background: #1A3A63; color: #FFFFFF;
+  border-radius: 22px; padding: 12px 30px;
+  font-size: 14px; font-weight: 700;
+}
+
+/* ---------- certification gate on the registration screen ---------- */
+.cert-h{ display: flex; align-items: center; gap: 13px; flex-wrap: wrap; margin-top: 10px; }
+.cert-h .t{ font-size: 14.5px; font-weight: 700; color: #1B3D6D; }
+.cert-pill{
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase;
+  padding: 4px 9px; border-radius: 3px;
+  border: 0; cursor: pointer;
+  transition: filter .14s, box-shadow .14s;
+}
+.cert-pill:hover{ filter: brightness(1.06); box-shadow: 0 0 0 3px rgba(224, 138, 12, .28); }
+.cert-pill:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.cert-pill.req{ background: #FDECEC; color: #A32020; border: 1px solid #F3C9C9; }
+.cert-pill.ok{ background: var(--kz-teal); color: #FFFFFF; }
+.cert-toggle-hint{
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--note);
+}
+.cert-tbd{
+  border: 1.5px dashed #9AA8B5; background: #F7FAFC;
+  border-radius: 3px; padding: 18px 20px;
+  display: flex; flex-direction: column; gap: 13px; align-items: flex-start;
+}
+.cert-tbd .lab{
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .11em; text-transform: uppercase; color: #6E7C8A;
+}
+.cert-tbd p{ margin: 0; font-size: 13px; line-height: 1.62; color: var(--ac-body); max-width: 78ch; }
+.cert-start{
+  font-family: var(--sans);
+  background: #1A4A7A; color: #FFFFFF; border: 0;
+  border-radius: 22px; padding: 11px 26px;
+  font-size: 13.5px; font-weight: 700; cursor: pointer;
+}
+.cert-start:hover{ filter: brightness(1.1); }
+.cert-start:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.cert-badge{
+  border: 1px solid var(--kz-wash-line); background: var(--kz-wash);
+  border-radius: 3px; padding: 18px 20px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.cert-badge .ck{
+  width: 38px; height: 38px; flex: none; border-radius: 50%;
+  background: var(--kz-teal); color: #FFFFFF;
+  display: grid; place-items: center; font-size: 19px; font-weight: 700;
+}
+.cert-badge .cb{ display: flex; flex-direction: column; gap: 3px; }
+.cert-badge .cb b{ font-size: 16px; font-weight: 700; color: var(--kz-teal-deep); letter-spacing: -.008em; }
+.cert-badge .cb span{ font-size: 12.5px; color: #3D6E6C; }
+.cert-badge .cb a{ font-size: 12.5px; font-weight: 700; color: #1A5FA8; text-decoration: none; }
+.cert-badge .redo{
+  margin-left: auto; flex: none;
+  font-family: var(--note-sans); font-size: 11.5px; font-weight: 700;
+  color: #6B3F02; background: var(--note-wash);
+  border: 1px solid var(--note-line); border-radius: 4px;
+  padding: 6px 11px; cursor: pointer;
+}
+.approve-row{ display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 22px; }
+.approve-row .nwf-submit{ margin-top: 0; align-self: auto; }
+.nwf-submit.off{ background: #C7D2DC; color: #F2F7FB; }
+.approve-hint{ font-size: 12.5px; color: #8494A5; display: flex; align-items: center; gap: 7px; }
+.approve-hint.ok{ color: var(--kz-teal-deep); font-weight: 600; }
+.cert-wrap{ display: flex; flex-direction: column; gap: 13px; }
+
+/* ---------- aggregator-aware organisation block ---------- */
+.imo-scn{
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  background: var(--note-wash); border: 1px solid var(--note-line);
+  border-radius: 4px; padding: 8px 11px;
+}
+.imo-scn .l{
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--note);
+}
+.imo-scn button{
+  font-family: var(--sans); font-size: 12px; font-weight: 700;
+  border: 1.5px solid var(--note-line); background: #FFFFFF; color: #6B3F02;
+  border-radius: 20px; padding: 6px 13px; cursor: pointer;
+}
+.imo-scn button.on{ background: #1A4A7A; border-color: #1A4A7A; color: #FFFFFF; }
+.imo-scn button:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+
+.hier{
+  border: 1px solid #C9D4DE; border-radius: 3px;
+  padding: 17px 16px 19px;
+  display: flex; flex-direction: column;
+}
+.hier-lbl{
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .11em; text-transform: uppercase; color: #7A8899;
+  margin-bottom: 5px;
+}
+.hier-v{
+  border: 1px solid #C9D4DE; border-radius: 3px;
+  padding: 13px; font-size: 13.5px; font-weight: 600;
+  display: flex; align-items: center; gap: 10px;
+  background: #FFFFFF; color: #1B3D6D;
+}
+.hier-v .tagx{
+  margin-left: auto; flex: none;
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .07em; text-transform: uppercase;
+  padding: 3px 7px; border-radius: 3px;
+}
+.hier-v .lock{ font-size: 12px; opacity: .8; }
+.hier-v .cv{ font-size: 15px; line-height: 1; color: #8494A5; }
+.hier-v.auto{ background: var(--kz-wash); border-color: var(--kz-wash-line); color: var(--kz-teal-deep); }
+.hier-v.auto .tagx{ background: var(--kz-teal); color: #FFFFFF; }
+.hier-v.derived{ background: var(--kz-wash); border-color: var(--kz-teal); border-style: dashed; color: var(--kz-teal-deep); }
+.hier-v.derived .tagx{ background: var(--kz-teal-deep); color: #FFFFFF; }
+.hier-v.none{ background: #F4F7FA; color: #8494A5; font-weight: 500; }
+.hier-v.none .tagx{ background: #D5DFE8; color: #4A5768; }
+.hier-v.pick{ color: #6C7A8A; font-weight: 500; }
+.hier-v.pick .tagx{ background: #E4EDF5; color: #1B3D6D; }
+.hier-v.picked{ color: #1B3D6D; font-weight: 600; }
+.hier-v.picked .tagx{ background: #E4EDF5; color: #1B3D6D; }
+.hier-tick{ height: 15px; margin: 0 0 0 15px; border-left: 1.5px solid #C9D4DE; }
+.hier-alt{ display: flex; flex-direction: column; gap: 4px; padding: 7px 0 0 2px; }
+.hier-alt a{ font-size: 12.5px; color: #1A5FA8; font-weight: 600; text-decoration: none; }
+.hier-gap{ height: 15px; }
+
+.imo-note{
+  font-size: 12.5px; line-height: 1.58; color: var(--ac-body);
+  background: #F7FAFC; border: 1px solid #E1E8EF;
+  border-radius: 3px; padding: 12px 14px;
+}
+.imo-note b{ color: #1B3D6D; font-weight: 700; }
+.imo-note .kz{ color: var(--kz-teal-deep); font-weight: 700; }
+
+.nwf-tbl.four .hd, .nwf-tbl.four .row{ grid-template-columns: 1.35fr 1.7fr 1.25fr .75fr; }
+.nwf-tbl .row{
+  display: grid; padding: 14px 16px; align-items: center;
+  font-size: 13px; color: var(--ac-body); border-top: 1px solid #E1E8EF;
+}
+.nwf-tbl .row b{ color: #1B3D6D; font-weight: 700; }
+.nwf-tbl .row .aggc{ color: var(--kz-teal-deep); font-weight: 700; }
+.nwf-tbl .row .act{ color: #1A5FA8; font-weight: 600; }
+.imo-wrap{ display: flex; flex-direction: column; gap: 13px; }
+
+/* ---------- the Before You Register gate ---------- */
+.nwm-ov{
+  position: absolute; inset: 0; z-index: 4;
+  background: rgba(16, 40, 66, .38);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 118px 20px 20px;
+}
+.nwm{
+  width: 100%; max-width: 470px;
+  background: #FFFFFF; border-radius: 4px;
+  box-shadow: 0 22px 54px -18px rgba(9, 26, 43, .58);
+  overflow: hidden;
+}
+.nwm .nwm-h{
+  padding: 18px 22px 15px;
+  font-size: 19px; font-weight: 700; color: #1B3D6D;
+  border-bottom: 1px solid #E4EAF0;
+}
+.nwm .nwm-b{ padding: 17px 22px 4px; font-size: 13.5px; color: var(--ac-body); line-height: 1.55; }
+.nwm .nwm-term{
+  display: flex; gap: 11px; align-items: flex-start;
+  padding: 14px 22px 20px;
+  font-size: 14.5px; font-weight: 700; color: #1B3D6D; line-height: 1.45;
+}
+.nwm .nwm-term .ck{ color: #3E8C4F; font-size: 16px; line-height: 1.2; flex: none; }
+.nwm .nwm-f{ display: flex; justify-content: space-between; gap: 12px; padding: 0 22px 20px; }
+.nwm .nwm-f button{
+  font-family: var(--sans);
+  border: 0; border-radius: 4px; cursor: pointer;
+  padding: 10px 26px; font-size: 13.5px; font-weight: 700; color: #FFFFFF;
+}
+.nwm .nwm-f button.no{ background: #E02D2D; }
+.nwm .nwm-f button.yes{ background: #1A4A7A; }
+.nwm .nwm-f button:hover{ filter: brightness(1.08); }
+.nwm .nwm-f button:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+
+.nw-body{
+  padding: 26px 26px 32px;
+  background: #FFFFFF;
+  display: flex; flex-direction: column;
+}
+.nw-page-head{ display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px; }
+.nw-page-head p{ margin: 0; font-size: 13.5px; color: var(--ac-body); max-width: 78ch; }
+.nw-cap{ margin: 14px 0 0; font-size: 12px; color: var(--ac-muted); line-height: 1.55; max-width: 84ch; }
+.nw-submit{
+  margin-top: 22px; align-self: flex-start;
+  background: #1A4A7A; color: #FFFFFF;
+  border-radius: 22px; padding: 11px 32px;
+  font-size: 14px; font-weight: 700;
+}
+.steps-list{ max-width: 880px; }
+
+.nw-panels{
+  padding: 26px 22px 30px;
+  display: grid; grid-template-columns: 1.35fr 1fr; gap: 22px;
+  background: #FFFFFF;
+}
+.nw-login{
+  border: 1px solid #E4EAF0;
+  border-radius: 3px;
+  padding: 22px 26px 26px;
+  box-shadow: 0 1px 3px rgba(20,51,92,.07);
+  display: flex; flex-direction: column; gap: 15px;
+}
+.nw-lrow{ display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: space-between; }
+.nw-h{ font-size: 21px; font-weight: 700; color: #1B3D6D; letter-spacing: -.01em; }
+.ilia-lock{ display: flex; align-items: center; gap: 9px; }
+.ilia-word{ display: flex; flex-direction: column; gap: 3px; }
+.ilia-word b{ font-size: 30px; font-weight: 700; color: #1B3D6D; line-height: .82; letter-spacing: -.02em; }
+.ilia-dots{ display: flex; gap: 4px; }
+.ilia-dots i{ width: 6px; height: 6px; border-radius: 50%; display: block; }
+.ilia-dots i:nth-child(1){ background: #2B6CB0; }
+.ilia-dots i:nth-child(2){ background: #38A169; }
+.ilia-dots i:nth-child(3){ background: #ECC94B; }
+.ilia-dots i:nth-child(4){ background: #E53E3E; }
+.ilia-exp{ display: flex; flex-direction: column; }
+.ilia-exp span{ font-size: 9.5px; font-weight: 600; color: #4A5768; line-height: 1.32; }
+.nw-field{
+  border: 1px solid #D6DEE7;
+  border-radius: 2px;
+  padding: 15px 14px;
+  font-size: 13.5px; color: #6C7A8A;
+}
+.nw-field em{ font-style: normal; color: #D93025; }
+.nw-lbtn{
+  align-self: center;
+  background: #1A4A7A; color: #FFFFFF;
+  border-radius: 22px; padding: 11px 40px;
+  font-size: 14.5px; font-weight: 700;
+}
+.nw-forgot{ align-self: center; font-size: 13px; font-weight: 600; color: #1A5FA8; }
+.nw-reg{
+  background: #1A3A63;
+  border-radius: 3px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px; padding: 34px 24px;
+}
+.nw-reg b{ font-size: 20px; font-weight: 700; color: #FFFFFF; text-align: center; }
+.nw-reg button{
+  font-family: var(--sans);
+  background: transparent; color: #FFFFFF;
+  border: 1.5px solid #FFFFFF;
+  border-radius: 22px; padding: 10px 26px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.nw-reg button:hover{ background: rgba(255,255,255,.14); }
+.nw-reg button:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 3px; }
+
+.dlg-foot{
+  border-top: 1px solid var(--ac-line);
+  padding: 16px 24px 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  background: #FBFDFE;
+}
+.dlg-nav{ display: flex; align-items: center; gap: 10px; }
+.dlg-nav .spacer{ flex: 1; }
+.nbtn{
+  font-family: var(--sans);
+  font-size: 13.5px; font-weight: 700;
+  border-radius: 4px; padding: 10px 20px;
+  cursor: pointer;
+  border: 1.5px solid var(--ac-line);
+  background: #FFFFFF; color: var(--ac-heading);
+}
+.nbtn.go{ background: var(--kz-teal); border-color: var(--kz-teal); color: #FFFFFF; }
+.nbtn[disabled]{ opacity: .42; cursor: default; }
+.nbtn:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+.dlg-meta{
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--ac-line);
+  border: 1px solid var(--ac-line); border-radius: 5px; overflow: hidden;
+}
+.dlg-meta div{ background: #FFFFFF; padding: 11px 13px; display: flex; flex-direction: column; gap: 3px; }
+.dlg-meta dt{
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ac-muted);
+}
+.dlg-meta dd{ margin: 0; font-size: 12.5px; font-weight: 600; color: var(--ac-heading); line-height: 1.42; }
+
+/* ---------- option comparison ---------- */
+.cmp{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--doc-line);
+  border: 1px solid var(--doc-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cmp > div{ background: var(--doc-panel); padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 10px; }
+.cmp .oh{ display: flex; align-items: baseline; gap: 9px; }
+.cmp .oh .on{
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  color: #FFFFFF; background: var(--ac-navy);
+  border-radius: 3px; padding: 3px 7px;
+}
+.cmp h3{ margin: 0; font-size: 15.5px; font-weight: 700; letter-spacing: -.008em; }
+.cmp .size{
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase;
+}
+.cmp .size.lg{ color: #A3320D; }
+.cmp .size.md{ color: var(--note); }
+.cmp .size.sm{ color: var(--kz-teal-deep); }
+.cmp p{ margin: 0; font-size: 13.5px; color: var(--doc-ink-soft); line-height: 1.58; }
+.cmp p .k{ font-weight: 700; color: var(--doc-ink); }
+.cmp .try{
+  margin-top: auto;
+  align-self: flex-start;
+  font-family: var(--note-sans);
+  font-size: 12.5px; font-weight: 700;
+  border: 1.5px solid var(--doc-line); background: var(--doc-panel);
+  color: var(--doc-ink); border-radius: 5px; padding: 8px 14px; cursor: pointer;
+}
+.cmp .try:hover{ border-color: var(--note-bright); background: var(--note-wash); }
+.cmp .try:focus-visible{ outline: 3px solid var(--note-bright); outline-offset: 2px; }
+
+@media (max-width: 760px){
+  .wrap{ padding: 26px 16px 52px; }
+  .copyrow{ grid-template-columns: 1fr; gap: 4px; }
+  .fgrid, .tiles, .dlg-meta{ grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; animation: none !important; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="doc-head">
+    <div class="lede">
+      <p class="eyebrow">Agent Center · Kai-Zen · MVP</p>
+      <h1>Get Kai-Zen Certified on the Agent Center</h1>
+      <p><strong>The MVP:</strong> LPL agents already known to the Agent Center see a <strong>Get Kai-Zen Certified</strong> button and complete onboarding without leaving AC — confirm their Nevada licence, complete certification, sign the agent agreement. Below are four candidate placements for that button; <strong>all four are live</strong>, so click any of them to walk the agent’s experience.</p>
+    </div>
+  </header>
+
+  <div id="view-main">
+
+  <!-- ================= SCREEN 1 : DASHBOARD ================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2>Screen 1 — Agent Center dashboard</h2>
+      <span class="tag">Entry points</span>
+      <p>Everything outside the amber callouts matches the dashboard as it is today. The teal elements are the new ones — and they work.</p>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar">
+        <div class="lights" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="url">simplicityagentcenter.com/dashboard</div>
+      </div>
+      <div class="frame-scroll">
+        <div class="ac">
+
+          <!-- ---------- sidebar ---------- -->
+          <aside class="ac-side">
+            <div class="ac-brand">
+              <span class="mark" aria-hidden="true">
+                <svg width="30" height="30" viewBox="0 0 30 30">
+                  <circle cx="15" cy="15" r="14" fill="#164B73"></circle>
+                  <path d="M15 4.5a10.5 10.5 0 0 1 0 21 6 6 0 0 1 0-12 4.5 4.5 0 0 0 0-9z" fill="#FFFFFF"></path>
+                  <circle cx="15" cy="9" r="2.6" fill="#FFFFFF"></circle>
+                </svg>
+              </span>
+              <span class="name"><b>SIMPLICITY</b><span>GROUP</span></span>
+              <span class="collapse" aria-hidden="true">«</span>
+            </div>
+
+            <div class="ac-search">
+              <input type="text" placeholder="Search..." aria-label="Search">
+              <span class="btn" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.8" cy="6.8" r="4.6"></circle><path d="M10.4 10.4 14 14"></path></svg>
+              </span>
+            </div>
+
+            <nav class="ac-nav">
+              <a href="#" class="on"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 8.6 10 3l7 5.6V17H3z"></path><path d="M8 17v-5h4v5"></path></svg></span>Home</a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2.5" y="6" width="15" height="10.5" rx="1.5"></rect><path d="M7.5 6V4.5h5V6"></path></svg></span>My Business<span class="chev">›</span></a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 2.5h7l3 3v12H5z"></path><path d="M7.5 9h5M7.5 12h5"></path></svg></span>Commission Statements</a>
+
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 16.5s-6.5-4-6.5-8A3.5 3.5 0 0 1 10 6.2a3.5 3.5 0 0 1 6.5 2.3c0 4-6.5 8-6.5 8z"></path></svg></span>Life Insurance<span class="chev">⌄</span></a>
+              <div class="sub">
+                <a href="#">Term &amp; Permanent</a>
+                <a href="#">Indexed UL</a>
+                <a href="#" class="kz" data-flow>Kai-Zen<span class="newpill">New</span></a>
+              </div>
+
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 16.5v-6M8.6 16.5v-11M13.2 16.5v-8M17 16.5v-4"></path></svg></span>Annuities<span class="chev">›</span></a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6.5" width="14" height="9.5" rx="1.5"></rect><path d="M10 9v4.5M7.8 11.2h4.4"></path></svg></span>Long Term Care<span class="chev">›</span></a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 2.8 16.5 5v5.5c0 3.6-2.7 5.9-6.5 7.2-3.8-1.3-6.5-3.6-6.5-7.2V5z"></path></svg></span>Disability<span class="chev">›</span></a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 14.5 7.5 9l3.2 3L17 5"></path><path d="M13.2 5H17v3.8"></path></svg></span>Securities<span class="chev">›</span></a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3.5 8.2v3.6h3l4.5 3.4V4.8L7 8.2z"></path><path d="M14.4 7.4a4.5 4.5 0 0 1 0 5.2"></path></svg></span>Marketing Services<span class="chev">›</span></a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4.6" width="14" height="12.4" rx="1.5"></rect><path d="M3 8.4h14M7 3v3M13 3v3"></path></svg></span>Simplicity Events<span class="chev">›</span></a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2.6" y="4.4" width="14.8" height="11.2" rx="1.5"></rect><circle cx="7.6" cy="9" r="1.8"></circle><path d="M4.8 13.4c.5-1.5 1.6-2.2 2.8-2.2s2.3.7 2.8 2.2M12.4 8.4h3M12.4 11.4h3"></path></svg></span>Contact Simplicity</a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7.3"></circle><path d="M8.2 8a1.9 1.9 0 1 1 2.6 1.8c-.5.3-.8.7-.8 1.3"></path><circle cx="10" cy="13.6" r=".85" fill="currentColor" stroke="none"></circle></svg></span>Frequently Asked Questions</a>
+              <a href="#"><span class="ico"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="2.6"></circle><path d="M10 3v2.2M10 14.8V17M3 10h2.2M14.8 10H17M5.1 5.1l1.6 1.6M13.3 13.3l1.6 1.6M14.9 5.1l-1.6 1.6M6.7 13.3l-1.6 1.6"></path></svg></span>Settings</a>
+            </nav>
+
+            <div class="ac-user">
+              <span class="av">SA</span>Simplicity Agent<span class="updown">⌃⌄</span>
+            </div>
+          </aside>
+
+          <!-- ---------- main ---------- -->
+          <div class="ac-main">
+
+            <div class="ac-welcome">
+              <h2>Welcome, Simplicity</h2>
+              <div class="wx">
+                <span class="deg">76°F</span>
+                <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="7" fill="#FFD34D"></circle><g stroke="#FFD34D" stroke-width="2.4" stroke-linecap="round"><path d="M17 3v4M17 27v4M3 17h4M27 17h4M7.1 7.1l2.8 2.8M24.1 24.1l2.8 2.8M26.9 7.1l-2.8 2.8M9.9 24.1l-2.8 2.8"></path></g></svg>
+                <span class="sky">Clear sky</span>
+              </div>
+            </div>
+
+            <!-- My Business -->
+            <div class="ac-card">
+              <div class="ac-card-top">
+                <h3>My Business</h3>
+                <span class="stamp">Last updated 05/08/2026 at 9:20PM ET</span>
+                <span class="ac-btn">⟳ Refresh</span>
+                <span class="ac-btn">🗓 YTD</span>
+                <span class="ac-btn solid">Viewing: My Policies ⌄</span>
+              </div>
+              <div class="kpi-row">
+                <div class="kpi">
+                  <div class="lbl">Life Target Premiums</div>
+                  <div class="big">$1,125,000<i>Paid</i></div>
+                  <div class="rule"></div>
+                  <div class="sub">$1,125,000<i>Pending</i></div>
+                </div>
+                <div class="kpi">
+                  <div class="lbl">Annuity Premiums</div>
+                  <div class="big">$1,675,000<i>Paid</i></div>
+                  <div class="rule"></div>
+                  <div class="sub">$1,675,000<i>Pending</i></div>
+                </div>
+                <div class="kpi">
+                  <div class="lbl">Other Premiums</div>
+                  <div class="big">$25,300<i>Paid</i></div>
+                  <div class="rule"></div>
+                  <div class="sub">$34,900<i>Pending</i></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- KAI-ZEN PROMO CARD -->
+            <div class="kz-promo" id="promo">
+              <span class="kz-mark" aria-hidden="true">KZ</span>
+              <div class="kz-copy">
+                <span class="kz-eyebrow">New from NIW</span>
+                <h3>Add Kai-Zen to your practice</h3>
+                <p>Kai-Zen helps high-earning clients build significantly more life and long-term-care protection using leveraged funding. Complete a short certification to start offering it.</p>
+              </div>
+              <div class="kz-side">
+                <button class="kz-cta" type="button" data-flow>Get Kai-Zen Certified →</button>
+                <span class="learn">What is Kai-Zen?</span>
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="ac-card">
+              <div class="ac-card-top">
+                <h3>Quick Links</h3>
+                <span class="stamp"></span>
+                <span class="ac-btn">✎ Configure</span>
+              </div>
+              <div class="ql-grid">
+                <div class="ql">Simplicity LifeLink™</div>
+                <div class="ql">iGo e-App</div>
+                <div class="ql">FireLight</div>
+                <div class="ql">Annuity Rate Watch</div>
+                <div class="ql">Annuity Calculators</div>
+                <div class="ql">iPipeline Quote</div>
+                <div class="ql">Carrier Directory</div>
+                <div class="ql">Ensight Intelligent Quote</div>
+                <button class="ql kz" id="qltile" type="button" data-flow>Get Kai-Zen Certified</button>
+              </div>
+            </div>
+
+            <!-- News -->
+            <div class="ac-card">
+              <div class="ac-card-top"><h3>News &amp; Updates</h3></div>
+              <div class="news">
+                <div class="news-item" id="newsitem">
+                  <div class="thumb" aria-hidden="true">
+                    <svg width="156" height="102" viewBox="0 0 156 102">
+                      <rect width="156" height="102" fill="#0E7C7B"></rect>
+                      <rect x="16" y="20" width="74" height="7" rx="3.5" fill="#FFFFFF" opacity=".92"></rect>
+                      <rect x="16" y="34" width="106" height="7" rx="3.5" fill="#FFFFFF" opacity=".55"></rect>
+                      <rect x="16" y="48" width="52" height="7" rx="3.5" fill="#FFFFFF" opacity=".38"></rect>
+                      <rect x="16" y="68" width="66" height="18" rx="3" fill="#FFFFFF"></rect>
+                      <rect x="24" y="75" width="50" height="4" rx="2" fill="#0E7C7B"></rect>
+                    </svg>
+                  </div>
+                  <div class="body">
+                    <a class="t" href="#">Kai-Zen Certification Is Now Open on the Agent Center</a>
+                    <p>NIW’s Kai-Zen strategy is now available through Simplicity. Certification takes about 45 minutes and covers who Kai-Zen is designed for, how the funding works, and how to present it. Once you’re certified and approved, you’ll get access to run cases.</p>
+                    <button class="dl" type="button" data-flow>Get Kai-Zen Certified ↗</button>
+                  </div>
+                </div>
+
+                <div class="news-item">
+                  <div class="thumb" aria-hidden="true">
+                    <svg width="156" height="102" viewBox="0 0 156 102">
+                      <rect width="156" height="102" fill="#F1F5F9"></rect>
+                      <g fill="#FFFFFF" stroke="#C4D2DE">
+                        <rect x="24" y="14" width="72" height="80"></rect>
+                        <rect x="34" y="10" width="72" height="80"></rect>
+                        <rect x="44" y="6" width="72" height="80"></rect>
+                      </g>
+                      <g fill="#8FA6B8">
+                        <rect x="52" y="16" width="56" height="3"></rect>
+                        <rect x="52" y="24" width="56" height="2"></rect><rect x="52" y="30" width="56" height="2"></rect>
+                        <rect x="52" y="36" width="56" height="2"></rect><rect x="52" y="42" width="56" height="2"></rect>
+                        <rect x="52" y="48" width="56" height="2"></rect><rect x="52" y="54" width="56" height="2"></rect>
+                        <rect x="52" y="60" width="56" height="2"></rect><rect x="52" y="66" width="56" height="2"></rect>
+                        <rect x="52" y="72" width="36" height="2"></rect>
+                      </g>
+                    </svg>
+                  </div>
+                  <div class="body">
+                    <a class="t" href="#">The Latest Index Volatility Control Report Now Available</a>
+                    <p>Simplicity Group’s latest report from The Index Standard is now live, delivering essential data on YTD, 1Y, 3Y, and 5Y performance metrics across leading volatility control and multi-asset indexes.</p>
+                    <span class="dl">Download Full Report ↗</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- annotation layer — positioned by measurement on load -->
+          <div id="notes"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PLACEMENT KEY ================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2>What each placement is for</h2>
+      <p>They are not alternatives — they stack, and they all point at the same destination.</p>
+    </div>
+    <div class="key">
+      <div>
+        <span class="n">1</span>
+        <span class="role">Permanent · always there</span>
+        <h3>Nav item under Life Insurance</h3>
+        <p>Categorically correct — Kai-Zen is a life strategy. Never expires, survives every dashboard refresh. Low discovery on its own, which is why it doesn’t ship alone.</p>
+      </div>
+      <div>
+        <span class="n">2</span>
+        <span class="role">Launch · 60–90 days</span>
+        <h3>Promo card below My Business</h3>
+        <p>Directly under the numbers agents log in to check. Highest visibility on the page, and the only slot with room to explain what Kai-Zen is before asking for a commitment.</p>
+      </div>
+      <div>
+        <span class="n">3</span>
+        <span class="role">Optional · confirm first</span>
+        <h3>Quick Links tile</h3>
+        <p>Sits with the tools agents already use. One caveat: Quick Links has a <em>Configure</em> control, so if agents can edit that grid, a tile may not be guaranteed to appear.</p>
+      </div>
+      <div>
+        <span class="n">4</span>
+        <span class="role">Day one · decays</span>
+        <h3>News &amp; Updates post</h3>
+        <p>Near-zero build and can go live before anything else is ready. It scrolls away over time, so it’s the announcement — not the front door.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COPY ================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2>The copy, as used above</h2>
+      <span class="tag">Approved direction</span>
+    </div>
+    <div class="copybox">
+      <dl class="copyrow">
+        <dt>Primary button</dt>
+        <dd>
+          <span class="v">Get Kai-Zen Certified</span>
+          <span class="why">Status, not paperwork. Short enough to hold a button at any width, and it tells the truth about what’s on the other side — training, then approval.</span>
+        </dd>
+      </dl>
+      <dl class="copyrow">
+        <dt>Promo headline</dt>
+        <dd>
+          <span class="v">Add Kai-Zen to your practice</span>
+          <span class="why">Benefit-framed. Leads with what the agent gets, so the button doesn’t have to introduce an unfamiliar product and ask for commitment at the same time.</span>
+        </dd>
+      </dl>
+      <dl class="copyrow">
+        <dt>Nav item</dt>
+        <dd>
+          <span class="v">Kai-Zen</span>
+          <span class="why">Just the product name. Nav labels are wayfinding, not calls to action — the CTA belongs on the page it opens.</span>
+        </dd>
+      </dl>
+      <dl class="copyrow">
+        <dt>Secondary link</dt>
+        <dd>
+          <span class="v">What is Kai-Zen?</span>
+          <span class="why">An exit for the agent who has never heard of it. Without this, the only path is “commit or leave.”</span>
+        </dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ================= THE APPROACH ================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2>The approach — onboarding inside the Agent Center</h2>
+      <span class="tag">Selected</span>
+      <p>For an LPL agent already known to AC, the whole flow runs in an AC-designed modal. Click any entry point above to walk it.</p>
+    </div>
+    <div class="cmp">
+      <div>
+        <div class="oh"><span class="on">A</span><h3>What the agent does</h3></div>
+        <span class="size sm">Three steps · nothing typed</span>
+        <p>Four entry points on AC all open the same modal: <span class="k">confirm the Nevada licence</span>, <span class="k">complete Kai-Zen certification</span>, <span class="k">sign the agent agreement</span>. Then submit.</p>
+        <p>No registration form. AC already holds the agent’s details, so the record is assembled behind the scenes rather than re-typed.</p>
+      </div>
+      <div>
+        <div class="oh"><span class="on">B</span><h3>What NIW still owns</h3></div>
+        <span class="size md">Unchanged</span>
+        <p><span class="k">Approval</span> stays a NIW-admin job in ILIA’s existing queue, and the <span class="k">agent agreement</span> stays NIW’s document. ILIA remains the operating system of record once the agent is live.</p>
+        <p>The <span class="k">certification content</span> is still net-new and still comes from Simplicity.</p>
+      </div>
+      <div>
+        <div class="oh"><span class="on">C</span><h3>What to settle before build</h3></div>
+        <span class="size lg">Open</span>
+        <p><span class="k">AC has to post the registration into ILIA.</span> The agent never visits niwcorp, so AC calls the registration API with the Rep Sheet data and the right IMO — see the tech note in <b>Agg structure</b>.</p>
+        <p><span class="k">Non-AC traffic.</span> Agents who arrive at niwcorp directly still need the existing flow, with certification added there too.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AFTER SUBMIT ================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2>After the agent submits</h2>
+      <span class="tag">NIW → ILIA</span>
+      <p>Everything from here already exists and does not change.</p>
+    </div>
+    <div class="key" style="grid-template-columns:1fr">
+      <div>
+        <div class="steps-list">
+          <div class="sl"><span class="dot">1</span><div class="sb"><span class="where">From AC</span><b>The registration is posted into ILIA</b><span>A pending agent record is created with the agent’s details, their IMO and their carriers — and the certification recorded as complete.</span></div></div>
+          <div class="sl"><span class="dot ilia">2</span><div class="sb"><span class="where">NIW admin · in ILIA</span><b>Approval in the existing queue</b><span>An action-item alert fires, then the admin verifies IMO, region and carriers in Agent Approval Management. Unchanged from today.</span></div></div>
+          <div class="sl"><span class="dot ilia">3</span><div class="sb"><span class="where">In ILIA</span><b>Welcome email and account access</b><span>The agent sets a password on the record created at submission — not a second registration.</span></div></div>
+          <div class="sl"><span class="dot ilia">4</span><div class="sb"><span class="where">In ILIA · ongoing</span><b>The agent works Kai-Zen in ILIA</b><span>Invites, agent links, action items, tranches. Unchanged from today.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= THE OPEN ITEM ================= -->
+  <section class="section">
+    <div class="decide">
+      <h3><span class="mono">Open item</span> AC now has to write into ILIA</h3>
+      <p>Moving the flow inside AC removes the hand-off the agent used to feel — and moves the work onto AC. Because the agent never reaches niwcorp, <strong>AC has to post the completed registration into ILIA itself</strong>: the Rep Sheet details, the resolved IMO, the carriers, and the certification result.</p>
+      <p>The good news is the endpoint already exists — it is the same one niwcorp.com posts to today, and it needs no ILIA change. The ask on NIW is narrow: agree the payload, and decide where the certification result is recorded, since <strong>there is no field for it on the agent record right now</strong>. The mapping is in the tech note under <strong>Agg structure</strong>.</p>
+    </div>
+  </section>
+
+  </div>
+
+  <div id="view-agg">
+    <section class="section">
+      <div class="section-head">
+        <h2>LPL as an ILIA Aggregator</h2>
+        <span class="tag">Agg structure</span>
+        <button class="tagbtn" id="map-btn" type="button" aria-expanded="false">
+          <span class="chev" aria-hidden="true">▸</span><span id="map-label">Tech note — AC ⟶ ILIA data</span>
+        </button>
+      </div>
+
+      <div class="mapwrap" id="map-panel" hidden>
+        <div class="mh"><span class="flag">Tech note</span><span>How AC data maps onto ILIA’s agent-registration schema</span></div>
+        <div class="mb">
+          <p>So the right data comes across, this is <strong>which AC field feeds which ILIA field</strong> for an agent registration. The ILIA column is taken from the live code — the public registration endpoint and the Sequelize models. The <strong>AC column is our assumption and needs confirming</strong> with the Agent Center team against the real Rep Sheet.</p>
+
+          <div class="map-scroll">
+            <table class="map-tbl">
+              <colgroup><col style="width:36%"><col style="width:26%"><col style="width:38%"></colgroup>
+              <thead><tr>
+                <th>AC — Rep Sheet field <span style="text-transform:none;letter-spacing:0">(to confirm)</span></th>
+                <th>ILIA registration payload</th>
+                <th>Lands in</th>
+              </tr></thead>
+              <tbody><tr><td class="acx">First name</td><td class="mono">firstName</td><td class="mono">User.firstName</td></tr><tr><td class="acx">Last name</td><td class="mono">lastName</td><td class="mono">User.lastName</td></tr><tr><td class="acx">Email — the de-facto join key</td><td class="mono">email</td><td class="mono">User.email &nbsp;(unique across every ILIA user)</td></tr><tr><td class="acx">Mobile phone</td><td class="mono">mobilePhone</td><td class="mono">User.phoneNumber</td></tr><tr><td class="acx">Work phone</td><td class="mono">workPhone</td><td class="mono">Agent.officeNumber</td></tr><tr><td class="acx">Firm / company name</td><td class="mono">companyName</td><td class="mono">Agent.companyName</td></tr><tr><td class="acx">Business address 1</td><td class="mono">businessAddress1</td><td class="mono">Agent.companyStreet</td></tr><tr><td class="acx">Business address 2</td><td class="mono">businessAddress2</td><td class="mono">Agent.businessAddress2</td></tr><tr><td class="acx">City</td><td class="mono">city</td><td class="mono">Agent.companyCity</td></tr><tr><td class="acx">State</td><td class="mono">state</td><td class="mono">Agent.companyState</td></tr><tr><td class="acx">Zip</td><td class="mono">zipCode</td><td class="mono">Agent.companyZipCode</td></tr><tr><td class="acx">Firm, resolved to its ILIA IMO account</td><td class="mono">imos[].id</td><td class="mono">AgentImo.imoId</td></tr><tr><td class="acx">Carrier appointments</td><td class="mono">imos[].carriers[]</td><td class="mono">AgentImoCarrier.carrierId</td></tr><tr><td class="acx">Region</td><td class="mono">imos[].region</td><td class="mono">AgentRegistrationRequest.region</td></tr><tr class="gap"><td class="acx">LPL affiliation flag <em>+ firm</em></td><td class="mono"><em>no field today</em></td><td class="mono">resolves <em>Imo.aggregatorId</em> via the IMO</td></tr></tbody>
+            </table>
+          </div>
+
+          <div class="map-gaps">
+            <div class="g"><b>The aggregator is never in the payload.</b> The registration API accepts IMOs only — the aggregator is read from that IMO’s <span class="mono">aggregatorId</span>. That is the schema reason the agent never picks an aggregator: send the right IMO and the roll-up resolves itself.</div>
+            <div class="g"><b>The LPL flag has nowhere to live on the agent record.</b> <span class="mono">Agent</span> has no external-id, NPN, licence or affiliation column. Cheapest path: don’t store the flag — use it to pick the right LPL institution IMO (or <span class="mono">LPL Independent</span>) at registration, and the aggregator is implied. Storing it needs a schema change on NIW’s side.</div>
+            <div class="g"><b>Email is the only join key.</b> There is no Salesforce ID, NPN or external ID on the ILIA agent record, and <span class="mono">email</span> is enforced unique across all users. If AC sends an email that differs from an existing ILIA record, the registration either collides or creates a second person — this is what the pre-population note on the registration screen is protecting against.</div>
+            <div class="g"><b>Registration writes five records, not one.</b> One call creates the Cognito user, <span class="mono">User</span>, <span class="mono">Agent</span>, <span class="mono">AgentImo</span> (+ <span class="mono">AgentImoCarrier</span>) and <span class="mono">AgentRegistrationRequest</span> at status <span class="mono">PENDING</span>, then alerts every active admin. So a bad payload is a partial agent, not a failed form.</div>
+          </div>
+
+          <p class="map-src">ILIA column verified against niw-api — public-api/agent/request + the User / Agent / AgentImo / AgentRegistrationRequest models. AC column: unverified, needs the Agent Center team.</p>
+        </div>
+      </div>
+      <p class="agg-lede">LPL becomes an <strong>Aggregator</strong> account — ILIA’s hierarchy level that sits above IMOs and exists precisely so a parent organisation can see the business written beneath it. Every LPL-affiliated institution becomes its own IMO account underneath. Independent agents get an IMO account of their own, <strong>LPL Independent</strong>, so they have somewhere to live.</p>
+
+      <div class="agg-frame">
+        <svg viewBox="0 0 1010 470" role="img" aria-label="LPL as an ILIA aggregator: LPL Financial sits above IMO accounts for each institution plus LPL Independent, which sit above agents, which sit above Kai-Zen enrollments, with a reporting roll-up back to LPL."><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 1 L8 5 L0 9 z" fill="#6E8095"></path></marker><marker id="art" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 1 L8 5 L0 9 z" fill="#0E7C7B"></path></marker></defs><g><text x="16" y="64" font-size="10.5" font-weight="700" fill="#55616F" letter-spacing="1.2" font-family="IBM Plex Mono, monospace">AGGREGATOR</text><text x="16" y="78" font-size="9.5" fill="#8C99A6" font-family="IBM Plex Mono, monospace">role 18</text><text x="16" y="174" font-size="10.5" font-weight="700" fill="#55616F" letter-spacing="1.2" font-family="IBM Plex Mono, monospace">IMO</text><text x="16" y="188" font-size="9.5" fill="#8C99A6" font-family="IBM Plex Mono, monospace">role 3</text><text x="16" y="294" font-size="10.5" font-weight="700" fill="#55616F" letter-spacing="1.2" font-family="IBM Plex Mono, monospace">AGENT</text><text x="16" y="308" font-size="9.5" fill="#8C99A6" font-family="IBM Plex Mono, monospace">role 4</text><text x="16" y="404" font-size="10.5" font-weight="700" fill="#55616F" letter-spacing="1.2" font-family="IBM Plex Mono, monospace">CLIENT</text><text x="16" y="418" font-size="9.5" fill="#8C99A6" font-family="IBM Plex Mono, monospace">role 5</text></g><g fill="none" stroke="#6E8095" stroke-width="1.4"><path d="M535 96 L535 124"></path><path d="M225 124 L787 124"></path><path d="M225 124 L225 150" marker-end="url(#ar)"></path><path d="M390 124 L390 150" marker-end="url(#ar)"></path><path d="M555 124 L555 150" marker-end="url(#ar)"></path><path d="M787 124 L787 150" marker-end="url(#ar)"></path><path d="M225 204 L225 244"></path><path d="M390 204 L390 244"></path><path d="M555 204 L555 244"></path><path d="M225 244 L555 244"></path><path d="M390 244 L390 270" marker-end="url(#ar)"></path><path d="M787 204 L787 270" marker-end="url(#ar)"></path><path d="M390 324 L390 356 L455 356 L455 380" marker-end="url(#ar)"></path><path d="M787 324 L787 356 L505 356 L505 380" marker-end="url(#ar)"></path></g><g fill="none" stroke="#0E7C7B" stroke-width="1.5" stroke-dasharray="6 5"><path d="M630 406 L960 406 L960 70 L652 70" marker-end="url(#art)"></path></g><text x="545" y="116" font-size="9.5" fill="#7A8899" font-family="IBM Plex Mono, monospace">Imo.aggregatorId</text><text x="400" y="238" font-size="9.5" fill="#7A8899" font-family="IBM Plex Mono, monospace">AgentImo</text><text x="400" y="350" font-size="9.5" fill="#7A8899" font-family="IBM Plex Mono, monospace">ClientPolicies.agentId</text><text x="795" y="398" text-anchor="middle" font-size="9.5" fill="#0E7C7B" font-family="IBM Plex Mono, monospace">reporting roll-up</text><rect x="420" y="44" width="230" height="52" rx="3" fill="#EDF7F6" stroke="#0E7C7B" stroke-width="1.6"></rect><text x="535" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1B3D6D">LPL Financial</text><text x="535" y="82" text-anchor="middle" font-size="9.5" fill="#70808F" font-family="IBM Plex Mono, monospace">Aggregator account</text><rect x="150" y="152" width="150" height="52" rx="3" fill="#FFFFFF" stroke="#2E6FA8" stroke-width="1.6"></rect><text x="225" y="174" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1B3D6D">Institution A</text><text x="225" y="190" text-anchor="middle" font-size="9.5" fill="#70808F" font-family="IBM Plex Mono, monospace">IMO account</text><rect x="315" y="152" width="150" height="52" rx="3" fill="#FFFFFF" stroke="#2E6FA8" stroke-width="1.6"></rect><text x="390" y="174" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1B3D6D">Institution B</text><text x="390" y="190" text-anchor="middle" font-size="9.5" fill="#70808F" font-family="IBM Plex Mono, monospace">IMO account</text><rect x="480" y="152" width="150" height="52" rx="3" fill="#F4F7FA" stroke="#9AA8B5" stroke-width="1.6" stroke-dasharray="6 4"></rect><text x="555" y="174" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1B3D6D">+ n more</text><text x="555" y="190" text-anchor="middle" font-size="9.5" fill="#70808F" font-family="IBM Plex Mono, monospace">as LPL adds firms</text><rect x="700" y="152" width="175" height="52" rx="3" fill="#FDF4E3" stroke="#C77A0A" stroke-width="1.6" stroke-dasharray="6 4"></rect><text x="787.5" y="174" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7A4A05">LPL Independent</text><text x="787.5" y="190" text-anchor="middle" font-size="9.5" fill="#70808F" font-family="IBM Plex Mono, monospace">IMO account · net-new</text><rect x="150" y="272" width="480" height="52" rx="3" fill="#F1F5F9" stroke="#B0C0CF" stroke-width="1.6"></rect><text x="390" y="294" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1B3D6D">Institutional agents</text><text x="390" y="310" text-anchor="middle" font-size="9.5" fill="#70808F" font-family="IBM Plex Mono, monospace">sit under their own institution</text><rect x="700" y="272" width="175" height="52" rx="3" fill="#F1F5F9" stroke="#B0C0CF" stroke-width="1.6"></rect><text x="787.5" y="294" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1B3D6D">Independent agents</text><text x="787.5" y="310" text-anchor="middle" font-size="9.5" fill="#70808F" font-family="IBM Plex Mono, monospace">direct with LPL</text><rect x="330" y="382" width="300" height="52" rx="3" fill="#FFFFFF" stroke="#2E6FA8" stroke-width="1.6"></rect><text x="480" y="404" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1B3D6D">Kai-Zen enrollments</text><text x="480" y="420" text-anchor="middle" font-size="9.5" fill="#70808F" font-family="IBM Plex Mono, monospace">clients + policies</text></svg>
+        <div class="agg-legend">
+          <span><i class="exist" aria-hidden="true"></i>Existing entity, set up as an ILIA account</span>
+          <span><i class="newx" aria-hidden="true"></i>Net-new container we create</span>
+          <span><i class="rep" aria-hidden="true"></i>Repeats per additional firm</span>
+        </div>
+      </div>
+
+      <p class="agg-cap">Both agent types reach the same place by different routes, and both roll up to LPL. The dashed teal path is what LPL actually gets out of being an aggregator: read-only visibility of every enrolment written beneath it, per institution or across all of them.</p>
+    </section>
+
+    <section class="section">
+      <div class="tie">
+        <h3><span class="mono">Why it sits in this plan</span> The Rep Sheet decides where the agent lands</h3>
+        <p>The Tech notes on the registration screen call for AC to tell NIW <strong>whether the agent is tied in with LPL</strong>. This structure is why that flag matters: it determines which IMO account the new agent is placed under — their own institution, or <strong>LPL Independent</strong> if they’re direct.</p>
+        <p>Get the flag at registration and the agent lands in the right place first time, and LPL’s roll-up reporting is correct from day one. Miss it and someone re-parents the agent by hand later, which is exactly the kind of clean-up the aggregator model exists to avoid.</p>
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- ================= OPEN QUESTIONS ================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2>Open questions</h2>
+      <span class="tag">To confirm</span>
+      <p>Flagged areas are outlined in plum wherever they appear.</p>
+    </div>
+<div class="qdock" id="qdock" role="region" aria-label="Open questions">
+  <div class="qdock-h">
+    <b>Open questions</b><span class="c" id="qdock-count">1</span>
+  </div>
+  <div class="qdock-b" id="qdock-b"></div>
+  <div class="qdock-f">Highlighting is on — flagged areas are outlined in plum</div>
+</div>
+
+  </section>
+
+  <footer class="foot">
+    <span>Concept mock — not a build. Dashboard chrome recreated from the live AC screenshot; all figures are the sample values shown there. Registration fields and hand-off steps are taken from the live ILIA registration/approval code.</span>
+    <span class="mono">S-CIH-CODE · concept v3 · Option 3</span>
+  </footer>
+</div>
+
+
+
+<!-- ================= CERTIFICATE DOCUMENT ================= -->
+<div class="cdoc-ov" id="certdoc" role="dialog" aria-modal="true" aria-label="Kai-Zen certification certificate">
+  <div class="cdoc-wrap">
+    <div class="cdoc-bar">
+      <span class="t">Certificate · sample</span>
+      <span class="sp"></span>
+      <button type="button" class="dl">Download PDF</button>
+      <button type="button" id="certdoc-x">Close</button>
+    </div>
+
+    <div class="cdoc">
+      <div class="cdoc-in">
+        <div class="cdoc-org">NIW Companies · A Simplicity Company</div>
+        <div class="cdoc-rule"></div>
+
+        <div class="cdoc-kind">Certificate of Completion</div>
+        <h4 class="cdoc-h">Kai-Zen<sup style="font-size:.42em;top:-.9em;position:relative">®</sup> Certified Agent</h4>
+
+        <p class="cdoc-lead">This is to certify that</p>
+        <p class="cdoc-name">Dana Whitfield</p>
+        <p class="cdoc-firm">Northpoint Financial &nbsp;·&nbsp; <span class="agg">LPL Financial</span></p>
+
+        <p class="cdoc-body">has successfully completed the <b>Kai-Zen Certification Program</b>, covering the leveraged funding strategy, how it works, suitability and target markets, benefits and considerations, and how to position Kai-Zen with clients — and is authorized to present the Kai-Zen strategy.</p>
+
+        <div class="cdoc-meta">
+          <div class="cdoc-fld">
+            <span class="fl2">Date issued</span><span class="fv">May 9, 2026</span>
+          </div>
+          <div class="cdoc-seal"><svg viewBox="0 0 130 130" role="img" aria-label="Kai-Zen Certified Agent seal"><defs><path id="arcT" d="M 20 65 A 45 45 0 0 1 110 65" fill="none"></path><path id="arcB" d="M 22 65 A 43 43 0 0 0 108 65" fill="none"></path></defs><circle cx="65" cy="65" r="61" fill="#FBF7EC" stroke="#164B73" stroke-width="2"></circle><circle cx="65" cy="65" r="54" fill="none" stroke="#C08A2E" stroke-width="1.1"></circle><circle cx="65" cy="65" r="34" fill="none" stroke="#164B73" stroke-width="1" stroke-dasharray="2 3"></circle><text font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" letter-spacing="1.9" fill="#164B73"><textPath href="#arcT" startOffset="50%" text-anchor="middle">KAI-ZEN CERTIFIED AGENT</textPath></text><text font-family="IBM Plex Mono, monospace" font-size="7.5" font-weight="600" letter-spacing="1.5" fill="#164B73"><textPath href="#arcB" startOffset="50%" text-anchor="middle">NIW COMPANIES · SIMPLICITY</textPath></text><text x="65" y="60" text-anchor="middle" font-family="Libre Baskerville, Georgia, serif" font-size="19" font-weight="700" fill="#164B73">KZ</text><text x="65" y="76" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7.5" font-weight="600" letter-spacing="1.4" fill="#A67C22">2026</text><path d="M56 84 l5 5 l11 -12" fill="none" stroke="#0E7C7B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+          <div class="cdoc-fld rt">
+            <span class="fl2">Certificate number</span><span class="fv">KZ-2026-04871</span>
+          </div>
+        </div>
+
+        <div class="cdoc-sign">
+          <div class="sg">
+            <span class="nm">NIW Companies</span><span class="ln3"></span>
+            <span class="cap">Authorized signatory · NIW Companies</span>
+          </div>
+          <div class="sg">
+            <span class="nm">Dana Whitfield</span><span class="ln3"></span>
+            <span class="cap">Certified agent</span>
+          </div>
+        </div>
+
+        <div class="cdoc-foot">Verify at niwcorp.com/verify · KZ-2026-04871</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= WORKFLOW MODAL ================= -->
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+  <div class="dlg" id="dlg" tabindex="-1">
+    <div class="dlg-head">
+      <div class="hb">
+        <span class="opt-tag" id="dlg-tag"></span>
+        <h4 id="dlg-title"></h4>
+        <p id="dlg-sub"></p>
+      </div>
+      <button class="dlg-x" id="dlg-x" type="button" aria-label="Close">✕</button>
+    </div>
+    <div class="acid" id="acid"></div>
+    <div class="rail" id="dlg-rail"></div>
+    <div class="dlg-body" id="dlg-body"></div>
+    <div class="dlg-foot">
+      <div class="dlg-nav">
+        <button class="nbtn" id="dlg-back" type="button">Back</button>
+        <span class="spacer"></span>
+        <button class="nbtn go" id="dlg-next" type="button">Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ---- callout toggle ---- */
+  var btn = document.getElementById('toggle');
+  var lbl = document.getElementById('toggle-label');
+  if(btn && lbl){
+    btn.addEventListener('click', function(){
+      var off = document.body.classList.toggle('notes-off');
+      lbl.textContent = off ? 'Show callouts' : 'Hide callouts';
+      btn.setAttribute('aria-pressed', off ? 'false' : 'true');
+    });
+  }
+
+  /* ---- callouts are measured off the real elements, never hardcoded ---- */
+  var SPOTS = [
+    { sel: '.ac-nav .sub', n: '1', label: 'Permanent nav home',        place: 'below' },
+    { sel: '#promo',        n: '2', label: 'Launch promo — prime slot', place: 'topRight' },
+    { sel: '#qltile',       n: '3', label: 'Optional Quick Links tile', place: 'right' },
+    { sel: '#newsitem',     n: '4', label: 'Day-one announcement',      place: 'topRight' }
+  ];
+
+  var ac = document.querySelector('.ac');
+  var host = document.getElementById('notes');
+  if(!ac || !host) return;
+
+  function build(){
+    host.textContent = '';
+    var base = ac.getBoundingClientRect();
+    if(!base.width) return;   /* hidden view — nothing to measure */
+
+    SPOTS.forEach(function(spot){
+      var el = document.querySelector(spot.sel);
+      if(!el) return;
+      var b = el.getBoundingClientRect();
+      var left   = b.left - base.left;
+      var top    = b.top  - base.top;
+      var right  = left + b.width;
+      var bottom = top + b.height;
+
+      var halo = document.createElement('div');
+      halo.className = 'halo';
+      var hx = Math.max(0, left - 5), hy = Math.max(0, top - 5);
+      halo.style.left   = hx + 'px';
+      halo.style.top    = hy + 'px';
+      halo.style.width  = (right + 5 - hx) + 'px';
+      halo.style.height = (bottom + 5 - hy) + 'px';
+      host.appendChild(halo);
+
+      var pin = document.createElement('div');
+      pin.className = 'pin';
+      pin.innerHTML = '<span class="num"></span><span class="stem"></span><span class="txt"></span>';
+      pin.querySelector('.num').textContent = spot.n;
+      pin.querySelector('.txt').textContent = spot.label;
+
+      if(spot.place === 'topRight'){
+        pin.className = 'pin rtl';
+        pin.style.left = 'auto';
+        pin.style.right = (base.width - right + 10) + 'px';
+        pin.style.top  = (top - 30) + 'px';
+      } else if(spot.place === 'below'){
+        pin.style.left = (left + 10) + 'px';
+        pin.style.top  = (bottom + 10) + 'px';
+        pin.querySelector('.stem').style.width = '10px';
+      } else {
+        pin.style.left = (right + 10) + 'px';
+        pin.style.top  = (top + b.height / 2 - 15) + 'px';
+      }
+      host.appendChild(pin);
+    });
+  }
+
+  build();
+  window.addEventListener('resize', build);
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(build); }
+  window.addEventListener('load', build);
+})();
+
+/* ---- tech note: AC → ILIA data mapping ---- */
+(function(){
+  var btn = document.getElementById('map-btn');
+  var panel = document.getElementById('map-panel');
+  var lbl = document.getElementById('map-label');
+  if(!btn || !panel) return;
+  btn.addEventListener('click', function(){
+    var open = panel.hidden;
+    panel.hidden = !open;
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.querySelector('.chev').textContent = open ? '▾' : '▸';
+    lbl.textContent = open ? 'Hide tech note' : 'Tech note — AC ⟶ ILIA data';
+  });
+})();
+
+/* ---- open-questions layer: toggle highlighting + the dock ---- */
+(function(){
+  /* add to this list as questions come up; the badge count follows it */
+  var QUESTIONS = [
+    {
+      n: '1',
+      title: 'Are we OK showing the aggregator name to agents?',
+      body: 'The onboarding modal confirms the agent’s details back to them — including their LPL affiliation — so the agent sees the aggregator name.',
+      where: [
+        'Identity strip at the top of the Get Kai-Zen Certified modal'
+      ],
+      fallback: 'If not: show the firm only and keep the aggregator internal to ILIA. Placement and roll-up still work — the agent just never sees the parent name.',
+      ask: 'Ask Judy — including the aggregators already in ILIA today'
+    }
+  ];
+
+  var dock = document.getElementById('qdock');
+  var body = document.getElementById('qdock-b');
+  var count = document.getElementById('qdock-count');
+  if(!dock || !body) return;
+
+  if(count) count.textContent = QUESTIONS.length;
+
+  body.innerHTML = QUESTIONS.map(function(q){
+    return '<div class="qitem"><span class="qn">' + q.n + '</span><div class="qc">' +
+      '<b>' + q.title + '</b>' +
+      '<p>' + q.body + '</p>' +
+      '<span class="lab">Where it shows up</span>' +
+      '<ul>' + q.where.map(function(w){ return '<li>' + w + '</li>'; }).join('') + '</ul>' +
+      '<span class="lab">If the answer is no</span>' +
+      '<p>' + q.fallback + '</p>' +
+      '<span class="ask">' + q.ask + '</span>' +
+    '</div></div>';
+  }).join('');
+
+  document.body.classList.add('q-on');
+})();
+
+
+/* ============================================================
+   THE AC ONBOARDING MODAL — user experience only.
+   Three parts: Nevada licence · Kai-Zen certification · agent agreement.
+   The agent is already known to AC, so nothing is typed.
+   ============================================================ */
+(function(){
+  var ov    = document.getElementById('ov');
+  var dlg   = document.getElementById('dlg');
+  var elTag = document.getElementById('dlg-tag');
+  var elTtl = document.getElementById('dlg-title');
+  var elSub = document.getElementById('dlg-sub');
+  var elId  = document.getElementById('acid');
+  var elRail= document.getElementById('dlg-rail');
+  var elBody= document.getElementById('dlg-body');
+  var elBack= document.getElementById('dlg-back');
+  var elNext= document.getElementById('dlg-next');
+  if(!ov || !dlg) return;
+
+  var STEPS = [
+    { key: 'nv',   label: 'Nevada license' },
+    { key: 'cert', label: 'Kai-Zen certification' },
+    { key: 'sign', label: 'Agent agreement' }
+  ];
+
+  var done = { nv: false, cert: false, sign: false };
+  var idx = 0, submitted = false, lastFocus = null;
+
+  /* high-level shape of the certification — content comes from Simplicity */
+  var CHAPTERS = [
+    { r: 'Kai-Zen Leveraged Strategy',          h: 'The Kai-Zen Leveraged Strategy',      d: '6 min' },
+    { r: 'How it Works',                        h: 'How Kai-Zen Works',                   d: '9 min' },
+    { r: 'Why it Makes Sense for Your Clients', h: 'Why It Makes Sense for Your Clients', d: '7 min' },
+    { r: 'Target Markets',                      h: 'Target Markets',                      d: '5 min' },
+    { r: 'Benefits &amp; Considerations',           h: 'Benefits &amp; Considerations',           d: '8 min' },
+    { r: 'How to Position it to Your Clients',  h: 'How to Position It to Your Clients',  d: '10 min' },
+    { r: 'Complete Certification',              h: 'Complete Your Certification',         d: '5 min' }
+  ];
+  var LAST = CHAPTERS.length - 1;
+  var chapter = 0;
+
+  function card(title, state, inner, note){
+    return '<div class="scard"><div class="sh"><b>' + title + '</b>' +
+      (note ? '<span class="nt">' + note + '</span>' : '') +
+      '<span class="st ' + (state ? 'ok' : 'todo') + '">' + (state ? 'Complete' : 'Required') + '</span></div>' +
+      '<div class="sb">' + inner + '</div></div>';
+  }
+
+  function stepNevada(){
+    var inner = '<p>Kai-Zen policies are issued out of Nevada, so you need a current <b>non-resident Life Insurance License in Nevada</b> before you can be approved to sell it.</p>' +
+      '<button type="button" class="confirm' + (done.nv ? ' on' : '') + '" data-act="nv">' +
+        '<span class="bx">' + (done.nv ? '✓' : '') + '</span>' +
+        '<span class="cl">I confirm I hold a current non-resident Life Insurance License in Nevada.</span>' +
+      '</button>' +
+      (done.nv ? '' : '<p style="font-size:12.5px;color:#75838F;margin:0">Don’t hold one yet? You can come back to this once you do — nothing is submitted until all three steps are complete.</p>');
+    return card('Non-resident Life Insurance License — Nevada', done.nv, inner);
+  }
+
+  var CERT_NOTE = '(Rahim KZ Cert Mocks)';
+
+  function courseView(){
+    var ch = CHAPTERS[chapter];
+    var isFinal = chapter === LAST;
+
+    var rail = '<div class="course-rail"><div class="ct">Kai-Zen<br>Certification</div><ol>' +
+      CHAPTERS.map(function(c, i){
+        var cls = i === chapter ? 'on' : (i < chapter ? 'did' : '');
+        return '<li class="' + cls + '"><span class="dot">' + (i < chapter ? '✓' : '') + '</span>' +
+          '<button type="button" class="lb" data-cact="ch:' + i + '">' + c.r + '</button></li>';
+      }).join('') + '</ol></div>';
+
+    var pane = isFinal
+      ? '<div class="finalx"><span class="bg2">✓</span>' +
+          '<b>All modules complete</b>' +
+          '<p>Finish the knowledge check to be certified to present Kai-Zen to your clients.</p></div>'
+      : '<div class="vid"><div class="screen"><span class="play">▶</span></div>' +
+          '<div class="bar"><span class="sq">▶</span><span class="tr"><span class="kn"></span></span>' +
+          '<span class="vol">🔊</span></div></div>';
+
+    var main = '<div class="course-main"><div class="cmh">' + ch.h + '</div>' + pane +
+      '<div class="course-foot">' +
+        '<span class="cprog">Module ' + (chapter + 1) + ' of ' + CHAPTERS.length + ' · ' + ch.d + '</span>' +
+        '<button type="button" class="course-next' + (isFinal ? ' fin' : '') + '" data-cact="next">' +
+          (isFinal ? 'Complete certification' : 'Next') + '</button>' +
+      '</div></div>';
+
+    return card('Kai-Zen Certification', false, '', CERT_NOTE).replace('<div class="sb"></div>',
+      '<div class="sb" style="padding:0"><div class="course">' + rail + main + '</div></div>');
+  }
+
+  function stepCert(){
+    if(done.cert){
+      return card('Kai-Zen Certification', true,
+        '<div class="cert-badge"><span class="ck">✓</span>' +
+          '<span class="cb"><b>You’re now certified to sell Kai-Zen</b>' +
+            '<span>Completed 05/09/2026 · certificate on file</span>' +
+            '<button type="button" class="lnk" data-certdoc>View certificate</button></span></div>' +
+        '<button type="button" class="undo" data-act="cert">Retake certification</button>', CERT_NOTE);
+    }
+    return courseView();
+  }
+
+  function stepSign(){
+    var inner;
+    if(done.sign){
+      inner = '<div class="cert-badge"><span class="ck">✓</span>' +
+        '<span class="cb"><b>Agent agreement signed</b>' +
+          '<span>Signed 05/09/2026 · copy emailed to you and held by NIW</span>' +
+          '<a href="#">View signed agreement</a></span></div>' +
+        '<button type="button" class="undo" data-act="sign">Undo signature</button>';
+    } else {
+      inner = '<p>NIW has already counter-signed. Review the agreement and add your signature to finish.</p>' +
+        '<div class="docbox"><div class="dt"><span>NIW Kai-Zen Agent Agreement</span>' +
+          '<span class="badge">Counter-signed by NIW</span></div>' +
+          '<div class="dl2"><div class="ln"></div><div class="ln m"></div><div class="ln"></div>' +
+            '<div class="ln s"></div><div class="ln m"></div>' +
+            '<div style="margin-top:12px">Awaiting your signature.</div></div></div>' +
+        '<button type="button" class="actbtn navy" data-act="sign">Review &amp; sign</button>';
+    }
+    return card('NIW Agent Agreement', done.sign, inner);
+  }
+
+  function stepDone(){
+    return '<div class="allset"><span class="big">✓</span>' +
+      '<h5>You’re all set, Dana</h5>' +
+      '<p>Your Kai-Zen registration is with the NIW team for approval. You’ll get an email as soon as it’s reviewed.</p>' +
+      '<div class="nx"><span class="l">What happens next</span><ul>' +
+        '<li>NIW reviews your registration — usually within one business day.</li>' +
+        '<li>Once approved, you’ll get an email with access to ilia, where you run your Kai-Zen cases.</li>' +
+        '<li>Your certification and signed agreement are already on file — nothing else to send.</li>' +
+      '</ul></div></div>';
+  }
+
+  var cdocOv = document.getElementById('certdoc');
+  function openCertDoc(){ if(cdocOv) cdocOv.classList.add('open'); }
+  function closeCertDoc(){ if(cdocOv) cdocOv.classList.remove('open'); }
+  if(cdocOv){
+    document.getElementById('certdoc-x').addEventListener('click', closeCertDoc);
+    cdocOv.addEventListener('click', function(e){ if(e.target === cdocOv) closeCertDoc(); });
+  }
+
+  function paint(){
+    /* rail */
+    elRail.textContent = '';
+    STEPS.forEach(function(st, i){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = submitted ? 'done' : (i === idx ? 'cur' : (done[st.key] ? 'done' : ''));
+      b.innerHTML = '<span class="rn"></span>';
+      b.querySelector('.rn').textContent = done[st.key] ? '✓' : String(i + 1);
+      b.appendChild(document.createTextNode(st.label));
+      b.addEventListener('click', function(){ submitted = false; idx = i; paint(); });
+      elRail.appendChild(b);
+    });
+
+    /* body */
+    if(submitted){
+      elBody.innerHTML = stepDone();
+    } else {
+      elBody.innerHTML = idx === 0 ? stepNevada() : (idx === 1 ? stepCert() : stepSign());
+    }
+
+    elBody.querySelectorAll('[data-act]').forEach(function(el){
+      el.addEventListener('click', function(){
+        var k = el.getAttribute('data-act');
+        done[k] = !done[k];
+        if(k === 'cert' && !done.cert){ chapter = 0; }
+        paint();
+      });
+    });
+
+    elBody.querySelectorAll('[data-certdoc]').forEach(function(el){
+      el.addEventListener('click', function(){ openCertDoc(); });
+    });
+
+    elBody.querySelectorAll('[data-cact]').forEach(function(el){
+      el.addEventListener('click', function(){
+        var a = el.getAttribute('data-cact');
+        if(a.indexOf('ch:') === 0){ chapter = Number(a.slice(3)); }
+        else if(a === 'next'){
+          if(chapter < LAST){ chapter++; }
+          else { done.cert = true; }
+        }
+        paint();
+      });
+    });
+
+    /* footer */
+    elBack.disabled = submitted || idx === 0;
+    elBack.style.display = submitted ? 'none' : '';
+    if(submitted){
+      elNext.textContent = 'Done';
+      elNext.disabled = false;
+    } else if(idx < STEPS.length - 1){
+      elNext.textContent = 'Continue';
+      elNext.disabled = !done[STEPS[idx].key];
+    } else {
+      elNext.textContent = 'Submit registration';
+      elNext.disabled = !(done.nv && done.cert && done.sign);
+    }
+  }
+
+  function open(){
+    idx = 0; submitted = false;
+    done = { nv: false, cert: false, sign: false };
+    chapter = 0;
+    lastFocus = document.activeElement;
+    elTag.textContent = 'Agent Center · Kai-Zen onboarding';
+    elTtl.textContent = 'Get Kai-Zen Certified';
+    elSub.textContent = 'Three steps to start offering Kai-Zen to your clients';
+    elId.innerHTML = '<span class="av">DW</span>' +
+      '<span class="who"><b>Dana Whitfield</b>' +
+        '<span>Northpoint Financial · <span class="q-mark" data-q="1">LPL Financial</span></span></span>' +
+      '<span class="chk">✓ Confirmed from your Agent Center profile</span>';
+    paint();
+    ov.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    dlg.focus();
+  }
+
+  function close(){
+    closeCertDoc();
+    ov.classList.remove('open');
+    document.body.style.overflow = '';
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  document.querySelectorAll('[data-flow]').forEach(function(b){
+    b.addEventListener('click', function(e){ e.preventDefault(); open(); });
+  });
+  document.getElementById('dlg-x').addEventListener('click', close);
+  ov.addEventListener('click', function(e){ if(e.target === ov) close(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Escape') return;
+    if(cdocOv && cdocOv.classList.contains('open')){ closeCertDoc(); return; }
+    if(ov.classList.contains('open')) close();
+  });
+  elBack.addEventListener('click', function(){ if(idx > 0){ idx--; paint(); } });
+  elNext.addEventListener('click', function(){
+    if(submitted){ close(); return; }
+    if(idx < STEPS.length - 1){ idx++; paint(); return; }
+    submitted = true; paint();
+  });
+})();
+</script>
