@@ -85,6 +85,15 @@
   table.ft td.h{font-weight:700;color:var(--ink);white-space:nowrap;width:1%}
   table.ft td.ex{color:var(--accent-ink);font-style:italic;white-space:nowrap}
   table.ft td.ex code{font-style:normal}
+  .ffeats{margin-top:12px}
+  .ffeat{padding:14px 0;border-bottom:1px solid var(--border)}
+  .ffeat:last-child{border-bottom:none}
+  .ffeat-h{font-size:1rem;color:var(--ink);display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-weight:700}
+  .ffeat-h .tag{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--amber-ink);
+    background:var(--amber-soft);border-radius:999px;padding:2px 8px}
+  .ffeat p{margin:.4em 0 0;color:var(--ink-2);font-size:.92rem;max-width:80ch}
+  .ffeat .req{background:var(--surface-2);border-left:3px solid var(--border-strong);border-radius:0 8px 8px 0;padding:8px 12px}
+  .ffeat .req b{color:var(--ink)}
   code{font-family:var(--mono);font-size:.85em;background:var(--mono-bg);padding:.1em .4em;border-radius:5px;border:1px solid var(--border);white-space:nowrap}
 
   /* maintained tab */
@@ -240,6 +249,44 @@
           <tr><td class="h">Stays in its lane</td><td>An ILIA support agent only — resists off-topic use and manipulation attempts.</td><td class="ex">Declines "be a pizza bot"</td></tr>
           <tr><td class="h">Audited</td><td>Every sensitive lookup is written to an audit trail.</td><td class="ex">Who looked up what</td></tr>
         </table></div>
+      </div>
+
+      <!-- Future feature sets (running list) -->
+      <div class="fcard">
+        <div class="fcard-h"><span class="em">🚀</span><h3>Future Feature Sets</h3><span class="status wip">Ideas</span></div>
+        <p class="sub">A running list of what's next — captured as we discuss it. Direction, not commitments.</p>
+        <div class="ffeats">
+          <div class="ffeat">
+            <div class="ffeat-h">Daily Tasks — scheduled assistant <span class="tag">Phase 2</span></div>
+            <p>Standing daily jobs: check email &amp; flag client messages, a morning digest, "agents who never logged in," recurring follow-ups, etc.</p>
+            <p class="req"><b>Requires:</b> a hosted/production backend that runs on a schedule — the in-browser overlay can't run while you're away; per-admin stored tasks &amp; standing instructions; a results surface (Tasks panel + morning digest); plus whatever each task touches (email, DB…). Stays draft-only, produces a review queue (not autonomous actions), and is logged per-admin.</p>
+          </div>
+          <div class="ffeat">
+            <div class="ffeat-h">Draft emails as the admin</div>
+            <p>"Send Brad his annual review" → confirm which Brad → pull the correct doc → draft into your mailbox → you review &amp; send.</p>
+            <p class="req"><b>Requires:</b> the admin connects email (one-time OAuth, scoped to create drafts); Max reads the admin's own email from their authenticated account; reuses confirm-who + pull-docs. Doc travels as a secure expiring link (preferred for PII) or an attachment. Draft-only — Max never sends; the admin does.</p>
+          </div>
+          <div class="ffeat">
+            <div class="ffeat-h">Email triage</div>
+            <p>Summarize the inbox, flag what matters, draft replies.</p>
+            <p class="req"><b>Requires:</b> email READ access (OAuth read scope — a bigger privacy surface than drafting), with explicit consent and folder/label scoping; runs on the Daily-Tasks scheduler. Replies are draft-only.</p>
+          </div>
+          <div class="ffeat">
+            <div class="ffeat-h">Per-admin activity logging</div>
+            <p>Every session &amp; action tied to the authenticated admin — full "who did what with Max" audit.</p>
+            <p class="req"><b>Requires:</b> production deployment where the admin is authenticated (Max reads their Users.id/email from the session, not off the page); stamp that id on each entry via the existing audit chokepoint; decide where logs live (audit store / DB / Domo).</p>
+          </div>
+          <div class="ffeat">
+            <div class="ffeat-h">Agent / IMO / carrier analytics</div>
+            <p>"Which agents have the most clients," plus breakdowns by IMO / region / carrier / participant count.</p>
+            <p class="req"><b>Requires:</b> the NIWD-2219 read-grant expansion — SELECT on <code>Agents</code>, <code>AgentImos</code>, <code>Imos</code>, <code>AgentImoCarriers</code>, <code>Carriers</code>, <code>Participants</code> — plus the query/tool code to join them. Everything from the <code>Users</code> table already works today.</p>
+          </div>
+          <div class="ffeat">
+            <div class="ffeat-h">Domo reporting <span class="tag">In progress</span></div>
+            <p>Push Max's usage to Domo dashboards + ask Domo reporting questions in chat.</p>
+            <p class="req"><b>Requires:</b> a Domo API client (client ID/secret, data scope) from Sanjay; the dataset IDs to read + an "ILIA Support Max — Activity" dataset to write; the dual-mode <code>domo.js</code> module (pending creds).</p>
+          </div>
+        </div>
       </div>
 
     </div>
