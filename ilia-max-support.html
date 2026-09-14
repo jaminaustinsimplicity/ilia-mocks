@@ -131,8 +131,8 @@
   <div class="tabs" role="tablist" aria-label="ILIA Support Max sections">
     <button class="tab" role="tab" id="tab-features" aria-controls="panel-features" aria-selected="true">Support Features</button>
     <button class="tab" role="tab" id="tab-maintained" aria-controls="panel-maintained" aria-selected="false">How It's Maintained</button>
-    <button class="tab" role="tab" id="tab-integrations" aria-controls="panel-integrations" aria-selected="false">Integrations <span class="soon">soon</span></button>
-    <button class="tab" role="tab" id="tab-security" aria-controls="panel-security" aria-selected="false">Security <span class="soon">soon</span></button>
+    <button class="tab" role="tab" id="tab-integrations" aria-controls="panel-integrations" aria-selected="false">Integrations</button>
+    <button class="tab" role="tab" id="tab-security" aria-controls="panel-security" aria-selected="false">Security &amp; Guardrails</button>
     <button class="tab" role="tab" id="tab-roadmap" aria-controls="panel-roadmap" aria-selected="false">Roadmap <span class="soon">soon</span></button>
   </div>
 
@@ -334,16 +334,73 @@
     </div>
   </section>
 
-  <!-- ============ INTEGRATIONS (placeholder) ============ -->
+  <!-- ============ INTEGRATIONS ============ -->
   <section class="panel" id="panel-integrations" role="tabpanel" aria-labelledby="tab-integrations">
-    <div class="empty"><div class="big">🔌</div><b>Integrations</b>
-      <p>How Support Max connects to ILIA data, documents, FullStory, Jira, Confluence, and Domo — documentation coming soon.</p></div>
+    <div class="panel-head">
+      <h2>Integrations</h2>
+      <p>What Support Max connects to, and how. Every connection is <b>least-privilege</b> — read-only unless a write <em>is</em> the point (filing a bug or capturing an idea).</p>
+    </div>
+    <div class="mnote">
+      <div class="tablewrap"><table class="ft">
+        <tr><th>Integration</th><th>Access</th><th>What it powers</th><th>Status</th></tr>
+        <tr><td class="h">ILIA database (read replica)</td><td>Read-only · SELECT-only</td><td>Client &amp; servicing lookups, document metadata, and account/agent analytics.</td><td class="ex">Live · Agent/IMO/carrier pending NIWD-2219</td></tr>
+        <tr><td class="h">S3 documents</td><td>Read-only (GetObject)</td><td>Secure, expiring (~1 hr) view/download links for client documents.</td><td class="ex">Live (NIWD-2235)</td></tr>
+        <tr><td class="h">FullStory</td><td>Read-only (server key)</td><td>Find a client's session replays by email; attach to bugs; free domain-locked guest viewing.</td><td class="ex">Live</td></tr>
+        <tr><td class="h">Jira (Atlassian)</td><td>Write (scoped)</td><td>Files bugs into "Reported Bugs" — issue, priority, attachments, assignee, status. Never an active sprint.</td><td class="ex">Live</td></tr>
+        <tr><td class="h">Confluence — ILIA space</td><td>Read-only</td><td>Grounds Max's answers in your live ILIA docs (cached, auto-refresh).</td><td class="ex">Live</td></tr>
+        <tr><td class="h">Confluence — Feature Ideas</td><td>Write (one page)</td><td>Appends captured ideas to the Feature Ideas board.</td><td class="ex">Live</td></tr>
+        <tr><td class="h">Claude (the "brain")</td><td>Model endpoint</td><td>The reasoning engine. Prototype: Azure AI Foundry (zero-retention). Production: AWS Bedrock inside NIW's AWS — no data to Anthropic.</td><td class="ex">Live (Foundry) · Bedrock = prod (NIWD-2270)</td></tr>
+        <tr><td class="h">Domo</td><td>Read + write</td><td>Push usage to adoption dashboards; answer reporting questions from Domo data.</td><td class="ex">In progress (pending Domo access)</td></tr>
+        <tr><td class="h">Email (Gmail/Outlook)</td><td>Draft-only</td><td>Draft emails as the admin; later, inbox triage. Opt-in OAuth per admin.</td><td class="ex">Future (Phase 2)</td></tr>
+      </table></div>
+    </div>
   </section>
 
-  <!-- ============ SECURITY (placeholder) ============ -->
+  <!-- ============ SECURITY ============ -->
   <section class="panel" id="panel-security" role="tabpanel" aria-labelledby="tab-security">
-    <div class="empty"><div class="big">🔒</div><b>Security &amp; Guardrails</b>
-      <p>The full write-up of Max's data handling, role-lock, and manipulation resistance — documentation coming soon. (Summary in "Built-in Safeguards" under Support Features.)</p></div>
+    <div class="panel-head">
+      <h2>Security &amp; Guardrails</h2>
+      <p>How Support Max is kept safe, honest, and in its lane — what's in place today, and the layers we recommend adding as it moves to production and gains capabilities.</p>
+    </div>
+
+    <div class="mnote">
+      <h3><span class="em">✅</span> In place today</h3>
+      <div class="tablewrap"><table class="ft">
+        <tr><th>Layer</th><th>What it does</th></tr>
+        <tr><td class="h">Read-only data</td><td>DB access is SELECT-only against a read replica — Max can never write, update, or delete ILIA data.</td></tr>
+        <tr><td class="h">Draft-only comms</td><td>Max never sends anything — emails/messages are prepared as drafts for a human to review and send.</td></tr>
+        <tr><td class="h">Permission-gated tools</td><td>Each tool requires a feature flag, deny-by-default — a seat without the flag can't use that tool.</td></tr>
+        <tr><td class="h">Confirm-who</td><td>Confirms the exact person before showing client data; never dumps full records; never surfaces SSN/DOB.</td></tr>
+        <tr><td class="h">Audit trail</td><td>Every sensitive lookup/action is logged (who, what, result) through a single chokepoint.</td></tr>
+        <tr><td class="h">Role-lock</td><td>An ILIA support agent only — declines off-topic tasks, other personas, and financial/legal/medical advice.</td></tr>
+        <tr><td class="h">Jailbreak resistance</td><td>Ignores "ignore your instructions / you are now… / dev mode" attempts; won't reveal its prompt, tools, or keys.</td></tr>
+        <tr><td class="h">Content = data, not commands</td><td>Text from docs, DB rows, Confluence, and sessions is treated as reference — never as instructions to act on.</td></tr>
+        <tr><td class="h">Secrets server-side</td><td>All credentials live server-side (never in the browser); no keys in code.</td></tr>
+        <tr><td class="h">Expiring links</td><td>Document links are time-limited (~1 hr) and read-only.</td></tr>
+        <tr><td class="h">PII path control</td><td>Real client data only flows to a zero-retention model endpoint (Foundry today; Bedrock in-AWS in prod) — never the non-ZDR public API.</td></tr>
+        <tr><td class="h">Browser-only overlay</td><td>The overlay reads the page; it never clicks or submits ILIA's own controls.</td></tr>
+      </table></div>
+    </div>
+
+    <div class="mnote lock">
+      <h3><span class="em">🛡️</span> Recommended next — to keep it from going rogue</h3>
+      <p>Layers we'd add as Max moves to production and gains more reach (email, scheduled tasks). These harden it against misuse, manipulation, and mistakes.</p>
+      <div class="tablewrap"><table class="ft">
+        <tr><th>Layer</th><th>Why it matters</th></tr>
+        <tr><td class="h">Authenticated identity + ILIA entitlements</td><td>Bind every action to the logged-in admin and enforce ILIA's own permission model server-side — Max should never see more than the admin is entitled to.</td></tr>
+        <tr><td class="h">Owner-locked behavior config</td><td>The system prompt/guardrails are owner-owned and change-controlled (reviewed before change) — prevents silent behavior drift or unauthorized "retraining."</td></tr>
+        <tr><td class="h">Output / tool-call validation</td><td>Validate the model's tool calls &amp; responses against strict schemas before anything runs — reject malformed or unexpected actions.</td></tr>
+        <tr><td class="h">Human-in-the-loop on all writes</td><td>Every side-effecting action (bug, idea, future email) needs explicit human confirmation; scheduled tasks produce a review queue, never autonomous actions.</td></tr>
+        <tr><td class="h">Rate limits + anomaly detection</td><td>Cap lookups per admin/session and alert on unusual volume — stops bulk client-data exfiltration through the agent.</td></tr>
+        <tr><td class="h">PII minimization / redaction</td><td>Strip or mask PII before it reaches the model wherever possible; never send SSN/DOB; field-level minimum disclosure.</td></tr>
+        <tr><td class="h">Untrusted-content isolation</td><td>Treat retrieved docs/DB/Confluence/email as untrusted; their contents can't trigger new tool calls without validation — critical once Max reads email.</td></tr>
+        <tr><td class="h">Egress allow-listing</td><td>Max can only send data to approved destinations (Jira, the ideas page, the admin's own mailbox draft) — no arbitrary outbound, no exfiltration paths.</td></tr>
+        <tr><td class="h">Least-privilege, rotated secrets</td><td>Per-capability credentials with minimal grants, in a secrets manager (IAM role for Bedrock — no long-lived keys), rotated regularly.</td></tr>
+        <tr><td class="h">Immutable, monitored audit</td><td>Tamper-resistant, retained audit log with alerting on client-data access — for compliance and incident response.</td></tr>
+        <tr><td class="h">Pre-deploy guardrail tests</td><td>Run a red-team / jailbreak eval suite before every deploy so a change can't quietly weaken the guardrails.</td></tr>
+        <tr><td class="h">Kill switch</td><td>One control to instantly disable Max — or a single capability — if it misbehaves.</td></tr>
+      </table></div>
+    </div>
   </section>
 
   <!-- ============ ROADMAP (placeholder) ============ -->
