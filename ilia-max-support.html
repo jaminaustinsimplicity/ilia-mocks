@@ -37,10 +37,10 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;
     -webkit-font-smoothing:antialiased;font-size:16px}
-  .wrap{max-width:980px;margin:0 auto;padding:44px 22px 72px}
+  .wrap{max-width:1040px;margin:0 auto;padding:44px 22px 72px}
   .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--accent-ink)}
   h1{font-size:clamp(2rem,4.6vw,2.7rem);line-height:1.08;margin:.3em 0 .28em;letter-spacing:-.02em;text-wrap:balance;font-weight:800}
-  .lede{font-size:1.12rem;color:var(--ink-2);max-width:70ch;text-wrap:pretty;margin:0}
+  .lede{font-size:1.12rem;color:var(--ink-2);max-width:72ch;text-wrap:pretty;margin:0}
   .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
   .pill{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);
     border-radius:999px;padding:5px 12px;font-size:.8rem;font-weight:600;color:var(--ink-2)}
@@ -62,25 +62,41 @@
 
   .panel-head{margin-bottom:20px}
   .panel-head h2{font-size:1.3rem;margin:0 0 .25em;letter-spacing:-.01em;font-weight:780}
-  .panel-head p{margin:0;color:var(--ink-2);max-width:66ch}
+  .panel-head p{margin:0;color:var(--ink-2);max-width:70ch}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
-  .card > h3{margin:0 0 .15em;font-size:1.08rem;display:flex;align-items:center;gap:9px;font-weight:750}
-  .card .em{font-size:1.25rem;line-height:1}
-  .card .sub{margin:.1em 0 .9em;color:var(--ink-2);font-size:.92rem}
-  ul.feat{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-  ul.feat li{display:flex;gap:9px;align-items:flex-start;font-size:.93rem;line-height:1.45}
-  ul.feat li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--accent);
-    margin-top:.5em;box-shadow:0 0 0 3px var(--accent-soft)}
-  ul.feat li b{font-weight:680}
-  ul.feat li em{font-style:normal;color:var(--ink-2)}
-
+  /* stacked full-width feature cards */
+  .stack{display:flex;flex-direction:column;gap:16px}
+  .fcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 22px;box-shadow:var(--shadow)}
+  .fcard-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .fcard-h .em{font-size:1.4rem;line-height:1}
+  .fcard-h h3{margin:0;font-size:1.12rem;font-weight:760}
+  .fcard .sub{margin:.5em 0 0;color:var(--ink-2);font-size:.95rem;max-width:74ch}
   .status{display:inline-flex;align-items:center;gap:6px;font-size:.66rem;font-weight:800;letter-spacing:.05em;
     text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-left:auto}
   .status.live{background:var(--good-soft);color:var(--good-ink)}
   .status.wip{background:var(--amber-soft);color:var(--amber-ink)}
-  .status.soon{background:var(--surface-2);color:var(--ink-2)}
+
+  .tablewrap{overflow-x:auto;margin-top:14px}
+  table.ft{width:100%;border-collapse:collapse;font-size:.92rem;min-width:560px}
+  table.ft th{text-align:left;font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-2);
+    font-weight:700;padding:0 14px 7px 0;border-bottom:1px solid var(--border)}
+  table.ft td{padding:9px 14px 9px 0;border-bottom:1px solid var(--border);vertical-align:top}
+  table.ft tr:last-child td{border-bottom:none}
+  table.ft td.h{font-weight:700;color:var(--ink);white-space:nowrap;width:1%}
+  table.ft td.ex{color:var(--accent-ink);font-style:italic;white-space:nowrap}
+  table.ft td.ex code{font-style:normal}
+  code{font-family:var(--mono);font-size:.85em;background:var(--mono-bg);padding:.1em .4em;border-radius:5px;border:1px solid var(--border);white-space:nowrap}
+
+  /* maintained tab */
+  .mnote{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 22px;box-shadow:var(--shadow);margin-bottom:16px}
+  .mnote h3{margin:0 0 .4em;font-size:1.06rem;font-weight:760;display:flex;align-items:center;gap:8px}
+  .mnote p{margin:.4em 0;color:var(--ink-2)}
+  .mnote .em{font-size:1.2rem}
+  .who{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .whocard{flex:1 1 230px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .whocard b{display:block;color:var(--ink);font-size:.95rem;margin-bottom:3px}
+  .whocard span{color:var(--ink-2);font-size:.9rem}
+  .lock{background:linear-gradient(180deg,var(--accent-soft),transparent 130%);border:1px solid color-mix(in srgb,var(--accent) 32%,var(--border))}
 
   .empty{background:var(--surface);border:1px dashed var(--border-strong);border-radius:16px;padding:40px 24px;
     text-align:center;color:var(--ink-2)}
@@ -95,7 +111,7 @@
   <header>
     <div class="eyebrow">ILIA · In-Product Support Agent</div>
     <h1>ILIA Support Max</h1>
-    <p class="lede">Support Max is an in-product AI copilot for ILIA admins. It answers ILIA &amp; Kai-Zen questions from live documentation and data, files bugs straight to Jira, captures product ideas, and surfaces the exact FullStory session behind an issue — all inside the ILIA screen the admin is already on. This page is the living reference for what it does.</p>
+    <p class="lede">Support Max is an in-product AI copilot for ILIA admins. It answers ILIA &amp; Kai-Zen questions from live documentation and data, pulls a client's documents, files bugs straight to Jira, captures product ideas, and surfaces the exact FullStory session behind an issue — all inside the ILIA screen the admin is already on. This page is the living reference for what it does and how it's maintained.</p>
     <div class="pillrow">
       <span class="pill"><span class="dot"></span> Prototype — live &amp; testing</span>
       <span class="pill"><span class="dot"></span> Read-only · draft-only</span>
@@ -105,8 +121,9 @@
 
   <div class="tabs" role="tablist" aria-label="ILIA Support Max sections">
     <button class="tab" role="tab" id="tab-features" aria-controls="panel-features" aria-selected="true">Support Features</button>
+    <button class="tab" role="tab" id="tab-maintained" aria-controls="panel-maintained" aria-selected="false">How It's Maintained</button>
     <button class="tab" role="tab" id="tab-integrations" aria-controls="panel-integrations" aria-selected="false">Integrations <span class="soon">soon</span></button>
-    <button class="tab" role="tab" id="tab-security" aria-controls="panel-security" aria-selected="false">Security &amp; Guardrails <span class="soon">soon</span></button>
+    <button class="tab" role="tab" id="tab-security" aria-controls="panel-security" aria-selected="false">Security <span class="soon">soon</span></button>
     <button class="tab" role="tab" id="tab-roadmap" aria-controls="panel-roadmap" aria-selected="false">Roadmap <span class="soon">soon</span></button>
   </div>
 
@@ -114,113 +131,178 @@
   <section class="panel active" id="panel-features" role="tabpanel" aria-labelledby="tab-features">
     <div class="panel-head">
       <h2>Support Features</h2>
-      <p>What Support Max can do today, organized by category. Each capability runs read-only and draft-only — Max never changes ILIA data or sends anything on its own.</p>
+      <p>What Support Max can do today, by category. Each capability runs read-only and draft-only — Max never changes ILIA data or sends anything on its own. Each table lists the highlights, what they mean, and an example.</p>
     </div>
 
-    <div class="grid">
+    <div class="stack">
 
       <!-- Conversational -->
-      <div class="card">
-        <h3><span class="em">💬</span> Conversational Support <span class="status live">Live</span></h3>
+      <div class="fcard">
+        <div class="fcard-h"><span class="em">💬</span><h3>Conversational Support</h3><span class="status live">Live</span></div>
         <p class="sub">Ask about ILIA or a client in plain language and get a grounded, honest answer.</p>
-        <ul class="feat">
-          <li><b>ILIA &amp; Kai-Zen Q&amp;A</b> — how workflows, screens, and strategies work.</li>
-          <li><b>Grounded in the live ILIA Confluence space</b> — answers reflect your actual documentation, not a static script.</li>
-          <li><b>Live data lookups</b> — client &amp; servicing details, documents, and more, pulled on demand.</li>
-          <li><b>"Thinking…" indicator</b> — you always see when Max is working.</li>
-          <li><b>Remembers your recent context</b> — greets you back and picks up where you left off.</li>
-          <li><b>"Which person?" picker</b> — when a name matches several people, you pick the exact one before any data is shown.</li>
-        </ul>
+        <div class="tablewrap"><table class="ft">
+          <tr><th>Highlight</th><th>What it means</th><th>Example</th></tr>
+          <tr><td class="h">ILIA &amp; Kai-Zen Q&amp;A</td><td>Explains how workflows, screens, and strategies work.</td><td class="ex">"How does DBR work?"</td></tr>
+          <tr><td class="h">Grounded in live Confluence</td><td>Answers reflect your actual ILIA documentation, not a static script — and update as the docs do.</td><td class="ex">Pulls the current DBR page</td></tr>
+          <tr><td class="h">Live data lookups</td><td>Reads client/servicing details on demand from the read-only database.</td><td class="ex">"What's Bob's policy status?"</td></tr>
+          <tr><td class="h">"Thinking…" indicator</td><td>Shows an animated cue whenever Max is working, including tool lookups.</td><td class="ex">● ● ● Thinking…</td></tr>
+          <tr><td class="h">Remembers context</td><td>Greets you back and continues where you left off (per admin, ~30 days).</td><td class="ex">"Welcome back, Jamin…"</td></tr>
+          <tr><td class="h">"Which person?" picker</td><td>When a name matches several people, you pick the exact one before any data is shown.</td><td class="ex">3 "Mike"s → choose one</td></tr>
+        </table></div>
+      </div>
+
+      <!-- Pull docs -->
+      <div class="fcard">
+        <div class="fcard-h"><span class="em">📄</span><h3>Pull Client Documents</h3><span class="status live">Live</span></div>
+        <p class="sub">Ask for a client's document and view it right in the chat — no digging through the file tab.</p>
+        <div class="tablewrap"><table class="ft">
+          <tr><th>Highlight</th><th>What it means</th><th>Example</th></tr>
+          <tr><td class="h">Confirm the client first</td><td>Max verifies the exact client before returning anything.</td><td class="ex">"Get me Edward's Trust Cert"</td></tr>
+          <tr><td class="h">Finds the right doc</td><td>Searches the client's full document set (incl. historical/signed) and narrows to what you asked.</td><td class="ex">"trust cert" → the trust docs</td></tr>
+          <tr><td class="h">Viewer modal</td><td>Click the link to view the PDF inline, then Download, Email (draft), or Close.</td><td class="ex">Inline PDF + actions</td></tr>
+          <tr><td class="h">Secure &amp; temporary</td><td>Links are read-only and expire (~1 hour); every pull is logged.</td><td class="ex">1-hr secure link</td></tr>
+        </table></div>
+      </div>
+
+      <!-- Data analytics -->
+      <div class="fcard">
+        <div class="fcard-h"><span class="em">📊</span><h3>Account &amp; Data Analytics</h3><span class="status live">Live</span></div>
+        <p class="sub">Ask questions about accounts (agents, clients, IMOs) and Max reasons over the ILIA data.</p>
+        <div class="tablewrap"><table class="ft">
+          <tr><th>Highlight</th><th>What it means</th><th>Example</th></tr>
+          <tr><td class="h">Newest / oldest</td><td>Lists or counts accounts by created date.</td><td class="ex">"Who are our newest agents?"</td></tr>
+          <tr><td class="h">Login &amp; status</td><td>Last login (or "never"), and onboarding status (Delivered / Opened Invite / Created Account).</td><td class="ex">"Has agent Bill logged in?"</td></tr>
+          <tr><td class="h">Filtered counts</td><td>Answers aggregate questions across an account type.</td><td class="ex">"How many agents never logged in?"</td></tr>
+          <tr><td class="h">Works across types</td><td>Agents, clients, IMOs, admins — all by role.</td><td class="ex">"Newest 10 clients"</td></tr>
+        </table></div>
       </div>
 
       <!-- Bug reporting -->
-      <div class="card">
-        <h3><span class="em">🐞</span> Bug Reporting <span class="status live">Live</span></h3>
+      <div class="fcard">
+        <div class="fcard-h"><span class="em">🐞</span><h3>Bug Reporting</h3><span class="status live">Live</span></div>
         <p class="sub">File a real Jira bug from the ILIA screen — no context-switching.</p>
-        <ul class="feat">
-          <li><b>Lands in a "Reported Bugs" intake</b> — set to <em>Needs Clarification</em>, never dropped into an active sprint.</li>
-          <li><b>Auto-assigned</b> to the triage owner so nothing falls through the cracks.</li>
-          <li><b>Structured capture</b> — title, what happened, where it happens, who's affected, and priority (mapped to Jira's real Priority field).</li>
-          <li><b>Screenshots → Jira attachments</b> — drag, paste, or choose files; remove on hover.</li>
-          <li><b>Add FullStory</b> — look up the client's sessions by email and attach the right replay to the ticket.</li>
-          <li><b>Guardrails</b> — required fields, and a submit lock so a bug can't be double-filed.</li>
-        </ul>
+        <div class="tablewrap"><table class="ft">
+          <tr><th>Highlight</th><th>What it means</th><th>Example</th></tr>
+          <tr><td class="h">Lands in "Reported Bugs"</td><td>Filed into a triage intake as <em>Needs Clarification</em> — never dropped into an active sprint.</td><td class="ex">Intake, not a live sprint</td></tr>
+          <tr><td class="h">Auto-assigned</td><td>Routed to the triage owner so nothing falls through the cracks.</td><td class="ex">→ triage owner</td></tr>
+          <tr><td class="h">Structured capture</td><td>Title, what happened, where, who's affected, and priority (real Jira Priority field).</td><td class="ex">Low / Med / High / Urgent</td></tr>
+          <tr><td class="h">Screenshots → attachments</td><td>Drag, paste, or choose files; they upload to the ticket.</td><td class="ex">Paste a screenshot</td></tr>
+          <tr><td class="h">Add FullStory</td><td>Look up the client's sessions by email and attach the right replay.</td><td class="ex">Attach the session</td></tr>
+          <tr><td class="h">Guardrails</td><td>Required fields, and a submit-lock so a bug can't be double-filed.</td><td class="ex">One click = one ticket</td></tr>
+        </table></div>
       </div>
 
       <!-- Idea capture -->
-      <div class="card">
-        <h3><span class="em">💡</span> Idea Capture <span class="status live">Live</span></h3>
+      <div class="fcard">
+        <div class="fcard-h"><span class="em">💡</span><h3>Idea Capture</h3><span class="status live">Live</span></div>
         <p class="sub">Turn an admin's suggestion into something the team actually sees.</p>
-        <ul class="feat">
-          <li><b>File a product idea</b> in a sentence or two, with impact.</li>
-          <li><b>Routed to the ILIA Feature Ideas board</b> for the tech team &amp; leadership to review.</li>
-          <li><b>Nothing sent elsewhere</b> — it's captured, not emailed.</li>
-        </ul>
+        <div class="tablewrap"><table class="ft">
+          <tr><th>Highlight</th><th>What it means</th><th>Example</th></tr>
+          <tr><td class="h">File a product idea</td><td>Capture the idea and its impact in a sentence or two.</td><td class="ex">"Add a bulk export…"</td></tr>
+          <tr><td class="h">Routed for review</td><td>Sent to the ILIA Feature Ideas board for the tech team &amp; leadership.</td><td class="ex">→ Feature Ideas board</td></tr>
+          <tr><td class="h">Captured, not emailed</td><td>Nothing is sent anywhere else — it's logged for review.</td><td class="ex">No messages sent</td></tr>
+        </table></div>
       </div>
 
-      <!-- FullStory session insight -->
-      <div class="card">
-        <h3><span class="em">🎬</span> Session Insight (FullStory) <span class="status live">Live</span></h3>
+      <!-- FullStory -->
+      <div class="fcard">
+        <div class="fcard-h"><span class="em">🎬</span><h3>Session Insight (FullStory)</h3><span class="status live">Live</span></div>
         <p class="sub">See exactly what a client did on screen — without leaving ILIA.</p>
-        <ul class="feat">
-          <li><b>Find sessions by client email</b> — no separate FullStory login/search.</li>
-          <li><b>Grouped by day</b>, newest first, so you can match the session to when the call happened.</li>
-          <li><b>View or attach</b> the right session, with easy add/remove.</li>
-          <li><b>Free team viewing</b> via domain-locked guest access — only your people can watch.</li>
-        </ul>
+        <div class="tablewrap"><table class="ft">
+          <tr><th>Highlight</th><th>What it means</th><th>Example</th></tr>
+          <tr><td class="h">Find by email</td><td>Type a client's email and Max lists their sessions — no separate FullStory search.</td><td class="ex">client@email.com → sessions</td></tr>
+          <tr><td class="h">Grouped by day</td><td>Newest first, grouped by date, so you match the session to when the call happened.</td><td class="ex">Today / Yesterday / …</td></tr>
+          <tr><td class="h">View or attach</td><td>Open a replay, or add the right one to a bug — with easy add/remove.</td><td class="ex">Attach to a ticket</td></tr>
+          <tr><td class="h">Free team viewing</td><td>Domain-locked guest access — only your people can watch, never outsiders.</td><td class="ex">@simplicitygroup.com only</td></tr>
+        </table></div>
       </div>
 
-      <!-- Reporting / Domo -->
-      <div class="card">
-        <h3><span class="em">📊</span> Reporting (Domo) <span class="status wip">In progress</span></h3>
+      <!-- Domo -->
+      <div class="fcard">
+        <div class="fcard-h"><span class="em">📈</span><h3>Reporting to Domo</h3><span class="status wip">In progress</span></div>
         <p class="sub">Two-way connection to Domo for adoption dashboards and in-chat reporting.</p>
-        <ul class="feat">
-          <li><b>Usage → Domo</b> — Max logs its own activity so leadership can dashboard adoption.</li>
-          <li><b>Domo → Max</b> — ask reporting questions in chat and get answers from Domo data.</li>
-          <li><em>Pending Domo access setup.</em></li>
-        </ul>
+        <div class="tablewrap"><table class="ft">
+          <tr><th>Highlight</th><th>What it means</th><th>Example</th></tr>
+          <tr><td class="h">Usage → Domo</td><td>Max logs its own activity so leadership can dashboard adoption.</td><td class="ex">Usage/adoption reports</td></tr>
+          <tr><td class="h">Domo → Max</td><td>Ask reporting questions in chat and get answers from Domo data.</td><td class="ex">"This month's totals?"</td></tr>
+          <tr><td class="h">Pending access</td><td>Waiting on Domo API setup before it goes live.</td><td class="ex">—</td></tr>
+        </table></div>
       </div>
 
-      <!-- Security summary card (links to full tab later) -->
-      <div class="card">
-        <h3><span class="em">🔒</span> Built-in Safeguards <span class="status live">Live</span></h3>
-        <p class="sub">Security is on by default — summarized here, detailed in the Security tab.</p>
-        <ul class="feat">
-          <li><b>Read-only &amp; draft-only</b> — never edits ILIA, never sends a message on its own.</li>
-          <li><b>Confirms which person</b> before showing client data; never dumps full records.</li>
-          <li><b>Stays in its lane</b> — an ILIA support agent only; resists off-topic or manipulation attempts.</li>
-          <li><b>Every sensitive action is logged</b> to an audit trail.</li>
-        </ul>
+      <!-- Safeguards -->
+      <div class="fcard">
+        <div class="fcard-h"><span class="em">🔒</span><h3>Built-in Safeguards</h3><span class="status live">Live</span></div>
+        <p class="sub">Security is on by default across everything above.</p>
+        <div class="tablewrap"><table class="ft">
+          <tr><th>Highlight</th><th>What it means</th><th>Example</th></tr>
+          <tr><td class="h">Read-only &amp; draft-only</td><td>Never edits ILIA data; never sends a message on its own.</td><td class="ex">Prepares drafts only</td></tr>
+          <tr><td class="h">Confirm-who</td><td>Confirms which person before showing client data; never dumps full records.</td><td class="ex">Pick the exact client</td></tr>
+          <tr><td class="h">Stays in its lane</td><td>An ILIA support agent only — resists off-topic use and manipulation attempts.</td><td class="ex">Declines "be a pizza bot"</td></tr>
+          <tr><td class="h">Audited</td><td>Every sensitive lookup is written to an audit trail.</td><td class="ex">Who looked up what</td></tr>
+        </table></div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ============ HOW IT'S MAINTAINED ============ -->
+  <section class="panel" id="panel-maintained" role="tabpanel" aria-labelledby="tab-maintained">
+    <div class="panel-head">
+      <h2>How It's Maintained</h2>
+      <p>Where Support Max will run in production, how it's kept current, and — importantly — who can change what. "Updating" Max means different things at different layers; they're not all the same job.</p>
+    </div>
+
+    <div class="mnote">
+      <h3><span class="em">🏛️</span> Where it runs</h3>
+      <p><b>Today:</b> a prototype running locally, overlaid on the live ILIA screen in the admin's browser — read-only.</p>
+      <p><b>In production:</b> Max's "brain" (Claude) runs through <b>Amazon Bedrock inside NIW's own AWS</b>, so client data never leaves our environment and never reaches an outside AI provider. The agent's backend is hosted in NIW infrastructure, and the copilot appears inside the ILIA product.</p>
+    </div>
+
+    <div class="mnote">
+      <h3><span class="em">🧩</span> The four layers — and how each is updated</h3>
+      <p>"Training/updating" Max isn't one thing. It's four separate layers, each changed a different way:</p>
+      <div class="tablewrap"><table class="ft">
+        <tr><th>Layer</th><th>What it is</th><th>How it's updated</th><th>Who</th></tr>
+        <tr><td class="h">Knowledge</td><td>What Max <em>knows</em> about ILIA.</td><td>Reads the live ILIA Confluence space (auto-refreshes). Edit the docs → Max knows it. <b>No deploy.</b></td><td>Anyone who edits Confluence (indirect)</td></tr>
+        <tr><td class="h">Behavior &amp; guardrails</td><td>How Max <em>acts</em> — its persona, rules, "stay in its lane," what it will and won't do.</td><td>An owner-controlled configuration. This is the "training" that shapes its behavior.</td><td><b>Owner (Jamin) only</b></td></tr>
+        <tr><td class="h">Capabilities</td><td>What Max can <em>do</em> — the tools (pull docs, analytics, file bugs).</td><td>A code change, shipped by a deploy. Changes only via another deploy.</td><td>Devs build &amp; deploy</td></tr>
+        <tr><td class="h">Deployment &amp; infra</td><td>Running the code — Bedrock, hosting, connections.</td><td>Standard deploy / infra setup.</td><td>Devs / infra (Mohit)</td></tr>
+      </table></div>
+    </div>
+
+    <div class="mnote">
+      <h3><span class="em">❓</span> "Where was <em>that</em> updated?" (e.g. better DB handling, pull-docs)</h3>
+      <p>Improvements like <b>handling the ILIA DB better</b> or <b>adding the pull-docs feature</b> are <b>capability (code) changes</b> — made in Max's codebase and shipped by a deploy. Once live, they change only with another deploy.</p>
+      <p>Teaching Max <b>new ILIA facts</b> is different — that's just <b>updating the Confluence docs</b>. Max reads them live, so no deploy is needed; it picks the change up on its own.</p>
+    </div>
+
+    <div class="mnote lock">
+      <h3><span class="em">🔐</span> Who can change how Max thinks</h3>
+      <p>By design, <b>only the owner controls Max's behavior and guardrails.</b> Changes to how it thinks, what it's allowed to do, and how it responds go through the owner — not ad-hoc, and not by devs. Devs deploy the code; they don't retrain or redirect it. (Enforced by keeping the behavior configuration owner-owned and change-controlled.)</p>
+      <div class="who">
+        <div class="whocard"><b>Owner (Jamin)</b><span>Controls behavior, guardrails, and what knowledge Max draws on. The only one who changes how it thinks/acts.</span></div>
+        <div class="whocard"><b>Developers</b><span>Build &amp; deploy new capabilities and fixes. They ship code — they don't change its behavior/training.</span></div>
+        <div class="whocard"><b>The team (via Confluence)</b><span>Keeping ILIA's docs current automatically keeps Max's knowledge current — read-only, no deploy.</span></div>
+      </div>
     </div>
   </section>
 
   <!-- ============ INTEGRATIONS (placeholder) ============ -->
   <section class="panel" id="panel-integrations" role="tabpanel" aria-labelledby="tab-integrations">
-    <div class="empty">
-      <div class="big">🔌</div>
-      <b>Integrations</b>
-      <p>How Support Max connects to ILIA data, documents, FullStory, Jira, Confluence, and Domo — documentation coming soon.</p>
-    </div>
+    <div class="empty"><div class="big">🔌</div><b>Integrations</b>
+      <p>How Support Max connects to ILIA data, documents, FullStory, Jira, Confluence, and Domo — documentation coming soon.</p></div>
   </section>
 
   <!-- ============ SECURITY (placeholder) ============ -->
   <section class="panel" id="panel-security" role="tabpanel" aria-labelledby="tab-security">
-    <div class="empty">
-      <div class="big">🔒</div>
-      <b>Security &amp; Guardrails</b>
-      <p>The full write-up of Max's data handling, role-lock, and manipulation resistance — documentation coming soon.</p>
-    </div>
+    <div class="empty"><div class="big">🔒</div><b>Security &amp; Guardrails</b>
+      <p>The full write-up of Max's data handling, role-lock, and manipulation resistance — documentation coming soon. (Summary in "Built-in Safeguards" under Support Features.)</p></div>
   </section>
 
   <!-- ============ ROADMAP (placeholder) ============ -->
   <section class="panel" id="panel-roadmap" role="tabpanel" aria-labelledby="tab-roadmap">
-    <div class="empty">
-      <div class="big">🗺️</div>
-      <b>Roadmap</b>
-      <p>What's next for Support Max — planned features and milestones — coming soon.</p>
-    </div>
+    <div class="empty"><div class="big">🗺️</div><b>Roadmap</b>
+      <p>What's next for Support Max — planned features and milestones — coming soon.</p></div>
   </section>
 
   <footer>
