@@ -1,0 +1,254 @@
+<title>ILIA Support Max</title>
+<style>
+  :root{
+    --bg:#F4F6FB; --surface:#FFFFFF; --surface-2:#EDF1F8; --ink:#17202E; --ink-2:#54627A;
+    --border:#D7DFEC; --border-strong:#C3CEDE;
+    --accent:#3671ED; --accent-ink:#254FC4; --accent-soft:#E7EEFD;
+    --good:#1C9A6A; --good-ink:#127A53; --good-soft:#E2F4EC;
+    --amber:#C2760E; --amber-ink:#8A5806; --amber-soft:#FBF0D9;
+    --danger:#CB3E3E; --danger-soft:#FBE7E7;
+    --mono-bg:#EEF2F9;
+    --shadow:0 1px 2px rgba(23,32,46,.06), 0 8px 24px -12px rgba(23,32,46,.18);
+    --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0D1420; --surface:#161F30; --surface-2:#1D2739; --ink:#E9EEF8; --ink-2:#9AA8BF;
+      --border:#28344B; --border-strong:#33425E;
+      --accent:#5E8CF6; --accent-ink:#93B2F9; --accent-soft:#182339;
+      --good:#34C48C; --good-ink:#5BD3A5; --good-soft:#12301F;
+      --amber:#E0A54B; --amber-ink:#EBBE76; --amber-soft:#2E2510;
+      --danger:#E86D6D; --danger-soft:#331C1C;
+      --mono-bg:#101A2A;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0D1420; --surface:#161F30; --surface-2:#1D2739; --ink:#E9EEF8; --ink-2:#9AA8BF;
+    --border:#28344B; --border-strong:#33425E;
+    --accent:#5E8CF6; --accent-ink:#93B2F9; --accent-soft:#182339;
+    --good:#34C48C; --good-ink:#5BD3A5; --good-soft:#12301F;
+    --amber:#E0A54B; --amber-ink:#EBBE76; --amber-soft:#2E2510;
+    --danger:#E86D6D; --danger-soft:#331C1C;
+    --mono-bg:#101A2A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased;font-size:16px}
+  .wrap{max-width:980px;margin:0 auto;padding:44px 22px 72px}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--accent-ink)}
+  h1{font-size:clamp(2rem,4.6vw,2.7rem);line-height:1.08;margin:.3em 0 .28em;letter-spacing:-.02em;text-wrap:balance;font-weight:800}
+  .lede{font-size:1.12rem;color:var(--ink-2);max-width:70ch;text-wrap:pretty;margin:0}
+  .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);
+    border-radius:999px;padding:5px 12px;font-size:.8rem;font-weight:600;color:var(--ink-2)}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px var(--good-soft)}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;margin:34px 0 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .tab{appearance:none;background:none;border:none;font-family:inherit;font-size:.95rem;font-weight:650;
+    color:var(--ink-2);padding:11px 16px;border-radius:10px 10px 0 0;cursor:pointer;position:relative;
+    border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+  .tab:hover{color:var(--ink);background:var(--surface-2)}
+  .tab[aria-selected="true"]{color:var(--accent-ink);background:var(--surface);border-color:var(--border);
+    border-bottom:1px solid var(--surface)}
+  .tab .soon{font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--amber-ink);
+    background:var(--amber-soft);border-radius:999px;padding:2px 6px;margin-left:7px;vertical-align:1px}
+  .panel{display:none;padding-top:30px}
+  .panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .panel-head{margin-bottom:20px}
+  .panel-head h2{font-size:1.3rem;margin:0 0 .25em;letter-spacing:-.01em;font-weight:780}
+  .panel-head p{margin:0;color:var(--ink-2);max-width:66ch}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+  .card > h3{margin:0 0 .15em;font-size:1.08rem;display:flex;align-items:center;gap:9px;font-weight:750}
+  .card .em{font-size:1.25rem;line-height:1}
+  .card .sub{margin:.1em 0 .9em;color:var(--ink-2);font-size:.92rem}
+  ul.feat{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  ul.feat li{display:flex;gap:9px;align-items:flex-start;font-size:.93rem;line-height:1.45}
+  ul.feat li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--accent);
+    margin-top:.5em;box-shadow:0 0 0 3px var(--accent-soft)}
+  ul.feat li b{font-weight:680}
+  ul.feat li em{font-style:normal;color:var(--ink-2)}
+
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:.66rem;font-weight:800;letter-spacing:.05em;
+    text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-left:auto}
+  .status.live{background:var(--good-soft);color:var(--good-ink)}
+  .status.wip{background:var(--amber-soft);color:var(--amber-ink)}
+  .status.soon{background:var(--surface-2);color:var(--ink-2)}
+
+  .empty{background:var(--surface);border:1px dashed var(--border-strong);border-radius:16px;padding:40px 24px;
+    text-align:center;color:var(--ink-2)}
+  .empty .big{font-size:1.8rem;margin-bottom:6px}
+
+  footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);color:var(--ink-2);font-size:.85rem}
+  a{color:var(--accent-ink)}
+  @media (max-width:560px){ .wrap{padding:32px 16px 56px} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ILIA · In-Product Support Agent</div>
+    <h1>ILIA Support Max</h1>
+    <p class="lede">Support Max is an in-product AI copilot for ILIA admins. It answers ILIA &amp; Kai-Zen questions from live documentation and data, files bugs straight to Jira, captures product ideas, and surfaces the exact FullStory session behind an issue — all inside the ILIA screen the admin is already on. This page is the living reference for what it does.</p>
+    <div class="pillrow">
+      <span class="pill"><span class="dot"></span> Prototype — live &amp; testing</span>
+      <span class="pill"><span class="dot"></span> Read-only · draft-only</span>
+      <span class="pill"><span class="dot"></span> Runs in the admin's browser</span>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="ILIA Support Max sections">
+    <button class="tab" role="tab" id="tab-features" aria-controls="panel-features" aria-selected="true">Support Features</button>
+    <button class="tab" role="tab" id="tab-integrations" aria-controls="panel-integrations" aria-selected="false">Integrations <span class="soon">soon</span></button>
+    <button class="tab" role="tab" id="tab-security" aria-controls="panel-security" aria-selected="false">Security &amp; Guardrails <span class="soon">soon</span></button>
+    <button class="tab" role="tab" id="tab-roadmap" aria-controls="panel-roadmap" aria-selected="false">Roadmap <span class="soon">soon</span></button>
+  </div>
+
+  <!-- ============ SUPPORT FEATURES ============ -->
+  <section class="panel active" id="panel-features" role="tabpanel" aria-labelledby="tab-features">
+    <div class="panel-head">
+      <h2>Support Features</h2>
+      <p>What Support Max can do today, organized by category. Each capability runs read-only and draft-only — Max never changes ILIA data or sends anything on its own.</p>
+    </div>
+
+    <div class="grid">
+
+      <!-- Conversational -->
+      <div class="card">
+        <h3><span class="em">💬</span> Conversational Support <span class="status live">Live</span></h3>
+        <p class="sub">Ask about ILIA or a client in plain language and get a grounded, honest answer.</p>
+        <ul class="feat">
+          <li><b>ILIA &amp; Kai-Zen Q&amp;A</b> — how workflows, screens, and strategies work.</li>
+          <li><b>Grounded in the live ILIA Confluence space</b> — answers reflect your actual documentation, not a static script.</li>
+          <li><b>Live data lookups</b> — client &amp; servicing details, documents, and more, pulled on demand.</li>
+          <li><b>"Thinking…" indicator</b> — you always see when Max is working.</li>
+          <li><b>Remembers your recent context</b> — greets you back and picks up where you left off.</li>
+          <li><b>"Which person?" picker</b> — when a name matches several people, you pick the exact one before any data is shown.</li>
+        </ul>
+      </div>
+
+      <!-- Bug reporting -->
+      <div class="card">
+        <h3><span class="em">🐞</span> Bug Reporting <span class="status live">Live</span></h3>
+        <p class="sub">File a real Jira bug from the ILIA screen — no context-switching.</p>
+        <ul class="feat">
+          <li><b>Lands in a "Reported Bugs" intake</b> — set to <em>Needs Clarification</em>, never dropped into an active sprint.</li>
+          <li><b>Auto-assigned</b> to the triage owner so nothing falls through the cracks.</li>
+          <li><b>Structured capture</b> — title, what happened, where it happens, who's affected, and priority (mapped to Jira's real Priority field).</li>
+          <li><b>Screenshots → Jira attachments</b> — drag, paste, or choose files; remove on hover.</li>
+          <li><b>Add FullStory</b> — look up the client's sessions by email and attach the right replay to the ticket.</li>
+          <li><b>Guardrails</b> — required fields, and a submit lock so a bug can't be double-filed.</li>
+        </ul>
+      </div>
+
+      <!-- Idea capture -->
+      <div class="card">
+        <h3><span class="em">💡</span> Idea Capture <span class="status live">Live</span></h3>
+        <p class="sub">Turn an admin's suggestion into something the team actually sees.</p>
+        <ul class="feat">
+          <li><b>File a product idea</b> in a sentence or two, with impact.</li>
+          <li><b>Routed to the ILIA Feature Ideas board</b> for the tech team &amp; leadership to review.</li>
+          <li><b>Nothing sent elsewhere</b> — it's captured, not emailed.</li>
+        </ul>
+      </div>
+
+      <!-- FullStory session insight -->
+      <div class="card">
+        <h3><span class="em">🎬</span> Session Insight (FullStory) <span class="status live">Live</span></h3>
+        <p class="sub">See exactly what a client did on screen — without leaving ILIA.</p>
+        <ul class="feat">
+          <li><b>Find sessions by client email</b> — no separate FullStory login/search.</li>
+          <li><b>Grouped by day</b>, newest first, so you can match the session to when the call happened.</li>
+          <li><b>View or attach</b> the right session, with easy add/remove.</li>
+          <li><b>Free team viewing</b> via domain-locked guest access — only your people can watch.</li>
+        </ul>
+      </div>
+
+      <!-- Reporting / Domo -->
+      <div class="card">
+        <h3><span class="em">📊</span> Reporting (Domo) <span class="status wip">In progress</span></h3>
+        <p class="sub">Two-way connection to Domo for adoption dashboards and in-chat reporting.</p>
+        <ul class="feat">
+          <li><b>Usage → Domo</b> — Max logs its own activity so leadership can dashboard adoption.</li>
+          <li><b>Domo → Max</b> — ask reporting questions in chat and get answers from Domo data.</li>
+          <li><em>Pending Domo access setup.</em></li>
+        </ul>
+      </div>
+
+      <!-- Security summary card (links to full tab later) -->
+      <div class="card">
+        <h3><span class="em">🔒</span> Built-in Safeguards <span class="status live">Live</span></h3>
+        <p class="sub">Security is on by default — summarized here, detailed in the Security tab.</p>
+        <ul class="feat">
+          <li><b>Read-only &amp; draft-only</b> — never edits ILIA, never sends a message on its own.</li>
+          <li><b>Confirms which person</b> before showing client data; never dumps full records.</li>
+          <li><b>Stays in its lane</b> — an ILIA support agent only; resists off-topic or manipulation attempts.</li>
+          <li><b>Every sensitive action is logged</b> to an audit trail.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ INTEGRATIONS (placeholder) ============ -->
+  <section class="panel" id="panel-integrations" role="tabpanel" aria-labelledby="tab-integrations">
+    <div class="empty">
+      <div class="big">🔌</div>
+      <b>Integrations</b>
+      <p>How Support Max connects to ILIA data, documents, FullStory, Jira, Confluence, and Domo — documentation coming soon.</p>
+    </div>
+  </section>
+
+  <!-- ============ SECURITY (placeholder) ============ -->
+  <section class="panel" id="panel-security" role="tabpanel" aria-labelledby="tab-security">
+    <div class="empty">
+      <div class="big">🔒</div>
+      <b>Security &amp; Guardrails</b>
+      <p>The full write-up of Max's data handling, role-lock, and manipulation resistance — documentation coming soon.</p>
+    </div>
+  </section>
+
+  <!-- ============ ROADMAP (placeholder) ============ -->
+  <section class="panel" id="panel-roadmap" role="tabpanel" aria-labelledby="tab-roadmap">
+    <div class="empty">
+      <div class="big">🗺️</div>
+      <b>Roadmap</b>
+      <p>What's next for Support Max — planned features and milestones — coming soon.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>ILIA Support Max · living reference. Read-only &amp; draft-only in-product copilot for ILIA admins.</p>
+  </footer>
+</div>
+
+<script>
+  (function(){
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+    function select(tab){
+      tabs.forEach(function(t){
+        var on = t === tab;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        var panel = document.getElementById(t.getAttribute('aria-controls'));
+        if(panel) panel.classList.toggle('active', on);
+      });
+    }
+    tabs.forEach(function(t, i){
+      t.addEventListener('click', function(){ select(t); });
+      t.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+          e.preventDefault();
+          var dir = e.key === 'ArrowRight' ? 1 : -1;
+          var next = tabs[(i + dir + tabs.length) % tabs.length];
+          next.focus(); select(next);
+        }
+      });
+    });
+  })();
+</script>
