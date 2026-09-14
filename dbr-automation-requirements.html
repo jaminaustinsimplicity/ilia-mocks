@@ -377,6 +377,7 @@
     <button id="tabForms">DBR envelope &amp; routing</button>
     <button id="tabEmails">ILIA DBR emails</button>
     <button id="tabBlockers">Blockers checklist</button>
+    <button id="tabElect">New DBR election form</button>
   </nav>
 
   <!-- ============ TAB 1: EVENT CARDS ============ -->
@@ -1003,6 +1004,14 @@
     </div>
     <div class="bl-wrap" id="blList"></div>
   </section>
+
+  <!-- ============ TAB 6: NEW DBR ELECTION FORM (embedded) ============ -->
+  <section id="view-electform" hidden>
+    <p class="hint" style="margin-top:16px">The <b>new DBR election form</b> — the actual document, redesigned from Marissa's current form. This is the working copy for <b>Judy &amp; Chris feedback</b>; I edit it here (and in the shareable file) as we finalize. <a href="https://jaminaustinsimplicity.github.io/ilia-mocks/dbr-election-form.html" target="_blank" rel="noopener" style="color:var(--ilia);font-weight:600">Open full form ↗</a></p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-top:12px">
+      <iframe id="efFrame" title="DBR Election Form" style="width:100%;height:82vh;min-height:640px;border:0;display:block;background:#fff"></iframe>
+    </div>
+  </section>
 </div>
 
 <dialog id="uxModal">
@@ -1081,17 +1090,20 @@ function showTab(which){
   document.getElementById('view-forms').hidden=which!=='forms';
   document.getElementById('view-emails').hidden=which!=='emails';
   document.getElementById('view-blockers').hidden=which!=='blockers';
+  document.getElementById('view-electform').hidden=which!=='electform';
   document.getElementById('tabCards').classList.toggle('active',which==='cards');
   document.getElementById('tabTm').classList.toggle('active',which==='tm');
   document.getElementById('tabForms').classList.toggle('active',which==='forms');
   document.getElementById('tabEmails').classList.toggle('active',which==='emails');
   document.getElementById('tabBlockers').classList.toggle('active',which==='blockers');
+  document.getElementById('tabElect').classList.toggle('active',which==='electform');
 }
 document.getElementById('tabCards').addEventListener('click',()=>showTab('cards'));
 document.getElementById('tabTm').addEventListener('click',()=>showTab('tm'));
 document.getElementById('tabForms').addEventListener('click',()=>showTab('forms'));
 document.getElementById('tabEmails').addEventListener('click',()=>showTab('emails'));
 document.getElementById('tabBlockers').addEventListener('click',()=>showTab('blockers'));
+document.getElementById('tabElect').addEventListener('click',()=>showTab('electform'));
 
 const CHECK=[
  {group:"Decisions & confirmations to unblock",items:[
@@ -1541,6 +1553,285 @@ function renderEmail(key,i){
   d.querySelectorAll('.att-chip').forEach(b=>{const k=b.dataset.k;if(k){b.addEventListener('click',()=>openDoc(k));}else{b.disabled=true;}});
 }
 selectStep('client');
+
+const EF_HTML=`<title>DBR Election Form</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#e8ecf3; --paper:#ffffff; --ink:#1a2433; --muted:#57627a; --faint:#8994a6;
+    --accent:#1e4b8f; --accent-2:#2f6bd0; --accent-soft:#e8eef8;
+    --caution:#8a5a12; --caution-soft:#fbf1dc; --caution-line:#e6b757;
+    --good:#1c7a54; --good-soft:#e4f2eb;
+    --line:#d6dce7; --line-strong:#c1cad8;
+    --field:#fff7e2; --field-line:#e0b24a;
+    --serif:'Newsreader',Georgia,'Times New Roman',serif;
+    --sans:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+    --shadow:0 1px 2px rgba(20,30,50,.05),0 18px 50px -22px rgba(20,30,50,.28);
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --ground:#0c1320; --paper:#151e2b; --ink:#e7ecf5; --muted:#9aa6ba; --faint:#69748a;
+    --accent:#6fa1f6; --accent-2:#8fb6f9; --accent-soft:#172439;
+    --caution:#e2ab57; --caution-soft:#2b2410; --caution-line:#6d5a22;
+    --good:#4cc290; --good-soft:#12281e;
+    --line:#28323f; --line-strong:#38465a;
+    --field:#2a2510; --field-line:#6f5c22;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 20px 55px -25px rgba(0,0,0,.7);
+  }}
+  :root[data-theme="dark"]{
+    --ground:#0c1320; --paper:#151e2b; --ink:#e7ecf5; --muted:#9aa6ba; --faint:#69748a;
+    --accent:#6fa1f6; --accent-2:#8fb6f9; --accent-soft:#172439;
+    --caution:#e2ab57; --caution-soft:#2b2410; --caution-line:#6d5a22;
+    --good:#4cc290; --good-soft:#12281e;
+    --line:#28323f; --line-strong:#38465a;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 20px 55px -25px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:0 18px 80px}
+  .toolbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(8px);padding:12px 18px;margin:0 -18px 22px;border-bottom:1px solid var(--line)}
+  .toolbar .tl{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;color:var(--muted);letter-spacing:.02em}
+  .toolbar .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .tb-actions{display:flex;gap:8px}
+  .btn{font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;border-radius:8px;padding:8px 13px;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);transition:border-color .12s,background .12s}
+  .btn:hover{border-color:var(--accent)}
+  .btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .doc{background:var(--paper);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);padding:46px 52px 40px;position:relative}
+  .sample-flag{position:absolute;top:16px;right:18px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;color:var(--caution);background:var(--caution-soft);border:1px solid var(--caution-line);border-radius:5px;padding:3px 8px}
+  .letterhead{display:flex;justify-content:space-between;align-items:baseline;gap:14px;border-bottom:2px solid var(--accent);padding-bottom:12px}
+  .lh-brand{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+  .lh-doc{font-family:var(--mono);font-size:11px;color:var(--faint)}
+  h1{font-family:var(--serif);font-weight:600;font-size:31px;line-height:1.12;letter-spacing:-.01em;margin:22px 0 4px;text-wrap:balance}
+  .subtitle{font-size:13.5px;color:var(--muted);margin:0 0 4px}
+  .pi{display:grid;grid-template-columns:1fr 1fr;gap:0 34px;margin:22px 0 6px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .pi .cell{display:flex;justify-content:space-between;gap:12px;padding:10px 15px;border-bottom:1px solid var(--line);font-size:13px}
+  .pi .cell:nth-last-child(-n+2){border-bottom:none}
+  @media (max-width:560px){.pi{grid-template-columns:1fr}.pi .cell:nth-last-child(2){border-bottom:1px solid var(--line)}}
+  .pi .k{color:var(--muted)}
+  .pi .v{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+  h2{font-family:var(--serif);font-weight:600;font-size:19px;letter-spacing:-.01em;margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:3px}
+  p{margin:0 0 12px;font-size:14px;max-width:66ch}
+  p.lead{font-size:14.5px}
+  .notice p{color:var(--ink)}
+  .mf{font-family:var(--mono);font-size:.86em;background:var(--field);border-bottom:1.5px solid var(--field-line);border-radius:3px 3px 0 0;padding:1px 5px;font-weight:500;white-space:nowrap}
+  .ftag{display:none;font-family:var(--mono);font-size:10px;font-weight:500;color:var(--accent);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:middle;white-space:nowrap}
+  body.tags .ftag{display:inline-block}
+  .tag-hint{display:none}
+  body.tags .tag-hint{display:block}
+  .tbl-wrap{overflow-x:auto;margin:6px 0 8px}
+  table.cmp{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+  .cmp th,.cmp td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .cmp thead th{font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--faint);text-align:right;border-bottom:1.5px solid var(--line-strong)}
+  .cmp th:first-child,.cmp td:first-child{text-align:left;font-weight:600;color:var(--ink)}
+  .cmp tbody tr:last-child td{border-bottom:none}
+  .cmp tr.hl td{background:var(--accent-soft)}
+  .cmp tr.hl td:first-child{color:var(--accent)}
+  .assump{font-size:11.5px;color:var(--faint);margin:2px 0 0}
+  .elect{display:flex;flex-direction:column;gap:12px;margin:6px 0 4px}
+  .opt{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border:1.5px solid var(--line-strong);border-radius:11px;padding:15px 17px;cursor:pointer;transition:border-color .14s,background .14s}
+  .opt:hover{border-color:var(--accent)}
+  .opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+  .opt:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+  .opt input{appearance:none;-webkit-appearance:none;margin:2px 0 0;width:20px;height:20px;border:2px solid var(--line-strong);border-radius:50%;cursor:pointer;flex:none;position:relative}
+  .opt input:checked{border-color:var(--accent)}
+  .opt input:checked::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--accent)}
+  .opt .ttl{font-family:var(--serif);font-size:17px;font-weight:600;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+  .opt .amt{font-family:var(--mono);font-size:12.5px;font-weight:500;color:var(--good);background:var(--good-soft);border-radius:5px;padding:1px 8px}
+  .opt .desc{font-size:12.5px;color:var(--muted);margin:2px 0 0}
+  .opt .why{font-size:12.5px;color:var(--ink);margin:8px 0 0;padding:9px 11px;background:color-mix(in srgb,var(--muted) 7%,transparent);border-radius:7px;line-height:1.5}
+  .opt .why b{color:var(--ink)}
+  .health{color:var(--caution);font-weight:600}
+  .custom-in{margin:9px 0 0;display:flex;align-items:baseline;gap:7px;font-size:12.5px;color:var(--muted)}
+  .custom-in .amt-field{display:inline-flex;align-items:baseline;gap:3px;border-bottom:2px solid var(--field-line);padding:2px 8px 3px;background:var(--field);border-radius:4px 4px 0 0}
+  .custom-in .amt-field span{font-family:var(--mono);font-weight:600;color:var(--caution)}
+  .custom-in input{border:none;background:transparent;font-family:var(--mono);font-size:13px;color:var(--ink);width:120px;outline:none}
+  .consider{margin:8px 0 4px;border-left:3px solid var(--caution-line);background:var(--caution-soft);border-radius:0 9px 9px 0;padding:14px 16px}
+  .consider .eyebrow{color:var(--caution)}
+  .consider p{font-size:13px;color:var(--ink);margin:0}
+  .consider p+p{margin-top:8px}
+  .sig-block{border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-top:12px}
+  .sig-ceremony{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .sig-ceremony .num{width:19px;height:19px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--sans);font-weight:700;font-size:11px}
+  .sig-row{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+  @media (max-width:560px){.sig-row{grid-template-columns:1fr}}
+  .sig-line{margin-top:2px}
+  .sig-line .lbl{font-size:11px;color:var(--muted);margin-bottom:5px;display:flex;align-items:center}
+  .sig-line .rule{height:38px;border:1px dashed var(--line-strong);border-radius:7px;background:color-mix(in srgb,var(--accent) 3%,transparent);display:flex;align-items:center;padding:0 12px;font-size:12px;font-style:italic;color:var(--faint)}
+  .hh-text{font-size:11.5px;color:var(--muted);line-height:1.55;margin:12px 0 0;padding-top:11px;border-top:1px dashed var(--line-strong)}
+  .hh-text b{color:var(--ink)}
+  .footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
+  .footer b{color:var(--ink)}
+  .cadence{font-size:11.5px;color:var(--faint);margin-top:8px;text-align:center}
+  .spec{margin-top:26px;background:var(--paper);border:1px solid var(--accent);border-top:3px solid var(--accent);border-radius:8px;box-shadow:var(--shadow);padding:22px 26px}
+  .spec h2{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 30%,transparent);margin-top:0}
+  .spec .sub{font-size:12.5px;color:var(--muted);margin:-4px 0 16px}
+  .spec-tbl{overflow-x:auto}
+  table.fld{width:100%;border-collapse:collapse;font-size:12px;min-width:560px}
+  .fld th,.fld td{padding:8px 11px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  .fld thead th{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--faint)}
+  .fld td:first-child{font-family:var(--mono);font-weight:500;color:var(--accent);white-space:nowrap}
+  .fld tbody tr:last-child td{border-bottom:none}
+  .fld .role{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .spec-group{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:20px 0 6px}
+  .spec-notes{margin:16px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+  .spec-notes li{font-size:12.5px;color:var(--ink);padding-left:20px;position:relative;line-height:1.5}
+  .spec-notes li::before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:700}
+  .spec-notes code{font-family:var(--mono);font-size:11.5px;background:var(--accent-soft);border-radius:4px;padding:1px 5px}
+  .route{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:14px 0 2px;font-size:12px}
+  .route .node{font-weight:600;background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:20px;padding:3px 11px}
+  .route .arw{color:var(--faint);font-weight:700}
+  .route .doc2{background:var(--caution-soft);color:var(--caution);border-color:var(--caution-line)}
+  @media print{body{background:#fff}.toolbar,.spec,.sample-flag{display:none!important}.wrap{max-width:none;padding:0}.doc{border:none;box-shadow:none;padding:0}body.tags .ftag{display:none!important}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<div class="toolbar">
+  <span class="tl"><span class="dot"></span> Kai-Zen DBR · Election Form <span style="color:var(--faint);font-weight:500">draft mock</span></span>
+  <span class="tb-actions">
+    <button class="btn" id="tagBtn" aria-pressed="false">Show DocuSign field tags</button>
+    <button class="btn" id="printBtn">Print</button>
+  </span>
+</div>
+<div class="wrap">
+  <div class="doc">
+    <span class="sample-flag">SAMPLE · ILIA auto-fills per client</span>
+    <div class="letterhead">
+      <span class="lh-brand">Kai-Zen Plan Servicing · Simplicity–NIW</span>
+      <span class="lh-doc">Form: NIW–DBR–EL · v.2026</span>
+    </div>
+    <h1>Death Benefit Reduction — Your Election</h1>
+    <p class="subtitle">A planned <b>term-rider reduction</b> for the Kai-Zen policy design · Policy Years 11–15</p>
+    <div class="pi" aria-label="Policy information">
+      <div class="cell"><span class="k">Client / Insured <span class="ftag">client_name</span></span><span class="v mf">{client_name}</span></div>
+      <div class="cell"><span class="k">Respond by <span class="ftag">respond_by</span></span><span class="v mf">{respond_by}</span></div>
+      <div class="cell"><span class="k">Policy Number <span class="ftag">policy_no</span></span><span class="v mf">{policy_no}</span></div>
+      <div class="cell"><span class="k">Policy Year <span class="ftag">policy_year</span></span><span class="v mf">{policy_year}</span></div>
+      <div class="cell"><span class="k">Carrier <span class="ftag">carrier</span></span><span class="v mf">{carrier}</span></div>
+      <div class="cell"><span class="k">Trust / Settlor <span class="ftag">trust_name</span></span><span class="v mf">{trust_name}</span></div>
+      <div class="cell"><span class="k">Current Death Benefit <span class="ftag">current_db</span></span><span class="v mf">{current_db}</span></div>
+      <div class="cell"><span class="k">Planned Term Reduction <span class="ftag">term_reduction_full</span></span><span class="v mf">{term_reduction_full}</span></div>
+    </div>
+    <section class="notice">
+      <h2>The Phase Your Policy Is Entering</h2>
+      <p class="lead">Your Kai-Zen policy is entering its <b>eleventh year</b> — an important phase of the original design. The focus now shifts toward the policy's <b>cash-value growth</b>, potential <b>supplemental retirement income</b>, and long-term death benefit.</p>
+      <p>The original illustration included a planned <b>term-rider death benefit reduction</b>. The term rider was used to lower the early cost of insurance and let more of your premium build cash value. Because the term rider costs more in later years, reducing it now is intended to keep insurance costs lower and support future growth and income. <b>The choice is yours</b> — and we will not make any change without your signed election below.</p>
+    </section>
+    <section>
+      <h2>Your Options at a Glance</h2>
+      <p class="tag-hint" style="font-size:12px;color:var(--faint);margin-bottom:8px">Comparison values are auto-generated by ILIA from the in-force illustration. <span class="ftag">strategy_comparison</span></p>
+      <div class="tbl-wrap">
+        <table class="cmp">
+          <thead><tr><th>Strategy</th><th>Cash Value</th><th>Suppl. income / yr</th><th>Death benefit at age 90</th></tr></thead>
+          <tbody>
+            <tr><td>Original illustration</td><td>$1,150,000</td><td>$92,000</td><td>$1,000,000</td></tr>
+            <tr class="hl"><td>Full Planned Reduction</td><td>$1,290,000</td><td>$110,000</td><td>$817,600</td></tr>
+            <tr class="hl"><td>Half Planned Reduction</td><td>$1,220,000</td><td>$101,000</td><td>$908,800</td></tr>
+            <tr><td>No Term Reduction</td><td>$1,150,000</td><td>$92,000</td><td>$1,000,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="assump">Assumptions: original crediting rate 6.91% vs. current in-force 5.98%. Figures are projections based on current in-force assumptions — not guarantees. Sample values shown.</p>
+    </section>
+    <section>
+      <h2>Your Election <span class="ftag">dbr_election · radio · required · signer: Client</span></h2>
+      <p style="margin-bottom:14px"><b>Please choose one option below</b> and sign. Each option's full illustration is attached to this packet.</p>
+      <div class="elect" role="radiogroup" aria-label="Death benefit reduction election">
+        <label class="opt"><input type="radio" name="dbr_election" value="FULL"><div>
+            <div class="ttl">Full Planned Reduction <span class="amt">Term reduction: {term_reduction_full}</span></div>
+            <div class="desc">Follow the original plan beginning in Policy Year 11.</div>
+            <div class="why"><b>What this means:</b> the greatest focus on cash-value growth and potential supplemental retirement income. Your death benefit is reduced by the full planned term amount.</div>
+          </div></label>
+        <label class="opt"><input type="radio" name="dbr_election" value="HALF"><div>
+            <div class="ttl">Half Planned Reduction <span class="amt">Term reduction: {term_reduction_half} (≈50%)</span></div>
+            <div class="desc">Reduce about half of the planned term reduction.</div>
+            <div class="why"><b>What this means:</b> a balance between cash-value accumulation and death-benefit protection — you keep more coverage than the full reduction while still lowering cost.</div>
+          </div></label>
+        <label class="opt"><input type="radio" name="dbr_election" value="NONE"><div>
+            <div class="ttl">No Term Reduction</div>
+            <div class="desc">Keep the existing term coverage this year. (You may choose to reduce in a future year, through Year 15.)</div>
+            <div class="why"><b>What this means:</b> the greatest emphasis on death-benefit protection — the term coverage stays in place.<br><span class="health">If your health has changed, choose No Term Reduction</span> — you may want to keep a higher death benefit for your heirs.</div>
+          </div></label>
+        <label class="opt"><input type="radio" name="dbr_election" value="CUSTOM"><div>
+            <div class="ttl">A different (custom) amount</div>
+            <div class="desc">Request a reduction amount other than the three above.</div>
+            <div class="why"><b>What this means:</b> select this and a Kai-Zen servicing specialist will contact you to work out a custom amount and prepare a new illustration.
+              <span class="custom-in">Amount you have in mind (optional): <span class="amt-field"><span>$</span><input inputmode="numeric" placeholder="0" aria-label="Custom amount"></span><span class="ftag">requested_amount · text · optional</span></span>
+            </div>
+          </div></label>
+      </div>
+    </section>
+    <section class="consider">
+      <span class="eyebrow">Important considerations</span>
+      <p>Once the term rider is reduced, it generally <b>cannot be restored</b> to its previous level. Restoring coverage later may require new underwriting and could be more expensive or unavailable on the same terms.</p>
+      <p>Because this is a <b>premium-financed policy</b>, keeping a higher level of term coverage may raise future costs, which could reduce policy values and increase the risk of a policy lapse in later years. The decision is a trade-off between death-benefit protection, cash-value growth, supplemental income, and long-term cost.</p>
+    </section>
+    <section>
+      <h2>Signatures</h2>
+      <div class="sig-block">
+        <div class="sig-ceremony"><span class="num">1</span> Client / Insured — election</div>
+        <div class="sig-row">
+          <div class="sig-line"><div class="lbl">Client signature <span class="ftag">client_signature · sig</span></div><div class="rule">DocuSign signature</div></div>
+          <div class="sig-line"><div class="lbl">Date <span class="ftag">client_sign_date · date</span></div><div class="rule">auto-filled</div></div>
+        </div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-ceremony"><span class="num">2</span> Settlor — Hold Harmless &amp; Indemnification</div>
+        <div class="sig-row">
+          <div class="sig-line"><div class="lbl">Settlor signature <span class="ftag">settlor_signature · sig</span></div><div class="rule">DocuSign signature</div></div>
+          <div class="sig-line"><div class="lbl">Date <span class="ftag">settlor_sign_date · date</span></div><div class="rule">auto-filled</div></div>
+        </div>
+        <div class="sig-line" style="margin-top:12px"><div class="lbl">Settlor printed name <span class="ftag">settlor_name · text</span></div><div class="rule mf" style="font-style:normal">{settlor_name}</div></div>
+        <p class="hh-text"><b>Hold Harmless &amp; Indemnification as to Provident Trust Group, LLC.</b> Provident Trust Group, LLC (trustee) has been directed by the Settlor to execute documents to reduce the death benefit. The Settlor acknowledges the reduction was contemplated in the original design, releases and indemnifies Provident from liability arising from the reduction, and directs Provident to execute the necessary documents. <i>Required regardless of the election above. If the Client is the Settlor, the Client signs both sections.</i></p>
+      </div>
+    </section>
+    <div class="footer">
+      <span>Questions? Call <b>(972) 755-1582</b> or email <b>niw.info@simplicitygroup.com</b></span>
+      <span>Kai-Zen Plan Servicing · Simplicity–NIW</span>
+    </div>
+    <p class="cadence">Sent 120 days before the deadline · reminders at 90 &amp; 60 days (same form) · reminders stop once your signed election is received.</p>
+  </div>
+  <div class="spec" id="spec">
+    <h2>For Chris — DocuSign field map &amp; routing</h2>
+    <p class="sub">Everything in one envelope, signed in order. Use <b>real DocuSign field tabs</b> (not checkboxes drawn on the PDF) so ILIA can read the response. Toggle "Show DocuSign field tags" above to see each field in place on the form.</p>
+    <div class="spec-group">Client-entered fields</div>
+    <div class="spec-tbl"><table class="fld"><thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Notes</th></tr></thead><tbody>
+      <tr><td>dbr_election</td><td>Radio group</td><td class="role">Client</td><td>Values: FULL / HALF / NONE / CUSTOM · required</td></tr>
+      <tr><td>requested_amount</td><td>Text (numeric)</td><td class="role">Client</td><td>Optional · shows only when CUSTOM · custom is handled offline</td></tr>
+    </tbody></table></div>
+    <div class="spec-group">Pre-filled (read-only) — sourced from Case Details · NIWD-1024</div>
+    <div class="spec-tbl"><table class="fld"><thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Source</th></tr></thead><tbody>
+      <tr><td>policy_no · client_name · trust_name</td><td>Text</td><td class="role">read-only</td><td>Case Details</td></tr>
+      <tr><td>carrier · policy_year · respond_by</td><td>Text / date</td><td class="role">read-only</td><td>Case Details + trigger schedule</td></tr>
+      <tr><td>current_db · term_reduction_full · term_reduction_half</td><td>Currency</td><td class="role">read-only</td><td>Original design + illustration (Half ≈ 50% of full)</td></tr>
+      <tr><td>new_db_full · new_db_half</td><td>Currency</td><td class="role">read-only</td><td>Derived</td></tr>
+    </tbody></table></div>
+    <div class="spec-group">Signature fields</div>
+    <div class="spec-tbl"><table class="fld"><thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Notes</th></tr></thead><tbody>
+      <tr><td>client_signature · client_sign_date</td><td>Signature · date</td><td class="role">Client</td><td>Ceremony 1 — election</td></tr>
+      <tr><td>settlor_signature · settlor_name · settlor_sign_date</td><td>Signature · text · date</td><td class="role">Settlor</td><td>Ceremony 2 — Hold Harmless (always required; Phase 1 settlor = insured → same signer)</td></tr>
+    </tbody></table></div>
+    <div class="spec-group">Envelope routing (signing order)</div>
+    <div class="route">
+      <span class="node">1 · Client (election)</span><span class="arw">→</span>
+      <span class="node">2 · Settlor (Hold Harmless)</span><span class="arw">→</span>
+      <span class="node doc2">3 · Trustee (carrier change form)</span><span class="arw">→</span>
+      <span class="node doc2">4 · Bank (carrier change form)</span>
+    </div>
+    <ul class="spec-notes">
+      <li>This form is <b>Document 1</b> (election + Hold Harmless). The <b>Carrier Policy Change Form</b> is Document 2 — signed by Trustee then Bank — spec'd separately.</li>
+      <li><b>Open question to resolve first (Judy/Chris):</b> does the client make the Yes/Full/Half/None choice <b>in ILIA</b> and eSign only signs, or is dbr_election a live DocuSign field? This determines whether these election tabs exist in the envelope.</li>
+      <li>Lock the field names above, then map the capture method (webhook vs polling — B3) so ILIA reads the completed envelope + stores the signed PDF.</li>
+      <li>Carrier variants for Document 2: National Life ✓ · Allianz (pending, Marissa) · Minnesota Life (offline).</li>
+    </ul>
+  </div>
+</div>
+<script>
+  var tagBtn=document.getElementById('tagBtn');
+  tagBtn.addEventListener('click',function(){var on=document.body.classList.toggle('tags');tagBtn.classList.toggle('on',on);tagBtn.setAttribute('aria-pressed',on?'true':'false');tagBtn.textContent=on?'Hide DocuSign field tags':'Show DocuSign field tags';});
+  document.getElementById('printBtn').addEventListener('click',function(){window.print();});
+<\/script>`;
+(function(){var f=document.getElementById('efFrame');if(f){f.srcdoc=EF_HTML;}})();
 
 const root=document.documentElement;
 document.getElementById('themeBtn').addEventListener('click',()=>{const c=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');root.setAttribute('data-theme',c==='dark'?'light':'dark');});
