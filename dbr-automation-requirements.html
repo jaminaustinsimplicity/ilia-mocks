@@ -416,6 +416,42 @@
   .scr-tbl td:first-child{font-weight:600;color:var(--ink);white-space:nowrap}
   .scr-tbl tr:last-child td{border-bottom:none}
   .scr-tbl code{font-family:var(--fm);font-size:11px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:0 4px}
+  /* JIRA plan (Epic → Stories → Tasks) */
+  .plan-wrap{max-width:1000px;margin:14px 0 0}
+  .epic-banner{background:linear-gradient(135deg,var(--marissa),var(--ilia));color:#fff;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+  .epic-banner .ep-k{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+  .epic-banner h3{margin:3px 0 5px;font-size:18px;color:#fff}
+  .epic-banner p{margin:0;font-size:12.5px;opacity:.92;max-width:80ch}
+  .epic-banner .ep-badge{display:inline-block;margin-top:8px;font-size:10.5px;font-weight:700;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:2px 9px}
+  .plan-legend{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px;font-size:11px;color:var(--muted)}
+  .lg-tag{font-size:9.5px;font-weight:700;border-radius:20px;padding:1px 8px;border:1px solid}
+  .lg-new{color:var(--ok);border-color:var(--ok)}
+  .lg-reuse{color:var(--ilia);border-color:var(--ilia)}
+  .lg-dec{color:var(--warn);border-color:var(--warn)}
+  .lg-own{color:var(--marissa);border-color:var(--marissa)}
+  .wave{margin:22px 0 0}
+  .wave-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .wave-n{flex:none;width:30px;height:30px;border-radius:9px;background:var(--ilia);color:#fff;font-weight:800;font-size:15px;display:grid;place-items:center}
+  .wave-h b{font-size:14.5px;color:var(--ink)}
+  .wave-h span{font-size:11.5px;color:var(--muted)}
+  .wave.deferred .wave-n{background:var(--faint)}
+  .story{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--marissa);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;margin:0 0 12px}
+  .story-h{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px}
+  .story-sub{font-size:11.5px;color:var(--muted);margin:0 0 10px}
+  .ptask{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--border)}
+  .ptask:first-of-type{border-top:none}
+  .ptask .pn{flex:none;width:20px;height:20px;border-radius:5px;background:var(--surface-2);border:1px solid var(--border-strong);color:var(--muted);font-size:11px;font-weight:700;display:grid;place-items:center;margin-top:1px}
+  .ptask .pbody{flex:1;min-width:0}
+  .ptask .pt{font-size:12.5px;color:var(--ink);font-weight:600}
+  .ptask .pd{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .ptask .ptags{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+  .ptag{font-size:9.5px;font-weight:700;border-radius:20px;padding:1px 7px;border:1px solid;white-space:nowrap}
+  .ptag.own{color:var(--marissa);border-color:var(--marissa)}
+  .ptag.new{color:var(--ok);border-color:var(--ok)}
+  .ptag.reuse{color:var(--ilia);border-color:var(--ilia)}
+  .ptag.dec{color:var(--warn);border-color:var(--warn)}
+  .ptag.dep{color:var(--faint);border-color:var(--border-strong)}
+  .wave.deferred .story{border-left-color:var(--faint);opacity:.92}
 </style>
 
 <div class="wrap">
@@ -435,6 +471,7 @@
     <button id="tabScraper">Ben's Scraper</button>
     <button id="tabEmails">ILIA DBR emails</button>
     <button id="tabBlockers">Blockers checklist</button>
+    <button id="tabPlan">JIRA plan</button>
     <button id="tabElect">New DBR election form</button>
   </nav>
 
@@ -1265,6 +1302,132 @@
       </div>
     </div>
   </section>
+
+  <!-- ============ TAB: JIRA PLAN ============ -->
+  <section id="view-plan" hidden>
+    <div class="tm-intro">
+      <b>The dev game plan.</b> One <b>Epic</b> → logical <b>Stories</b> → <b>Tasks</b>, in the order they should be built (dependencies first). Owners tagged; each task flags whether it's <b>new</b> or <b>reuses an existing NIWD ticket</b>. When requirements lock &amp; Judy signs off, we create this Epic clean, re-parent the tickets worth keeping, and close/supersede the stale ones so devs work from one place. <span style="color:var(--warn)">Plan only — nothing created in Jira yet.</span>
+    </div>
+
+    <div class="plan-wrap">
+      <div class="epic-banner">
+        <div class="ep-k">Epic</div>
+        <h3>DBR Automation — Kai-Zen IUL (Policy Years 11–15)</h3>
+        <p>Detect eligible policies → request carrier illustrations (via AWS + scraper) → send 120/90/60 notices → capture the client's election (Full / Half / No) → apply &amp; route trustee → carrier → bank report, all visible in Tranche Management &amp; Case Details.</p>
+        <span class="ep-badge">Draft — create when requirements lock + Judy sign-off</span>
+      </div>
+
+      <div class="plan-legend">
+        <span>Legend:</span>
+        <span class="lg-tag lg-new">NEW task</span>
+        <span class="lg-tag lg-reuse">REUSE / EXTEND NIWD-xxxx</span>
+        <span class="lg-tag lg-dec">DECISION needed</span>
+        <span class="lg-tag lg-own">owner</span>
+      </div>
+
+      <!-- WAVE 0 -->
+      <div class="wave">
+        <div class="wave-h"><span class="wave-n">0</span><b>Foundations &amp; decisions</b><span>— unblock everything else; can start now</span></div>
+        <div class="story">
+          <div class="story-h">Story A · DBR data &amp; Case Details fields</div>
+          <p class="story-sub">Clean data + the fields everything writes into.</p>
+          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Validate &amp; populate clean DBR data (settlor = insured)</div><div class="pd">Phase-1 accounts; the trigger fires off this data.</div><div class="ptags"><span class="ptag own">Data team</span><span class="ptag reuse">NIWD-1767 (B1)</span></div></div></div>
+          <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">Add new DBR fields to Case Details</div><div class="pd">Current DB, term/base, Full/Half/No, low point per option, cash value, income, DB@90, in-force rate, DBR status, elected option.</div><div class="ptags"><span class="ptag own">Mohit</span><span class="ptag reuse">extends NIWD-784</span></div></div></div>
+          <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Confirm DBR start-year cohort rule + reconcile 2299 window</div><div class="pd">Early cohorts Yr 10 vs later Yr 11; reconcile NIWD-2299's Yr 10–14 vs PY 11–15.</div><div class="ptags"><span class="ptag dec">Decision</span><span class="ptag own">Judy / Kyle</span></div></div></div>
+          <div class="ptask"><span class="pn">4</span><div class="pbody"><div class="pt">DBR amount formula — 50% cap, term-first, cumulative/stacking</div><div class="pd">Reduction ≤ 50% of current DB; term rider before base; how amounts carry when a year is declined.</div><div class="ptags"><span class="ptag own">Paul + dev</span><span class="ptag reuse">relates NIWD-1752 / 2299</span></div></div></div>
+        </div>
+      </div>
+
+      <!-- WAVE 1 -->
+      <div class="wave">
+        <div class="wave-h"><span class="wave-n">1</span><b>Carrier illustration pipeline</b><span>— the linchpin; feeds every downstream field</span></div>
+        <div class="story">
+          <div class="story-h">Story B · Request → AWS → Ben's Scraper</div>
+          <p class="story-sub">See the "Ben's Scraper" tab for the full build spec.</p>
+          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Stand up the AWS landing spot for carrier illustrations</div><div class="pd">Dedicated location; carrier emails copied there.</div><div class="ptags"><span class="ptag own">Jamin / infra</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">Carrier in-force request email</div><div class="pd">3 ways (Full/Half/No) + 50% rule + term/base split + low point at 0% + participating loan + growth rate + run to age 100.</div><div class="ptags"><span class="ptag own">Jamin / Chris / Marissa</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Collect sample illustrations + ordering emails</div><div class="pd">Flex Life, National Life, Allianz — so Ben can build the parser.</div><div class="ptags"><span class="ptag own">Paul</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">4</span><div class="pbody"><div class="pt">Build the scraper microservice</div><div class="pd">Parse the 6 illustrations (3 reduction + 3 low points at 0%), validate, match to policy.</div><div class="ptags"><span class="ptag own">Ben</span><span class="ptag new">new · linchpin</span><span class="ptag dep">needs B1–B3</span></div></div></div>
+          <div class="ptask"><span class="pn">5</span><div class="pbody"><div class="pt">Scraper data mapping</div><div class="pd">→ Case Details · election form · carrier change form · bank report.</div><div class="ptags"><span class="ptag own">Ben</span><span class="ptag new">new</span></div></div></div>
+        </div>
+      </div>
+
+      <!-- WAVE 2 -->
+      <div class="wave">
+        <div class="wave-h"><span class="wave-n">2</span><b>Election form + notices</b><span>— what the client receives &amp; signs</span></div>
+        <div class="story">
+          <div class="story-h">Story C · DBR election form (DocuSign)</div>
+          <p class="story-sub">Draft built (in-force explanation + 3 options + Hold Harmless page).</p>
+          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Finalize the new election form</div><div class="pd">3 options, in-force rate explanation, Trust/Settlor, appended Hold Harmless. Copy sign-off with Judy/Chris.</div><div class="ptags"><span class="ptag own">Jamin / Marissa</span><span class="ptag new">new (draft done)</span></div></div></div>
+          <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">Build the DocuSign template — real field tabs + routing</div><div class="pd"><code>dbr_election</code> = full/half/none; signatures; sequential recipients.</div><div class="ptags"><span class="ptag own">Chris Lane</span><span class="ptag reuse">NIWD-1770 (B3) / 1742</span></div></div></div>
+          <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Map form fields from scraper + Case Details</div><div class="pd">3 choices + in-force rate auto-populate.</div><div class="ptags"><span class="ptag own">dev</span><span class="ptag reuse">extends NIWD-1024</span></div></div></div>
+        </div>
+        <div class="story">
+          <div class="story-h">Story D · Notices &amp; scheduler</div>
+          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Eligibility &amp; trigger scheduler (120/90/60)</div><div class="pd">Daily scan; cohort start-year aware; deadline off tranche funding date; exclusion + health gates.</div><div class="ptags"><span class="ptag own">ILIA dev</span><span class="ptag reuse">extends NIWD-1023</span></div></div></div>
+          <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">Notice email copy (Full / Half / No + health prompt)</div><div class="pd">Resolve health-decline vs re-offer; copy no longer assumes Client = Settlor.</div><div class="ptags"><span class="ptag own">Marissa</span><span class="ptag reuse">NIWD-1026 / 1025</span></div></div></div>
+          <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Assemble &amp; send one DocuSign envelope</div><div class="pd">Election + 3 illustrations + comparison; stop reminders on signed; audit log.</div><div class="ptags"><span class="ptag own">ILIA dev + Chris</span><span class="ptag new">new</span></div></div></div>
+        </div>
+      </div>
+
+      <!-- WAVE 3 -->
+      <div class="wave">
+        <div class="wave-h"><span class="wave-n">3</span><b>Capture, routing &amp; outcomes</b><span>— read the response, act on it</span></div>
+        <div class="story">
+          <div class="story-h">Story E · Election capture &amp; routing</div>
+          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">DocuSign completion capture</div><div class="pd">Webhook vs polling; read <code>dbr_election</code> + store the signed PDF.</div><div class="ptags"><span class="ptag own">Chris Lane</span><span class="ptag reuse">NIWD-1770 (B3)</span></div></div></div>
+          <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">Election routing + status</div><div class="pd">Full/Half → apply; None → re-offer; no-response → re-offer.</div><div class="ptags"><span class="ptag own">ILIA dev</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Apply reduction + write elected low point to Case Details</div><div class="pd">Low Point field → Chris's bank report.</div><div class="ptags"><span class="ptag own">ILIA dev</span><span class="ptag reuse">relates NIWD-2053/2185/2300</span></div></div></div>
+          <div class="ptask"><span class="pn">4</span><div class="pbody"><div class="pt">Re-offer scheduler</div><div class="pd">Next anniversary through Yr 15; skip if Health.</div><div class="ptags"><span class="ptag own">ILIA dev</span><span class="ptag new">new</span></div></div></div>
+        </div>
+      </div>
+
+      <!-- WAVE 4 -->
+      <div class="wave">
+        <div class="wave-h"><span class="wave-n">4</span><b>Fulfillment + bank</b><span>— make the reduction official</span></div>
+        <div class="story">
+          <div class="story-h">Story F · Trustee → Carrier → Bank</div>
+          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Populate the carrier change form with the elected amount</div><div class="ptags"><span class="ptag own">dev / Chris</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">Sequential envelope routing — trustee then carrier</div><div class="pd">Trust signs the change form (per Hold Harmless), then release to carrier.</div><div class="ptags"><span class="ptag own">Chris Lane</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Carrier receipt confirmation</div><div class="pd">Feeds if available, else manual mark.</div><div class="ptags"><span class="ptag own">dev / carrier</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">4</span><div class="pbody"><div class="pt">Bank report package + upload</div><div class="pd">Signed change form + chosen illustration + low point + signed election + signed Hold Harmless.</div><div class="ptags"><span class="ptag own">Chris</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">5</span><div class="pbody"><div class="pt">Fulfillment statuses in Tranche Management</div><div class="pd">Sent to trustee → Trustee signed → Sent to carrier → Carrier confirmed → Complete.</div><div class="ptags"><span class="ptag own">ILIA dev</span><span class="ptag new">new</span></div></div></div>
+        </div>
+      </div>
+
+      <!-- WAVE 5 -->
+      <div class="wave">
+        <div class="wave-h"><span class="wave-n">5</span><b>Admin surfacing</b><span>— visibility for Marissa / admins</span></div>
+        <div class="story">
+          <div class="story-h">Story G · Tranche Management + Case Details</div>
+          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">DBR Status column in Tranche Management</div><div class="pd">Drive the defined statuses per client.</div><div class="ptags"><span class="ptag own">ILIA dev</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">DBR section in Case Details</div><div class="pd">Surface the DBR fields + status per client (see "DBR in Case Details" tab).</div><div class="ptags"><span class="ptag own">Mohit / dev</span><span class="ptag new">new</span></div></div></div>
+        </div>
+      </div>
+
+      <!-- DEFERRED -->
+      <div class="wave deferred">
+        <div class="wave-h"><span class="wave-n">P2</span><b>Phase 2 / deferred</b><span>— out of MVP scope</span></div>
+        <div class="story">
+          <div class="story-h">Not in this Epic (yet)</div>
+          <div class="ptask"><span class="pn">–</span><div class="pbody"><div class="pt">Settlor ≠ insured + Master Settlor load</div><div class="ptags"><span class="ptag reuse">NIWD-1771 (B4)</span></div></div></div>
+          <div class="ptask"><span class="pn">–</span><div class="pbody"><div class="pt">Custom amounts</div><div class="pd">Removed from MVP — routed to a phone call, no field.</div></div></div>
+          <div class="ptask"><span class="pn">–</span><div class="pbody"><div class="pt">Extended signing chain</div><div class="pd">Settlor → NIW Admin QC → Bank (notarize) — from the signing-ceremonies doc; extends Event 4.</div></div></div>
+        </div>
+      </div>
+
+      <div class="scr-card" style="margin-top:16px">
+        <h3>JIRA cleanup — runs alongside</h3>
+        <p class="sub">Goal: a clean slate for devs without deleting real finished work.</p>
+        <ul class="fd-list">
+          <li><span class="tick">✓</span><div><b>Keep</b> the done/valid tickets — NIWD-1752 (formula, done), 1034 (done), 784 (Ready for Staging), Tranche-Mgmt items — link them under the Epic as delivered.</div></li>
+          <li><span class="tick amber">→</span><div><b>Extend</b> the still-relevant ones — 1023/1024/1025/1026 (notices/mapping), 1770 (DocuSign), 1742 (envelope) — re-scope to the current model and re-parent.</div></li>
+          <li><span class="tick" style="background:var(--faint)">✕</span><div><b>Close &amp; supersede</b> the stale/custom-era ones with a link to the new Epic — history survives, devs aren't confused.</div></li>
+          <li><span class="tick bank">→</span><div><b>Confirm first</b> with Judy + Mohit before touching Jira; nothing is created or closed until the plan is signed off.</div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
 </div>
 
 <dialog id="uxModal">
@@ -1345,6 +1508,7 @@ function showTab(which){
   document.getElementById('view-scraper').hidden=which!=='scraper';
   document.getElementById('view-emails').hidden=which!=='emails';
   document.getElementById('view-blockers').hidden=which!=='blockers';
+  document.getElementById('view-plan').hidden=which!=='plan';
   document.getElementById('view-electform').hidden=which!=='electform';
   document.getElementById('tabCards').classList.toggle('active',which==='cards');
   document.getElementById('tabTm').classList.toggle('active',which==='tm');
@@ -1353,6 +1517,7 @@ function showTab(which){
   document.getElementById('tabScraper').classList.toggle('active',which==='scraper');
   document.getElementById('tabEmails').classList.toggle('active',which==='emails');
   document.getElementById('tabBlockers').classList.toggle('active',which==='blockers');
+  document.getElementById('tabPlan').classList.toggle('active',which==='plan');
   document.getElementById('tabElect').classList.toggle('active',which==='electform');
 }
 document.getElementById('tabCards').addEventListener('click',()=>showTab('cards'));
@@ -1362,6 +1527,7 @@ document.getElementById('tabForms').addEventListener('click',()=>showTab('forms'
 document.getElementById('tabScraper').addEventListener('click',()=>showTab('scraper'));
 document.getElementById('tabEmails').addEventListener('click',()=>showTab('emails'));
 document.getElementById('tabBlockers').addEventListener('click',()=>showTab('blockers'));
+document.getElementById('tabPlan').addEventListener('click',()=>showTab('plan'));
 document.getElementById('tabElect').addEventListener('click',()=>showTab('electform'));
 
 const CHECK=[
