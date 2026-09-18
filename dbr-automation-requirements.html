@@ -376,6 +376,46 @@
   .newflag{display:inline-block;font-family:var(--fm);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--ilia);border-radius:5px;padding:1px 6px;margin-left:7px;vertical-align:middle}
   .upstream{background:color-mix(in srgb,#1c7a54 8%,transparent);border:1px solid #1c7a54;border-radius:10px;padding:11px 13px}
   .upstream .lab{color:#1c7a54}
+  /* Case Details mock (admin portal recreation) */
+  .cd-screen{max-width:1000px;margin:14px 0 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px}
+  .cd-sec-h{font-size:15px;font-weight:700;color:var(--ink);margin:18px 0 12px;letter-spacing:-.01em}
+  .cd-sec-h:first-child{margin-top:0}
+  .cd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:720px){.cd-grid{grid-template-columns:1fr 1fr}}
+  @media (max-width:480px){.cd-grid{grid-template-columns:1fr}}
+  .cd-field{display:flex;flex-direction:column;gap:4px}
+  .cd-field .cl{font-size:11px;color:var(--muted);font-weight:600}
+  .cd-field .cv{border:1px solid var(--border-strong);border-radius:8px;padding:9px 11px;font-size:13px;color:var(--ink);background:var(--surface);min-height:38px;display:flex;align-items:center;font-variant-numeric:tabular-nums}
+  .cd-field.ro .cv{background:var(--surface-2);color:var(--muted)}
+  .cd-field .cnote{font-size:10.5px;color:var(--faint)}
+  .cd-dbr{margin:8px 0 4px;border:2px solid var(--ilia);border-radius:12px;background:var(--ilia-soft);padding:16px 18px}
+  .cd-dbr .cd-sec-h{color:var(--ilia);margin-top:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .cd-dbr .cd-field .cv{background:var(--surface)}
+  .cd-status{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--accepted);color:var(--accepted);background:color-mix(in srgb,var(--accepted) 10%,transparent)}
+  .cd-elected{border-color:var(--ilia)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--ilia) 25%,transparent)}
+  .cd-elected .cv{border-color:var(--ilia);font-weight:700;color:var(--ilia)!important}
+  .cd-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px;flex-wrap:wrap}
+  .cd-hd .cd-crumb{font-size:12px;color:var(--muted)}.cd-hd .cd-crumb b{color:var(--ink)}
+  /* Scraper spec */
+  .scr-wrap{max-width:1000px;margin:14px 0 0;display:flex;flex-direction:column;gap:16px}
+  .scr-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+  .scr-card h3{margin:0 0 4px;font-size:14px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .scr-card>.sub{font-size:12px;color:var(--muted);margin:0 0 12px}
+  .scr-pipe{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+  .scr-step{flex:1;min-width:140px;border:1.5px solid var(--border-strong);border-radius:10px;padding:11px 12px;background:var(--surface-2)}
+  .scr-step b{font-size:12.5px;color:var(--ink);display:block}
+  .scr-step span{font-size:11px;color:var(--muted)}
+  .scr-step.acc{border-color:var(--ilia);background:var(--ilia-soft)}
+  .scr-arrow{align-self:center;color:var(--faint);font-weight:800;font-size:16px}
+  @media (max-width:720px){.scr-arrow{transform:rotate(90deg)}}
+  .scr-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:720px){.scr-grid{grid-template-columns:1fr}}
+  table.scr-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+  .scr-tbl th,.scr-tbl td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  .scr-tbl th{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--faint)}
+  .scr-tbl td:first-child{font-weight:600;color:var(--ink);white-space:nowrap}
+  .scr-tbl tr:last-child td{border-bottom:none}
+  .scr-tbl code{font-family:var(--fm);font-size:11px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:0 4px}
 </style>
 
 <div class="wrap">
@@ -390,7 +430,9 @@
   <nav class="tabs" role="tablist">
     <button id="tabCards" class="active">DBR workflow event cards</button>
     <button id="tabTm">DBR in Tranche Management</button>
+    <button id="tabCase">DBR in Case Details</button>
     <button id="tabForms">DBR envelope &amp; routing</button>
+    <button id="tabScraper">Ben's Scraper</button>
     <button id="tabEmails">ILIA DBR emails</button>
     <button id="tabBlockers">Blockers checklist</button>
     <button id="tabElect">New DBR election form</button>
@@ -1039,6 +1081,190 @@
       <iframe id="efFrame" title="DBR Election Form" style="width:100%;height:82vh;min-height:640px;border:0;display:block;background:#fff"></iframe>
     </div>
   </section>
+
+  <!-- ============ TAB: DBR IN CASE DETAILS ============ -->
+  <section id="view-case" hidden>
+    <div class="tm-intro">
+      <b>Where DBR shows up in the admin portal.</b> When an admin opens a client → <b>Client Details → Case Details</b> tab, there's a <b>Benefit Amounts</b> section. We add a new <b>Death Benefit Reduction</b> section directly under it (above Distributions) so the admin sees that client's DBR fields, amounts, and <b>status</b> in one place — updated as the client responds. It appears in <b>Year 10</b> (if applicable) and <b>Years 11–15</b> for all when DBR notices go out. <span style="color:var(--warn)">Design mock — fields are the new Case Details fields (Mohit); values illustrative.</span>
+    </div>
+
+    <div class="cd-screen">
+      <div class="cd-hd">
+        <div class="cd-crumb">Account Management › <b>Carey Finn</b> › Client Details › <b>Case Details</b></div>
+        <span class="cd-status">DBR: Accepted — Applied (Half)</span>
+      </div>
+
+      <div class="cd-sec-h">Benefit Amounts <span style="font-size:11px;font-weight:500;color:var(--faint)">· existing fields (context)</span></div>
+      <div class="cd-grid">
+        <div class="cd-field ro"><span class="cl">Initial Total Death Benefit</span><span class="cv">$1,000,000</span></div>
+        <div class="cd-field ro"><span class="cl">Term Rider Death Benefit</span><span class="cv">$400,000</span></div>
+        <div class="cd-field ro"><span class="cl">Base Death Benefit</span><span class="cv">$600,000</span><span class="cnote">Calculated from initial minus term rider.</span></div>
+        <div class="cd-field ro"><span class="cl">Target Amount</span><span class="cv">—</span></div>
+        <div class="cd-field ro"><span class="cl">Potential Income at Age (min)</span><span class="cv">65</span></div>
+        <div class="cd-field ro"><span class="cl">Potential Income at Age (max)</span><span class="cv">90</span></div>
+      </div>
+
+      <div class="cd-dbr">
+        <div class="cd-sec-h">Death Benefit Reduction <span class="newflag">new · Sep 17 · Mohit</span> <span class="cd-status">Accepted — Applied</span></div>
+        <div class="cd-grid" style="margin-bottom:14px">
+          <div class="cd-field"><span class="cl">DBR Status</span><span class="cv">Accepted — Applied</span><span class="cnote">Mirrors the workflow status (Notice sent → Accepted → Applied → fulfillment).</span></div>
+          <div class="cd-field"><span class="cl">Elected option</span><span class="cv">Half reduction</span></div>
+          <div class="cd-field"><span class="cl">Election date</span><span class="cv">Jul 20, 2026</span></div>
+          <div class="cd-field"><span class="cl">Current Death Benefit (feed)</span><span class="cv">$1,000,000</span><span class="cnote">50%-rule basis.</span></div>
+          <div class="cd-field"><span class="cl">50% max reduction</span><span class="cv">$500,000</span><span class="cnote">= current DB ÷ 2. A reduction can't exceed this.</span></div>
+          <div class="cd-field"><span class="cl">Start year of DB reductions</span><span class="cv">Year 11</span></div>
+        </div>
+        <div class="cd-sec-h" style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);margin:4px 0 8px">The 3 options (term rider reduces first, then base)</div>
+        <div class="cd-grid" style="margin-bottom:14px">
+          <div class="cd-field"><span class="cl">Full reduction</span><span class="cv">$500,000</span><span class="cnote">$400k term + $100k base · low point $95,000</span></div>
+          <div class="cd-field cd-elected"><span class="cl">Half reduction ✓ elected</span><span class="cv">$250,000</span><span class="cnote">all from term rider · low point $88,000</span></div>
+          <div class="cd-field"><span class="cl">No reduction</span><span class="cv">$0</span><span class="cnote">no change · low point $82,000</span></div>
+        </div>
+        <div class="cd-grid">
+          <div class="cd-field"><span class="cl">In-force rate (scraped)</span><span class="cv">5.98%</span><span class="cnote">Ben's scraper.</span></div>
+          <div class="cd-field cd-elected"><span class="cl">Low point (elected → bank)</span><span class="cv">$88,000</span><span class="cnote">→ Low Point field · Chris's bank report.</span></div>
+          <div class="cd-field"><span class="cl">Low cash value (elected)</span><span class="cv">$1,220,000</span></div>
+          <div class="cd-field"><span class="cl">Income / yr (elected)</span><span class="cv">$101,000</span></div>
+          <div class="cd-field"><span class="cl">DB at age 90 (elected)</span><span class="cv">$908,800</span></div>
+          <div class="cd-field"><span class="cl">Notices sent</span><span class="cv">120 / 90 / 60‑day</span></div>
+        </div>
+        <p style="margin:12px 0 0;font-size:11.5px;color:var(--muted)"><b>Before election:</b> all three options show with their scraped data + status "Notice sent — awaiting response." <b>After election:</b> the elected option is highlighted, status advances (Accepted → Applied → fulfillment), and the elected low point is written to the Low Point field for the bank report.</p>
+      </div>
+
+      <div class="cd-sec-h">Distributions <span style="font-size:11px;font-weight:500;color:var(--faint)">· existing fields (context)</span></div>
+      <div class="cd-grid">
+        <div class="cd-field ro"><span class="cl">Loan Payoff Date</span><span class="cv">—</span></div>
+        <div class="cd-field ro"><span class="cl">Start Year of Death Benefit Reductions</span><span class="cv">Year 11</span></div>
+        <div class="cd-field ro"><span class="cl">Income Start Date</span><span class="cv">—</span></div>
+      </div>
+    </div>
+
+    <div class="scr-card" style="max-width:1000px;margin-top:16px">
+      <h3>Requirements — what to build here</h3>
+      <ul class="fd-list">
+        <li><span class="tick">→</span><div>Add a <b>Death Benefit Reduction</b> section to the Case Details tab, under Benefit Amounts, above Distributions.</div></li>
+        <li><span class="tick">→</span><div><b>New fields (Mohit):</b> current DB (feed), 50% max, Full/Half/No amounts, low point per option, term vs base split, low cash value, income, DB at age 90, in-force rate, DBR status, elected option, election date.</div></li>
+        <li><span class="tick">→</span><div>Populated by <b>Ben's scraper</b> (amounts + low points + rate) and by the <b>election capture</b> (status + elected option). See the Ben's Scraper tab.</div></li>
+        <li><span class="tick">→</span><div>Visible in <b>Year 10 (if applicable) and Years 11–15</b> when notices go out; read-only for admins (data-driven).</div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ TAB: BEN'S SCRAPER ============ -->
+  <section id="view-scraper" hidden>
+    <div class="tm-intro">
+      <b>Ben's Scraper — the low-point / in-force illustration scraper.</b> A microservice that reads the carrier in-force illustration files from an <b>AWS landing spot</b>, scrapes the values ILIA needs, validates them, and writes them into ILIA. This tab is the <b>build spec for Ben</b> — what it is and what he needs to know to build it. <span style="color:var(--warn)">Requirements draft — confirm details with Ben.</span>
+    </div>
+
+    <div class="scr-wrap">
+      <div class="scr-card">
+        <h3>The pipeline</h3>
+        <p class="sub">Illustrations are requested ~Year 11 (some cohorts Year 10), <b>before</b> the 120/90/60 client notices.</p>
+        <div class="scr-pipe">
+          <div class="scr-step"><b>1 · Request</b><span>Chris/Marissa email the carrier for the in-force illustrations (3 ways) + low points</span></div>
+          <span class="scr-arrow">→</span>
+          <div class="scr-step"><b>2 · Carrier replies</b><span>Carrier emails the illustration files — sent where they go today, <b>copied to AWS</b></span></div>
+          <span class="scr-arrow">→</span>
+          <div class="scr-step acc"><b>3 · AWS landing spot</b><span>Dedicated AWS location (Jamin) receives the files</span></div>
+          <span class="scr-arrow">→</span>
+          <div class="scr-step acc"><b>4 · Ben's scraper</b><span>Parse + validate + match to the client/policy</span></div>
+          <span class="scr-arrow">→</span>
+          <div class="scr-step"><b>5 · Write to ILIA</b><span>Case Details · election form · carrier change form · bank report</span></div>
+        </div>
+        <p style="margin:12px 0 0;font-size:11.5px;color:var(--warn)">⏳ Allianz in-force illustrations take ~3 weeks — request early. Judy to check with Marissa so carrier emails aren't duplicated.</p>
+      </div>
+
+      <div class="scr-card">
+        <h3>What we ask the carrier for — 6 illustrations per client</h3>
+        <p class="sub">Two separate runs: reduction illustrations at the in-force rate, and low points run at 0% / guaranteed (Paul: low point ≠ in-force illustration).</p>
+        <table class="scr-tbl">
+          <thead><tr><th>Illustration</th><th>Reduction</th><th>Rate</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>1 · Full</td><td>Full planned (e.g. $500k = $400k term + $100k base)</td><td>In-force (~5.98%)</td><td>Client comparison + amounts</td></tr>
+            <tr><td>2 · Half</td><td>~50% (e.g. $250k, all term)</td><td>In-force</td><td>Client comparison + amounts</td></tr>
+            <tr><td>3 · No reduction</td><td>$0</td><td>In-force</td><td>Client comparison</td></tr>
+            <tr><td>4 · Full low point</td><td>Full</td><td>0% / guaranteed</td><td>Bank low point</td></tr>
+            <tr><td>5 · Half low point</td><td>Half</td><td>0% / guaranteed</td><td>Bank low point</td></tr>
+            <tr><td>6 · No low point</td><td>None</td><td>0% / guaranteed</td><td>Bank low point</td></tr>
+          </tbody>
+        </table>
+        <p style="margin:10px 0 0;font-size:11.5px;color:var(--faint)"><b>50% rule &amp; term-first (context for the amounts requested):</b> a reduction can never exceed 50% of the current DB; the term rider is reduced before the base (~90% of cases have a term rider).</p>
+      </div>
+
+      <div class="scr-grid">
+        <div class="scr-card">
+          <h3>What to scrape (per illustration)</h3>
+          <table class="scr-tbl">
+            <thead><tr><th>Value</th><th>Maps to field</th></tr></thead>
+            <tbody>
+              <tr><td>Cash value</td><td><code>low_cash_value</code></td></tr>
+              <tr><td>Supplemental income / yr</td><td><code>income</code></td></tr>
+              <tr><td>Death benefit at age 90</td><td><code>db_age_90</code></td></tr>
+              <tr><td>In-force crediting rate</td><td><code>inforce_rate</code></td></tr>
+              <tr><td>Low point value</td><td><code>low_point</code> (per option)</td></tr>
+              <tr><td>Policy # / insured</td><td>matching key → client</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="scr-card">
+          <h3>Where the data goes</h3>
+          <ul class="fd-list">
+            <li><span class="tick">→</span><div><b>Case Details</b> — the new DBR fields (see DBR in Case Details tab)</div></li>
+            <li><span class="tick">→</span><div><b>DBR election form</b> — the 3 choices + in-force rate populate the DocuSign form</div></li>
+            <li><span class="tick">→</span><div><b>Carrier change form</b> — the elected reduction amount</div></li>
+            <li><span class="tick">→</span><div><b>Bank report</b> — chosen illustration + low point</div></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="scr-card">
+        <h3>Carrier &amp; product variance <span class="newflag">Ben must handle</span></h3>
+        <p class="sub">Values, layout, and rates differ by product — Ben needs sample illustrations to build the parser.</p>
+        <table class="scr-tbl">
+          <thead><tr><th>Carrier / product</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Flex Life (old Kaizen, Yr 10)</td><td>Low point only; values differ; illustrated at 2.5% guaranteed (not S&amp;P point-to-point 5.98%)</td></tr>
+            <tr><td>National Life (NLG)</td><td>State-specific variants (ND · NY · SD · FL · CA &amp; DE · 1441)</td></tr>
+            <tr><td>Allianz</td><td>Embeds the change within its illustration; in-force takes ~3 weeks</td></tr>
+            <tr><td>Minnesota Life (MNL)</td><td>Handled offline (per current form set)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="scr-card">
+        <h3>The carrier request email — what to ask the carrier to run</h3>
+        <ul class="fd-list">
+          <li><span class="tick">→</span><div>Run the in-force illustration <b>3 ways</b> (Full / Half / No), with the <b>term vs. base split</b> for each reduction</div></li>
+          <li><span class="tick">→</span><div>Respect the <b>50% rule</b> (reduction ≤ 50% of current DB)</div></li>
+          <li><span class="tick">→</span><div><b>Low point</b> run at <b>guaranteed / 0%</b></div></li>
+          <li><span class="tick">→</span><div><b>Participating loan</b> — borrow the loan payoff amount (Case Details → Distributions) in Year 14 to pay off the bank, and for <b>max income</b> from the min age to the max age</div></li>
+          <li><span class="tick">→</span><div>Include the <b>current growth rate</b>, and <b>run the illustration to age 100</b></div></li>
+        </ul>
+      </div>
+
+      <div class="scr-card oqs" style="border-radius:14px">
+        <div class="lab">Open questions for Ben</div>
+        <ul>
+          <li>File format &amp; layout per carrier (PDF? consistent fields?) — needs sample illustrations from <b>Paul</b>.</li>
+          <li>How do carrier emails land in AWS — the exact address / copy rule, and who sets the request going out?</li>
+          <li>Matching key — is policy # reliable to tie an illustration back to the right client/case?</li>
+          <li>Pull method — scrape from the emailed file in AWS, or a carrier API where available?</li>
+          <li>Old vs. new products — one parser with per-product profiles, or separate handlers?</li>
+        </ul>
+      </div>
+
+      <div class="scr-card">
+        <h3>What Ben needs to start</h3>
+        <ul class="fd-list">
+          <li><span class="tick bank">→</span><div><b>AWS landing spot</b> — Jamin to set up</div></li>
+          <li><span class="tick bank">→</span><div><b>Sample illustrations + ordering emails</b> (Flex Life, National Life, Allianz) — Paul</div></li>
+          <li><span class="tick bank">→</span><div><b>The field map</b> (this page) + the new Case Details fields — Mohit</div></li>
+          <li><span class="tick bank">→</span><div>Carrier list + variants, and the matching key</div></li>
+        </ul>
+        <p style="margin:10px 0 0;font-size:12px"><b>Owner:</b> Ben · <b>Status:</b> to be tasked (linchpin — the automation depends on it).</p>
+      </div>
+    </div>
+  </section>
 </div>
 
 <dialog id="uxModal">
@@ -1114,20 +1340,26 @@ TM_ROWS.forEach(r=>{
 function showTab(which){
   document.getElementById('view-cards').hidden=which!=='cards';
   document.getElementById('view-tm').hidden=which!=='tm';
+  document.getElementById('view-case').hidden=which!=='case';
   document.getElementById('view-forms').hidden=which!=='forms';
+  document.getElementById('view-scraper').hidden=which!=='scraper';
   document.getElementById('view-emails').hidden=which!=='emails';
   document.getElementById('view-blockers').hidden=which!=='blockers';
   document.getElementById('view-electform').hidden=which!=='electform';
   document.getElementById('tabCards').classList.toggle('active',which==='cards');
   document.getElementById('tabTm').classList.toggle('active',which==='tm');
+  document.getElementById('tabCase').classList.toggle('active',which==='case');
   document.getElementById('tabForms').classList.toggle('active',which==='forms');
+  document.getElementById('tabScraper').classList.toggle('active',which==='scraper');
   document.getElementById('tabEmails').classList.toggle('active',which==='emails');
   document.getElementById('tabBlockers').classList.toggle('active',which==='blockers');
   document.getElementById('tabElect').classList.toggle('active',which==='electform');
 }
 document.getElementById('tabCards').addEventListener('click',()=>showTab('cards'));
 document.getElementById('tabTm').addEventListener('click',()=>showTab('tm'));
+document.getElementById('tabCase').addEventListener('click',()=>showTab('case'));
 document.getElementById('tabForms').addEventListener('click',()=>showTab('forms'));
+document.getElementById('tabScraper').addEventListener('click',()=>showTab('scraper'));
 document.getElementById('tabEmails').addEventListener('click',()=>showTab('emails'));
 document.getElementById('tabBlockers').addEventListener('click',()=>showTab('blockers'));
 document.getElementById('tabElect').addEventListener('click',()=>showTab('electform'));
