@@ -505,7 +505,7 @@
               <div class="lab">Before the notice — carrier illustration request <span class="newflag">new · Sep 17</span></div>
               <p style="margin:0;font-size:12.5px">Around <b>year 11</b> (some cohorts year 10), <b>before</b> the client notices go out, we request the in-force illustrations from the carrier. The email asks the carrier to run the reduction <b>3 ways</b> (Full / Half / No) with the low points, and states the 50% rule + which amount comes off the term rider vs. the base.</p>
               <ul class="list plain" style="margin-top:8px">
-                <li><span class="ic">→</span>Carrier emails the illustrations to an <b>AWS landing spot</b> <span style="color:var(--faint)">(Jamin setting up)</span> — sent where they go today, <b>copied to AWS</b></li>
+                <li><span class="ic">→</span>Carrier emails the illustrations to an <b>AWS landing spot</b> <span style="color:var(--faint)">(Mohit setting up)</span> — sent where they go today, <b>copied to AWS</b></li>
                 <li><span class="ic">→</span><b>Ben's scraper</b> reads them from AWS, validates, and populates the 3 choices + the <b>in-force rate</b> onto the election form &amp; writes the fields to Case Details</li>
                 <li><span class="ic">→</span><b>6 illustrations per client:</b> 3 reduction (Full / Half / No at the in-force rate) <b>+</b> 3 low points — <b>run separately at 0% / guaranteed</b> <span style="color:var(--faint)">(Paul: low point ≠ in-force illustration)</span></li>
               </ul>
@@ -645,7 +645,7 @@
                 <li><b>DBR start year varies by cohort</b> — early cohorts had DBRs calculated at <b>Yr 10</b>, later cohorts at <b>Yr 11</b>. The auto-send logic must use each cohort's actual DBR schedule (not a hardcoded Yr 11). Ties to NIWD-2299's Yr 10–14 window. <b>(Waiting on Judy.)</b></li>
                 <li><b>Email copy for the notices</b> — the final notice wording (Full / Half / No reduction) isn't ready. Marissa is building it. <b>(Pending)</b></li>
                 <li><b>New DBR form — 3-illustration pick</b> — draft built (in-force explanation + Hold Harmless page + 3 options; custom removed). Finalize copy with Judy/Chris, then wire as the DocuSign form. <b>(In progress)</b></li>
-                <li><b>Carrier request pipeline (new · Sep 17)</b> — carrier in-force request email, AWS landing spot (Jamin), Ben's scraper, new case-details fields (Mohit), Paul's sample illustrations.</li>
+                <li><b>Carrier request pipeline (new · Sep 17)</b> — carrier in-force request email, AWS landing spot (Mohit), Ben's scraper, new case-details fields (Mohit), Paul's sample illustrations.</li>
                 <li><b>Ben's illustration + scraping automation</b> — auto-pull the <b>3 illustrations</b> (Full / Half / None) from the carrier + scrape the comparison; run the low point on the final elected illustration. <b>Linchpin.</b> <span style="color:var(--faint)">"Half" = ~50% of the planned term reduction (confirmed via Judy's comparison doc).</span></li>
                 <li><b>Clean DBR data in ILIA</b> — validated, populated DBR amounts for all <b>settlor = insured</b> accounts (Phase 1). The send fires off this data. <b>(B1)</b> <span style="color:var(--faint)">Depends on NIWD-2299 (illustrated-DB recalc, Yr 10–14) — reconcile the 10–14 vs 11–15 window with Kyle.</span></li>
                 <li><b>DBR amount formulas (cumulative) — Paul</b> — how the reduction is calculated each year and how amounts <b>carry/stack</b> when a year is declined. ILIA holds the per-year DB-drop amounts; need Paul's formulas. Ties to NIWD-2299.</li>
@@ -1222,7 +1222,7 @@
           <span class="scr-arrow">→</span>
           <div class="scr-step"><b>2 · Carrier replies</b><span>Carrier emails the illustration files — sent where they go today, <b>copied to AWS</b></span></div>
           <span class="scr-arrow">→</span>
-          <div class="scr-step acc"><b>3 · AWS landing spot</b><span>Dedicated AWS location (Jamin) receives the files</span></div>
+          <div class="scr-step acc"><b>3 · AWS landing spot</b><span>Dedicated AWS location (Mohit) receives the files</span></div>
           <span class="scr-arrow">→</span>
           <div class="scr-step acc"><b>4 · Ben's scraper</b><span>Parse + validate + match to the client/policy</span></div>
           <span class="scr-arrow">→</span>
@@ -1313,7 +1313,7 @@
       <div class="scr-card">
         <h3>What Ben needs to start</h3>
         <ul class="fd-list">
-          <li><span class="tick bank">→</span><div><b>AWS landing spot</b> — Jamin to set up</div></li>
+          <li><span class="tick bank">→</span><div><b>AWS landing spot</b> — Mohit to set up</div></li>
           <li><span class="tick bank">→</span><div><b>Sample illustrations + ordering emails</b> (Flex Life, National Life, Allianz) — Paul</div></li>
           <li><span class="tick bank">→</span><div><b>The field map</b> (this page) + the new Case Details fields — Mohit</div></li>
           <li><span class="tick bank">→</span><div>Carrier list + variants, and the matching key</div></li>
@@ -1364,7 +1364,7 @@
         <div class="story">
           <div class="story-h">Story B · Request → AWS → Ben's Scraper</div>
           <p class="story-sub">See the "Ben's Scraper" tab for the full build spec.</p>
-          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Stand up the AWS landing spot for carrier illustrations</div><div class="pd">Dedicated location; carrier emails copied there.</div><div class="ptags"><span class="ptag own">Jamin / infra</span><span class="ptag new">new</span></div></div></div>
+          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Stand up the AWS landing spot for carrier illustrations</div><div class="pd">Dedicated location; carrier emails copied there.</div><div class="ptags"><span class="ptag own">Mohit / infra</span><span class="ptag new">new</span></div></div></div>
           <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">Carrier in-force request email</div><div class="pd">3 ways (Full/Half/No) + 50% rule + term/base split + low point at 0% + participating loan + growth rate + run to age 100.</div><div class="ptags"><span class="ptag own">Jamin / Chris / Marissa</span><span class="ptag new">new</span></div></div></div>
           <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Collect sample illustrations + ordering emails</div><div class="pd">Flex Life, National Life, Allianz — so Ben can build the parser.</div><div class="ptags"><span class="ptag own">Paul</span><span class="ptag new">new</span></div></div></div>
           <div class="ptask"><span class="pn">4</span><div class="pbody"><div class="pt">Build the scraper microservice</div><div class="pd">Parse the 6 illustrations (3 reduction + 3 low points at 0%), validate, match to policy.</div><div class="ptags"><span class="ptag own">Ben</span><span class="ptag new">new · linchpin</span><span class="ptag dep">needs B1–B3</span></div></div></div>
@@ -1570,7 +1570,7 @@ const CHECK=[
    {t:"Clean DBR data — settlor = insured (B1)",d:"Validated, populated DBR amounts for all Phase-1 accounts. NIWD-1767.",tags:[["Data team","own"],["Blocker","block"],["Card 1","card"]]},
    {t:"Low-point mapping per carrier",d:"NLG 13-month low point / ALZ guaranteed SV → PolicyBreakDowns.lowPoint. NIWD-2185 (in progress).",tags:[["Dev","own"],["Dependency","dep"],["Cards 1 & 3","card"]]},
    {t:"New DBR case-details fields",d:"Add: current DB (feed), term rider DB, base DB, Full/Half/No amounts, low point per option, low cash value, income, DB at age 90, in-force rate.",tags:[["Mohit","own"],["New · Sep 17","block"],["Card 1","card"]]},
-   {t:"AWS landing spot for carrier illustrations",d:"Dedicated AWS location; carrier illustration emails copied there for the scraper to read.",tags:[["Jamin","own"],["New · Sep 17","block"],["Card 1","card"]]},
+   {t:"AWS landing spot for carrier illustrations",d:"Dedicated AWS location; carrier illustration emails copied there for the scraper to read.",tags:[["Mohit","own"],["New · Sep 17","block"],["Card 1","card"]]},
    {t:"Sample carrier illustrations for scraper",d:"Flex Life, National Life & Allianz sample illustrations + the carrier ordering emails, so Ben can build the scraper.",tags:[["Paul","own"],["New · Sep 17","dep"],["Card 1","card"]]}
  ]},
  {group:"Build tasks to create in JIRA",items:[
