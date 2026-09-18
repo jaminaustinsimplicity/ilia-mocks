@@ -458,7 +458,7 @@
   <header class="top">
     <div>
       <h1>DBR Automation Requirements</h1>
-      <p class="desc">Automating the <b>Death Benefit Reduction (DBR)</b> process for Kai-Zen IUL policies in Policy Years 11–15. Today it's run manually by ops; this project makes <b>ILIA</b> proactively detect eligible policies, notify clients on a schedule, collect their election — the client picks one of <b>3 ready illustrations (Full / Half / No reduction)</b> via DocuSign — and let <b>Marissa manage every case from Tranche Management</b>. This page is the living requirements — built event by event.</p>
+      <p class="desc">Automating the <b>Death Benefit Reduction (DBR)</b> process for Kai-Zen IUL policies in Policy Years 11–15 (early cohorts start Year 10). Today it's run manually by ops; this project makes <b>ILIA</b> proactively detect eligible policies, notify clients on a schedule, collect their election — the client picks one of <b>3 ready illustrations (Full / Half / No reduction)</b> via DocuSign — and let <b>Marissa manage every case from Tranche Management</b>. This page is the living requirements — built event by event.</p>
     </div>
     <button id="themeBtn">Theme</button>
   </header>
@@ -1312,8 +1312,8 @@
     <div class="plan-wrap">
       <div class="epic-banner">
         <div class="ep-k">Epic</div>
-        <h3>DBR Automation — Kai-Zen IUL (Policy Years 11–15)</h3>
-        <p>Detect eligible policies → request carrier illustrations (via AWS + scraper) → send 120/90/60 notices → capture the client's election (Full / Half / No) → apply &amp; route trustee → carrier → bank report, all visible in Tranche Management &amp; Case Details.</p>
+        <h3>DBR Automation — Kai-Zen IUL (Policy Years 11–15 · early cohorts start Year 10)</h3>
+        <p>Detect eligible policies → request carrier illustrations (via AWS + scraper) → send 120/90/60 notices → capture the client's election (Full / Half / No) → apply &amp; route trustee → carrier → bank report, all visible in Tranche Management &amp; Case Details. <b>Start year varies by cohort</b> — some policies' DBRs begin in <b>Year 10</b>, so eligibility, scheduling &amp; data must include Year-10 policies (not a fixed Year 11).</p>
         <span class="ep-badge">Draft — create when requirements lock + Judy sign-off</span>
       </div>
 
@@ -1333,7 +1333,7 @@
           <p class="story-sub">Clean data + the fields everything writes into.</p>
           <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Validate &amp; populate clean DBR data (settlor = insured)</div><div class="pd">Phase-1 accounts; the trigger fires off this data.</div><div class="ptags"><span class="ptag own">Data team</span><span class="ptag reuse">NIWD-1767 (B1)</span></div></div></div>
           <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">Add new DBR fields to Case Details</div><div class="pd">Current DB, term/base, Full/Half/No, low point per option, cash value, income, DB@90, in-force rate, DBR status, elected option.</div><div class="ptags"><span class="ptag own">Mohit</span><span class="ptag reuse">extends NIWD-784</span></div></div></div>
-          <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Confirm DBR start-year cohort rule + reconcile 2299 window</div><div class="pd">Early cohorts Yr 10 vs later Yr 11; reconcile NIWD-2299's Yr 10–14 vs PY 11–15.</div><div class="ptags"><span class="ptag dec">Decision</span><span class="ptag own">Judy / Kyle</span></div></div></div>
+          <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Account for Year-10 (early-cohort) start + reconcile 2299 window</div><div class="pd">Some cohorts' DBRs start in <b>Year 10</b>, others Year 11 — eligibility, the scheduler &amp; the data set must include Year-10 policies, not a fixed Yr 11. Reconcile NIWD-2299's Yr 10–14 vs PY 11–15.</div><div class="ptags"><span class="ptag dec">Decision</span><span class="ptag own">Judy / Kyle</span></div></div></div>
           <div class="ptask"><span class="pn">4</span><div class="pbody"><div class="pt">DBR amount formula — 50% cap, term-first, cumulative/stacking</div><div class="pd">Reduction ≤ 50% of current DB; term rider before base; how amounts carry when a year is declined.</div><div class="ptags"><span class="ptag own">Paul + dev</span><span class="ptag reuse">relates NIWD-1752 / 2299</span></div></div></div>
         </div>
       </div>
@@ -1364,7 +1364,7 @@
         </div>
         <div class="story">
           <div class="story-h">Story D · Notices &amp; scheduler</div>
-          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Eligibility &amp; trigger scheduler (120/90/60)</div><div class="pd">Daily scan; cohort start-year aware; deadline off tranche funding date; exclusion + health gates.</div><div class="ptags"><span class="ptag own">ILIA dev</span><span class="ptag reuse">extends NIWD-1023</span></div></div></div>
+          <div class="ptask"><span class="pn">1</span><div class="pbody"><div class="pt">Eligibility &amp; trigger scheduler (120/90/60)</div><div class="pd">Daily scan; cohort start-year aware (<b>Yr 10 early cohorts / Yr 11 later</b>); deadline off tranche funding date; exclusion + health gates.</div><div class="ptags"><span class="ptag own">ILIA dev</span><span class="ptag reuse">extends NIWD-1023</span></div></div></div>
           <div class="ptask"><span class="pn">2</span><div class="pbody"><div class="pt">Notice email copy (Full / Half / No + health prompt)</div><div class="pd">Resolve health-decline vs re-offer; copy no longer assumes Client = Settlor.</div><div class="ptags"><span class="ptag own">Marissa</span><span class="ptag reuse">NIWD-1026 / 1025</span></div></div></div>
           <div class="ptask"><span class="pn">3</span><div class="pbody"><div class="pt">Assemble &amp; send one DocuSign envelope</div><div class="pd">Election + 3 illustrations + comparison; stop reminders on signed; audit log.</div><div class="ptags"><span class="ptag own">ILIA dev + Chris</span><span class="ptag new">new</span></div></div></div>
         </div>
