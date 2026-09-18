@@ -360,13 +360,29 @@
   .att-chip .ac-view{font-weight:700;color:var(--ilia);font-size:11px;margin-left:4px}
   .att-chip:disabled{cursor:default;opacity:.7}
   @media (max-width:640px){.wrap{padding:16px 12px 50px}h1{font-size:20px}}
+  /* collapsible build detail — declutters each card */
+  details.more{border:1px dashed var(--border-strong);border-radius:10px;background:var(--surface-2);padding:0}
+  details.more>summary{list-style:none;cursor:pointer;padding:10px 13px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:8px}
+  details.more>summary::-webkit-details-marker{display:none}
+  details.more>summary::before{content:"▸";color:var(--ilia);font-size:12px;transition:transform .15s}
+  details.more[open]>summary::before{transform:rotate(90deg)}
+  details.more>summary:hover{color:var(--ink)}
+  details.more .more-in{padding:2px 13px 13px;display:flex;flex-direction:column;gap:12px}
+  /* new-info highlight + flag */
+  .rules{background:color-mix(in srgb,var(--ilia) 8%,transparent);border:1px solid var(--ilia);border-radius:10px;padding:11px 13px}
+  .rules .lab{color:var(--ilia)}
+  .rules ul{margin:6px 0 0;padding-left:18px;font-size:12.5px;line-height:1.55}
+  .rules li{margin:3px 0}
+  .newflag{display:inline-block;font-family:var(--fm);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--ilia);border-radius:5px;padding:1px 6px;margin-left:7px;vertical-align:middle}
+  .upstream{background:color-mix(in srgb,#1c7a54 8%,transparent);border:1px solid #1c7a54;border-radius:10px;padding:11px 13px}
+  .upstream .lab{color:#1c7a54}
 </style>
 
 <div class="wrap">
   <header class="top">
     <div>
       <h1>DBR Automation Requirements</h1>
-      <p class="desc">Automating the <b>Death Benefit Reduction (DBR)</b> process for Kai-Zen IUL policies in Policy Years 11–15. Today it's run manually by ops; this project makes <b>ILIA</b> proactively detect eligible policies, notify clients on a schedule, collect their election — the client picks one of <b>3 ready illustrations (Full / Half / No reduction)</b> or a custom amount — via DocuSign, and let <b>Marissa manage every case from Tranche Management</b>. This page is the living requirements — built event by event.</p>
+      <p class="desc">Automating the <b>Death Benefit Reduction (DBR)</b> process for Kai-Zen IUL policies in Policy Years 11–15. Today it's run manually by ops; this project makes <b>ILIA</b> proactively detect eligible policies, notify clients on a schedule, collect their election — the client picks one of <b>3 ready illustrations (Full / Half / No reduction)</b> via DocuSign — and let <b>Marissa manage every case from Tranche Management</b>. This page is the living requirements — built event by event.</p>
     </div>
     <button id="themeBtn">Theme</button>
   </header>
@@ -402,6 +418,26 @@
             <p class="lead"><b>How ILIA knows when to send:</b> it scans daily for eligible Kai-Zen policies approaching their DBR deadline (window starts Yr 10 or 11 by cohort, through Yr 15), then auto-sends the DBR notice on a set schedule — no manual kickoff.</p>
           </div>
           <div class="ec-body">
+            <div class="sec upstream">
+              <div class="lab">Before the notice — carrier illustration request <span class="newflag">new · Sep 17</span></div>
+              <p style="margin:0;font-size:12.5px">Around <b>year 11</b> (some cohorts year 10), <b>before</b> the client notices go out, we request the in-force illustrations from the carrier. The email asks the carrier to run the reduction <b>3 ways</b> (Full / Half / No) with the low points, and states the 50% rule + which amount comes off the term rider vs. the base.</p>
+              <ul class="list plain" style="margin-top:8px">
+                <li><span class="ic">→</span>Carrier emails the illustrations to an <b>AWS landing spot</b> <span style="color:var(--faint)">(Jamin setting up)</span> — sent where they go today, <b>copied to AWS</b></li>
+                <li><span class="ic">→</span><b>Ben's scraper</b> reads them from AWS, validates, and populates the 3 choices + the <b>in-force rate</b> onto the election form &amp; writes the fields to Case Details</li>
+                <li><span class="ic">→</span><b>6 illustrations per client:</b> 3 reduction (Full / Half / No at the in-force rate) <b>+</b> 3 low points — <b>run separately at 0% / guaranteed</b> <span style="color:var(--faint)">(Paul: low point ≠ in-force illustration)</span></li>
+              </ul>
+              <p style="margin:6px 0 0;font-size:11px;color:var(--warn)">⏳ Allianz in-force illustrations can take ~3 weeks — request early. Judy to check with Marissa so carrier emails aren't duplicated.</p>
+            </div>
+
+            <div class="sec rules">
+              <div class="lab">Reduction rules <span class="newflag">new · Sep 17</span></div>
+              <ul>
+                <li><b>50% max rule:</b> a reduction can never exceed <b>50% of the current death benefit</b> (from the carrier feed). Max reduction = current DB ÷ 2.</li>
+                <li><b>Term rider first:</b> always reduce the <b>term rider before the base</b> policy (~90% of cases have a term rider). No term rider → reduce from base; the 50% cap still applies.</li>
+                <li><b>Example:</b> Yr 11 planned DBR <b>500K</b> = 400K term + 100K base. <b>Half = 250K</b>, all from the term rider.</li>
+              </ul>
+            </div>
+
             <div class="sec">
               <div class="lab">When the notices go out</div>
               <p class="fire">120, 90 &amp; 60 days before the deadline</p>
@@ -411,9 +447,8 @@
 
             <div class="sec">
               <div class="lab">Each notice includes</div>
-              <p style="margin:0;font-size:12.5px">The DBR document — the client picks <b>one of 3 ready illustrations</b>: <b>Full reduction</b> (yes) · <b>Half reduction</b> · <b>No reduction</b> (no) — plus a <b>custom amount</b> field if they want a different number.</p>
+              <p style="margin:0;font-size:12.5px">The DBR document — the client picks <b>one of 3 ready illustrations</b>: <b>Full reduction</b> (yes) · <b>Half reduction</b> · <b>No reduction</b> (no). <b>Custom is removed</b> <span class="newflag">changed · Sep 17</span> — a "call a specialist" line replaces the custom field for non-standard amounts.</p>
               <p style="margin:6px 0 0;font-size:12px;color:var(--warn)">⏳ Marissa is building the updated notice with these options — she'll share it. <b>(Pending)</b></p>
-              <p style="margin:6px 0 0;font-size:11.5px;color:var(--faint)">Judy's model (Aug 19): most clients pick Full / Half / None, so pre-compute those three; custom stays for the rare exception.</p>
             </div>
 
             <div class="sec">
@@ -421,10 +456,9 @@
               <ul class="fd-list">
                 <li><span class="tick">✓</span><div><b>DBR election doc</b> — the form the client signs <span class="always">always</span></div></li>
                 <li><span class="tick">✓</span><div><b>3 in-force illustrations</b> — Full / Half / No reduction — + comparison summary. Ben auto-prepares <span class="always">in the notice</span></div></li>
-                <li><span class="tick bank">→</span><div><b>Low point</b> → the bank uses <b>these same 120/90/60 illustrations</b> (no re-run). On election, ILIA writes the chosen option's low point into the <b>Low Point field in Case Details</b> → Chris runs the bank report <span class="always">always</span></div></li>
-                <li><span class="tick" style="background:var(--faint)">–</span><div><b>Custom amount:</b> handled <b>offline</b> (MVP) — no ILIA automation</div></li>
+                <li><span class="tick bank">→</span><div><b>Low points</b> → run <b>separately at 0% / guaranteed</b> (not the in-force run) — one per option. On election, ILIA writes the chosen option's low point into the <b>Low Point field in Case Details</b> → Chris runs the bank report <span class="always">always</span></div></li>
               </ul>
-              <p style="margin:8px 0 0;font-size:11px;color:var(--faint)">Low point confirmed required (NIWD-2053); reuses the low-point mapping in NIWD-2185. Ben re-runs only for a custom amount (which is offline). <b>Judy provided the client comparison/education doc</b> ("Your Kai-Zen Policy…") — the source for the option copy + the strategy comparison (Cash Value · Suppl. Income · DB at 90). Todd's info page builds on it.</p>
+              <p style="margin:8px 0 0;font-size:11px;color:var(--faint)">Low point confirmed required (NIWD-2053); reuses the low-point mapping in NIWD-2185. <b>Paul (Sep 17): low point ≠ in-force illustration</b> — in-force policies have no built-in low-point report, so it's run separately at a zero rate. <b>Judy provided the client comparison/education doc</b> ("Your Kai-Zen Policy…") — the source for the option copy + the strategy comparison (Cash Value · Suppl. Income · DB at 90). Todd's info page builds on it.</p>
             </div>
 
             <div class="sec">
@@ -470,6 +504,7 @@
               <p style="font-size:12.5px;color:var(--muted)">If the client declines (not for Health), the trigger re-fires at the next anniversary — each year through Year 15.</p>
             </div>
 
+            <details class="more"><summary>Build detail — systems · data · confirmations · blockers · suggested tasks</summary><div class="more-in">
             <div class="sec">
               <div class="lab">Systems</div>
               <div class="chips"><span class="chip">ILIA scheduler — daily scan for the notice dates + eligibility</span></div>
@@ -488,6 +523,18 @@
                 <span class="chip">Prior decline reason</span>
                 <span class="chip">Signed-form status (stops reminders)</span>
               </div>
+              <div class="lab" style="margin-top:10px">New DBR fields in Case Details <span class="newflag">new · Sep 17 · Mohit</span></div>
+              <div class="chips">
+                <span class="chip">Current DB from feed (50% rule basis)</span>
+                <span class="chip">Term rider DB</span>
+                <span class="chip">Base DB</span>
+                <span class="chip">Full / Half / No amounts</span>
+                <span class="chip">Low point per option</span>
+                <span class="chip">Low cash value</span>
+                <span class="chip">Income</span>
+                <span class="chip">DB at age 90</span>
+                <span class="chip">In-force rate (scraped)</span>
+              </div>
             </div>
 
             <div class="cfm sec">
@@ -505,7 +552,7 @@
                 <li><b>Everything ships in one envelope</b> — the 3 illustrations + comparison ride in the notice (not “lean”/on-request).</li>
                 <li>The bank uses the <b>illustrations we create at 120/90/60</b> — <b>no re-run</b>. The same 3 illustrations serve Full / Half / No reduction.</li>
                 <li>On election, ILIA <b>stores the chosen option's low point in the elected year</b> → the <b>Low Point field in Case Details</b> → Chris runs the bank report.</li>
-                <li><b>Custom amounts are handled offline</b> (MVP) — not automated in ILIA.</li>
+                <li><b>Custom removed (Sep 17)</b> — non-standard amounts route to a phone call, not a field.</li>
               </ul>
             </div>
 
@@ -513,8 +560,9 @@
               <div class="lab">Blockers</div>
               <ul>
                 <li><b>DBR start year varies by cohort</b> — early cohorts had DBRs calculated at <b>Yr 10</b>, later cohorts at <b>Yr 11</b>. The auto-send logic must use each cohort's actual DBR schedule (not a hardcoded Yr 11). Ties to NIWD-2299's Yr 10–14 window. <b>(Waiting on Judy.)</b></li>
-                <li><b>Email copy for the notices</b> — the final notice wording (Full / Half / None + custom) isn't ready. Marissa is building it. <b>(Pending)</b></li>
-                <li><b>New DBR form — 3-illustration pick + custom</b> — Marissa is rebuilding the election form: pick one of Full / Half / No reduction, plus a custom-amount field. <b>(Pending)</b></li>
+                <li><b>Email copy for the notices</b> — the final notice wording (Full / Half / No reduction) isn't ready. Marissa is building it. <b>(Pending)</b></li>
+                <li><b>New DBR form — 3-illustration pick</b> — draft built (in-force explanation + Hold Harmless page + 3 options; custom removed). Finalize copy with Judy/Chris, then wire as the DocuSign form. <b>(In progress)</b></li>
+                <li><b>Carrier request pipeline (new · Sep 17)</b> — carrier in-force request email, AWS landing spot (Jamin), Ben's scraper, new case-details fields (Mohit), Paul's sample illustrations.</li>
                 <li><b>Ben's illustration + scraping automation</b> — auto-pull the <b>3 illustrations</b> (Full / Half / None) from the carrier + scrape the comparison; run the low point on the final elected illustration. <b>Linchpin.</b> <span style="color:var(--faint)">"Half" = ~50% of the planned term reduction (confirmed via Judy's comparison doc).</span></li>
                 <li><b>Clean DBR data in ILIA</b> — validated, populated DBR amounts for all <b>settlor = insured</b> accounts (Phase 1). The send fires off this data. <b>(B1)</b> <span style="color:var(--faint)">Depends on NIWD-2299 (illustrated-DB recalc, Yr 10–14) — reconcile the 10–14 vs 11–15 window with Kyle.</span></li>
                 <li><b>DBR amount formulas (cumulative) — Paul</b> — how the reduction is calculated each year and how amounts <b>carry/stack</b> when a year is declined. ILIA holds the per-year DB-drop amounts; need Paul's formulas. Ties to NIWD-2299.</li>
@@ -526,11 +574,12 @@
               <ul class="jlist">
                 <li><span class="jt">1</span><div><b>Validate &amp; populate DBR data — settlor = insured</b> <span style="color:var(--faint);font-weight:400">· data team</span><span class="jd">(B1) Validate DBR amounts vs. the carrier source of truth and populate them for all settlor = insured accounts. Prerequisite — the trigger fires off this data.</span></div></li>
                 <li><span class="jt">2</span><div><b>DBR eligibility &amp; trigger scheduler</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Daily job: find eligible policies (in the DBR window — Yr 10 or 11 start by cohort, through Yr 15 · Kai-Zen · settlor = insured · not excluded · not health-declined), calc the deadline from the tranche funding date + the DBR amount from the original design/illustration, and schedule the 120/90/60 sends. Start-year rule pending Judy.</span></div></li>
-                <li><span class="jt">3</span><div><b>Illustration auto-pull (3 scenarios) + data scrape</b> <span style="color:var(--faint);font-weight:400">· Ben</span><span class="jd">Auto-request the 3 in-force illustrations (Full / Half / None) from the carrier; scrape the client comparison. Run the low point only on the elected/final illustration (Admin, per NIWD-2300). Half = ~50% of the planned term reduction (Judy's doc). The linchpin.</span></div></li>
+                <li><span class="jt">3</span><div><b>Low-point scraper microservice (AWS)</b> <span style="color:var(--faint);font-weight:400">· Ben</span><span class="jd">6 illustrations/client: 3 reduction (Full/Half/No at the in-force rate) + 3 low points (run separately at 0%/guaranteed). Read carrier emails from the AWS landing spot, validate, scrape the values, and map them to case details + election form + carrier change form + bank report. Half = ~50% of the planned term reduction. The linchpin.</span></div></li>
                 <li><span class="jt">4</span><div><b>Assemble &amp; send the DBR package (DocuSign)</b> <span style="color:var(--faint);font-weight:400">· ILIA dev + Chris (DocuSign send)</span><span class="jd">Bundle the election form + the 3 illustrations + comparison into one DocuSign envelope (all-in-one, confirmed by Judy); send at 120/90/60; stop reminders once the signed form is in; log each send. Needs Marissa's form/copy + task 3.</span></div></li>
                 <li><span class="jt">5</span><div><b>DBR status in Tranche Management</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Add the DBR Status field to the Workflow tab and drive its states, starting with “Notice sent — awaiting response.”</span></div></li>
               </ul>
             </div>
+            </div></details>
           </div>
         </div>
 
@@ -549,22 +598,21 @@
               <div class="lab">How ILIA reads the response</div>
               <ul class="list plain">
                 <li><span class="ic">→</span>DocuSign completion webhook fires when the client signs</li>
-                <li><span class="ic">→</span>ILIA reads <code>dbr_election</code> = <code>full</code> / <code>half</code> / <code>none</code> (+ <code>requested_amount</code> if custom)</li>
+                <li><span class="ic">→</span>ILIA reads <code>dbr_election</code> = <code>full</code> / <code>half</code> / <code>none</code></li>
                 <li><span class="ic">→</span>Stops the 90 / 60-day reminders</li>
                 <li><span class="ic">→</span>Updates the DBR status in Tranche Management</li>
               </ul>
             </div>
 
             <div class="sec">
-              <div class="lab">The routes — 3 picks + custom (+ no response)</div>
+              <div class="lab">The routes — 3 picks (+ no response)</div>
               <div class="routes">
                 <div class="rrow r-full"><span class="rbadge">FULL</span><div><b>Full reduction</b> — apply the full amount<span class="rnext">→ Accepted → Applied (Event 3)</span></div></div>
                 <div class="rrow r-half"><span class="rbadge">HALF</span><div><b>Half reduction</b> — apply the ~50% amount<span class="rnext">→ Accepted → Applied (Event 3)</span></div></div>
                 <div class="rrow r-noreduce"><span class="rbadge">NONE</span><div><b>No reduction</b> — no change this year<span class="rnext">→ Declined — re-offer (through Yr 15)</span></div></div>
-                <div class="rrow r-custom"><span class="rbadge">CUST</span><div><b>Custom amount</b> — a different number<span class="rnext">→ Flagged for NIW · handled offline (MVP)</span></div></div>
                 <div class="rrow r-none"><span class="rbadge">—</span><div><b>No response</b> by the deadline<span class="rnext">→ No response · re-offer next year</span></div></div>
               </div>
-              <p style="margin:8px 0 0;font-size:11px;color:var(--faint)">Full / Half / No reduction are pre-computed — one envelope, one signature. Custom is rare, so it's handled offline (no ILIA automation).</p>
+              <p style="margin:8px 0 0;font-size:11px;color:var(--faint)">Full / Half / No reduction are pre-computed — one envelope, one signature. <b>Custom removed</b> <span class="newflag">changed · Sep 17</span> — non-standard amounts route to a phone call, not a field.</p>
             </div>
 
             <div class="sec tm-sec">
@@ -574,7 +622,6 @@
                 <li><span class="tick">F</span><div><b>Full reduction</b> → <b>“Accepted”</b> → fulfillment (Event 4)</div></li>
                 <li><span class="tick">H</span><div><b>Half reduction</b> → <b>“Accepted”</b> → fulfillment (Event 4)</div></li>
                 <li><span class="tick bank">N</span><div><b>No reduction</b> → <b>“Declined — re-offer”</b></div></li>
-                <li><span class="tick" style="background:var(--faint)">C</span><div><b>Custom amount</b> → flagged, <b>handled offline (MVP)</b> — not an automated TM status</div></li>
                 <li><span class="tick" style="background:var(--border-strong);color:var(--muted)">—</span><div><b>No response</b> → <b>“No response”</b></div></li>
               </ul>
               <button class="tm-link" data-tmlink="1">Open the DBR Tranche Management view
@@ -590,6 +637,7 @@
               </button>
             </div>
 
+            <details class="more"><summary>Build detail — systems · blockers · suggested tasks</summary><div class="more-in">
             <div class="sec">
               <div class="lab">Systems</div>
               <div class="chips"><span class="chip">DocuSign (completion webhook) ↔ ILIA</span></div>
@@ -598,18 +646,19 @@
             <div class="sec blockers">
               <div class="lab">Blockers</div>
               <ul>
-                <li><b>DocuSign completion callback (B3)</b> — Chris Lane to confirm <b>webhook vs polling</b> and the field mapping (<code>dbr_election</code> = full/half/none, <code>requested_amount</code> for custom).</li>
-                <li><b>2nd envelope only for custom</b> — Full / Half / None finish in one envelope; only the custom exception needs a follow-up envelope (see Event 3).</li>
+                <li><b>DocuSign completion callback (B3)</b> — Chris Lane to confirm <b>webhook vs polling</b> and the field mapping (<code>dbr_election</code> = full/half/none).</li>
+                <li><b>One envelope</b> — Full / Half / None all finish in a single envelope; no second envelope.</li>
               </ul>
             </div>
 
             <div class="jira sec">
               <div class="lab">Suggested JIRA tasks <span class="jira-hint">titles only — not created in Jira</span></div>
               <ul class="jlist">
-                <li><span class="jt">1</span><div><b>DocuSign response capture (integration)</b> <span style="color:var(--faint);font-weight:400">· Chris Lane (B3)</span><span class="jd">The key unknown for devs: confirm &amp; build how ILIA receives the completed envelope (webhook vs polling — with Chris Lane) and reads the field values — <code>dbr_election</code> = full/half/none, <code>requested_amount</code> for custom — plus the signed PDF. This is B3.</span></div></li>
-                <li><span class="jt">2</span><div><b>Election routing + status update</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">On capture: stop the reminders, set the DBR status, and route — Full/Half → apply, None → re-offer, Custom → sub-flow, no-response → re-offer.</span></div></li>
+                <li><span class="jt">1</span><div><b>DocuSign response capture (integration)</b> <span style="color:var(--faint);font-weight:400">· Chris Lane (B3)</span><span class="jd">The key unknown for devs: confirm &amp; build how ILIA receives the completed envelope (webhook vs polling — with Chris Lane) and reads the field values — <code>dbr_election</code> = full/half/none — plus the signed PDF. This is B3.</span></div></li>
+                <li><span class="jt">2</span><div><b>Election routing + status update</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">On capture: stop the reminders, set the DBR status, and route — Full/Half → apply, None → re-offer, no-response → re-offer.</span></div></li>
               </ul>
             </div>
+            </div></details>
           </div>
         </div>
 
@@ -630,7 +679,6 @@
                 <button class="seg-btn active" data-seg="full">Full</button>
                 <button class="seg-btn" data-seg="half">Half</button>
                 <button class="seg-btn" data-seg="none">No reduction</button>
-                <button class="seg-btn" data-seg="custom">Custom</button>
               </div>
               <div class="seg-body" id="segBody"></div>
             </div>
@@ -657,6 +705,7 @@
               </button>
             </div>
 
+            <details class="more"><summary>Build detail — systems · blockers · suggested tasks</summary><div class="more-in">
             <div class="sec">
               <div class="lab">Systems</div>
               <div class="chips"><span class="chip">ILIA (apply + re-offer)</span><span class="chip">Case Details (Low Point field)</span><span class="chip">Fulfillment → Event 4 (trustee · carrier)</span></div>
@@ -666,7 +715,6 @@
               <div class="lab">Blockers</div>
               <ul>
                 <li style="list-style:none;margin-left:-16px;color:var(--muted)"><i>Full, Half &amp; No reduction have <b>no blockers here</b> — one envelope each. The trustee → carrier fulfillment is now <b>Event 4</b>.</i></li>
-                <li><b>Custom is handled offline (MVP)</b> — its automation is out of scope, so no blocker in ILIA.</li>
               </ul>
             </div>
 
@@ -675,9 +723,9 @@
               <ul class="jlist">
                 <li><span class="jt">1</span><div><b>Apply reduction (Full / Half) + write low point</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">On Full or Half: apply the elected reduction, pull the low point from the 120/90/60 illustration into the Low Point field in Case Details (Chris's bank report), store the signed election/PDF, set status “Accepted” → “Applied,” then hand to fulfillment (Event 4).</span></div></li>
                 <li><span class="jt">2</span><div><b>No-reduction / no-response re-offer scheduler</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Record the No-reduction (or no-response), set the status, and schedule the re-offer for next anniversary through Yr 15 (skip if Health).</span></div></li>
-                <li><span class="jt">3</span><div><b>Flag custom for offline handling</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">On Custom: capture the flag (+ optional requested amount) and mark the case for NIW to handle offline. No automated illustration or 2nd envelope (MVP).</span></div></li>
               </ul>
             </div>
+            </div></details>
           </div>
         </div>
 
@@ -700,6 +748,7 @@
                 <li><span class="ic">→</span>The <b>trust signs the change form</b> (sign-off)</li>
                 <li><span class="ic">→</span>Packet is released to the <b>Carrier</b></li>
                 <li><span class="ic">→</span><b>Confirm the carrier received</b> the final forms (via feeds, if available)</li>
+                <li><span class="ic">→</span><b>Chris uploads the bank report</b> <span class="newflag">new · Sep 17</span> — signed carrier change form + chosen illustration + low point + signed DBR election + signed Hold Harmless</li>
               </ul>
               <p style="margin:8px 0 0;font-size:11.5px;color:var(--faint)">The amount the client picked must pull into the carrier forms — either auto-populated from the selection or entered by admin (open question below).</p>
             </div>
@@ -727,6 +776,7 @@
               </button>
             </div>
 
+            <details class="more"><summary>Build detail — systems · open questions · blockers · suggested tasks</summary><div class="more-in">
             <div class="sec">
               <div class="lab">Systems</div>
               <div class="chips"><span class="chip">DocuSign (sequential routing: trust → carrier)</span><span class="chip">Carrier (receipt confirmation / feeds)</span><span class="chip">ILIA (status + record)</span></div>
@@ -759,6 +809,7 @@
                 <li><span class="jt">4</span><div><b>Fulfillment statuses in Tranche Management</b> <span style="color:var(--faint);font-weight:400">· ILIA dev</span><span class="jd">Add and drive the new statuses: Sent to trustee → Trustee signed → Sent to carrier → Carrier confirmed → Complete.</span></div></li>
               </ul>
             </div>
+            </div></details>
           </div>
         </div>
 
@@ -774,7 +825,7 @@
   <!-- ============ TAB 2: DBR IN TRANCHE MANAGEMENT ============ -->
   <section id="view-tm" hidden>
     <div class="tm-intro">
-      <b>How Marissa sees &amp; manages DBR.</b> A new <b>DBR Status</b> column inside the Workflow tab shows every client's state per line — the same defined statuses the event cards set. The <b>elected option (Full / Half / None / Custom)</b> shows as a detail on the line, while the status stays in the known set. Statuses &amp; data are illustrative (design track #2). The row Card 1 links to is highlighted when you arrive.
+      <b>How Marissa sees &amp; manages DBR.</b> A new <b>DBR Status</b> column inside the Workflow tab shows every client's state per line — the same defined statuses the event cards set. The <b>elected option (Full / Half / No reduction)</b> shows as a detail on the line, while the status stays in the known set. Statuses &amp; data are illustrative (design track #2). The row Card 1 links to is highlighted when you arrive.
     </div>
     <div class="tm">
       <div class="tm-bar">
@@ -836,7 +887,7 @@
         <span class="doc-tag">DocuSign · client view</span>
         <p class="doc-h">Death Benefit Reduction — Your Election</p>
         <p class="doc-meta">Policy #KZ-100482 · Policy Year 11 · Trust: The Song Ma Trust</p>
-        <p class="prompt">Your Kai-Zen plan is entering its <b>eleventh year</b> — the phase where the planned <b>term-rider death benefit reduction</b> takes effect. Please <b>choose one option</b> below (each option's illustration is attached, or write a custom amount) and sign. <span class="req">*required</span></p>
+        <p class="prompt">Your Kai-Zen plan is entering its <b>eleventh year</b> — the phase where the planned <b>term-rider death benefit reduction</b> takes effect. Please <b>choose one option</b> below (each option's illustration is attached) and sign. <span class="req">*required</span></p>
         <div class="opts" id="fopts">
           <div class="opt" data-v="FULL"><span class="radio"></span><div>
             <div class="ot">Full Planned Reduction</div>
@@ -855,13 +906,8 @@
             <div class="od">Keep my existing term coverage this year. (I may choose to reduce in a future year, through Year 15.)</div>
             <div class="exp"><b>What this means:</b> the greatest emphasis on <b>death-benefit protection</b> — the term coverage stays in place. You'll have the option again next year, through Year 15.<br><b>If your health has changed, choose No Term Reduction</b> — you may want to keep a higher death benefit for your heirs.</div>
           </div></div>
-          <div class="opt" data-v="CUSTOM"><span class="radio"></span><div>
-            <div class="ot">A different (custom) amount</div>
-            <div class="od">I'd like a reduction amount other than the three above.</div>
-            <div class="exp"><b>What this means:</b> select this and <b>reach out to us</b> — we'll work out a custom amount with you directly. (Handled offline; optionally note the amount you have in mind below.)</div>
-            <div class="partial-field"><label>Amount you have in mind (optional)</label><span class="amt-in"><span>$</span><input id="famtInput" inputmode="numeric" placeholder="0" aria-label="Amount you have in mind"></span></div>
-          </div></div>
         </div>
+        <p style="font-size:11px;color:var(--muted);line-height:1.5;margin:8px 0 0;padding:9px 11px;border:1px dashed var(--border-strong);border-radius:8px">Need a <b>different amount</b>? Call a Kai-Zen servicing specialist at <b>(972) 755-1582</b> — non-standard amounts are handled by phone, not a field.</p>
         <p style="font-size:11px;color:var(--muted);line-height:1.5;margin:2px 0 0"><b>Important:</b> once the term rider is reduced it generally can't be restored (may require new underwriting). Because the policy is premium-financed, keeping more term coverage can raise future cost and lapse risk.</p>
         <div class="sig">
           <div class="fld">Client signature <span class="req">*</span><div class="line">DocuSign signature</div></div>
@@ -884,13 +930,12 @@
         <div class="fnotes">
           <h3>Build notes for Marissa</h3>
           <ol>
-            <li><b>One required radio group</b> — <code>dbr_election</code> = <code>FULL</code> / <code>HALF</code> / <code>NONE</code> / <code>CUSTOM</code>.</li>
-            <li><b>Custom → optional amount field</b> <code>requested_amount</code> + a “we'll follow up” note (custom is handled offline).</li>
+            <li><b>One required radio group</b> — <code>dbr_election</code> = <code>FULL</code> / <code>HALF</code> / <code>NONE</code>. <b>Custom removed</b> — a "call a specialist" line handles non-standard amounts.</li>
             <li><b>Make the election required</b> — no “signed but no answer.”</li>
             <li><b>Use real DocuSign fields, not a checkbox drawn on the PDF</b> — only field tabs come back as data ILIA can read.</li>
             <li><b>Plain labels + a one-line explainer per option</b> (final client wording is Marissa/Judy’s to approve).</li>
             <li><b>Lock the field names</b> and hand to Chris Lane for the webhook mapping.</li>
-            <li><b>Custom is handled offline (MVP):</b> the form just captures the flag (+ optional amount) and tells the client NIW will follow up — no 2nd illustration/envelope in ILIA. Full / Half / None finish in one envelope.</li>
+            <li><b>One envelope</b> — Full / Half / None all finish in a single envelope.</li>
           </ol>
         </div>
 
@@ -901,17 +946,9 @@
             <li><span class="tick">✓</span><div><b>DBR election doc</b> — the form the client signs (this page) <span class="always">always</span></div></li>
             <li><span class="tick">✓</span><div><b>3 in-force illustrations</b> — Full / Half / No reduction — Ben auto-pulls from carrier <span class="always">in the notice</span></div></li>
             <li><span class="tick">✓</span><div><b>Comparison summary</b> (before vs. after) — Ben auto-generates <span class="always">in the notice</span></div></li>
-            <li><span class="tick bank">→</span><div><b>Low point</b> → the bank uses the <b>120/90/60 illustration</b> (no re-run); on election ILIA writes it to the <b>Low Point field in Case Details</b> → Chris's bank report <span class="always">always</span></div></li>
+            <li><span class="tick bank">→</span><div><b>Low points</b> → run <b>separately at 0% / guaranteed</b> (one per option). On election ILIA writes the chosen option's low point to the <b>Low Point field in Case Details</b> → Chris's bank report <span class="always">always</span></div></li>
           </ul>
-          <p class="fd-note"><b>Confirmed by Judy:</b> everything ships in <b>one envelope</b> — the 3 illustrations &amp; comparison ride in the notice. Low point confirmed required (NIWD-2053), reused from the 120/90/60 illustration (no re-run).</p>
-          <div class="fd-partial">
-            <div class="fd-h">If the client writes a Custom amount → handled offline (MVP)</div>
-            <ul class="fd-list">
-              <li><span class="tick" style="background:var(--faint)">–</span><div>No auto illustration or 2nd envelope in ILIA</div></li>
-              <li><span class="tick" style="background:var(--faint)">–</span><div>NIW contacts the client and processes the custom amount offline</div></li>
-            </ul>
-            <p class="fd-note">MVP decision (Judy, Aug 19) — customs are rare. Revisit in Phase 2.</p>
-          </div>
+          <p class="fd-note"><b>Confirmed by Judy:</b> everything ships in <b>one envelope</b> — the 3 illustrations &amp; comparison ride in the notice. <b>Paul (Sep 17):</b> the low point is a separate run at 0% (not the in-force illustration); need 6 illustrations/client (3 reduction + 3 low point).</p>
         </div>
       </div>
     </div>
@@ -932,7 +969,7 @@
         <div class="e-body">
           <div class="e-top"><b class="e-name">DBR Notice — initial</b><span class="e-tag">Event 1 · 120 days out</span></div>
           <div class="e-meta"><b>To:</b> Client (routed via the agent, Janine)</div>
-          <div class="e-meta"><b>Includes:</b> the DBR election form (Full / Half / None + custom) + 3 illustrations + comparison summary — all in one envelope</div>
+          <div class="e-meta"><b>Includes:</b> the DBR election form (Full / Half / None) + 3 illustrations + comparison summary — all in one envelope</div>
           <div class="e-note">⏳ Copy — Marissa is building the new notice. (Pending)</div>
         </div>
       </div>
@@ -955,20 +992,10 @@
         </div>
       </div>
 
-      <div class="email-item type-partial">
+      <div class="email-item type-confirm">
         <span class="e-num">4</span>
         <div class="e-body">
-          <div class="e-top"><b class="e-name">Revised DBR — review &amp; sign</b><span class="e-tag">Custom · offline (MVP)</span></div>
-          <div class="e-meta"><b>Fires when:</b> a client wants a custom amount — handled offline; sent manually by NIW if needed, not auto by ILIA</div>
-          <div class="e-meta"><b>To:</b> Client + agent &nbsp;·&nbsp; <b>Includes:</b> new in-force illustration + revised comparison + revised election (prepared offline)</div>
-          <div class="e-note">Custom is handled offline for MVP — this draft is a starting point if the team sends it manually.</div>
-        </div>
-      </div>
-
-      <div class="email-item type-confirm">
-        <span class="e-num">5</span>
-        <div class="e-body">
-          <div class="e-top"><b class="e-name">Confirmation — DBR applied</b><span class="e-tag">Event 3 · Accept / Partial signed</span></div>
+          <div class="e-top"><b class="e-name">Confirmation — DBR applied</b><span class="e-tag">Event 3 · Accepted signed</span></div>
           <div class="e-meta"><b>Fires when:</b> the reduction is applied to the policy</div>
           <div class="e-meta"><b>To:</b> Client &nbsp;·&nbsp; <b>Includes:</b> confirmation the reduction was applied</div>
           <div class="e-note">Optional confirmation — confirm with the team whether it's sent.</div>
@@ -976,7 +1003,7 @@
       </div>
 
       <div class="email-item type-confirm">
-        <span class="e-num">6</span>
+        <span class="e-num">5</span>
         <div class="e-body">
           <div class="e-top"><b class="e-name">Confirmation — no change this year</b><span class="e-tag">Event 3 · Decline / No response</span></div>
           <div class="e-meta"><b>Fires when:</b> the client declines, or the deadline passes with no response</div>
@@ -1110,8 +1137,10 @@ const CHECK=[
    {t:"DBR start-year rule — early cohorts Yr 10 vs later Yr 11",d:"Auto-send must key off each cohort's actual DBR schedule, not a fixed Yr 11.",tags:[["Judy","own"],["Blocker","block"],["Card 1","card"]]},
    {t:"“Half” definition — confirmed (build the calc)",d:"Half ≈ 50% of the planned term reduction (Judy's comparison doc). Remaining: Ben's tool computes the 50% amount + illustration.",tags:[["Ben","own"],["Confirmed","dep"],["Cards 1 & 3","card"]]},
    {t:"DBR amount formulas — cumulative / stacking across years",d:"How the reduction is calc'd each year and how amounts carry when a year is declined. Ties to NIWD-2299.",tags:[["Paul","own"],["Blocker","block"],["Card 1","card"]]},
-   {t:"Final email copy (Full / Half / None + custom)",d:"Notice + reminder wording, incl. the health prompt on No reduction.",tags:[["Marissa","own"],["Pending","pending"],["Card 1 · Emails","card"]]},
-   {t:"New DBR election form (3-pick + custom)",d:"The DocuSign form Marissa builds so ILIA can capture & route.",tags:[["Marissa","own"],["Pending","pending"],["Card 1 · Forms","card"]]},
+   {t:"Final email copy (Full / Half / No reduction)",d:"Notice + reminder wording, incl. the health prompt on No reduction. Custom removed — 'call a specialist' line instead.",tags:[["Marissa","own"],["Pending","pending"],["Card 1 · Emails","card"]]},
+   {t:"New DBR election form (3-pick, no custom)",d:"Draft built (in-force explanation + Hold Harmless page + 3 options). Finalize copy with Judy/Chris, then wire as the DocuSign form.",tags:[["Jamin / Marissa","own"],["In progress","dep"],["Card 1 · Forms","card"]]},
+   {t:"50% max reduction rule",d:"A reduction can never exceed 50% of the current DB (from feed). Max = current DB ÷ 2. Validate on every option.",tags:[["Judy","own"],["Confirmed","dep"],["Rules · Sep 17","card"]]},
+   {t:"Term-rider-first reduction hierarchy",d:"Always reduce the term rider before the base (~90% have a term rider); no term rider → base. 50% cap still applies.",tags:[["Judy","own"],["Confirmed","dep"],["Rules · Sep 17","card"]]},
    {t:"“Why” for each option (for descriptions)",d:"Judy will send the rationale to drop into each option's explainer.",tags:[["Judy","own"],["Pending","pending"],["Forms","card"]]},
    {t:"Client comparison/education doc — Judy provided",d:"Judy's 'Your Kai-Zen Policy' comparison (3 strategies: Cash Value · Suppl. Income · DB at 90) is the option copy source. Remaining: Todd's polished info page from it.",tags:[["Judy / Todd","own"],["Confirmed","dep"],["Card 1","card"]]},
    {t:"Reconcile NIWD-2299 window (Yr 10–14 vs 11–15)",d:"Illustrated-DB recalc; confirm indexing so boundary years are right.",tags:[["Kyle","own"],["Dependency","dep"],["Card 1","card"]]},
@@ -1121,18 +1150,23 @@ const CHECK=[
  ]},
  {group:"Data prerequisites",items:[
    {t:"Clean DBR data — settlor = insured (B1)",d:"Validated, populated DBR amounts for all Phase-1 accounts. NIWD-1767.",tags:[["Data team","own"],["Blocker","block"],["Card 1","card"]]},
-   {t:"Low-point mapping per carrier",d:"NLG 13-month low point / ALZ guaranteed SV → PolicyBreakDowns.lowPoint. NIWD-2185 (in progress).",tags:[["Dev","own"],["Dependency","dep"],["Cards 1 & 3","card"]]}
+   {t:"Low-point mapping per carrier",d:"NLG 13-month low point / ALZ guaranteed SV → PolicyBreakDowns.lowPoint. NIWD-2185 (in progress).",tags:[["Dev","own"],["Dependency","dep"],["Cards 1 & 3","card"]]},
+   {t:"New DBR case-details fields",d:"Add: current DB (feed), term rider DB, base DB, Full/Half/No amounts, low point per option, low cash value, income, DB at age 90, in-force rate.",tags:[["Mohit","own"],["New · Sep 17","block"],["Card 1","card"]]},
+   {t:"AWS landing spot for carrier illustrations",d:"Dedicated AWS location; carrier illustration emails copied there for the scraper to read.",tags:[["Jamin","own"],["New · Sep 17","block"],["Card 1","card"]]},
+   {t:"Sample carrier illustrations for scraper",d:"Flex Life, National Life & Allianz sample illustrations + the carrier ordering emails, so Ben can build the scraper.",tags:[["Paul","own"],["New · Sep 17","dep"],["Card 1","card"]]}
  ]},
  {group:"Build tasks to create in JIRA",items:[
    {t:"DBR eligibility & trigger scheduler (120/90/60)",d:"Daily scan; cohort start-year aware; calc deadline off tranche funding date.",tags:[["ILIA dev","own"],["Card 1","card"]]},
-   {t:"Illustration auto-pull (3 scenarios) + data scrape",d:"Full / Half / None from carrier; scrape comparison; low point on elected illustration. Linchpin.",tags:[["Ben","own"],["Card 1","card"]]},
+   {t:"Low-point scraper microservice (AWS)",d:"6 illustrations/client: 3 reduction (Full/Half/No at in-force rate) + 3 low points (run at 0%/guaranteed). Read carrier emails from the AWS landing spot, validate, scrape values. Linchpin.",tags:[["Ben","own"],["New · Sep 17","card"]]},
+   {t:"Scraper data mapping",d:"Map scraped values → case details, DBR election form, carrier change form, and the bank report upload.",tags:[["Ben","own"],["New · Sep 17","card"]]},
+   {t:"Carrier in-force request email",d:"Request the reduction 3 ways (Full/Half/No) with 50% rule, term vs base split, low point at 0%, participating loan (bank payoff + max income), current growth rate, run to age 100.",tags:[["Jamin / Chris","own"],["New · Sep 17","card"]]},
+   {t:"Bank report upload package",d:"Upload: signed carrier change form + chosen illustration + low point + signed DBR election + signed Hold Harmless.",tags:[["Chris","own"],["New · Sep 17","card"]]},
    {t:"Assemble & send DBR package (DocuSign)",d:"Bundle election + 3 illustrations + comparison into one envelope; 120/90/60; stop on signed.",tags:[["ILIA dev + Chris","own"],["Card 1","card"]]},
    {t:"DBR status field in Tranche Management",d:"Add the DBR Status column + drive the defined statuses.",tags:[["ILIA dev","own"],["Card 1","card"]]},
-   {t:"DocuSign response capture (B3)",d:"Webhook vs polling; read dbr_election = full/half/none (+ requested_amount) + signed PDF.",tags:[["Chris Lane","own"],["Card 2","card"]]},
-   {t:"Election routing + status update",d:"Full/Half → apply, None → re-offer, Custom → offline flag, no-response → re-offer.",tags:[["ILIA dev","own"],["Card 2","card"]]},
+   {t:"DocuSign response capture (B3)",d:"Webhook vs polling; read dbr_election = full/half/none + signed PDF.",tags:[["Chris Lane","own"],["Card 2","card"]]},
+   {t:"Election routing + status update",d:"Full/Half → apply, None → re-offer, no-response → re-offer.",tags:[["ILIA dev","own"],["Card 2","card"]]},
    {t:"Apply reduction (Full/Half) + write low point",d:"Apply the reduction; write the option's low point to Case Details (Chris's bank report); hand to fulfillment.",tags:[["ILIA dev","own"],["Card 3","card"]]},
    {t:"No-reduction / no-response re-offer scheduler",d:"Set status; schedule the re-offer through Yr 15 (skip if Health).",tags:[["ILIA dev","own"],["Card 3","card"]]},
-   {t:"Flag custom for offline handling",d:"Capture flag + optional amount; mark for NIW to work offline. No automation (MVP).",tags:[["ILIA dev","own"],["Card 3","card"]]},
    {t:"Carrier form population",d:"Pull the elected reduction amount into the carrier forms (auto or admin-input).",tags:[["ILIA dev + Chris","own"],["Card 4","card"]]},
    {t:"Sequential envelope routing (trust → carrier)",d:"Route to trustee first for the change-form signature, then release to the carrier.",tags:[["Chris Lane","own"],["Card 4","card"]]},
    {t:"Carrier receipt confirmation",d:"Confirm the carrier received the final forms (feed or manual) + update the case.",tags:[["ILIA dev","own"],["Card 4","card"]]},
@@ -1198,20 +1232,18 @@ const CHECK=[
   });
 })();
 
-const FROUTES={FULL:{cls:'accept',txt:'Apply the full reduction → Accepted → Applied'},HALF:{cls:'accept',txt:'Apply the ~50% reduction → Accepted → Applied'},NONE:{cls:'decline',txt:'No change this year · re-offer next year (thru Yr 15)'},CUSTOM:{cls:'partial',txt:'Flagged for NIW — handled offline (MVP)'}};
+const FROUTES={FULL:{cls:'accept',txt:'Apply the full reduction → Accepted → Applied'},HALF:{cls:'accept',txt:'Apply the ~50% reduction → Accepted → Applied'},NONE:{cls:'decline',txt:'No change this year · re-offer next year (thru Yr 15)'}};
 let fsel=null;
 const fopts=document.querySelectorAll('#fopts .opt');
-const fcapE=document.getElementById('fcapElection'),fcapA=document.getElementById('fcapAmount'),fcapR=document.getElementById('fcapRoute'),famt=document.getElementById('famtInput');
+const fcapE=document.getElementById('fcapElection'),fcapA=document.getElementById('fcapAmount'),fcapR=document.getElementById('fcapRoute');
 function frender(){
   if(!fcapE)return;
-  if(!fsel){fcapE.textContent='— not chosen';fcapE.className='none';fcapA.textContent='—';fcapA.className='none';fcapR.textContent='choose an option';fcapR.className='rv none';return;}
+  if(!fsel){fcapE.textContent='— not chosen';fcapE.className='none';if(fcapA){fcapA.textContent='—';fcapA.className='none';}fcapR.textContent='choose an option';fcapR.className='rv none';return;}
   fcapE.textContent=fsel;fcapE.className='v';
-  if(fsel==='CUSTOM'){const a=(famt.value||'').trim();fcapA.textContent=a?'$'+a:'(awaiting amount)';fcapA.className=a?'v':'none';}else{fcapA.textContent='—';fcapA.className='none';}
+  if(fcapA){fcapA.textContent='—';fcapA.className='none';}
   const r=FROUTES[fsel];fcapR.textContent=r.txt;fcapR.className='rv '+r.cls;
 }
-fopts.forEach(o=>o.addEventListener('click',()=>{fsel=o.dataset.v;fopts.forEach(x=>x.classList.toggle('sel',x===o));if(fsel==='CUSTOM')setTimeout(()=>famt.focus(),60);frender();}));
-famt.addEventListener('input',frender);
-famt.addEventListener('click',e=>e.stopPropagation());
+fopts.forEach(o=>o.addEventListener('click',()=>{fsel=o.dataset.v;fopts.forEach(x=>x.classList.toggle('sel',x===o));frender();}));
 frender();
 
 document.getElementById('card1TmLink').addEventListener('click',()=>{
@@ -1225,17 +1257,16 @@ const UX={1:{
   intro:"A Year-11 client (insured = settlor) has been flagged for a DBR. Here's what they go through when the notice arrives.",
   receive:"An email / DocuSign notice, routed through their agent (Janine): a decision is needed — review and choose by the due date. One click opens the packet.",
   docs:[
-    ["Election form (the DBR doc)","Where they make & sign their choice — shows policy info, the Full / Half / No-reduction options (+ a custom field), and a plain 'what this means' under each."],
+    ["Election form (the DBR doc)","Where they make & sign their choice — shows policy info, the Full / Half / No-reduction options, and a plain 'what this means' under each."],
     ["3 in-force illustrations (Full / Half / None)","One projection per option, pre-computed — so they compare the actual outcome of each choice side by side."],
     ["Comparison summary (Ben auto-builds)","The at-a-glance before-vs-after that sits on top of the three illustrations."]
   ],
   choose:[
     ["Full reduction","Take the full planned reduction — its illustration is right there in the packet."],
     ["Half reduction","Take the ~50% reduction — its illustration is also in the packet."],
-    ["No reduction","Keep the death benefit unchanged this year — revisit next year, through Year 15."],
-    ["Custom amount","Want a different number? Write it in; ILIA prepares a new illustration for it (a short second round)."]
+    ["No reduction","Keep the death benefit unchanged this year — revisit next year, through Year 15."]
   ],
-  close:"They check one box, sign in DocuSign — done. ILIA reads the choice and routes it. No phone tag, no chasing documents."
+  close:"They check one box, sign in DocuSign — done. ILIA reads the choice and routes it. (A different amount? Call a specialist — no field on the form.)"
 },
 2:{
   title:"Client experience — responding & signing",
@@ -1243,15 +1274,14 @@ const UX={1:{
   receive:"They open the DocuSign packet — the election form plus the 3 illustrations and comparison, all in one envelope.",
   docs:[
     ["3 illustrations + comparison","They compare Full / Half / No-reduction side by side to decide."],
-    ["Election form","They check one box — Full, Half, or No reduction — or write a custom amount."],
+    ["Election form","They check one box — Full, Half, or No reduction."],
     ["Signature","They e-sign; DocuSign timestamps it and returns the choice to ILIA."]
   ],
   choose:[
     ["Full / Half","Pick the option and sign — one click, done. ILIA applies that reduction."],
-    ["No reduction","One click — nothing changes; they're asked again next year."],
-    ["Custom amount","They enter a number and sign the request; ILIA comes back with a new illustration to review and sign (the exception path)."]
+    ["No reduction","One click — nothing changes; they're asked again next year."]
   ],
-  close:"For Full / Half / No reduction it's truly one-and-done. Only a custom amount needs a short second round (the new illustration) before it's final."
+  close:"Full / Half / No reduction is truly one-and-done. A different amount? The client calls a specialist — no field on the form."
 },
 4:{
   title:"Experience — fulfillment (trustee & carrier)",
@@ -1314,21 +1344,6 @@ const UX={1:{
     ["DocuSign","None — already signed on the first form."]
   ],
   close:"They'll get a fresh DBR notice next anniversary, through Year 15."
-},
-"3-custom":{
-  title:"Client experience — Custom amount (offline, MVP)",
-  labels:{receive:"What happens next",docs:"What they see",choose:"How it's handled",sign:"Bottom line"},
-  intro:"The client wrote a custom amount (not one of the three ready options) — the rare exception, handled offline for MVP.",
-  receive:"ILIA records their interest + optional requested amount and flags the case. NIW reaches out to the client directly to work the custom amount offline.",
-  docs:[
-    ["A note that NIW will follow up","No automated 2nd illustration or envelope in ILIA for MVP."],
-    ["Offline handling","NIW prepares the revised illustration and paperwork outside ILIA."]
-  ],
-  choose:[
-    ["Client selects ‘different amount’","And reaches out to NIW — that's all the form does."],
-    ["NIW handles offline","Revised illustration + signature done manually, off-platform (MVP)."]
-  ],
-  close:"MVP decision (Judy, Aug 19): customs are rare, so no automation — the client is contacted and it's processed offline. Revisit automating this in Phase 2."
 }};
 const uxModal=document.getElementById('uxModal');
 function openUX(n){
@@ -1432,8 +1447,8 @@ if(topScroll&&topInner&&trackOuter){
 const EMAILS=[
  {name:"DBR Notice — initial",
   subject:"URGENT: Important Notice from Kai-Zen Plan Servicing — Next Steps, Year {policy_year} — {client_name}",
-  body:"Dear {client_name},\n\nYour Kai-Zen plan has reached its {policy_year}th year. At this stage you can choose how to handle the death benefit reduction for this year.\n\nPlease review the attached documents with your agent and choose one of three options — Full reduction, Half reduction, or No reduction (each option's illustration is attached) — or write in a custom amount. Then sign electronically via DocuSign.\n\nPlease complete your DocuSign by {due_date}. If no response is received by {due_date}, no change will be made to your policy for year {policy_year}, and you'll have the option again next year (through year 15).\n\nYour estimated loan repayment amount is {loan_amount}.\n\nPolicy Year {policy_year}\nActual — Cash Surrender: {actual_csv} · Death Benefit: {actual_db}\nIllustrated — Cash Value: {illus_cv} · Death Benefit: {illus_db}\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
-  att:["DBR election form (DocuSign — Full/Half/None + custom)","3 in-force illustrations (Full / Half / No reduction)","Comparison summary (the 3 options side by side)"]},
+  body:"Dear {client_name},\n\nYour Kai-Zen plan has reached its {policy_year}th year. At this stage you can choose how to handle the death benefit reduction for this year.\n\nPlease review the attached documents with your agent and choose one of three options — Full reduction, Half reduction, or No reduction (each option's illustration is attached). Then sign electronically via DocuSign. For a different amount, call a specialist at (972) 755-1582.\n\nPlease complete your DocuSign by {due_date}. If no response is received by {due_date}, no change will be made to your policy for year {policy_year}, and you'll have the option again next year (through year 15).\n\nYour estimated loan repayment amount is {loan_amount}.\n\nPolicy Year {policy_year}\nActual — Cash Surrender: {actual_csv} · Death Benefit: {actual_db}\nIllustrated — Cash Value: {illus_cv} · Death Benefit: {illus_db}\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
+  att:["DBR election form (DocuSign — Full / Half / None)","3 in-force illustrations (Full / Half / No reduction)","Comparison summary (the 3 options side by side)"]},
  {name:"DBR Notice — reminder (90 days)",
   subject:"Reminder: action needed on your Kai-Zen death benefit reduction — due {due_date}",
   body:"Dear {client_name},\n\nA friendly reminder that your death benefit reduction election for year {policy_year} is still open. Please review and sign via DocuSign by {due_date}.\n\nIf we don't hear from you, no change will be made to your policy this year.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
@@ -1442,10 +1457,6 @@ const EMAILS=[
   subject:"Final reminder: your Kai-Zen death benefit reduction — due {due_date}",
   body:"Dear {client_name},\n\nThis is your final reminder — the deadline to make your death benefit reduction election for year {policy_year} is {due_date}. Please sign via DocuSign before then.\n\nIf no response is received by {due_date}, no change will be made this year.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
   att:["Same as the initial notice (DocuSign link)"]},
- {name:"Revised DBR — review & sign (Partial)",
-  subject:"Your revised Death Benefit Reduction — review & sign — {client_name}",
-  body:"Dear {client_name},\n\nThank you — based on your request, we've prepared a new illustration reflecting your requested reduction amount of {requested_amount}.\n\nPlease review the attached with your agent and sign via DocuSign to confirm. If you'd like a different amount, just let us know.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
-  att:["New in-force illustration (your requested amount)","Revised comparison (before vs. after)","Revised DocuSign election (2nd envelope)"]},
  {name:"Confirmation — DBR applied",
   subject:"Confirmed: your death benefit reduction has been applied — {client_name}",
   body:"Dear {client_name},\n\nThis confirms that your death benefit reduction for year {policy_year} has been applied to your policy. Your updated death benefit is {new_db_amount}.\n\nNo further action is needed.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
@@ -1476,8 +1487,8 @@ document.getElementById('emOk').addEventListener('click',()=>document.getElement
 const ROUTE=[
  {who:"Client / Settlor",role:"insured · elects + signs",when:"Step 1 — the envelope starts here.",
   sees:"The DBR notice (year, reduction amount, respond-by date), the 3 illustrations (Full / Half / No reduction) + comparison, the election, and the Hold Harmless.",
-  does:"Reviews the options, makes the election (Full / Half / No reduction, or a custom amount), signs the election — and signs the Hold Harmless as the Settlor.",
-  inc:["DBR notice — policy #, year, reduction amount, respond-by date","3 in-force illustrations — Full / Half / No reduction","Comparison summary","Election (Full / Half / None + custom)","Hold Harmless & Indemnification (Settlor signs)"]},
+  does:"Reviews the options, makes the election (Full / Half / No reduction), signs the election — and signs the Hold Harmless as the Settlor.",
+  inc:["DBR notice — policy #, year, reduction amount, respond-by date","3 in-force illustrations — Full / Half / No reduction","Comparison summary","Election (Full / Half / None)","Hold Harmless & Indemnification (Settlor signs)"]},
  {who:"Trustee — Provident Trust Group, LLC",role:"trustee · authorizes",when:"Step 2 — DocuSign auto-routes here once the client finishes.",
   sees:"The client's completed election plus the carrier change form to authorize.",
   does:"Executes / signs the carrier change form as directed by the settlor (per the Hold Harmless the client signed).",
@@ -1517,8 +1528,8 @@ const NOTICE_EMAILS=[
   {tab:"60-day reminder",ei:2,atts:CLIENT_ATTS}
 ];
 const CONFIRM_EMAILS=[
-  {tab:"Confirmation — applied",ei:4,atts:[]},
-  {tab:"Confirmation — no change",ei:5,atts:[]}
+  {tab:"Confirmation — applied",ei:3,atts:[]},
+  {tab:"Confirmation — no change",ei:4,atts:[]}
 ];
 const TRUSTEE_EMAIL={tab:"DocuSign sign request",title:"DocuSign: Signature requested — Kai-Zen DB reduction · Policy {policy_no}",copy:"Provident Trust Group — a Kai-Zen death benefit reduction for {client_name} is ready for your signature. Please review the carrier change form and the client's signed election, then sign to authorize the change.",atts:[{name:"Carrier change form (NLG / MNL / ALZ)",key:"carrierchange"},{name:"Client's completed election",key:"election"},{name:"Signed Hold Harmless",key:"holdharmless"}]};
 const CARRIER_EMAIL={tab:"Carrier delivery",title:"Kai-Zen DB reduction — completed change forms · Policy {policy_no}",copy:"Enclosed are the fully-signed change forms authorizing the death benefit reduction for {client_name}, Policy {policy_no}. Please process the reduction and confirm receipt.",atts:[{name:"Signed carrier change form(s)",key:"carrierchange"}]};
@@ -1555,6 +1566,8 @@ function renderEmail(key,i){
 selectStep('client');
 
 const EF_HTML=`<title>DBR Election Form</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   :root{
@@ -1584,12 +1597,17 @@ const EF_HTML=`<title>DBR Election Form</title>
     --caution:#e2ab57; --caution-soft:#2b2410; --caution-line:#6d5a22;
     --good:#4cc290; --good-soft:#12281e;
     --line:#28323f; --line-strong:#38465a;
+    --field:#2a2510; --field-line:#6f5c22;
     --shadow:0 1px 2px rgba(0,0,0,.3),0 20px 55px -25px rgba(0,0,0,.7);
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
   .wrap{max-width:820px;margin:0 auto;padding:0 18px 80px}
-  .toolbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(8px);padding:12px 18px;margin:0 -18px 22px;border-bottom:1px solid var(--line)}
+
+  /* toolbar */
+  .toolbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(8px);
+    padding:12px 18px;margin:0 -18px 22px;border-bottom:1px solid var(--line)}
   .toolbar .tl{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;color:var(--muted);letter-spacing:.02em}
   .toolbar .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
   .tb-actions{display:flex;gap:8px}
@@ -1597,8 +1615,11 @@ const EF_HTML=`<title>DBR Election Form</title>
   .btn:hover{border-color:var(--accent)}
   .btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
   .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* the paper */
   .doc{background:var(--paper);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);padding:46px 52px 40px;position:relative}
   .sample-flag{position:absolute;top:16px;right:18px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;color:var(--caution);background:var(--caution-soft);border:1px solid var(--caution-line);border-radius:5px;padding:3px 8px}
+
   .logo-band{display:flex;align-items:center;justify-content:center;gap:20px;background:#fff;border-radius:9px;padding:11px 24px;margin:0 auto 18px;width:fit-content;border:1px solid var(--line);box-shadow:0 1px 2px rgba(20,30,50,.05)}
   .logo-band img{height:36px;width:auto;display:block}
   .lg-div{width:1px;height:32px;background:#dbe0e8}
@@ -1607,22 +1628,31 @@ const EF_HTML=`<title>DBR Election Form</title>
   .lh-doc{font-family:var(--mono);font-size:11px;color:var(--faint)}
   h1{font-family:var(--serif);font-weight:600;font-size:31px;line-height:1.12;letter-spacing:-.01em;margin:22px 0 4px;text-wrap:balance}
   .subtitle{font-size:13.5px;color:var(--muted);margin:0 0 4px}
+
+  /* policy info grid */
   .pi{display:grid;grid-template-columns:1fr 1fr;gap:0 34px;margin:22px 0 6px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
   .pi .cell{display:flex;justify-content:space-between;gap:12px;padding:10px 15px;border-bottom:1px solid var(--line);font-size:13px}
   .pi .cell:nth-last-child(-n+2){border-bottom:none}
   @media (max-width:560px){.pi{grid-template-columns:1fr}.pi .cell:nth-last-child(2){border-bottom:1px solid var(--line)}}
   .pi .k{color:var(--muted)}
   .pi .v{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+
   h2{font-family:var(--serif);font-weight:600;font-size:19px;letter-spacing:-.01em;margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
   .eyebrow{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:3px}
   p{margin:0 0 12px;font-size:14px;max-width:66ch}
   p.lead{font-size:14.5px}
   .notice p{color:var(--ink)}
+
+  /* merge field token */
   .mf{font-family:var(--mono);font-size:.86em;background:var(--field);border-bottom:1.5px solid var(--field-line);border-radius:3px 3px 0 0;padding:1px 5px;font-weight:500;white-space:nowrap}
+
+  /* docusign field tag (toggle) */
   .ftag{display:none;font-family:var(--mono);font-size:10px;font-weight:500;color:var(--accent);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:middle;white-space:nowrap}
   body.tags .ftag{display:inline-block}
   .tag-hint{display:none}
   body.tags .tag-hint{display:block}
+
+  /* comparison table */
   .tbl-wrap{overflow-x:auto;margin:6px 0 8px}
   table.cmp{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
   .cmp th,.cmp td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
@@ -1632,6 +1662,8 @@ const EF_HTML=`<title>DBR Election Form</title>
   .cmp tr.hl td{background:var(--accent-soft)}
   .cmp tr.hl td:first-child{color:var(--accent)}
   .assump{font-size:11.5px;color:var(--faint);margin:2px 0 0}
+
+  /* election */
   .elect{display:flex;flex-direction:column;gap:12px;margin:6px 0 4px}
   .opt{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;border:1.5px solid var(--line-strong);border-radius:11px;padding:15px 17px;cursor:pointer;transition:border-color .14s,background .14s}
   .opt:hover{border-color:var(--accent)}
@@ -1650,10 +1682,14 @@ const EF_HTML=`<title>DBR Election Form</title>
   .custom-in .amt-field{display:inline-flex;align-items:baseline;gap:3px;border-bottom:2px solid var(--field-line);padding:2px 8px 3px;background:var(--field);border-radius:4px 4px 0 0}
   .custom-in .amt-field span{font-family:var(--mono);font-weight:600;color:var(--caution)}
   .custom-in input{border:none;background:transparent;font-family:var(--mono);font-size:13px;color:var(--ink);width:120px;outline:none}
+
+  /* considerations */
   .consider{margin:8px 0 4px;border-left:3px solid var(--caution-line);background:var(--caution-soft);border-radius:0 9px 9px 0;padding:14px 16px}
   .consider .eyebrow{color:var(--caution)}
   .consider p{font-size:13px;color:var(--ink);margin:0}
   .consider p+p{margin-top:8px}
+
+  /* signatures */
   .sig-block{border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-top:12px}
   .sig-ceremony{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .sig-ceremony .num{width:19px;height:19px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--sans);font-weight:700;font-size:11px}
@@ -1664,9 +1700,12 @@ const EF_HTML=`<title>DBR Election Form</title>
   .sig-line .rule{height:38px;border:1px dashed var(--line-strong);border-radius:7px;background:color-mix(in srgb,var(--accent) 3%,transparent);display:flex;align-items:center;padding:0 12px;font-size:12px;font-style:italic;color:var(--faint)}
   .hh-text{font-size:11.5px;color:var(--muted);line-height:1.55;margin:12px 0 0;padding-top:11px;border-top:1px dashed var(--line-strong)}
   .hh-text b{color:var(--ink)}
+
   .footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
   .footer b{color:var(--ink)}
   .cadence{font-size:11.5px;color:var(--faint);margin-top:8px;text-align:center}
+
+  /* Chris spec panel */
   .spec{margin-top:26px;background:var(--paper);border:1px solid var(--accent);border-top:3px solid var(--accent);border-radius:8px;box-shadow:var(--shadow);padding:22px 26px}
   .spec h2{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 30%,transparent);margin-top:0}
   .spec .sub{font-size:12.5px;color:var(--muted);margin:-4px 0 16px}
@@ -1686,9 +1725,17 @@ const EF_HTML=`<title>DBR Election Form</title>
   .route .node{font-weight:600;background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:20px;padding:3px 11px}
   .route .arw{color:var(--faint);font-weight:700}
   .route .doc2{background:var(--caution-soft);color:var(--caution);border-color:var(--caution-line)}
-  @media print{body{background:#fff}.toolbar,.spec,.sample-flag{display:none!important}.wrap{max-width:none;padding:0}.doc{border:none;box-shadow:none;padding:0}body.tags .ftag{display:none!important}}
+
+  @media print{
+    body{background:#fff}
+    .toolbar,.spec,.sample-flag{display:none!important}
+    .wrap{max-width:none;padding:0}
+    .doc{border:none;box-shadow:none;padding:0}
+    body.tags .ftag{display:none!important}
+  }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+
 <div class="toolbar">
   <span class="tl"><span class="dot"></span> Kai-Zen DBR · Election Form <span style="color:var(--faint);font-weight:500">draft mock</span></span>
   <span class="tb-actions">
@@ -1696,20 +1743,25 @@ const EF_HTML=`<title>DBR Election Form</title>
     <button class="btn" id="printBtn">Print</button>
   </span>
 </div>
+
 <div class="wrap">
   <div class="doc">
     <span class="sample-flag">SAMPLE · ILIA auto-fills per client</span>
+
     <div class="logo-band">
       <img src="data:image/png;base64,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AAC6AAAAugAAAAAAAAAAAAAAAAAAAAAAAADSAAAAagAAAAAAAAAAAAAAAAAAAAAAAAC1AAAAtQAAAAAAAAAAAAAAAAAAAAAAAAC2AAAAAAAAAAAAAAB+AAAAAAAAAAAAAACMAAAAAAAAAAAAAADaAAAAfwAAAAsAAAAPAAAAnQAAAN8AAAAAAAAAAAAAAAAAAACMAAAAAAAAANEAAAAAAAAAAAAAAMIAAADCAAAAAAAAAAAAAAAAAAAAqgAAAAAAAAAAAAAAgwAAAAAAAAAAAAAAFQAAAEMAAACFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA0gAAAF8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAABiAAAAAAAAAAAAAAAAAAAAAAAAAHoAAAAAAAAAAAAAALgAAAC4AAAAAAAAAPsAAAB8AAAAAAAAABQAAAC9AAAAnwAAAAAAAAAAAAAAAAAAANUAAABVAAAAAAAAAAAAAAAAAAAAAAAAAIoAAAAAAAAAAAAAAPQAAAB3AAAAAAAAAAoAAABXAAAAqgAAAPQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAAICAgADAwMA///+AAH/AQABAAIAAgICAAICAgAB/gEA////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP4AAADTAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnAAAAoAAAANMAAAC1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANoAAADyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAAJ8AAAAbAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAP//27WA92QW+/IAAAAASUVORK5CYII=" alt="NIW — A Simplicity Company">
       <span class="lg-div"></span>
       <img src="data:image/png;base64,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" alt="Kai-Zen">
     </div>
+
     <div class="letterhead">
       <span class="lh-brand">Kai-Zen Plan Servicing · Simplicity–NIW</span>
       <span class="lh-doc">Form: NIW–DBR–EL · v.2026</span>
     </div>
+
     <h1>Death Benefit Reduction — Your Election</h1>
     <p class="subtitle">A planned <b>term-rider reduction</b> for the Kai-Zen policy design · Policy Years 11–15</p>
+
     <div class="pi" aria-label="Policy information">
       <div class="cell"><span class="k">Client / Insured <span class="ftag">client_name</span></span><span class="v mf">{client_name}</span></div>
       <div class="cell"><span class="k">Respond by <span class="ftag">respond_by</span></span><span class="v mf">{respond_by}</span></div>
@@ -1720,17 +1772,38 @@ const EF_HTML=`<title>DBR Election Form</title>
       <div class="cell"><span class="k">Current Death Benefit <span class="ftag">current_db</span></span><span class="v mf">{current_db}</span></div>
       <div class="cell"><span class="k">Planned Term Reduction <span class="ftag">term_reduction_full</span></span><span class="v mf">{term_reduction_full}</span></div>
     </div>
+
     <section class="notice">
       <h2>The Phase Your Policy Is Entering</h2>
       <p class="lead">Your Kai-Zen policy is entering its <b>eleventh year</b> — an important phase of the original design. The focus now shifts toward the policy's <b>cash-value growth</b>, potential <b>supplemental retirement income</b>, and long-term death benefit.</p>
       <p>The original illustration included a planned <b>term-rider death benefit reduction</b>. The term rider was used to lower the early cost of insurance and let more of your premium build cash value. Because the term rider costs more in later years, reducing it now is intended to keep insurance costs lower and support future growth and income. <b>The choice is yours</b> — and we will not make any change without your signed election below.</p>
     </section>
+
+    <section>
+      <h2>Understanding Your In-Force Illustration</h2>
+      <p>Your <b>original</b> illustration and this new <b>in-force</b> illustration are run at <b>different assumed growth rates</b>, so the two are <b>not an apples-to-apples comparison</b>. The in-force figures show what the carrier is permitted to illustrate today under current insurance-company guidelines — <b>not a prediction of what your policy will actually do</b>. Your real results will change based on actual policy performance.</p>
+      <p class="tag-hint" style="font-size:12px;color:var(--faint);margin-bottom:8px">The in-force crediting rate is auto-filled by ILIA from the scraped in-force illustration. <span class="ftag">inforce_rate</span></p>
+      <div class="tbl-wrap">
+        <table class="cmp">
+          <thead>
+            <tr><th>Item</th><th>Original Illustration</th><th>Current In-Force <span class="ftag">inforce_rate</span></th></tr>
+          </thead>
+          <tbody>
+            <tr class="hl"><td>Illustrated crediting rate</td><td>6.91%</td><td>5.98%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="assump">The in-force illustration uses the <b>maximum illustrated crediting rate</b> allowed under current guidelines. Illustrated values are projections based on this assumed rate. Actual policy performance depends on future index performance and other policy factors, and may be higher or lower than illustrated. Sample rate shown.</p>
+    </section>
+
     <section>
       <h2>Your Options at a Glance</h2>
       <p class="tag-hint" style="font-size:12px;color:var(--faint);margin-bottom:8px">Comparison values are auto-generated by ILIA from the in-force illustration. <span class="ftag">strategy_comparison</span></p>
       <div class="tbl-wrap">
         <table class="cmp">
-          <thead><tr><th>Strategy</th><th>Cash Value</th><th>Suppl. income / yr</th><th>Death benefit at age 90</th></tr></thead>
+          <thead>
+            <tr><th>Strategy</th><th>Cash Value</th><th>Suppl. income / yr</th><th>Death benefit at age 90</th></tr>
+          </thead>
           <tbody>
             <tr><td>Original illustration</td><td>$1,150,000</td><td>$92,000</td><td>$1,000,000</td></tr>
             <tr class="hl"><td>Full Planned Reduction</td><td>$1,290,000</td><td>$110,000</td><td>$817,600</td></tr>
@@ -1741,41 +1814,52 @@ const EF_HTML=`<title>DBR Election Form</title>
       </div>
       <p class="assump">Assumptions: original crediting rate 6.91% vs. current in-force 5.98%. Figures are projections based on current in-force assumptions — not guarantees. Sample values shown.</p>
     </section>
+
     <section>
       <h2>Your Election <span class="ftag">dbr_election · radio · required · signer: Client</span></h2>
       <p style="margin-bottom:14px"><b>Please choose one option below</b> and sign. Each option's full illustration is attached to this packet.</p>
       <div class="elect" role="radiogroup" aria-label="Death benefit reduction election">
-        <label class="opt"><input type="radio" name="dbr_election" value="FULL"><div>
+
+        <label class="opt">
+          <input type="radio" name="dbr_election" value="FULL">
+          <div>
             <div class="ttl">Full Planned Reduction <span class="amt">Term reduction: {term_reduction_full}</span></div>
             <div class="desc">Follow the original plan beginning in Policy Year 11.</div>
             <div class="why"><b>What this means:</b> the greatest focus on cash-value growth and potential supplemental retirement income. Your death benefit is reduced by the full planned term amount.</div>
-          </div></label>
-        <label class="opt"><input type="radio" name="dbr_election" value="HALF"><div>
+          </div>
+        </label>
+
+        <label class="opt">
+          <input type="radio" name="dbr_election" value="HALF">
+          <div>
             <div class="ttl">Half Planned Reduction <span class="amt">Term reduction: {term_reduction_half} (≈50%)</span></div>
             <div class="desc">Reduce about half of the planned term reduction.</div>
             <div class="why"><b>What this means:</b> a balance between cash-value accumulation and death-benefit protection — you keep more coverage than the full reduction while still lowering cost.</div>
-          </div></label>
-        <label class="opt"><input type="radio" name="dbr_election" value="NONE"><div>
+          </div>
+        </label>
+
+        <label class="opt">
+          <input type="radio" name="dbr_election" value="NONE">
+          <div>
             <div class="ttl">No Term Reduction</div>
             <div class="desc">Keep the existing term coverage this year. (You may choose to reduce in a future year, through Year 15.)</div>
             <div class="why"><b>What this means:</b> the greatest emphasis on death-benefit protection — the term coverage stays in place.<br><span class="health">If your health has changed, choose No Term Reduction</span> — you may want to keep a higher death benefit for your heirs.</div>
-          </div></label>
-        <label class="opt"><input type="radio" name="dbr_election" value="CUSTOM"><div>
-            <div class="ttl">A different (custom) amount</div>
-            <div class="desc">Request a reduction amount other than the three above.</div>
-            <div class="why"><b>What this means:</b> select this and a Kai-Zen servicing specialist will contact you to work out a custom amount and prepare a new illustration.
-              <span class="custom-in">Amount you have in mind (optional): <span class="amt-field"><span>$</span><input inputmode="numeric" placeholder="0" aria-label="Custom amount"></span><span class="ftag">requested_amount · text · optional</span></span>
-            </div>
-          </div></label>
+          </div>
+        </label>
+
       </div>
+      <p style="font-size:12.5px;color:var(--muted);margin:12px 0 0;padding:11px 14px;border:1px dashed var(--line-strong);border-radius:9px;background:color-mix(in srgb,var(--accent) 3%,transparent)">Need a <b>different amount</b>? Please call a Kai-Zen servicing specialist at <b>(972) 755-1582</b> to discuss a custom reduction and have a new illustration prepared.</p>
     </section>
+
     <section class="consider">
       <span class="eyebrow">Important considerations</span>
       <p>Once the term rider is reduced, it generally <b>cannot be restored</b> to its previous level. Restoring coverage later may require new underwriting and could be more expensive or unavailable on the same terms.</p>
       <p>Because this is a <b>premium-financed policy</b>, keeping a higher level of term coverage may raise future costs, which could reduce policy values and increase the risk of a policy lapse in later years. The decision is a trade-off between death-benefit protection, cash-value growth, supplemental income, and long-term cost.</p>
     </section>
+
     <section>
       <h2>Signatures</h2>
+
       <div class="sig-block">
         <div class="sig-ceremony"><span class="num">1</span> Client / Insured — election</div>
         <div class="sig-row">
@@ -1783,42 +1867,91 @@ const EF_HTML=`<title>DBR Election Form</title>
           <div class="sig-line"><div class="lbl">Date <span class="ftag">client_sign_date · date</span></div><div class="rule">auto-filled</div></div>
         </div>
       </div>
-      <div class="sig-block">
+
+      <div class="sig-block" style="border-style:dashed">
         <div class="sig-ceremony"><span class="num">2</span> Settlor — Hold Harmless &amp; Indemnification</div>
-        <div class="sig-row">
-          <div class="sig-line"><div class="lbl">Settlor signature <span class="ftag">settlor_signature · sig</span></div><div class="rule">DocuSign signature</div></div>
-          <div class="sig-line"><div class="lbl">Date <span class="ftag">settlor_sign_date · date</span></div><div class="rule">auto-filled</div></div>
-        </div>
-        <div class="sig-line" style="margin-top:12px"><div class="lbl">Settlor printed name <span class="ftag">settlor_name · text</span></div><div class="rule mf" style="font-style:normal">{settlor_name}</div></div>
-        <p class="hh-text"><b>Hold Harmless &amp; Indemnification as to Provident Trust Group, LLC.</b> Provident Trust Group, LLC (trustee) has been directed by the Settlor to execute documents to reduce the death benefit. The Settlor acknowledges the reduction was contemplated in the original design, releases and indemnifies Provident from liability arising from the reduction, and directs Provident to execute the necessary documents. <i>Required regardless of the election above. If the Client is the Settlor, the Client signs both sections.</i></p>
+        <p class="hh-text" style="border-top:none;padding-top:0;margin-top:0">The Settlor signs the full <b>Hold Harmless &amp; Indemnification as to Provident Trust Group, LLC</b> on the <b>attached page</b> — it rides in the same envelope and is required regardless of the election chosen. If the Client is the Settlor, the Client signs both.</p>
       </div>
     </section>
+
     <div class="footer">
       <span>Questions? Call <b>(972) 755-1582</b> or email <b>niw.info@simplicitygroup.com</b></span>
       <span>Kai-Zen Plan Servicing · Simplicity–NIW</span>
     </div>
     <p class="cadence">Sent 120 days before the deadline · reminders at 90 &amp; 60 days (same form) · reminders stop once your signed election is received.</p>
   </div>
+
+  <!-- Appended document: Hold Harmless & Indemnification -->
+  <div class="doc" style="margin-top:26px;break-before:page">
+    <span class="sample-flag">ATTACHED · rides in the same envelope · Settlor signs</span>
+    <div class="letterhead">
+      <span class="lh-brand">Kai-Zen Plan Servicing · Simplicity–NIW</span>
+      <span class="lh-doc">Form: NIW-DBR-HH · v.2026</span>
+    </div>
+    <h1 style="font-size:24px">Hold Harmless &amp; Indemnification as to Provident Trust Group, LLC</h1>
+    <p class="subtitle">Directed by the Settlor · required with every Death Benefit Reduction election</p>
+
+    <div class="pi" aria-label="Trust information" style="margin-top:18px">
+      <div class="cell"><span class="k">Trust Name <span class="ftag">trust_name</span></span><span class="v mf">{trust_name}</span></div>
+      <div class="cell"><span class="k">Settlor Name <span class="ftag">settlor_name</span></span><span class="v mf">{settlor_name}</span></div>
+    </div>
+
+    <section style="margin-top:8px">
+      <p class="hh-text" style="border-top:none;padding-top:0">Provident Trust Group, LLC (“Provident”), as the trustee of the <span class="mf">{trust_name}</span> Insurance Trust, has been directed by <span class="mf">{settlor_name}</span> (“Settlor”) to execute certain documents, including but not limited to insurance policy documents, to reduce the value of the Settlor’s death benefit amount. Settlor acknowledges and confirms the reduction of the death benefit was contemplated as part of the investment strategy as originally presented to the Settlor. Settlor agrees Provident has not provided education, advice, nor communicated with Settlor regarding the strategy. Provident is not responsible for the determination of the suitability nor effect of the benefit reduction. Settlor acknowledges and confirms Provident is not responsible to determine if the death benefit reduction will affect the ability to repay any loans or encumbrances of the Settlor’s trust, nor will Provident be responsible to make any other parties whole as a result of the death benefit reduction. Settlor confirms he/she has been referred to his/her agent, tax advisor, and legal counsel to review the effect of the reduction of the death benefit, including but not limited to the review of the terms of the Settlor’s trust, insurance policy, and loan documents.</p>
+      <p class="hh-text" style="border-top:none;padding-top:0;margin-top:10px">Settlor, on behalf of him/herself and his/her heirs, assigns, beneficiaries, and successors, agrees to release and indemnify Provident, its parents, subsidiaries, officers, directors, stockholders, affiliates, partners, employees, agents, registered representatives, successors and assigns (collectively, the “Provident Entities”) from any and all liability or claims arising from or related to the reduction of the Settlor’s death benefit. Settlor directs Provident to execute any necessary documents to effectuate the reduction of the death benefit, and agrees to release, indemnify, and hold Provident harmless based on the direction given by Settlor to Provident to effectuate the reduction of the death benefit.</p>
+    </section>
+
+    <div class="sig-block" style="margin-top:18px">
+      <div class="sig-ceremony"><span class="num">2</span> Settlor — Hold Harmless &amp; Indemnification</div>
+      <div class="sig-row">
+        <div class="sig-line"><div class="lbl">Settlor signature <span class="ftag">settlor_signature · sig</span></div><div class="rule">DocuSign signature</div></div>
+        <div class="sig-line"><div class="lbl">Date <span class="ftag">settlor_sign_date · date</span></div><div class="rule">auto-filled</div></div>
+      </div>
+      <div class="sig-line" style="margin-top:12px"><div class="lbl">Settlor printed name <span class="ftag">settlor_name · text</span></div><div class="rule mf" style="font-style:normal">{settlor_name}</div></div>
+      <p class="hh-text"><i>If the Client is the Settlor, the Client signs both this Hold Harmless and the election. Required regardless of the election chosen.</i></p>
+    </div>
+  </div>
+
+  <!-- Implementation spec for Chris (screen only) -->
   <div class="spec" id="spec">
     <h2>For Chris — DocuSign field map &amp; routing</h2>
-    <p class="sub">Everything in one envelope, signed in order. Use <b>real DocuSign field tabs</b> (not checkboxes drawn on the PDF) so ILIA can read the response. Toggle "Show DocuSign field tags" above to see each field in place on the form.</p>
+    <p class="sub">Everything in one envelope, signed in order. Use <b>real DocuSign field tabs</b> (not checkboxes drawn on the PDF) so ILIA can read the response. Toggle “Show DocuSign field tags” above to see each field in place on the form.</p>
+
     <div class="spec-group">Client-entered fields</div>
-    <div class="spec-tbl"><table class="fld"><thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Notes</th></tr></thead><tbody>
-      <tr><td>dbr_election</td><td>Radio group</td><td class="role">Client</td><td>Values: FULL / HALF / NONE / CUSTOM · required</td></tr>
-      <tr><td>requested_amount</td><td>Text (numeric)</td><td class="role">Client</td><td>Optional · shows only when CUSTOM · custom is handled offline</td></tr>
-    </tbody></table></div>
+    <div class="spec-tbl">
+      <table class="fld">
+        <thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>dbr_election</td><td>Radio group</td><td class="role">Client</td><td>Values: <code>FULL</code> / <code>HALF</code> / <code>NONE</code> · required. <b>Custom removed</b> — non-standard amounts route to a phone call, no field.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="spec-group">Pre-filled (read-only) — sourced from Case Details · NIWD-1024</div>
-    <div class="spec-tbl"><table class="fld"><thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Source</th></tr></thead><tbody>
-      <tr><td>policy_no · client_name · trust_name</td><td>Text</td><td class="role">read-only</td><td>Case Details</td></tr>
-      <tr><td>carrier · policy_year · respond_by</td><td>Text / date</td><td class="role">read-only</td><td>Case Details + trigger schedule</td></tr>
-      <tr><td>current_db · term_reduction_full · term_reduction_half</td><td>Currency</td><td class="role">read-only</td><td>Original design + illustration (Half ≈ 50% of full)</td></tr>
-      <tr><td>new_db_full · new_db_half</td><td>Currency</td><td class="role">read-only</td><td>Derived</td></tr>
-    </tbody></table></div>
+    <div class="spec-tbl">
+      <table class="fld">
+        <thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>policy_no · client_name · trust_name</td><td>Text</td><td class="role">read-only</td><td>Case Details</td></tr>
+          <tr><td>carrier · policy_year · respond_by</td><td>Text / date</td><td class="role">read-only</td><td>Case Details + trigger schedule</td></tr>
+          <tr><td>current_db · term_reduction_full · term_reduction_half</td><td>Currency</td><td class="role">read-only</td><td>Original design + illustration (Half ≈ 50% of full). Term rider reduces first, then base. Reduction ≤ 50% of current_db (50% rule).</td></tr>
+          <tr><td>new_db_full · new_db_half</td><td>Currency</td><td class="role">read-only</td><td>Derived</td></tr>
+          <tr><td>inforce_rate</td><td>Text (%)</td><td class="role">read-only</td><td><b>Scraped by Ben</b> from the in-force illustration → shown in the "Understanding Your In-Force Illustration" section</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="spec-group">Signature fields</div>
-    <div class="spec-tbl"><table class="fld"><thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Notes</th></tr></thead><tbody>
-      <tr><td>client_signature · client_sign_date</td><td>Signature · date</td><td class="role">Client</td><td>Ceremony 1 — election</td></tr>
-      <tr><td>settlor_signature · settlor_name · settlor_sign_date</td><td>Signature · text · date</td><td class="role">Settlor</td><td>Ceremony 2 — Hold Harmless (always required; Phase 1 settlor = insured → same signer)</td></tr>
-    </tbody></table></div>
+    <div class="spec-tbl">
+      <table class="fld">
+        <thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>client_signature · client_sign_date</td><td>Signature · date</td><td class="role">Client</td><td>Ceremony 1 — election</td></tr>
+          <tr><td>settlor_signature · settlor_name · settlor_sign_date</td><td>Signature · text · date</td><td class="role">Settlor</td><td>Ceremony 2 — Hold Harmless (always required; Phase 1 settlor = insured → same signer)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="spec-group">Envelope routing (signing order)</div>
     <div class="route">
       <span class="node">1 · Client (election)</span><span class="arw">→</span>
@@ -1826,19 +1959,27 @@ const EF_HTML=`<title>DBR Election Form</title>
       <span class="node doc2">3 · Trustee (carrier change form)</span><span class="arw">→</span>
       <span class="node doc2">4 · Bank (carrier change form)</span>
     </div>
+
     <ul class="spec-notes">
       <li>This form is <b>Document 1</b> (election + Hold Harmless). The <b>Carrier Policy Change Form</b> is Document 2 — signed by Trustee then Bank — spec'd separately.</li>
-      <li><b>Open question to resolve first (Judy/Chris):</b> does the client make the Yes/Full/Half/None choice <b>in ILIA</b> and eSign only signs, or is dbr_election a live DocuSign field? This determines whether these election tabs exist in the envelope.</li>
+      <li><b>Open question to resolve first (Judy/Chris):</b> does the client make the Yes/Full/Half/None choice <b>in ILIA</b> and eSign only signs, or is <code>dbr_election</code> a live DocuSign field? This determines whether these election tabs exist in the envelope.</li>
       <li>Lock the field names above, then map the capture method (webhook vs polling — B3) so ILIA reads the completed envelope + stores the signed PDF.</li>
       <li>Carrier variants for Document 2: National Life ✓ · Allianz (pending, Marissa) · Minnesota Life (offline).</li>
     </ul>
   </div>
 </div>
+
 <script>
-  var tagBtn=document.getElementById('tagBtn');
-  tagBtn.addEventListener('click',function(){var on=document.body.classList.toggle('tags');tagBtn.classList.toggle('on',on);tagBtn.setAttribute('aria-pressed',on?'true':'false');tagBtn.textContent=on?'Hide DocuSign field tags':'Show DocuSign field tags';});
-  document.getElementById('printBtn').addEventListener('click',function(){window.print();});
-<\/script>`;
+  const tagBtn=document.getElementById('tagBtn');
+  tagBtn.addEventListener('click',()=>{
+    const on=document.body.classList.toggle('tags');
+    tagBtn.classList.toggle('on',on);
+    tagBtn.setAttribute('aria-pressed',on?'true':'false');
+    tagBtn.textContent=on?'Hide DocuSign field tags':'Show DocuSign field tags';
+  });
+  document.getElementById('printBtn').addEventListener('click',()=>window.print());
+<\/script>
+`;
 (function(){var f=document.getElementById('efFrame');if(f){f.srcdoc=EF_HTML;}})();
 
 const root=document.documentElement;
