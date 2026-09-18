@@ -2197,7 +2197,8 @@ const EF_HTML=`<title>DBR Election Form</title>
 
     <section class="notice">
       <h2>The Phase Your Policy Is Entering</h2>
-      <p class="lead">Your Kai-Zen policy is entering its <b>eleventh year</b> — an important phase of the original design. The focus now shifts toward the policy's <b>cash-value growth</b>, potential <b>supplemental retirement income</b>, and long-term death benefit.</p>
+      <p class="lead">Your Kai-Zen policy is entering its <span class="mf">{policy_year_ordinal}</span> year <span class="ftag">policy_year</span> — an important phase of the original design. The focus now shifts toward the policy's <b>cash-value growth</b>, potential <b>supplemental retirement income</b>, and long-term death benefit.</p>
+      <p style="font-size:11.5px;color:var(--faint);margin:-6px 0 12px;font-style:italic">The year above is <b>auto-filled per client</b> — it reflects the client's actual DBR year (Policy Year 10–15), not a fixed Year 11.</p>
       <p>The original illustration included a planned <b>term-rider death benefit reduction</b>. The term rider was used to lower the early cost of insurance and let more of your premium build cash value. Because the term rider costs more in later years, reducing it now is intended to keep insurance costs lower and support future growth and income. <b>The choice is yours</b> — and we will not make any change without your signed election below.</p>
     </section>
 
@@ -2246,7 +2247,7 @@ const EF_HTML=`<title>DBR Election Form</title>
           <input type="radio" name="dbr_election" value="FULL">
           <div>
             <div class="ttl">Full Planned Reduction <span class="amt">Term reduction: {term_reduction_full}</span></div>
-            <div class="desc">Follow the original plan beginning in Policy Year 11.</div>
+            <div class="desc">Follow the original plan beginning in Policy Year <span class="mf">{policy_year}</span>.</div>
             <div class="why"><b>What this means:</b> the greatest focus on cash-value growth and potential supplemental retirement income. Your death benefit is reduced by the full planned term amount.</div>
           </div>
         </label>
@@ -2355,7 +2356,7 @@ const EF_HTML=`<title>DBR Election Form</title>
         <thead><tr><th>Field</th><th>Type</th><th>Signer / role</th><th>Source</th></tr></thead>
         <tbody>
           <tr><td>policy_no · client_name · trust_name</td><td>Text</td><td class="role">read-only</td><td>Case Details</td></tr>
-          <tr><td>carrier · policy_year · respond_by</td><td>Text / date</td><td class="role">read-only</td><td>Case Details + trigger schedule</td></tr>
+          <tr><td>carrier · policy_year · policy_year_ordinal · respond_by</td><td>Text / date</td><td class="role">read-only</td><td>Case Details + trigger schedule · <code>policy_year_ordinal</code> = the year in words ("eleventh") for the intro copy — <b>dynamic per client (Yr 10–15), not static</b></td></tr>
           <tr><td>current_db · term_reduction_full · term_reduction_half</td><td>Currency</td><td class="role">read-only</td><td>Original design + illustration (Half ≈ 50% of full). Term rider reduces first, then base. Reduction ≤ 50% of current_db (50% rule).</td></tr>
           <tr><td>new_db_full · new_db_half</td><td>Currency</td><td class="role">read-only</td><td>Derived</td></tr>
           <tr><td>inforce_rate</td><td>Text (%)</td><td class="role">read-only</td><td><b>Scraped by Ben</b> from the in-force illustration → shown in the "Understanding Your In-Force Illustration" section</td></tr>
