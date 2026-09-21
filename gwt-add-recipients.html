@@ -1,0 +1,275 @@
+<title>GWT · Add Recipients (Step 5)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#eef1f6;--surface:#fff;--surface-2:#f5f7fb;--border:#dde3ec;--border-strong:#c5cddb;
+    --ink:#151c2a;--muted:#5b6675;--faint:#8b95a5;
+    --accent:#2f6beb;--accent-soft:#e7effd;--ok:#0e9c69;--ok-soft:#e4f4ed;--warn:#c07a12;--warn-soft:#fbf1e0;
+    --radius:14px;--shadow:0 1px 2px rgba(17,24,39,.06),0 10px 30px rgba(17,24,39,.07);
+    --ff:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0c121c;--surface:#141d29;--surface-2:#0f1722;--border:#27313f;--border-strong:#3a4757;
+    --ink:#e8edf4;--muted:#9aa6b6;--faint:#6b7686;
+    --accent:#5a8cf5;--accent-soft:#16243c;--ok:#31c48d;--ok-soft:#12281e;--warn:#e0a23a;--warn-soft:#2a2110;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.4);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0c121c;--surface:#141d29;--surface-2:#0f1722;--border:#27313f;--border-strong:#3a4757;
+    --ink:#e8edf4;--muted:#9aa6b6;--faint:#6b7686;
+    --accent:#5a8cf5;--accent-soft:#16243c;--ok:#31c48d;--ok-soft:#12281e;--warn:#e0a23a;--warn-soft:#2a2110;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);line-height:1.45;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+  .brand{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--accent)}
+  .brand span{color:var(--faint);font-weight:500}
+  h1{font-size:21px;margin:6px 0 2px;letter-spacing:-.01em}
+  .sub{margin:0 0 4px;color:var(--muted);font-size:13px;max-width:80ch}
+  .flag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);border:1px solid var(--warn);border-radius:20px;padding:2px 9px}
+  .steps{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 6px}
+  .step{font-size:11px;font-weight:600;color:var(--faint);background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:4px 11px}
+  .step.done{color:var(--ok);border-color:var(--ok)}
+  .step.cur{color:#fff;background:var(--accent);border-color:var(--accent)}
+
+  .grid{display:grid;grid-template-columns:1fr 400px;gap:20px;margin-top:14px;align-items:start}
+  @media (max-width:920px){.grid{grid-template-columns:1fr}}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px}
+  .sec-head{display:flex;align-items:flex-start;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:16px}
+  .sec-head .num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px;display:grid;place-items:center}
+  .sec-head b{font-size:16px;display:block}
+  .sec-head .sh-sub{font-size:12.5px;color:var(--muted)}
+
+  .opt{display:flex;gap:13px;align-items:flex-start;border:1.5px solid var(--border-strong);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .12s,background .12s;margin-bottom:11px}
+  .opt:hover{border-color:var(--accent)}
+  .opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+  .opt .radio{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--border-strong);margin-top:1px;display:grid;place-items:center}
+  .opt.sel .radio{border-color:var(--accent)}
+  .opt.sel .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  .opt .ot{font-size:14.5px;font-weight:700}
+  .opt .od{font-size:12.5px;color:var(--muted);margin-top:3px}
+
+  /* Yes-only reveal */
+  #yesPanel{margin:4px 0 0;overflow:hidden;transition:opacity .15s}
+  #yesPanel[hidden]{display:none}
+  .reveal-tag{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin:6px 0 8px}
+
+  /* NEW illustration sub-question */
+  .subq{border:1.5px solid var(--accent);border-radius:12px;background:var(--accent-soft);padding:14px 16px;margin-bottom:16px}
+  .subq-h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;flex-wrap:wrap}
+  .subq-d{font-size:12px;color:var(--muted);margin:3px 0 11px}
+  .mini-opts{display:flex;gap:10px;flex-wrap:wrap}
+  .mini{display:flex;align-items:center;gap:8px;border:1.5px solid var(--border-strong);border-radius:10px;background:var(--surface);padding:9px 14px;cursor:pointer;font-size:13px;font-weight:600;flex:1;min-width:130px}
+  .mini:hover{border-color:var(--accent)}
+  .mini.sel{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+  .mini .r{flex:none;width:16px;height:16px;border-radius:50%;border:2px solid var(--border-strong);display:grid;place-items:center}
+  .mini.sel .r{border-color:var(--accent)}
+  .mini.sel .r::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .mini .mt{color:var(--muted);font-weight:500;font-size:11.5px;display:block}
+  .mini .mt b{color:var(--ink);font-weight:700;font-size:13px;display:block}
+
+  /* info tooltip */
+  .info{position:relative;flex:none;width:17px;height:17px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent);font-size:11px;font-weight:700;font-style:italic;display:inline-grid;place-items:center;cursor:help;font-family:Georgia,serif}
+  .info .tip{visibility:hidden;opacity:0;position:absolute;left:50%;bottom:calc(100% + 9px);transform:translateX(-50%);width:250px;background:var(--ink);color:var(--surface);font-family:var(--ff);font-style:normal;font-weight:500;font-size:11.5px;line-height:1.5;letter-spacing:0;text-transform:none;padding:9px 11px;border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.28);z-index:20;transition:opacity .13s;pointer-events:none}
+  .info .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--ink)}
+  .info:hover .tip,.info:focus .tip,.info:focus-visible .tip{visibility:visible;opacity:1}
+  @media (max-width:520px){.info .tip{width:200px}}
+
+  /* loved-ones entry */
+  .lo-lab{font-size:12px;font-weight:700;color:var(--ink);margin:2px 0 8px}
+  .lo-row{display:grid;grid-template-columns:1fr 1fr 40px;gap:10px;margin-bottom:10px}
+  @media (max-width:560px){.lo-row{grid-template-columns:1fr 1fr}}
+  .fld{display:flex;flex-direction:column;gap:4px}
+  .fld.full{grid-column:1 / -1}
+  .fld label{font-size:10.5px;color:var(--muted);font-weight:600}
+  .fld input,.fld select{border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);color:var(--ink);font-family:inherit;font-size:13px;padding:9px 10px;outline:none}
+  .fld input:focus,.fld select:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  .lo-rm{align-self:end;height:38px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface-2);color:var(--muted);cursor:pointer;font-size:15px}
+  .lo-rm:hover{border-color:var(--warn);color:var(--warn)}
+  .lo-add{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--accent);background:none;border:1px dashed var(--accent);border-radius:9px;padding:9px 13px;cursor:pointer;margin-top:2px}
+  .lo-add:hover{background:var(--accent-soft)}
+
+  .note{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+  .note .nt{font-size:11.5px;color:var(--muted)}.note .nt b{color:var(--warn)}
+  .send{font-family:inherit;font-size:13.5px;font-weight:700;border:none;border-radius:22px;padding:11px 26px;cursor:pointer;background:var(--accent);color:#fff}
+  .send:disabled{background:var(--border-strong);color:var(--surface);cursor:not-allowed}
+  .send:not(:disabled):hover{filter:brightness(1.06)}
+
+  /* workflow panel */
+  .flow{position:sticky;top:16px}
+  .flow-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+  .flow-card h2{font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--faint);margin:0 0 3px}
+  .flow-now{font-size:12px;color:var(--muted);margin:0 0 14px}
+  .flow-now b{color:var(--ink)}
+  .fstep{display:flex;gap:11px;align-items:flex-start;position:relative;padding-bottom:16px}
+  .fstep:last-child{padding-bottom:0}
+  .fstep:not(:last-child)::before{content:"";position:absolute;left:13px;top:26px;bottom:-2px;width:2px;background:var(--border)}
+  .fstep .fn{flex:none;width:28px;height:28px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--border-strong);color:var(--muted);font-size:13px;font-weight:700;display:grid;place-items:center;z-index:1}
+  .fstep.on .fn{background:var(--accent);border-color:var(--accent);color:#fff}
+  .fstep.hl .fn{background:var(--ok);border-color:var(--ok);color:#fff}
+  .fstep .ft{font-size:13px;font-weight:600;color:var(--ink)}
+  .fstep .fd{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .fstep.off{opacity:.4}
+  .flow-tag{display:inline-block;font-size:10px;font-weight:700;border-radius:20px;padding:1px 8px;border:1px solid;margin-top:6px}
+  .ft-portal{color:var(--accent);border-color:var(--accent)}
+  .ft-illus{color:var(--ok);border-color:var(--ok)}
+  .foot{font-size:11px;color:var(--faint);margin-top:20px;text-align:center}
+  .themebtn{font-family:inherit;font-size:12px;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <div class="brand">Agent Portal · GWT <span>· Giftor Invitation</span></div>
+      <h1>Add Recipients</h1>
+    </div>
+    <button class="themebtn" id="themeBtn">Theme</button>
+  </div>
+  <p class="sub">Mock of <b>Step 5 — Add Recipients</b> of the Agent GWT giftor-invitation flow, showing the <b>“Yes”</b> path and the new <b>“generate illustrations?”</b> question, with the resulting workflow on the right. <span class="flag">Design mock</span></p>
+
+  <div class="grid">
+    <!-- ============ THE SCREEN ============ -->
+    <div class="card">
+      <div class="sec-head">
+        <span class="num">5</span>
+        <div><b>Add Recipients</b><span class="sh-sub">The people who will receive the gift.</span></div>
+      </div>
+
+      <div class="opt sel" id="optYes" role="radio" aria-checked="true" tabindex="0">
+        <span class="radio"></span>
+        <div>
+          <div class="ot">Yes — add loved ones now</div>
+          <div class="od">Enter each loved one’s details here. The invitation can’t send until at least one loved one is added.</div>
+        </div>
+      </div>
+
+      <div class="opt" id="optNo" role="radio" aria-checked="false" tabindex="0">
+        <span class="radio"></span>
+        <div>
+          <div class="ot">No — send to the giftor</div>
+          <div class="od">The giftor adds and invites their loved ones from their own portal after they’re invited.</div>
+        </div>
+      </div>
+
+      <!-- Revealed only when Yes -->
+      <div id="yesPanel">
+        <div class="reveal-tag">▾ Because you chose “add loved ones now”</div>
+
+        <!-- NEW: illustration question, presented first -->
+        <div class="subq">
+          <div class="subq-h">Generate illustrations for the loved ones?
+            <span class="info" tabindex="0" aria-label="More info">i<span class="tip">The giftor will see these illustrations in their giftor portal and can update them before they’re sent.</span></span>
+          </div>
+          <div class="subq-d">We can pre-generate an illustration for each loved one so the giftor has something ready to review.</div>
+          <div class="mini-opts" id="illusOpts">
+            <div class="mini sel" data-illus="yes"><span class="r"></span><span class="mt"><b>Yes — generate now</b>Giftor reviews &amp; can edit in their portal</span></div>
+            <div class="mini" data-illus="no"><span class="r"></span><span class="mt"><b>No — skip for now</b>No illustrations pre-generated</span></div>
+          </div>
+        </div>
+
+        <!-- loved-ones entry -->
+        <div class="lo-lab">Loved ones <span style="color:var(--faint);font-weight:500">· add at least one</span></div>
+        <div id="loList"></div>
+        <button class="lo-add" id="loAdd">+ Add another loved one</button>
+      </div>
+
+      <div class="note">
+        <span class="nt"><b>Please note!</b> All Agents must be licensed with the state of Nevada; if you are not, please get licensed before sending an invite.</span>
+        <button class="send" id="sendBtn" disabled>Send Invitation</button>
+      </div>
+    </div>
+
+    <!-- ============ WORKFLOW PANEL ============ -->
+    <div class="flow">
+      <div class="flow-card">
+        <h2>What happens next</h2>
+        <p class="flow-now" id="flowNow"></p>
+        <div id="flowSteps"></div>
+      </div>
+      <p class="foot">Live preview — updates as you change the selections.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root=document.documentElement;
+  document.getElementById('themeBtn').addEventListener('click',()=>{const c=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');root.setAttribute('data-theme',c==='dark'?'light':'dark');});
+
+  let mode='yes';       // 'yes' | 'no'
+  let illus='yes';      // 'yes' | 'no'
+  const optYes=document.getElementById('optYes'), optNo=document.getElementById('optNo');
+  const yesPanel=document.getElementById('yesPanel');
+  const loList=document.getElementById('loList'), loAdd=document.getElementById('loAdd');
+  const sendBtn=document.getElementById('sendBtn');
+  const flowNow=document.getElementById('flowNow'), flowSteps=document.getElementById('flowSteps');
+
+  const RELS=['Relationship','Spouse','Child','Parent','Sibling','Grandchild','Other'];
+  function addRow(){
+    const row=document.createElement('div');row.className='lo-row';
+    row.innerHTML=
+      '<div class="fld"><label>First name</label><input placeholder="First"></div>'+
+      '<div class="fld"><label>Last name</label><input placeholder="Last"></div>'+
+      '<button class="lo-rm" title="Remove">✕</button>'+
+      '<div class="fld full"><label>Email</label><input placeholder="name@email.com"></div>'+
+      '<div class="fld full"><label>Relationship to giftor</label><select>'+RELS.map(r=>'<option>'+r+'</option>').join('')+'</select></div>';
+    row.querySelector('.lo-rm').addEventListener('click',()=>{if(loList.children.length>1){row.remove();sync();}});
+    row.querySelectorAll('input').forEach(i=>i.addEventListener('input',sync));
+    loList.appendChild(row);sync();
+  }
+  loAdd.addEventListener('click',addRow);
+
+  function pickMode(m){mode=m;optYes.classList.toggle('sel',m==='yes');optYes.setAttribute('aria-checked',m==='yes');optNo.classList.toggle('sel',m==='no');optNo.setAttribute('aria-checked',m==='no');yesPanel.hidden=(m!=='yes');if(m==='yes'&&loList.children.length===0)addRow();sync();}
+  optYes.addEventListener('click',()=>pickMode('yes'));
+  optNo.addEventListener('click',()=>pickMode('no'));
+  optYes.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();pickMode('yes');}});
+  optNo.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();pickMode('no');}});
+
+  document.getElementById('illusOpts').addEventListener('click',e=>{const m=e.target.closest('.mini');if(!m)return;illus=m.dataset.illus;document.querySelectorAll('#illusOpts .mini').forEach(x=>x.classList.toggle('sel',x===m));sync();});
+
+  function lovedCount(){return [...loList.querySelectorAll('.lo-row')].filter(r=>r.querySelector('input').value.trim()).length;}
+
+  function sync(){
+    // send button validity
+    const ok = mode==='no' || (mode==='yes' && lovedCount()>0);
+    sendBtn.disabled=!ok;
+    renderFlow();
+  }
+
+  function step(state,n,t,d,tag){
+    return '<div class="fstep '+state+'"><div class="fn">'+n+'</div><div><div class="ft">'+t+'</div>'+(d?'<div class="fd">'+d+'</div>':'')+(tag||'')+'</div></div>';
+  }
+  function renderFlow(){
+    let now,html='';
+    if(mode==='no'){
+      now='<b>No</b> — send to the giftor.';
+      html =step('on',1,'Agent sends the invitation','No loved ones entered by the agent.');
+      html+=step('on',2,'Giftor is invited','They receive access to their giftor portal.');
+      html+=step('hl',3,'Giftor adds loved ones','From their own portal, the giftor adds &amp; invites their loved ones themselves.','<span class="flow-tag ft-portal">giftor portal</span>');
+    } else {
+      const c=lovedCount();
+      now='<b>Yes</b> — add loved ones now · illustrations: <b>'+(illus==='yes'?'generate':'skip')+'</b>'+(c?' · '+c+' loved one'+(c>1?'s':''):'');
+      html =step('on',1,'Agent enters loved ones now','Name, email &amp; relationship for each loved one'+(c?' — '+c+' added':'')+'.');
+      if(illus==='yes'){
+        html+=step('on',2,'ILIA generates an illustration per loved one','One pre-built illustration for each recipient.','<span class="flow-tag ft-illus">illustrations on</span>');
+        html+=step('on',3,'Giftor is invited','They receive access to their giftor portal.');
+        html+=step('hl',4,'Giftor reviews &amp; can update','The giftor sees the illustrations in their portal and can <b>update them before they’re sent</b>.','<span class="flow-tag ft-portal">giftor portal</span>');
+        html+=step('on',5,'Invitations sent to loved ones','Once the giftor confirms, the gift invitations go out.');
+      } else {
+        html+=step('off',2,'No illustrations pre-generated','Skipped — none created at this step.','<span class="flow-tag" style="color:var(--faint);border-color:var(--border-strong)">illustrations off</span>');
+        html+=step('on',3,'Giftor is invited','They receive access to their giftor portal.');
+        html+=step('hl',4,'Giftor proceeds without pre-built illustrations','They can generate/adjust illustrations later in their portal before invitations go out.','<span class="flow-tag ft-portal">giftor portal</span>');
+        html+=step('on',5,'Invitations sent to loved ones','Once the giftor confirms, the gift invitations go out.');
+      }
+    }
+    flowNow.innerHTML=now;
+    flowSteps.innerHTML=html;
+  }
+
+  // init on Yes
+  pickMode('yes');
+</script>
