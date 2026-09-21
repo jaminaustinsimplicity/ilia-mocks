@@ -82,15 +82,22 @@
 
   /* loved-ones entry */
   .lo-lab{font-size:12px;font-weight:700;color:var(--ink);margin:2px 0 8px}
-  .lo-row{display:grid;grid-template-columns:1fr 1fr 40px;gap:10px;margin-bottom:10px}
-  @media (max-width:560px){.lo-row{grid-template-columns:1fr 1fr}}
+  .illus-banner{display:flex;gap:9px;align-items:flex-start;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:10px;padding:11px 13px;margin:0 0 12px;font-size:12px;color:var(--muted);line-height:1.5}
+  .illus-banner .ib-i{flex:none;width:17px;height:17px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;font-style:italic;display:grid;place-items:center;font-family:Georgia,serif}
+  .illus-banner b{color:var(--ink)}
+  .lo-row{position:relative;border:1px solid var(--border);border-radius:11px;background:var(--surface);padding:13px 15px 12px;margin-bottom:12px}
+  .lo-idx{font-size:10.5px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+  .lo-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  @media (max-width:560px){.lo-grid{grid-template-columns:1fr}}
   .fld{display:flex;flex-direction:column;gap:4px}
   .fld.full{grid-column:1 / -1}
   .fld label{font-size:10.5px;color:var(--muted);font-weight:600}
-  .fld input,.fld select{border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);color:var(--ink);font-family:inherit;font-size:13px;padding:9px 10px;outline:none}
+  .fld .req{color:#c0392b}
+  .fld input,.fld select{border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);color:var(--ink);font-family:inherit;font-size:13px;padding:9px 10px;outline:none;width:100%}
   .fld input:focus,.fld select:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
-  .lo-rm{align-self:end;height:38px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface-2);color:var(--muted);cursor:pointer;font-size:15px}
-  .lo-rm:hover{border-color:var(--warn);color:var(--warn)}
+  .fld .hint2{font-size:10px;color:var(--faint)}
+  .lo-rm2{display:block;margin:11px 0 0 auto;border:none;background:none;color:var(--faint);font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer}
+  .lo-rm2:hover{color:var(--warn)}
   .lo-add{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--accent);background:none;border:1px dashed var(--accent);border-radius:9px;padding:9px 13px;cursor:pointer;margin-top:2px}
   .lo-add:hover{background:var(--accent-soft)}
 
@@ -174,6 +181,7 @@
 
         <!-- loved-ones entry -->
         <div class="lo-lab">Loved ones <span style="color:var(--faint);font-weight:500">· add at least one</span></div>
+        <div id="illusBanner" class="illus-banner"><span class="ib-i">i</span><div>Complete the fields below to <b>run this loved one’s illustration</b>. Documents are optional — you can upload them now, or the giftor can add them later.</div></div>
         <div id="loList"></div>
         <button class="lo-add" id="loAdd">+ Add another loved one</button>
       </div>
@@ -208,19 +216,46 @@
   const sendBtn=document.getElementById('sendBtn');
   const flowNow=document.getElementById('flowNow'), flowSteps=document.getElementById('flowSteps');
 
-  const RELS=['Relationship','Spouse','Child','Parent','Sibling','Grandchild','Other'];
+  const REL_OPTS=
+    '<option value="" selected disabled>Select relationship…</option>'+
+    '<optgroup label="Immediate family"><option>Child</option><option>Grandchild</option><option>Spouse</option><option>Domestic partner</option><option>Parent</option><option>Sibling</option></optgroup>'+
+    '<optgroup label="Extended family"><option>Stepchild</option><option>Great-grandchild</option><option>Grandparent</option><option>Niece / Nephew</option><option>Aunt / Uncle</option><option>Cousin</option><option>In-law</option></optgroup>'+
+    '<optgroup label="Non-family (may need review)"><option>Business partner</option><option>Key employee</option></optgroup>'+
+    '<option>Other</option>';
+  function relField(){
+    return '<div class="fld full"><label>This loved one’s relationship to the giftor <span class="req">*</span></label><select>'+REL_OPTS+'</select><span class="hint2">How this recipient is related to the person giving the gift.</span></div>';
+  }
+  function rowInner(idx){
+    const head='<div class="lo-idx">Loved one '+idx+'</div><div class="lo-grid">'+
+      '<div class="fld"><label>First name <span class="req">*</span></label><input placeholder="First" data-name></div>'+
+      '<div class="fld"><label>Last name <span class="req">*</span></label><input placeholder="Last"></div>';
+    if(illus==='yes'){
+      return head+
+        '<div class="fld"><label>Cell number <span class="req">*</span></label><input placeholder="(000) 000-0000"></div>'+
+        '<div class="fld"><label>Email <span class="req">*</span></label><input placeholder="name@email.com"></div>'+
+        '<div class="fld"><label>Date of birth <span class="req">*</span></label><input placeholder="MM/DD/YYYY"></div>'+
+        '<div class="fld"><label>Gender <span class="req">*</span></label><select><option value="" selected disabled>Select…</option><option>Male</option><option>Female</option></select></div>'+
+        '<div class="fld"><label>Expected contribution amount for this gift <span class="req">*</span></label><input placeholder="$0"></div>'+
+        '<div class="fld"><label>Health <span class="req">*</span></label><select><option value="" selected disabled>Select…</option><option>Excellent Health</option><option>Average Health</option><option>Below Average Health</option></select></div>'+
+        relField()+'</div><button class="lo-rm2">✕ Remove</button>';
+    }
+    return head+
+      '<div class="fld full"><label>Email <span class="req">*</span></label><input placeholder="name@email.com"></div>'+
+      relField()+'</div><button class="lo-rm2">✕ Remove</button>';
+  }
+  function bindRow(row){
+    row.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',sync));
+    const rm=row.querySelector('.lo-rm2');
+    if(rm)rm.addEventListener('click',()=>{if(loList.children.length>1){row.remove();reindex();sync();}});
+  }
+  function reindex(){[...loList.children].forEach((r,i)=>{const el=r.querySelector('.lo-idx');if(el)el.textContent='Loved one '+(i+1);});}
   function addRow(){
     const row=document.createElement('div');row.className='lo-row';
-    row.innerHTML=
-      '<div class="fld"><label>First name</label><input placeholder="First"></div>'+
-      '<div class="fld"><label>Last name</label><input placeholder="Last"></div>'+
-      '<button class="lo-rm" title="Remove">✕</button>'+
-      '<div class="fld full"><label>Email</label><input placeholder="name@email.com"></div>'+
-      '<div class="fld full"><label>Relationship to giftor</label><select>'+RELS.map(r=>'<option>'+r+'</option>').join('')+'</select></div>';
-    row.querySelector('.lo-rm').addEventListener('click',()=>{if(loList.children.length>1){row.remove();sync();}});
-    row.querySelectorAll('input').forEach(i=>i.addEventListener('input',sync));
-    loList.appendChild(row);sync();
+    loList.appendChild(row);
+    row.innerHTML=rowInner(loList.children.length);
+    bindRow(row);sync();
   }
+  function rerenderAll(){const n=Math.max(1,loList.children.length);loList.innerHTML='';for(let i=0;i<n;i++)addRow();}
   loAdd.addEventListener('click',addRow);
 
   function pickMode(m){mode=m;optYes.classList.toggle('sel',m==='yes');optYes.setAttribute('aria-checked',m==='yes');optNo.classList.toggle('sel',m==='no');optNo.setAttribute('aria-checked',m==='no');yesPanel.hidden=(m!=='yes');if(m==='yes'&&loList.children.length===0)addRow();sync();}
@@ -229,12 +264,12 @@
   optYes.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();pickMode('yes');}});
   optNo.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();pickMode('no');}});
 
-  document.getElementById('illusOpts').addEventListener('click',e=>{const m=e.target.closest('.mini');if(!m)return;illus=m.dataset.illus;document.querySelectorAll('#illusOpts .mini').forEach(x=>x.classList.toggle('sel',x===m));sync();});
+  document.getElementById('illusOpts').addEventListener('click',e=>{const m=e.target.closest('.mini');if(!m)return;illus=m.dataset.illus;document.querySelectorAll('#illusOpts .mini').forEach(x=>x.classList.toggle('sel',x===m));rerenderAll();sync();});
 
-  function lovedCount(){return [...loList.querySelectorAll('.lo-row')].filter(r=>r.querySelector('input').value.trim()).length;}
+  function lovedCount(){return [...loList.querySelectorAll('.lo-row')].filter(r=>{const n=r.querySelector('input[data-name]');return n&&n.value.trim();}).length;}
 
   function sync(){
-    // send button validity
+    const b=document.getElementById('illusBanner'); if(b) b.hidden=(illus!=='yes');
     const ok = mode==='no' || (mode==='yes' && lovedCount()>0);
     sendBtn.disabled=!ok;
     renderFlow();
