@@ -1,0 +1,208 @@
+<title>DBR Fields in Case Details — Isolated Task</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#eef1f6;--surface:#fff;--surface-2:#f5f7fb;--border:#dde3ec;--border-strong:#c5cddb;
+    --ink:#151c2a;--muted:#5b6675;--faint:#8b95a5;
+    --accent:#2f6beb;--accent-soft:#e7effd;--ok:#0e9c69;--ok-soft:#e4f4ed;--warn:#c07a12;--warn-soft:#fbf1e0;
+    --radius:14px;--shadow:0 1px 2px rgba(17,24,39,.06),0 10px 30px rgba(17,24,39,.07);
+    --ff:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--fm:ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0c121c;--surface:#141d29;--surface-2:#0f1722;--border:#27313f;--border-strong:#3a4757;
+    --ink:#e8edf4;--muted:#9aa6b6;--faint:#6b7686;
+    --accent:#5a8cf5;--accent-soft:#16243c;--ok:#31c48d;--ok-soft:#12281e;--warn:#e0a23a;--warn-soft:#2a2110;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.4);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0c121c;--surface:#141d29;--surface-2:#0f1722;--border:#27313f;--border-strong:#3a4757;
+    --ink:#e8edf4;--muted:#9aa6b6;--faint:#6b7686;
+    --accent:#5a8cf5;--accent-soft:#16243c;--ok:#31c48d;--ok-soft:#12281e;--warn:#e0a23a;--warn-soft:#2a2110;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);line-height:1.45;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .brand{font-size:13px;font-weight:700;color:var(--accent)}.brand span{color:var(--faint);font-weight:500}
+  h1{font-size:21px;margin:6px 0 3px;letter-spacing:-.01em}
+  .sub{margin:0;color:var(--muted);font-size:13px;max-width:88ch}.sub b{color:var(--ink)}
+  .flag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ok);background:var(--ok-soft);border:1px solid var(--ok);border-radius:20px;padding:2px 9px}
+  .themebtn{font-family:inherit;font-size:12px;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer}
+
+  .grid{display:grid;grid-template-columns:400px 1fr;gap:20px;margin-top:18px;align-items:start}
+  @media (max-width:940px){.grid{grid-template-columns:1fr}}
+
+  /* JIRA-ready task card */
+  .task{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;position:sticky;top:16px}
+  .task .tk-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .tk-type{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:3px 8px}
+  .tk-type .sq{width:12px;height:12px;border-radius:3px;background:var(--accent)}
+  .tk-key{font-family:var(--fm);font-size:11px;color:var(--faint)}
+  .tk-now{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ok);border:1px solid var(--ok);border-radius:20px;padding:2px 8px}
+  .task h2{font-size:15.5px;margin:0 0 10px;letter-spacing:-.01em}
+  .tk-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .tk-tag{font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;border:1px solid}
+  .tk-own{color:var(--accent);border-color:var(--accent)}
+  .tk-dep{color:var(--ok);border-color:var(--ok)}
+  .tk-lab{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:14px 0 6px}
+  .task p,.task li{font-size:12.5px;color:var(--muted);line-height:1.5}
+  .task p{margin:0 0 8px}.task p b,.task li b{color:var(--ink)}
+  .task ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+  .ac li{color:var(--ink)}
+  .oos{background:var(--warn-soft);border:1px solid var(--warn);border-radius:9px;padding:9px 11px;margin-top:4px}
+  .oos .tk-lab{color:var(--warn);margin-top:0}
+  .oos li{color:var(--ink)}
+
+  /* Case Details screen mock */
+  .screen{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px}
+  .cd-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:6px;flex-wrap:wrap}
+  .cd-crumb{font-size:12px;color:var(--muted)}.cd-crumb b{color:var(--ink)}
+  .cd-hint{display:flex;gap:9px;align-items:flex-start;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:10px;padding:11px 13px;margin:14px 0 4px;font-size:12px;color:var(--muted);line-height:1.5}
+  .cd-hint .i{flex:none;width:17px;height:17px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;font-style:italic;display:grid;place-items:center;font-family:Georgia,serif}
+  .cd-hint b{color:var(--ink)}
+  .cd-sec-h{font-size:12px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 10px;color:var(--faint)}
+  .cd-dbr{border:2px solid var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent) 4%,transparent);padding:16px 18px;margin-top:8px}
+  .cd-dbr-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .cd-dbr-h b{font-size:15px;color:var(--accent)}
+  .newflag{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--accent);border-radius:5px;padding:1px 7px}
+  .grp{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);margin:14px 0 8px}
+  .grp:first-of-type{margin-top:0}
+  .cd-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media (max-width:760px){.cd-grid{grid-template-columns:1fr 1fr}}
+  @media (max-width:480px){.cd-grid{grid-template-columns:1fr}}
+  .fld{display:flex;flex-direction:column;gap:4px}
+  .fld label{font-size:10.5px;color:var(--muted);font-weight:600}
+  .fld input,.fld select{border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);color:var(--ink);font-family:inherit;font-size:13px;padding:9px 10px;outline:none;width:100%}
+  .fld input:focus,.fld select:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  .cd-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+  .btn{font-family:inherit;font-size:13px;font-weight:700;border-radius:9px;padding:9px 18px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink)}
+  .btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .foot{font-size:11px;color:var(--faint);margin-top:18px}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="brand">ILIA Admin · Case Details <span>· DBR fields</span></div>
+      <h1>Add DBR fields to Case Details</h1>
+    </div>
+    <button class="themebtn" id="themeBtn">Theme</button>
+  </div>
+  <p class="sub"><b>Isolated, ship-now task.</b> The processing team needs a place in <b>Case Details</b> to record DBR data <b>today</b> — those fields don't exist yet. Pulled out of the DBR-automation Epic so it can be built on its own, with <b>no dependencies</b>: just the fields, manually editable. <span class="flag">Shippable now</span></p>
+
+  <div class="grid">
+    <!-- ============ THE TASK ============ -->
+    <div class="task">
+      <div class="tk-top">
+        <span class="tk-type"><span class="sq"></span>Task</span>
+        <span class="tk-key">NIWD-XXXX · draft</span>
+        <span class="tk-now">Unblock now</span>
+      </div>
+      <h2>Add DBR data fields to Case Details (manual entry)</h2>
+      <div class="tk-meta">
+        <span class="tk-tag tk-own">Mohit (fields)</span>
+        <span class="tk-tag tk-own">ILIA dev</span>
+        <span class="tk-tag tk-dep">No dependencies</span>
+      </div>
+
+      <div class="tk-lab">Why now</div>
+      <p>The processing team is handling DBRs manually and has <b>nowhere in Case Details to record the data</b>. Adding these fields as simple, editable inputs solves that immediately — independent of the carrier scraper, election capture, and status automation (all later in the Epic).</p>
+
+      <div class="tk-lab">Scope</div>
+      <ul>
+        <li>Add a <b>Death Benefit Reduction</b> section to the Case Details tab, under <b>Benefit Amounts</b>.</li>
+        <li>Fields are <b>manually editable</b> by admin / processing and <b>persist</b> on the case record.</li>
+        <li>Fields to add: start year, current DB, term/base DB, Full/Half/No amounts, low point per option, low cash value, income, DB at age 90, in-force rate, DBR status, elected option, election date. <span style="color:var(--faint)">(See the screen →)</span></li>
+      </ul>
+
+      <div class="oos">
+        <div class="tk-lab">Out of scope (keeps it small)</div>
+        <ul>
+          <li>No scraper / auto-population</li>
+          <li>No election capture or DocuSign</li>
+          <li>No status workflow / calculations</li>
+        </ul>
+      </div>
+
+      <div class="tk-lab">Acceptance criteria</div>
+      <ul class="ac">
+        <li>The DBR fields appear in Case Details under Benefit Amounts.</li>
+        <li>Processing can enter, edit &amp; save each value.</li>
+        <li>Values persist and display on the case.</li>
+      </ul>
+
+      <div class="tk-lab">Note</div>
+      <p>This is a <b>subset</b> of the DBR-automation Case Details work — later these same fields get <b>auto-populated</b> by the scraper + election. Building them now as manual fields unblocks processing without rework.</p>
+    </div>
+
+    <!-- ============ THE SCREEN ============ -->
+    <div class="screen">
+      <div class="cd-hd">
+        <div class="cd-crumb">Account Management › <b>Client</b> › Client Details › <b>Case Details</b></div>
+        <span style="font-size:11px;font-weight:700;color:var(--faint)">How it looks in Case Details</span>
+      </div>
+
+      <div class="cd-hint"><span class="i">i</span><div>This is the <b>manual-entry version</b> the processing team needs today. It sits under the existing <b>Benefit Amounts</b> section; every field is editable. (Later, the DBR automation fills these in automatically.)</div></div>
+
+      <div class="cd-sec-h">Benefit Amounts · existing (context)</div>
+      <div class="cd-grid">
+        <div class="fld"><label>Initial Total Death Benefit</label><input value="$1,000,000" disabled></div>
+        <div class="fld"><label>Term Rider Death Benefit</label><input value="$400,000" disabled></div>
+        <div class="fld"><label>Base Death Benefit</label><input value="$600,000" disabled></div>
+      </div>
+
+      <div class="cd-dbr">
+        <div class="cd-dbr-h"><b>Death Benefit Reduction</b><span class="newflag">new · add these fields</span></div>
+
+        <div class="grp">Reduction setup</div>
+        <div class="cd-grid">
+          <div class="fld"><label>Start year of DB reductions</label><input value="Year 11"></div>
+          <div class="fld"><label>Current DB (from feed)</label><input value="$1,000,000"></div>
+          <div class="fld"><label>50% max reduction</label><input value="$500,000"></div>
+          <div class="fld"><label>Term rider DB</label><input value="$400,000"></div>
+          <div class="fld"><label>Base DB</label><input value="$600,000"></div>
+        </div>
+
+        <div class="grp">Reduction options &amp; low points</div>
+        <div class="cd-grid">
+          <div class="fld"><label>Full reduction amount</label><input value="$500,000"></div>
+          <div class="fld"><label>Half reduction amount</label><input value="$250,000"></div>
+          <div class="fld"><label>No reduction</label><input value="$0"></div>
+          <div class="fld"><label>Low point — Full</label><input value="$95,000"></div>
+          <div class="fld"><label>Low point — Half</label><input value="$88,000"></div>
+          <div class="fld"><label>Low point — No</label><input value="$82,000"></div>
+        </div>
+
+        <div class="grp">Illustration values</div>
+        <div class="cd-grid">
+          <div class="fld"><label>Low cash value</label><input value="$1,220,000"></div>
+          <div class="fld"><label>Income / yr</label><input value="$101,000"></div>
+          <div class="fld"><label>Death benefit at age 90</label><input value="$908,800"></div>
+          <div class="fld"><label>In-force rate</label><input value="5.98%"></div>
+        </div>
+
+        <div class="grp">Election &amp; status</div>
+        <div class="cd-grid">
+          <div class="fld"><label>DBR status</label><select><option>Not started</option><option>Notice sent — awaiting response</option><option selected>Accepted</option><option>Declined — re-offer</option><option>No response</option><option>Applied</option></select></div>
+          <div class="fld"><label>Elected option</label><select><option>—</option><option>Full reduction</option><option selected>Half reduction</option><option>No reduction</option></select></div>
+          <div class="fld"><label>Election date</label><input value="07/20/2026"></div>
+        </div>
+
+        <div class="cd-actions">
+          <button class="btn">Cancel</button>
+          <button class="btn pri">Save DBR fields</button>
+        </div>
+      </div>
+
+      <p class="foot">Design mock · sample values are editable placeholders. This isolates just the “add fields” task; the full DBR automation (scraper, notices, election, fulfillment) is tracked separately.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root=document.documentElement;
+  document.getElementById('themeBtn').addEventListener('click',()=>{const c=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');root.setAttribute('data-theme',c==='dark'?'light':'dark');});
+</script>
