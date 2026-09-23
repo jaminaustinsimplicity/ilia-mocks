@@ -456,6 +456,26 @@
   .email-sec-h{font-size:14px;font-weight:700;color:var(--ink);margin:22px 2px 2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .email-sec-h .es-sub{font-size:11.5px;font-weight:400;color:var(--muted)}
   .type-carrier{--em:var(--marissa)}
+  /* DBR admin management tab */
+  .grp2{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:12px 0 6px}
+  .mini-note{font-size:11.5px;color:var(--muted);margin:10px 0 0}.mini-note b{color:var(--ink)}
+  .adm-flow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .adm-col{flex:1;min-width:190px;display:flex;flex-direction:column;gap:8px}
+  .adm-lab{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+  .adm-src,.adm-surf{border:1px solid var(--border-strong);border-radius:9px;background:var(--surface-2);padding:9px 11px;font-size:12px;font-weight:600;color:var(--ink)}
+  .adm-src span{display:block;font-size:10.5px;font-weight:400;color:var(--muted);margin-top:2px}
+  .adm-surf{border-color:var(--marissa);color:var(--marissa);background:color-mix(in srgb,var(--marissa) 8%,transparent)}
+  .adm-arrow{align-self:center;color:var(--faint);font-weight:800;font-size:18px}
+  @media(max-width:720px){.adm-arrow{transform:rotate(90deg)}.adm-flow{flex-direction:column}}
+  .adm-rec{flex:1.1;min-width:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;border:2px solid var(--ilia);border-radius:12px;background:var(--ilia-soft);padding:14px}
+  .adm-rec b{font-size:13px;color:var(--ilia)}.adm-rec>span{font-size:10.5px;color:var(--muted)}
+  .adm-status{margin-top:6px;font-size:11px;font-weight:700;color:#fff;background:var(--ilia);border-radius:20px;padding:3px 10px}
+  .adm-fields{font-size:10.5px;color:var(--muted);margin-top:2px}
+  .rule-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .rule-list li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.45}
+  .rule-list .rk{flex:none;width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;margin-top:1px}
+  .rk.ok{background:var(--ok)}.rk.open{background:var(--warn)}
+  .rule-list .ro-tag{font-size:9.5px;font-weight:700;color:var(--marissa);border:1px solid var(--marissa);border-radius:20px;padding:0 7px;margin-left:6px;white-space:nowrap}
 </style>
 
 <div class="wrap">
@@ -471,6 +491,7 @@
     <button id="tabCards" class="active">DBR workflow event cards</button>
     <button id="tabTm">DBR in Tranche Management</button>
     <button id="tabCase">DBR in Case Details</button>
+    <button id="tabAdmin">DBR admin management</button>
     <button id="tabForms">DBR envelope &amp; routing</button>
     <button id="tabScraper">Ben's Scraper</button>
     <button id="tabEmails">ILIA DBR emails</button>
@@ -1147,6 +1168,123 @@
     </div>
   </section>
 
+  <!-- ============ TAB: DBR ADMIN MANAGEMENT ============ -->
+  <section id="view-admin" hidden>
+    <div class="tm-intro">
+      <b>DBR admin management.</b> How the <b>admin / processing side</b> works end-to-end — <b>Tranche Management</b> and <b>Case Details (yearly policy breakdown)</b> working together, and the rules that keep them in sync. This is the working space to build out the <b>logic, functions &amp; rules</b>. <span style="color:var(--warn)">Design track — rules in progress; open decisions listed below.</span>
+    </div>
+
+    <div class="rules" style="max-width:1000px">
+      <div class="lab">Core principle — one record, one status</div>
+      <ul>
+        <li>A client's DBR lives on their <b>case, per policy year</b>. Its <b>DBR Status</b> is the single shared value.</li>
+        <li><b>Both screens are windows onto the same record</b> — nothing is copied between them; they stay in sync because they read &amp; write the same data.</li>
+        <li><b>Every field &amp; action has exactly one home</b> — no double entry, no conflicting edits.</li>
+      </ul>
+    </div>
+
+    <div class="scr-grid" style="max-width:1000px;margin-top:16px">
+      <div class="scr-card">
+        <h3>🗂️ Tranche Management → Workflow <span class="newflag">the queue</span></h3>
+        <p class="sub">Work <b>many</b> cases — the processing cockpit (Marissa).</p>
+        <div class="grp2">Surfaces</div>
+        <ul class="fd-list">
+          <li><span class="tick" style="background:var(--marissa)">›</span><div>DBR Status per client · elected option · fulfillment stage</div></li>
+        </ul>
+        <div class="grp2">Can do</div>
+        <ul class="fd-list">
+          <li><span class="tick" style="background:var(--marissa)">›</span><div>Resend a notice</div></li>
+          <li><span class="tick" style="background:var(--marissa)">›</span><div>Advance fulfillment — Sent to trustee → Trustee signed → Sent to carrier → Carrier confirmed</div></li>
+          <li><span class="tick" style="background:var(--marissa)">›</span><div><b>View</b> → jump to that client's Case Details</div></li>
+          <li><span class="tick" style="background:var(--marissa)">›</span><div>Filter / sort by DBR Status</div></li>
+        </ul>
+        <p class="mini-note"><b>Writes:</b> fulfillment status.</p>
+      </div>
+      <div class="scr-card">
+        <h3>📄 Case Details → Yearly Breakdown → DBR <span class="newflag">the record</span></h3>
+        <p class="sub">Work <b>one</b> case / policy year — the record of truth.</p>
+        <div class="grp2">Surfaces</div>
+        <ul class="fd-list">
+          <li><span class="tick bank">›</span><div>All DBR fields — reference figures, the 3 options, amounts, low points, elected option, revised DB, status, decline reason, docs</div></li>
+        </ul>
+        <div class="grp2">Can do</div>
+        <ul class="fd-list">
+          <li><span class="tick bank">›</span><div>Enter / verify the DBR data · pick the elected option</div></li>
+          <li><span class="tick bank">›</span><div>Revised DB amount · reason for declining · upload client DB request · add notes</div></li>
+          <li><span class="tick bank">›</span><div><b>Save</b> — commits the record</div></li>
+        </ul>
+        <p class="mini-note"><b>Writes:</b> the DBR data + status (on save).</p>
+      </div>
+    </div>
+
+    <div class="scr-card" style="max-width:1000px;margin-top:16px">
+      <h3>Data flow — who writes what</h3>
+      <p class="sub">Four sources write to one record; both screens read it.</p>
+      <div class="adm-flow">
+        <div class="adm-col">
+          <div class="adm-lab">Sources (write)</div>
+          <div class="adm-src">Carrier illustrations → Ben's scraper<span>amounts · low points · in-force rate</span></div>
+          <div class="adm-src">Client election (DocuSign capture)<span>elected option · status</span></div>
+          <div class="adm-src">Admin manual edits — Case Details<span>any field · revised DB · decline reason</span></div>
+          <div class="adm-src">TM fulfillment actions<span>trustee → carrier steps</span></div>
+        </div>
+        <div class="adm-arrow">→</div>
+        <div class="adm-rec">
+          <b>The case record</b>
+          <span>per policy year</span>
+          <span class="adm-status">DBR Status (shared)</span>
+          <span class="adm-fields">+ all DBR fields</span>
+        </div>
+        <div class="adm-arrow">→</div>
+        <div class="adm-col">
+          <div class="adm-lab">Surfaces (read)</div>
+          <div class="adm-surf">Tranche Mgmt — DBR Status column</div>
+          <div class="adm-surf">Case Details — DBR section</div>
+          <div class="mini-note" style="margin-top:4px">Change a source → the record updates → <b>both screens reflect it</b>. No copying.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scr-card" style="max-width:1000px;margin-top:16px">
+      <h3>Actions — and what they update</h3>
+      <table class="scr-tbl">
+        <thead><tr><th>Where</th><th>Action</th><th>Updates the record →</th></tr></thead>
+        <tbody>
+          <tr><td>Tranche Mgmt</td><td>Resend notice</td><td>Re-sends the 120/90/60 notice; status stays "Notice sent — awaiting response"</td></tr>
+          <tr><td>Tranche Mgmt</td><td>Advance fulfillment</td><td>Sets Sent to trustee → Trustee signed → Sent to carrier → Carrier confirmed → Complete</td></tr>
+          <tr><td>Tranche Mgmt</td><td>View</td><td>Opens the client's Case Details DBR section (no change)</td></tr>
+          <tr><td>Case Details</td><td>Pick elected option + Save</td><td>Sets elected option + status (Accepted / Declined), writes revised DB &amp; elected low point</td></tr>
+          <tr><td>Case Details</td><td>Enter reason for declining</td><td>Records decline reason (Health / Other) — shows on No reduction</td></tr>
+          <tr><td>Case Details</td><td>Upload client DB request</td><td>Attaches the doc to the case</td></tr>
+        </tbody>
+      </table>
+      <p class="mini-note">Each row's change is reflected on the other screen because they read the same record.</p>
+    </div>
+
+    <div class="scr-grid" style="max-width:1000px;margin-top:16px">
+      <div class="scr-card">
+        <h3>Rules — confirmed</h3>
+        <ul class="rule-list">
+          <li><span class="rk ok">✓</span><div>One record, one <b>DBR Status</b> — shared by both screens.</div></li>
+          <li><span class="rk ok">✓</span><div>Every field &amp; action has <b>one home</b> — no double entry.</div></li>
+          <li><span class="rk ok">✓</span><div>Term rider reduces <b>first</b>, then base; reduction ≤ <b>50% of current DB</b>.</div></li>
+          <li><span class="rk ok">✓</span><div>Elected <b>low point → Low Point field</b> → Chris's bank report.</div></li>
+          <li><span class="rk ok">✓</span><div>The DBR section lives <b>per policy year</b> in Case Details (NIWD-784 + 2511).</div></li>
+        </ul>
+      </div>
+      <div class="scr-card">
+        <h3>Decisions to lock <span class="newflag">open</span></h3>
+        <ul class="rule-list">
+          <li><span class="rk open">?</span><div><b>Editable vs. read-only</b> per field — manual-entry now vs. auto-populated later (scraper/election). <span class="ro-tag">Jamin / Mohit</span></div></li>
+          <li><span class="rk open">?</span><div>Can admin <b>manually override DBR Status</b>, or is it always workflow-driven? (manual now, auto later) <span class="ro-tag">Judy / dev</span></div></li>
+          <li><span class="rk open">?</span><div><b>Confirm action homes</b> — which actions live in TM vs. Case Details so they never conflict. <span class="ro-tag">Judy / Marissa</span></div></li>
+          <li><span class="rk open">?</span><div><b>Who-writes-what</b> — lock the source→field map (scraper / election / admin / TM). <span class="ro-tag">dev</span></div></li>
+          <li><span class="rk open">?</span><div><b>Audit</b> — show "last updated by / when" on the DBR record? <span class="ro-tag">Jamin</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ TAB: BEN'S SCRAPER ============ -->
   <section id="view-scraper" hidden>
     <div class="tm-intro">
@@ -1464,6 +1602,7 @@ function showTab(which){
   document.getElementById('view-cards').hidden=which!=='cards';
   document.getElementById('view-tm').hidden=which!=='tm';
   document.getElementById('view-case').hidden=which!=='case';
+  document.getElementById('view-admin').hidden=which!=='admin';
   document.getElementById('view-forms').hidden=which!=='forms';
   document.getElementById('view-scraper').hidden=which!=='scraper';
   document.getElementById('view-emails').hidden=which!=='emails';
@@ -1473,6 +1612,7 @@ function showTab(which){
   document.getElementById('tabCards').classList.toggle('active',which==='cards');
   document.getElementById('tabTm').classList.toggle('active',which==='tm');
   document.getElementById('tabCase').classList.toggle('active',which==='case');
+  document.getElementById('tabAdmin').classList.toggle('active',which==='admin');
   document.getElementById('tabForms').classList.toggle('active',which==='forms');
   document.getElementById('tabScraper').classList.toggle('active',which==='scraper');
   document.getElementById('tabEmails').classList.toggle('active',which==='emails');
@@ -1483,6 +1623,7 @@ function showTab(which){
 document.getElementById('tabCards').addEventListener('click',()=>showTab('cards'));
 document.getElementById('tabTm').addEventListener('click',()=>showTab('tm'));
 document.getElementById('tabCase').addEventListener('click',()=>showTab('case'));
+document.getElementById('tabAdmin').addEventListener('click',()=>showTab('admin'));
 document.getElementById('tabForms').addEventListener('click',()=>showTab('forms'));
 document.getElementById('tabScraper').addEventListener('click',()=>showTab('scraper'));
 document.getElementById('tabEmails').addEventListener('click',()=>showTab('emails'));
