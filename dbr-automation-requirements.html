@@ -481,6 +481,7 @@
   .askjudy .aj-i{width:13px;height:13px;border-radius:50%;background:var(--warn);color:#fff;display:grid;place-items:center;font-size:9px;font-style:italic;font-family:Georgia,serif}
   .askjudy .aj-pop{display:none;position:absolute;left:0;top:calc(100% + 7px);z-index:60;width:262px;background:var(--surface);color:var(--ink);border:1px solid var(--warn);border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.22);padding:11px 13px;font-weight:400;font-size:11.5px;line-height:1.5;text-transform:none;letter-spacing:0;text-align:left;cursor:auto;white-space:normal}
   .askjudy.open .aj-pop{display:block}
+  .askjudy.aj-right .aj-pop{left:auto;right:0}
   .askjudy .aj-h{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--warn);margin-bottom:4px}
   .reflow{border:1.5px solid var(--warn);border-radius:12px;background:var(--warn-soft);padding:14px 16px;margin-top:16px;max-width:1000px}
   .reflow h3{margin:0 0 4px;font-size:14px;color:var(--ink)}
@@ -728,6 +729,14 @@
                 <div class="rrow r-none"><span class="rbadge">—</span><div><b>No response</b> by the deadline<span class="rnext">→ No response · re-offer next year</span></div></div>
               </div>
               <p style="margin:8px 0 0;font-size:11px;color:var(--faint)">Full / Half / No reduction are pre-computed — one envelope, one signature. <b>Custom removed</b> <span class="newflag">changed · Sep 17</span> — non-standard amounts route to a phone call, not a field.</p>
+            </div>
+
+            <div class="sec" style="border:1px solid var(--warn);background:var(--warn-soft);border-radius:10px;padding:11px 12px">
+              <div class="lab" style="color:var(--warn)">Changed their mind? — re-election <span class="newflag">new</span></div>
+              <p style="margin:0;font-size:12px">If a client calls to switch after electing, admin re-opens it in <b>Case Details → yearly breakdown → Edit election</b> — a <b>governed re-election</b>: new signed DBR form required, upload a fresh illustration + resend the notice if needed, status → <b>“Re-election — awaiting signature,”</b> then re-applies. <b>TM reflects it instantly.</b></p>
+              <button class="tm-link" data-adminlink="1" style="margin-top:8px">See DBR admin management
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
             </div>
 
             <div class="sec tm-sec">
@@ -1127,6 +1136,16 @@
           <div class="e-meta"><b>Fires when:</b> the client declines, or the deadline passes with no response</div>
           <div class="e-meta"><b>To:</b> Client &nbsp;·&nbsp; <b>Includes:</b> note that no change was made; ILIA re-offers next year</div>
           <div class="e-note">Optional confirmation — confirm with the team whether it's sent.</div>
+        </div>
+      </div>
+
+      <div class="email-item type-notice">
+        <span class="e-num">6</span>
+        <div class="e-body">
+          <div class="e-top"><b class="e-name">Updated DBR election — please sign</b><span class="e-tag">Re-election · new signed form</span></div>
+          <div class="e-meta"><b>Fires when:</b> admin changes a client's election (re-election) and sends the new form for signature</div>
+          <div class="e-meta"><b>To:</b> Client (via agent) &nbsp;·&nbsp; <b>Includes:</b> the new DBR election form for the new option (+ a fresh illustration if the change needed one)</div>
+          <div class="e-note">New status while pending: “Re-election — awaiting signature.”</div>
         </div>
       </div>
 
@@ -1658,8 +1677,15 @@ document.getElementById('tabPlan').addEventListener('click',()=>showTab('plan'))
 document.getElementById('tabElect').addEventListener('click',()=>showTab('electform'));
 document.addEventListener('click',function(e){
   const aj=e.target.closest('.askjudy');
-  document.querySelectorAll('.askjudy.open').forEach(function(x){if(x!==aj)x.classList.remove('open');});
-  if(aj && !e.target.closest('.aj-pop')) aj.classList.toggle('open');
+  document.querySelectorAll('.askjudy.open').forEach(function(x){if(x!==aj){x.classList.remove('open');x.classList.remove('aj-right');}});
+  if(aj && !e.target.closest('.aj-pop')){
+    aj.classList.toggle('open');
+    aj.classList.remove('aj-right');
+    if(aj.classList.contains('open')){
+      const pop=aj.querySelector('.aj-pop');
+      if(pop && pop.getBoundingClientRect().right > (window.innerWidth-8)) aj.classList.add('aj-right');
+    }
+  }
 });
 
 const CHECK=[
@@ -1895,6 +1921,7 @@ function openUX(n){
 }
 document.querySelectorAll('.ux-link').forEach(b=>b.addEventListener('click',()=>openUX(b.dataset.ux)));
 document.querySelectorAll('[data-tmlink]').forEach(b=>b.addEventListener('click',()=>showTab('tm')));
+document.querySelectorAll('[data-adminlink]').forEach(b=>b.addEventListener('click',()=>showTab('admin')));
 
 const DOCP={
  election:{name:"DBR Election Form",what:"The one-page form the client checks a box on and signs — the form shown on this tab.",kind:"election"},
@@ -1995,6 +2022,10 @@ const EMAILS=[
   subject:"No change to your policy this year — {client_name}",
   body:"Dear {client_name},\n\nThis confirms that no death benefit reduction was made to your policy for year {policy_year}. You'll have the option again next year (through year 15).\n\nNo action is needed.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
   att:["None"]},
+ {name:"Updated DBR election — please sign",
+  subject:"Your updated Death Benefit Reduction election — please review & sign — {client_name}",
+  body:"Dear {client_name},\n\nAs requested, we've updated your death benefit reduction election for year {policy_year} to {elected_option}. Please review the attached and sign via DocuSign to confirm — your change isn't final until this is signed.\n\nNothing else on your policy changes until we receive your signature.\n\nQuestions? Call (972) 755-1582 or email niw.info@simplicitygroup.com.\n\nKai-Zen Plan Servicing — Simplicity-NIW",
+  att:["Updated DBR election form (new option, DocuSign)","New in-force illustration — only if the change required one"]},
  {name:"Carrier illustration request",
   subject:"In-force illustration request — Kai-Zen DB reduction · Policy {policy_no} · {client_name}",
   body:"Hello,\n\nPlease run an in-force illustration for the policy below, three ways, so our client can review their death benefit reduction options:\n\n1) Full reduction of {term_reduction_full} — {full_term} from the term rider, {full_base} from the base death benefit\n2) Half reduction of {term_reduction_half} (~50%)\n3) No reduction\n\nFor each, please also provide the low point run at guaranteed / 0%. The reduction must not exceed 50% of the current death benefit ({current_db}); reduce the term rider first, then the base.\n\nPlease use a participating loan to (a) pay off the bank loan of {loan_amount} in year 14, and (b) generate maximum income from age {income_age_min} to age {income_age_max}. Include the current growth rate and run the illustration to age 100.\n\nPlease return the completed illustrations to {aws_return}.\n\nThank you,\nKai-Zen Plan Servicing — Simplicity-NIW · (972) 755-1582 · niw.info@simplicitygroup.com",
@@ -2648,6 +2679,7 @@ const CD_HTML=`<title>DBR in Yearly Policy Breakdown</title>
   .askjudy .aj-i{width:13px;height:13px;border-radius:50%;background:var(--warn);color:#fff;display:grid;place-items:center;font-size:9px;font-style:italic;font-family:Georgia,serif}
   .askjudy .aj-pop{display:none;position:absolute;left:0;top:calc(100% + 7px);z-index:60;width:262px;background:var(--surface);color:var(--ink);border:1px solid var(--warn);border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.22);padding:11px 13px;font-weight:400;font-size:11.5px;line-height:1.5;text-transform:none;letter-spacing:0;text-align:left;cursor:auto;white-space:normal}
   .askjudy.open .aj-pop{display:block}
+  .askjudy.aj-right .aj-pop{left:auto;right:0}
   .askjudy .aj-h{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--warn);margin-bottom:4px}
 </style>
 
@@ -2827,8 +2859,15 @@ const CD_HTML=`<title>DBR in Yearly Policy Breakdown</title>
 
   document.addEventListener('click',function(e){
     const aj=e.target.closest('.askjudy');
-    document.querySelectorAll('.askjudy.open').forEach(function(x){if(x!==aj)x.classList.remove('open');});
-    if(aj && !e.target.closest('.aj-pop')) aj.classList.toggle('open');
+    document.querySelectorAll('.askjudy.open').forEach(function(x){if(x!==aj){x.classList.remove('open');x.classList.remove('aj-right');}});
+    if(aj && !e.target.closest('.aj-pop')){
+      aj.classList.toggle('open');
+      aj.classList.remove('aj-right');
+      if(aj.classList.contains('open')){
+        const pop=aj.querySelector('.aj-pop');
+        if(pop && pop.getBoundingClientRect().right > (window.innerWidth-8)) aj.classList.add('aj-right');
+      }
+    }
   });
 <\/script>
 `;(function(){var g=document.getElementById('cdFrame');if(g){g.srcdoc=CD_HTML;}})();
