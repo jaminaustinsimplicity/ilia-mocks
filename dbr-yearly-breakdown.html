@@ -197,7 +197,7 @@
         <div class="fld"><label>Eligible for DBR this year? <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Can admin change which policy year is DBR-eligible? (Client may decline for years, then start reducing later — e.g. after 65.)</span></span></label><select><option selected>Yes</option><option>No</option></select></div>
       </div>
 
-      <div class="grp">Choose the reduction <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--faint)">· term rider first, then base</span><span class="gl"></span><button type="button" class="editbtn js-edit">✎ Edit election</button><span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Who can edit an election (which role)? And is a "reason for change" mandatory before saving?</span></span></div>
+      <div class="grp">Choose the reduction <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--faint)">· term rider first, then base</span><span class="gl"></span><button type="button" class="editbtn js-toggleelect" style="border-style:dashed">◐ Preview: not elected</button><button type="button" class="editbtn js-edit">✎ Edit election</button><span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Who can edit an election (which role)? And is a "reason for change" mandatory before saving?</span></span></div>
       <div class="opts js-opts locked">
         <div class="opt" data-opt="full">
           <div class="opt-top"><span class="opt-r"></span><span class="opt-name">Full reduction</span><span class="opt-badge">Elected</span></div>
@@ -239,9 +239,10 @@
       <div class="renote js-renote"><b>✓ New election form generated &amp; sent to the client for signature.</b> Status set to <b>“Re-election — awaiting signature.”</b> When the client signs, ILIA applies the new option and Tranche Management updates instantly.</div>
 
       <div class="grp">Post-election — DBR record &amp; carry-forward <span class="pe-flag post">post-election</span> <span class="gl"></span> <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--faint)">shows once an election is made</span></div>
+      <div class="js-noelect" style="display:none;margin:0 0 10px;border:1px solid var(--warn);background:var(--warn-soft);border-radius:9px;padding:9px 12px;font-size:11.5px;color:var(--ink)"><b style="color:var(--warn)">⏳ No election yet</b> — post-election details populate once the client elects (Full / Half / No).</div>
       <div class="refg">
-        <div class="fld"><label>Elected this year</label><input class="ro" value="Half — $250,000" readonly></div>
-        <div class="fld"><label>Cumulative reduced to date <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Do we track a running total of reductions across years, and show it here?</span></span></label><input class="ro" value="$250,000" readonly></div>
+        <div class="fld"><label>Elected this year</label><input class="ro js-elected-year" value="Half — $250,000" readonly></div>
+        <div class="fld"><label>Cumulative reduced to date <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Do we track a running total of reductions across years, and show it here?</span></span></label><input class="ro js-cumulative" value="$250,000" readonly></div>
         <div class="fld"><label>Remaining allowable (50% cap) <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Only 50% reduction per 12-month period — is "remaining" a running cap tracked year to year?</span></span></label><input class="ro" value="$250,000" readonly><span class="hint2">the most that can still be reduced</span></div>
       </div>
       <div class="term-note"><b>Term status:</b> term rider partially reduced ($250k of $400k). Once the term rider is fully removed, no further term reduction is needed — remaining reductions come from the base. <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Once the term is off, is base reduction the only remaining lever? And does "term off" mean we skip term in later years?</span></span></div>
@@ -357,6 +358,41 @@
     if(editBtn)editBtn.addEventListener('click',()=>{setLocked(false);if(reelect)reelect.classList.add('show');if(renote)renote.classList.remove('show');resetReDocs();editBtn.style.display='none';});
     if(reCancel)reCancel.addEventListener('click',()=>{setLocked(true);if(reelect)reelect.classList.remove('show');if(editBtn)editBtn.style.display='';});
     if(reSend)reSend.addEventListener('click',()=>{setLocked(true);if(reelect)reelect.classList.remove('show');if(renote)renote.classList.add('show');setReStatus();if(editBtn)editBtn.style.display='';});
+    // toggle: elected view <-> not-yet-elected preview
+    const toggleBtn=row.querySelector('.js-toggleelect');
+    const electedYear=row.querySelector('.js-elected-year');
+    const cumulative=row.querySelector('.js-cumulative');
+    const noelect=row.querySelector('.js-noelect');
+    let isElected=true;
+    function applyElected(v){
+      isElected=v;
+      if(v){
+        if(opts)opts.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x.dataset.opt==='half'));
+        if(statusBadge){statusBadge.textContent='Accepted';statusBadge.style.cssText='';}
+        if(statusSel)statusSel.value='Accepted';
+        if(elected)elected.value='Half reduction';
+        if(revised)revised.value='$750,000';
+        if(electedYear)electedYear.value='Half — $250,000';
+        if(cumulative)cumulative.value='$250,000';
+        if(noelect)noelect.style.display='none';
+        if(editBtn)editBtn.style.display='';
+        if(toggleBtn)toggleBtn.textContent='◐ Preview: not elected';
+      }else{
+        if(opts)opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));
+        if(statusBadge){statusBadge.textContent='Awaiting election';statusBadge.style.cssText='margin-left:auto;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--warn);color:var(--warn);background:var(--warn-soft)';}
+        if(statusSel)statusSel.value='Notice sent — awaiting response';
+        if(elected)elected.value='—';
+        if(revised)revised.value='—';
+        if(electedYear)electedYear.value='—';
+        if(cumulative)cumulative.value='—';
+        if(noelect)noelect.style.display='block';
+        if(editBtn)editBtn.style.display='none';
+        if(reelect)reelect.classList.remove('show');
+        setLocked(true);
+        if(toggleBtn)toggleBtn.textContent='◑ Show elected';
+      }
+    }
+    if(toggleBtn)toggleBtn.addEventListener('click',()=>applyElected(!isElected));
     if(statusSel&&statusBadge)statusSel.addEventListener('change',()=>{statusBadge.textContent=statusSel.value.split(' —')[0];});
     if(reason&&otherWrap)reason.addEventListener('change',()=>{otherWrap.style.display=(reason.value==='Other')?'flex':'none';});
   }
