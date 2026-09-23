@@ -476,6 +476,17 @@
   .rule-list .rk{flex:none;width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;margin-top:1px}
   .rk.ok{background:var(--ok)}.rk.open{background:var(--warn)}
   .rule-list .ro-tag{font-size:9.5px;font-weight:700;color:var(--marissa);border:1px solid var(--marissa);border-radius:20px;padding:0 7px;margin-left:6px;white-space:nowrap}
+  /* Ask Judy (i) markers */
+  .askjudy{position:relative;display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:var(--warn);background:var(--warn-soft);border:1px solid var(--warn);border-radius:20px;padding:1px 8px 1px 5px;cursor:pointer;vertical-align:middle;margin-left:6px;font-family:inherit;text-transform:none;letter-spacing:.02em}
+  .askjudy .aj-i{width:13px;height:13px;border-radius:50%;background:var(--warn);color:#fff;display:grid;place-items:center;font-size:9px;font-style:italic;font-family:Georgia,serif}
+  .askjudy .aj-pop{display:none;position:absolute;left:0;top:calc(100% + 7px);z-index:60;width:262px;background:var(--surface);color:var(--ink);border:1px solid var(--warn);border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.22);padding:11px 13px;font-weight:400;font-size:11.5px;line-height:1.5;text-transform:none;letter-spacing:0;text-align:left;cursor:auto;white-space:normal}
+  .askjudy.open .aj-pop{display:block}
+  .askjudy .aj-h{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--warn);margin-bottom:4px}
+  .reflow{border:1.5px solid var(--warn);border-radius:12px;background:var(--warn-soft);padding:14px 16px;margin-top:16px;max-width:1000px}
+  .reflow h3{margin:0 0 4px;font-size:14px;color:var(--ink)}
+  .reflow .sub{font-size:12px;color:var(--muted);margin:0 0 12px}
+  .reflow ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+  .reflow li{font-size:12.5px;line-height:1.5}.reflow li b{color:var(--ink)}
 </style>
 
 <div class="wrap">
@@ -948,6 +959,7 @@
         <span class="st st-accepted">Accepted</span>
         <span class="st st-declined">Declined — re-offer</span>
         <span class="st st-none">No response</span>
+        <span class="st st-awaiting">Re-election — awaiting signature</span>
         <span class="st st-fulfill">Sent to trustee</span>
         <span class="st st-fulfill">Trustee signed</span>
         <span class="st st-fulfill">Sent to carrier</span>
@@ -1259,6 +1271,20 @@
         </tbody>
       </table>
       <p class="mini-note">Each row's change is reflected on the other screen because they read the same record.</p>
+    </div>
+
+    <div class="reflow">
+      <h3>Scenario — client changes their mind (re-election) <span class="newflag">rule to confirm</span></h3>
+      <p class="sub">Client A elected "No reduction," it auto-pushed to Case Details + TM. Then they call to switch. How admins handle it:</p>
+      <ol>
+        <li><b>Where:</b> Case Details → Yearly Breakdown → DBR section → <b>“Edit election.”</b> (The record of truth; TM just reflects it.)</li>
+        <li><b>It's governed, not a free swap.</b> Editing unlocks the <b>option only</b> + a required <b>reason for change</b>. Amounts/low points stay locked (carrier facts).</li>
+        <li><b>No new illustration needed</b> — all 3 (Full/Half/No) were pulled up front; switching between them reuses them.</li>
+        <li><b>A new signed election form <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Require a new signed election form for <b>any</b> change, or only material ones (No reduction → a reduction)?</span></span> is required</b> — Save generates + sends a new DocuSign form; nothing is final until the client signs.</li>
+        <li><b>Status:</b> Save → <b>“Re-election — awaiting signature.”</b> When signed → “Accepted (new option)” → fulfillment re-runs. <b>TM reflects each change instantly.</b></li>
+        <li><b>Already fulfilled?</b> If the reduction was already sent to the carrier, it becomes a <b>carrier correction / reversal</b>. <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Already-fulfilled reversals — handle in MVP, or escalate offline?</span></span></li>
+        <li><b>Who + audit:</b> processing role only, reason required, logged (who / when / from → to). <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Which role can edit an election? Is a reason mandatory? Do we surface “last updated by / when” on the record?</span></span></li>
+      </ol>
     </div>
 
     <div class="scr-grid" style="max-width:1000px;margin-top:16px">
@@ -1630,6 +1656,11 @@ document.getElementById('tabEmails').addEventListener('click',()=>showTab('email
 document.getElementById('tabBlockers').addEventListener('click',()=>showTab('blockers'));
 document.getElementById('tabPlan').addEventListener('click',()=>showTab('plan'));
 document.getElementById('tabElect').addEventListener('click',()=>showTab('electform'));
+document.addEventListener('click',function(e){
+  const aj=e.target.closest('.askjudy');
+  document.querySelectorAll('.askjudy.open').forEach(function(x){if(x!==aj)x.classList.remove('open');});
+  if(aj && !e.target.closest('.aj-pop')) aj.classList.toggle('open');
+});
 
 const CHECK=[
  {group:"Decisions & confirmations to unblock",items:[
@@ -2591,6 +2622,24 @@ const CD_HTML=`<title>DBR in Yearly Policy Breakdown</title>
   .btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
   .status-badge{margin-left:auto;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--ok);color:var(--ok);background:var(--ok-soft)}
   .foot{font-size:11px;color:var(--faint);margin-top:16px;text-align:center}
+  /* edit / re-election */
+  .editbtn{font-family:inherit;font-size:11.5px;font-weight:700;color:var(--accent);background:var(--surface);border:1px solid var(--accent);border-radius:8px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0}
+  .editbtn:hover{background:var(--accent-soft)}
+  .opts.locked .opt{cursor:default}
+  .opts.locked .opt:not(.sel){opacity:.62}
+  .opts.locked .opt input{pointer-events:none;background:var(--ro);border-style:dashed;color:var(--muted)}
+  .reelect{display:none;margin-top:14px;border:1.5px solid var(--warn);border-radius:11px;background:var(--warn-soft);padding:13px 15px}
+  .reelect.show{display:block}
+  .re-banner{font-size:12px;color:var(--ink);line-height:1.5;margin-bottom:11px}.re-banner b{color:var(--ink)}
+  .re-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
+  .renote{display:none;margin-top:12px;border:1px solid var(--ok);background:var(--ok-soft);border-radius:9px;padding:10px 13px;font-size:12px;color:var(--ink)}
+  .renote.show{display:block}.renote b{color:var(--ok)}
+  /* Ask Judy (i) markers */
+  .askjudy{position:relative;display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:var(--warn);background:var(--warn-soft);border:1px solid var(--warn);border-radius:20px;padding:1px 8px 1px 5px;cursor:pointer;vertical-align:middle;margin-left:6px;font-family:inherit;text-transform:none;letter-spacing:.02em}
+  .askjudy .aj-i{width:13px;height:13px;border-radius:50%;background:var(--warn);color:#fff;display:grid;place-items:center;font-size:9px;font-style:italic;font-family:Georgia,serif}
+  .askjudy .aj-pop{display:none;position:absolute;left:0;top:calc(100% + 7px);z-index:60;width:262px;background:var(--surface);color:var(--ink);border:1px solid var(--warn);border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.22);padding:11px 13px;font-weight:400;font-size:11.5px;line-height:1.5;text-transform:none;letter-spacing:0;text-align:left;cursor:auto;white-space:normal}
+  .askjudy.open .aj-pop{display:block}
+  .askjudy .aj-h{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--warn);margin-bottom:4px}
 </style>
 
 <div class="wrap">
@@ -2634,8 +2683,8 @@ const CD_HTML=`<title>DBR in Yearly Policy Breakdown</title>
         <div class="fld"><label>In-force rate</label><input class="ro" value="5.98%" readonly></div>
       </div>
 
-      <div class="grp">Choose the reduction <span class="gl"></span> <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--faint)">term rider reduces first, then base</span></div>
-      <div class="opts js-opts">
+      <div class="grp">Choose the reduction <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--faint)">· term rider first, then base</span><span class="gl"></span><button type="button" class="editbtn js-edit">✎ Edit election</button><span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Who can edit an election (which role)? And is a "reason for change" mandatory before saving?</span></span></div>
+      <div class="opts js-opts locked">
         <div class="opt" data-opt="full">
           <div class="opt-top"><span class="opt-r"></span><span class="opt-name">Full reduction</span><span class="opt-badge">Elected</span></div>
           <div class="f2"><label>Reduction amount</label><input value="$500,000"></div>
@@ -2656,6 +2705,17 @@ const CD_HTML=`<title>DBR in Yearly Policy Breakdown</title>
         </div>
       </div>
 
+      <div class="reelect js-reelect">
+        <div class="re-banner">⚠ Changing the election is a <b>governed re-election</b>, not a quick swap. It requires a <b>new signed election form</b> — nothing is final until the client signs. <b>No new illustration is needed</b> (all 3 were already provided), and you're changing the <b>option only</b> — the amounts/low points are carrier facts and stay as provided.
+          <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Do we require a new signed election form for <b>any</b> change, or only material ones (e.g. No reduction → a reduction)?</span></span>
+          <br><span style="color:var(--warn)">If the reduction was already sent to the carrier, this becomes a carrier correction / reversal.</span>
+          <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Already-fulfilled reversals (reduction already sent to the carrier) — handle in MVP, or escalate offline?</span></span>
+        </div>
+        <div class="fld" style="max-width:440px"><label>Reason for change <span class="req">*</span></label><input placeholder="e.g. Client called — changed their mind"></div>
+        <div class="re-actions"><button class="btn js-recancel" type="button">Cancel</button><button class="btn pri js-resend" type="button">Save &amp; send new election form</button></div>
+      </div>
+      <div class="renote js-renote"><b>✓ New election form generated &amp; sent to the client for signature.</b> Status set to <b>“Re-election — awaiting signature.”</b> When the client signs, ILIA applies the new option and Tranche Management updates instantly.</div>
+
       <div class="grp">Elected option — illustration values <span class="gl"></span></div>
       <div class="refg">
         <div class="fld"><label>Low cash value</label><input value="$1,220,000"></div>
@@ -2666,7 +2726,7 @@ const CD_HTML=`<title>DBR in Yearly Policy Breakdown</title>
       <div class="grp">Election &amp; status <span class="gl"></span></div>
       <div class="electg">
         <div class="fld"><label>Elected option</label><input class="ro js-elected" value="Half reduction" readonly></div>
-        <div class="fld"><label>DBR status</label><select class="js-statussel"><option>Notice sent — awaiting response</option><option selected>Accepted</option><option>Declined — re-offer</option><option>No response</option><option>Applied</option></select></div>
+        <div class="fld"><label>DBR status</label><select class="js-statussel"><option>Notice sent — awaiting response</option><option selected>Accepted</option><option>Declined — re-offer</option><option>No response</option><option>Applied</option><option>Re-election — awaiting signature</option></select></div>
         <div class="fld"><label>Election date</label><input value="07/20/2026"></div>
         <div class="fld"><label>Revised death benefit amount <span style="color:var(--faint);font-weight:500">· NIWD-784</span></label><input class="js-revised" value="$750,000"><span class="hint2">current DB − elected reduction</span></div>
         <div class="decline js-decline">
@@ -2715,20 +2775,35 @@ const CD_HTML=`<title>DBR in Yearly Policy Breakdown</title>
     const otherWrap=row.querySelector('.js-otherwrap');
     const NAMES={full:'Full reduction',half:'Half reduction',none:'No reduction'};
     const REV={full:'$500,000',half:'$750,000',none:'$1,000,000'};
+    const editBtn=row.querySelector('.js-edit');
+    const reelect=row.querySelector('.js-reelect');
+    const renote=row.querySelector('.js-renote');
+    const reCancel=row.querySelector('.js-recancel');
+    const reSend=row.querySelector('.js-resend');
+    function setLocked(v){if(opts)opts.classList.toggle('locked',v);}
     if(opts){
       opts.querySelectorAll('.opt').forEach(o=>o.addEventListener('click',e=>{
-        if(e.target.tagName==='INPUT')return; // let inputs be edited
+        if(opts.classList.contains('locked'))return; // no changes unless editing
+        if(e.target.tagName==='INPUT')return;
         opts.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x===o));
         const k=o.dataset.opt;
         if(elected)elected.value=NAMES[k];
         if(revised)revised.value=REV[k];
-        const isNone=(k==='none');
-        if(decline)decline.classList.toggle('show',isNone);
+        if(decline)decline.classList.toggle('show',k==='none');
       }));
     }
+    if(editBtn)editBtn.addEventListener('click',()=>{setLocked(false);if(reelect)reelect.classList.add('show');if(renote)renote.classList.remove('show');editBtn.style.display='none';});
+    if(reCancel)reCancel.addEventListener('click',()=>{setLocked(true);if(reelect)reelect.classList.remove('show');if(editBtn)editBtn.style.display='';});
+    if(reSend)reSend.addEventListener('click',()=>{setLocked(true);if(reelect)reelect.classList.remove('show');if(renote)renote.classList.add('show');if(statusBadge){statusBadge.textContent='Re-election';statusBadge.style.cssText='margin-left:auto;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--warn);color:var(--warn);background:var(--warn-soft)';}if(statusSel)statusSel.value='Re-election — awaiting signature';if(editBtn)editBtn.style.display='';});
     if(statusSel&&statusBadge)statusSel.addEventListener('change',()=>{statusBadge.textContent=statusSel.value.split(' —')[0];});
     if(reason&&otherWrap)reason.addEventListener('change',()=>{otherWrap.style.display=(reason.value==='Other')?'flex':'none';});
   }
+
+  document.addEventListener('click',function(e){
+    const aj=e.target.closest('.askjudy');
+    document.querySelectorAll('.askjudy.open').forEach(function(x){if(x!==aj)x.classList.remove('open');});
+    if(aj && !e.target.closest('.aj-pop')) aj.classList.toggle('open');
+  });
 <\/script>
 `;(function(){var g=document.getElementById('cdFrame');if(g){g.srcdoc=CD_HTML;}})();
 
