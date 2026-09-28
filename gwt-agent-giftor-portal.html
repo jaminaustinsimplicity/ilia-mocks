@@ -244,6 +244,20 @@
   .lo-empty{background:var(--surface);border:1px dashed var(--border-strong);border-radius:10px;padding:22px 18px;text-align:center}
   .lo-empty p{margin:0 0 13px;font-size:12.5px;color:var(--muted)}
 
+  /* ---------- IMO view ---------- */
+  .acard{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:11px;overflow:hidden;box-shadow:0 1px 2px rgba(17,24,39,.04)}
+  .acard.open{border-color:var(--purple);box-shadow:var(--shadow)}
+  .ahead{display:grid;grid-template-columns:minmax(220px,2.2fr) .9fr .9fr 1fr 30px;gap:13px;align-items:center;padding:15px 16px;cursor:pointer;background:none;border:none;width:100%;text-align:left;font-family:inherit}
+  .ahead:hover{background:var(--surface-2)}
+  @media (max-width:1040px){.ahead{grid-template-columns:1fr 30px}.ahead .hcol{display:none}.ahead .hcol.keep{display:block;grid-column:1}}
+  .aav{flex:none;width:36px;height:36px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,#6b4fd8,#2f8ade);color:#fff;font-size:12.5px;font-weight:800}
+  .acard.open .chev{transform:rotate(90deg);stroke:var(--purple)}
+  .abody{border-top:1px solid var(--border);padding:15px 16px;background:var(--surface-2)}
+  .ro{display:flex;gap:10px;align-items:flex-start;background:var(--purple-soft);border:1px solid var(--purple);border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:11.5px;color:var(--muted);line-height:1.55}
+  .ro svg{flex:none;width:16px;height:16px;stroke:var(--purple);fill:none;stroke-width:1.9;margin-top:1px}
+  .ro b{color:var(--ink)}
+  .ropill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--purple);background:var(--purple-soft);border:1px solid var(--purple);border-radius:20px;padding:2px 9px;margin-left:8px;vertical-align:2px}
+
   /* ---------- modals ---------- */
   .ovl{position:fixed;inset:0;background:rgba(12,18,28,.55);backdrop-filter:blur(2px);z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:26px 16px;overflow-y:auto}
   .ovl[hidden]{display:none}
@@ -389,7 +403,7 @@
     <div>
       <div class="brand">Agent Portal · GWT <span>· Post-invitation workflow</span></div>
       <h1>GWT Center <span class="flag">Design mock</span></h1>
-      <p class="sub">The <b>new GWT Center location in the ILIA agent portal</b> &mdash; switch between the <b>default state</b> (no giftors invited yet) and the <b>populated state</b>, where each giftor is a collapsed card that expands to reveal the loved ones tied to them. Tab 2 holds the <b>emails</b> around this flow &mdash; to the agent, to the giftor, and to the IMO.</p>
+      <p class="sub">The <b>new GWT Center location in the ILIA agent portal</b> &mdash; switch between the <b>default state</b> (no giftors invited yet) and the <b>populated state</b>, where each giftor is a collapsed card that expands to reveal the loved ones tied to them. Tab 2 holds the <b>emails</b> around this flow. Tab 3 is the <b>IMO view</b> &mdash; the same screen, read-only, across every agent.</p>
     </div>
     <button class="themebtn" id="themeBtn">Theme</button>
   </div>
@@ -397,6 +411,7 @@
   <div class="tabs">
     <button class="tab on" data-v="portal">1 &middot; GWT Center screen</button>
     <button class="tab" data-v="email">2 &middot; Emails</button>
+    <button class="tab" data-v="imo">3 &middot; IMO GWT Center</button>
   </div>
 
   <section class="view" id="v-portal">
@@ -879,6 +894,84 @@
     </div>
 </section>
 
+
+  <section class="view" id="v-imo" hidden>
+    <div class="shell">
+      <aside class="side">
+        <div class="logo">
+          <div><div class="lt">ilia</div>
+            <div class="dots"><i style="background:#e8453c"></i><i style="background:#22a95d"></i><i style="background:#1b6ed6"></i><i style="background:#f2b705"></i></div>
+          </div>
+          <div class="ls">Interactive<br>Learning<br>Information<br>Assistant</div>
+        </div>
+        <nav class="nav">
+          <a href="#" class="isnew"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 8h20v4H2z"/><path d="M12 22V8"/><path d="M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5h4z"/><path d="M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5h-4z"/></svg>GWT Center<span class="newpill">NEW</span></a>
+        </nav>
+        <p style="font-size:10.5px;color:var(--faint);padding:12px 14px 0;line-height:1.5">Shown with only this item, per the brief. Whatever else an IMO normally has would sit around it.</p>
+      </aside>
+
+      <div class="main">
+        <div class="crumb">IMO Portal &nbsp;&middot;&nbsp; GWT Center</div>
+
+        <div class="statebar">
+          <span class="sl">Mock control &mdash; screen state</span>
+          <div class="seg" id="imoSeg">
+            <button data-s="empty">No GWT activity yet</button>
+            <button data-s="full" class="on">With activity</button>
+          </div>
+          <span class="sl" style="color:var(--faint);text-transform:none;letter-spacing:0;font-weight:500">Not part of the design.</span>
+        </div>
+
+        <div class="ph">
+          <div>
+            <h2>GWT Center <span class="ropill">View only</span></h2>
+            <p>Every Greatest Wealth Transfer across your agents &mdash; who they have invited, the loved ones under each giftor, and where every family stands.</p>
+          </div>
+        </div>
+
+        <div id="imoEmpty" hidden>
+          <div class="empty">
+            <div class="art">
+              <svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 8h20v4H2z"/><path d="M12 22V8"/><path d="M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5h4z"/><path d="M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5h-4z"/></svg>
+            </div>
+            <h3>No GWT activity yet</h3>
+            <p>None of your agents has invited a Greatest Wealth Transfer giftor. When they do, they appear here automatically &mdash; there is nothing for you to set up.</p>
+          </div>
+          <div class="hiw">
+            <h4>What will show here, and when</h4>
+            <div class="steps">
+              <div class="st"><div class="n">Step 1</div><b>An agent invites a giftor</b><span>The agent appears here with that giftor beneath them, from the moment the invitation is sent.</span></div>
+              <div class="st"><div class="n">Step 2</div><b>The giftor creates their account</b><span>Their status updates here on its own &mdash; nobody has to tell you.</span></div>
+              <div class="st gate"><div class="n">Step 3</div><b>Loved ones are added</b><span>Expand a giftor to see each loved one, their gift amount and their illustration.</span></div>
+              <div class="st"><div class="n">Step 4</div><b>Invitations go out, enrolment begins</b><span>Follow each family through to policies in force.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="imoFull">
+          <div class="ro">
+            <svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span><b>This is a view-only screen.</b> You can see everything your agents are doing in GWT, but nothing is changed from here &mdash; loved ones are managed by the agent, and only the giftor can send invitations.</span>
+          </div>
+
+          <div class="toolbar">
+            <div class="search">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input placeholder="Search agents, giftors or loved ones...">
+            </div>
+            <select class="sel"><option>All agents</option><option>Agents with activity</option><option>Agents with none</option></select>
+            <select class="sel"><option>Sort: Last activity</option><option>Sort: Most giftors</option><option>Sort: Agent name</option></select>
+            <span class="cnt">3 agents &middot; 5 giftors &middot; 7 loved ones</span>
+          </div>
+
+          <div class="acard"><button class="ahead"><div class="hcol keep"><span class="hlab">Agent</span><span class="gid"><span class="aav" aria-hidden="true">BO</span><span><span class="gname"><span class="gnm">Ben Ortiz</span></span><span class="gmail">b.ortiz@example.com</span></span></span></div><div class="hcol"><span class="hlab">Giftors</span><span class="lovedcount"><span class="pill">3</span></span></div><div class="hcol"><span class="hlab">Loved ones</span><span class="lovedcount"><span class="pill">5</span></span></div><div class="hcol"><span class="hlab">Last activity</span><span class="hval soft">2 hours ago</span></div><svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button><div class="abody"><div class="gcard"><button class="ghead"><div class="hcol keep"><span class="hlab">Giftor</span><span class="gid"><span class="gav" aria-hidden="true">MW<span class="gbadge"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 8h20v4H2z"/><path d="M12 20V8"/><path d="M12 8S11 4 9 4a2 2 0 0 0 0 4h3z"/><path d="M12 8s1-4 3-4a2 2 0 0 1 0 4h-3z"/></svg></span></span><span><span class="gname"><span class="gnm">Margaret Whitfield</span><span class="kz yes"><svg viewBox="0 0 24 24"><path d="m5 12 5 5L19 7"/></svg>Has a policy</span></span><span class="gmail">m.whitfield@example.com</span></span></span></div><div class="hcol"><span class="hlab">Giftor status</span><span class="chip go">Account created</span></div><div class="hcol"><span class="hlab">Loved ones</span><span class="lovedcount"><span class="pill">3</span></span></div><div class="hcol"><span class="hlab">Last activity</span><span class="hval soft">2 hours ago</span></div><svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button><div class="gbody"><table class="lotable"><thead><tr><th style="width:30%">Loved one</th><th style="width:16%">Gift amount</th><th style="width:30%">Illustration</th><th style="width:24%">Status</th></tr></thead><tbody><tr><td><span class="ln">Daniel Whitfield</span><span class="lr">Child &middot; age 29</span></td><td>$50,000</td><td><span class="chip done nodot">Ready &middot; v2</span><span class="meta">Re-run by the giftor &middot; 2 hours ago</span></td><td><span class="chip wait">Waiting on giftor</span></td></tr><tr><td><span class="ln">Sophie Whitfield</span><span class="lr">Child &middot; age 26</span></td><td>$50,000</td><td><span class="chip done nodot">Ready</span><span class="meta">Run by the agent &middot; yesterday</span></td><td><span class="chip wait">Waiting on giftor</span></td></tr><tr><td><span class="ln">Elias Whitfield</span><span class="lr">Grandchild &middot; age 8</span></td><td><span style="color:var(--faint)">Not set</span></td><td><span class="chip idle">Not run</span></td><td><span class="chip idle">Details incomplete</span></td></tr></tbody></table></div></div><div class="gcard"><button class="ghead"><div class="hcol keep"><span class="hlab">Giftor</span><span class="gid"><span class="gav" aria-hidden="true">RO<span class="gbadge"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 8h20v4H2z"/><path d="M12 20V8"/><path d="M12 8S11 4 9 4a2 2 0 0 0 0 4h3z"/><path d="M12 8s1-4 3-4a2 2 0 0 1 0 4h-3z"/></svg></span></span><span><span class="gname"><span class="gnm">Raymond Ortega</span><span class="kz no"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>No policy</span></span><span class="gmail">r.ortega@example.com</span></span></span></div><div class="hcol"><span class="hlab">Giftor status</span><span class="chip wait">Invited &mdash; no account yet</span></div><div class="hcol"><span class="hlab">Loved ones</span><span class="lovedcount"><span class="pill" style="background:var(--surface-2);color:var(--faint)">0</span></span></div><div class="hcol"><span class="hlab">Last activity</span><span class="hval soft">Invited 3 days ago</span></div><svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button><div class="gbody"><p style="font-size:12.5px;color:var(--muted);margin:0">No loved ones added yet &mdash; Raymond has not created his ILIA account.</p></div></div><div class="gcard"><button class="ghead"><div class="hcol keep"><span class="hlab">Giftor</span><span class="gid"><span class="gav" aria-hidden="true">PR<span class="gbadge"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 8h20v4H2z"/><path d="M12 20V8"/><path d="M12 8S11 4 9 4a2 2 0 0 0 0 4h3z"/><path d="M12 8s1-4 3-4a2 2 0 0 1 0 4h-3z"/></svg></span></span><span><span class="gname"><span class="gnm">Priya Raman</span><span class="kz yes"><svg viewBox="0 0 24 24"><path d="m5 12 5 5L19 7"/></svg>Has a policy</span></span><span class="gmail">p.raman@example.com</span></span></span></div><div class="hcol"><span class="hlab">Giftor status</span><span class="chip done">Invitations sent</span></div><div class="hcol"><span class="hlab">Loved ones</span><span class="lovedcount"><span class="pill">2</span></span></div><div class="hcol"><span class="hlab">Last activity</span><span class="hval soft">5 days ago</span></div><svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button><div class="gbody"><table class="lotable"><thead><tr><th style="width:30%">Loved one</th><th style="width:16%">Gift amount</th><th style="width:30%">Illustration</th><th style="width:24%">Status</th></tr></thead><tbody><tr><td><span class="ln">Anika Raman</span><span class="lr">Child &middot; age 31</span></td><td>$75,000</td><td><span class="chip done nodot">Ready &middot; v2</span><span class="meta">Run by the agent &middot; 6 days ago</span></td><td><span class="chip pur">Enrolling</span><span class="meta">Application step</span></td></tr><tr><td><span class="ln">Vikram Raman</span><span class="lr">Child &middot; age 27</span></td><td>$75,000</td><td><span class="chip done nodot">Ready</span><span class="meta">Run by the agent &middot; 6 days ago</span></td><td><span class="chip go">Account created</span><span class="meta">Enrollment not started</span></td></tr></tbody></table></div></div></div></div>
+          <div class="acard"><button class="ahead"><div class="hcol keep"><span class="hlab">Agent</span><span class="gid"><span class="aav" aria-hidden="true">DW</span><span><span class="gname"><span class="gnm">Dana Whitmore</span></span><span class="gmail">d.whitmore@example.com</span></span></span></div><div class="hcol"><span class="hlab">Giftors</span><span class="lovedcount"><span class="pill">1</span></span></div><div class="hcol"><span class="hlab">Loved ones</span><span class="lovedcount"><span class="pill">2</span></span></div><div class="hcol"><span class="hlab">Last activity</span><span class="hval soft">4 days ago</span></div><svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button><div class="abody"><div class="gcard"><button class="ghead"><div class="hcol keep"><span class="hlab">Giftor</span><span class="gid"><span class="gav" aria-hidden="true">HB<span class="gbadge"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 8h20v4H2z"/><path d="M12 20V8"/><path d="M12 8S11 4 9 4a2 2 0 0 0 0 4h3z"/><path d="M12 8s1-4 3-4a2 2 0 0 1 0 4h-3z"/></svg></span></span><span><span class="gname"><span class="gnm">Harold Bexley</span><span class="kz yes"><svg viewBox="0 0 24 24"><path d="m5 12 5 5L19 7"/></svg>Has a policy</span></span><span class="gmail">h.bexley@example.com</span></span></span></div><div class="hcol"><span class="hlab">Giftor status</span><span class="chip go">Account created</span></div><div class="hcol"><span class="hlab">Loved ones</span><span class="lovedcount"><span class="pill">2</span></span></div><div class="hcol"><span class="hlab">Last activity</span><span class="hval soft">4 days ago</span></div><svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button><div class="gbody"><table class="lotable"><thead><tr><th style="width:30%">Loved one</th><th style="width:16%">Gift amount</th><th style="width:30%">Illustration</th><th style="width:24%">Status</th></tr></thead><tbody><tr><td><span class="ln">Naomi Bexley</span><span class="lr">Grandchild &middot; age 19</span></td><td>$30,000</td><td><span class="chip done nodot">Ready</span><span class="meta">Run by the agent &middot; 4 days ago</span></td><td><span class="chip wait">Waiting on giftor</span></td></tr><tr><td><span class="ln">Jonah Bexley</span><span class="lr">Grandchild &middot; age 16</span></td><td>$30,000</td><td><span class="chip done nodot">Ready</span><span class="meta">Run by the agent &middot; 4 days ago</span></td><td><span class="chip wait">Waiting on giftor</span></td></tr></tbody></table></div></div></div></div>
+          <div class="acard"><button class="ahead"><div class="hcol keep"><span class="hlab">Agent</span><span class="gid"><span class="aav" aria-hidden="true">TR</span><span><span class="gname"><span class="gnm">Tomas Riley</span></span><span class="gmail">t.riley@example.com</span></span></span></div><div class="hcol"><span class="hlab">Giftors</span><span class="lovedcount"><span class="pill">1</span></span></div><div class="hcol"><span class="hlab">Loved ones</span><span class="lovedcount"><span class="pill" style="background:var(--surface-2);color:var(--faint)">0</span></span></div><div class="hcol"><span class="hlab">Last activity</span><span class="hval soft">2 weeks ago</span></div><svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button><div class="abody"><div class="gcard"><button class="ghead"><div class="hcol keep"><span class="hlab">Giftor</span><span class="gid"><span class="gav" aria-hidden="true">CN<span class="gbadge"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 8h20v4H2z"/><path d="M12 20V8"/><path d="M12 8S11 4 9 4a2 2 0 0 0 0 4h3z"/><path d="M12 8s1-4 3-4a2 2 0 0 1 0 4h-3z"/></svg></span></span><span><span class="gname"><span class="gnm">Celia Nunez</span><span class="kz no"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>No policy</span></span><span class="gmail">c.nunez@example.com</span></span></span></div><div class="hcol"><span class="hlab">Giftor status</span><span class="chip wait">Invited &mdash; no account yet</span></div><div class="hcol"><span class="hlab">Loved ones</span><span class="lovedcount"><span class="pill" style="background:var(--surface-2);color:var(--faint)">0</span></span></div><div class="hcol"><span class="hlab">Last activity</span><span class="hval soft">Invited 2 weeks ago</span></div><svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button><div class="gbody"><p style="font-size:12.5px;color:var(--muted);margin:0">No loved ones added yet &mdash; Celia has not created her ILIA account.</p></div></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ EDIT LOVED ONE ============ -->
   <div class="ovl" id="ovlLoved" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-label="Edit loved one">
@@ -1268,8 +1361,9 @@
   tabs.forEach(function(t){
     t.addEventListener('click',function(){
       tabs.forEach(function(x){x.classList.toggle('on',x===t);});
-      document.getElementById('v-portal').hidden=(t.dataset.v!=='portal');
-      document.getElementById('v-email').hidden=(t.dataset.v!=='email');
+      ['portal','email','imo'].forEach(function(k){
+        document.getElementById('v-'+k).hidden=(t.dataset.v!==k);
+      });
       window.scrollTo({top:0,behavior:'smooth'});
     });
   });
@@ -1281,6 +1375,27 @@
       ['agent','remind','update','imo'].forEach(function(k){
         document.getElementById('m-'+k).hidden=(t.dataset.m!==k);
       });
+    });
+  });
+
+  /* IMO view: agent-level accordion */
+  document.querySelectorAll('.acard .ahead').forEach(function(h2){
+    h2.setAttribute('aria-expanded','false');
+    h2.addEventListener('click',function(){
+      var card=h2.parentElement;
+      var open=card.classList.toggle('open');
+      card.querySelector('.abody').hidden=!open;
+      h2.setAttribute('aria-expanded',open?'true':'false');
+    });
+    h2.parentElement.querySelector('.abody').hidden=true;
+  });
+
+  var imoSeg=document.querySelectorAll('#imoSeg button');
+  imoSeg.forEach(function(b){
+    b.addEventListener('click',function(){
+      imoSeg.forEach(function(x){x.classList.toggle('on',x===b);});
+      document.getElementById('imoEmpty').hidden=(b.dataset.s!=='empty');
+      document.getElementById('imoFull').hidden=(b.dataset.s!=='full');
     });
   });
 
