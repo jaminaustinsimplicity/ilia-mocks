@@ -512,7 +512,7 @@
             <div class="gbody">
               <div class="livebar">
                 <span class="livedot"></span>
-                <span><b>Margaret is in Daniel Whitfield&rsquo;s details right now.</b> While the giftor is inside a loved one&rsquo;s record, <b>the giftor has authority</b> &mdash; your editing is paused for that loved one until she leaves. Everyone else in this list is unaffected. (NIWD-2260.)</span>
+                <span><b>Margaret is in Elias Whitfield&rsquo;s details right now.</b> While the giftor is inside a loved one&rsquo;s record, <b>the giftor has authority</b> &mdash; your editing is paused for that loved one until she leaves. Everyone else in this list is unaffected. (NIWD-2260.)</span>
               </div>
 
               <div class="shared">
@@ -530,31 +530,40 @@
                   <tr><th style="width:22%">Loved one</th><th style="width:12%">Gift amount</th><th style="width:24%">Illustration</th><th style="width:16%">Status</th><th style="width:26%"></th></tr>
                 </thead>
                 <tbody>
-                  <tr class="locked">
+                  <tr>
                     <td><span class="ln">Daniel Whitfield</span><span class="lr">Child &middot; age 29</span>
-                      <span class="lockmsg"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Giftor is editing &mdash; locked to you</span></td>
+                      <span class="lockmsg"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>With the giftor &mdash; you can&rsquo;t edit</span></td>
                     <td>$50,000</td>
                     <td><span class="chip done nodot">Ready &middot; v2</span><span class="meta byg">Re-run by Margaret &middot; 2 hours ago</span></td>
-                    <td><span class="chip wait">Awaiting giftor</span></td>
+                    <td><span class="chip wait">Waiting on giftor</span></td>
                     <td><div class="rowacts">
                       <button class="lnk">View illustration</button>
-                      <button class="lnk off" disabled title="Margaret is in this loved one's details — the giftor has authority while they're in the record.">Re-run</button>
-                      <button class="lnk off" disabled title="Margaret is in this loved one's details — the giftor has authority while they're in the record.">Edit</button>
+                      <button class="lnk off" disabled title="This loved one is with Margaret for review. You can't change it while it's waiting on her.">Re-run</button>
+                      <button class="lnk off" disabled title="This loved one is with Margaret for review. You can't change it while it's waiting on her.">Edit</button>
                     </div></td>
                   </tr>
                   <tr>
-                    <td><span class="ln">Sophie Whitfield</span><span class="lr">Child &middot; age 26</span></td>
+                    <td><span class="ln">Sophie Whitfield</span><span class="lr">Child &middot; age 26</span>
+                      <span class="lockmsg"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>With the giftor &mdash; you can&rsquo;t edit</span></td>
                     <td>$50,000</td>
                     <td><span class="chip done nodot">Ready</span><span class="meta">Run by you &middot; yesterday</span></td>
-                    <td><span class="chip wait">Awaiting giftor</span></td>
-                    <td><div class="rowacts"><button class="lnk">View illustration</button><button class="lnk">Re-run</button><button class="lnk mut">Edit</button></div></td>
+                    <td><span class="chip wait">Waiting on giftor</span></td>
+                    <td><div class="rowacts">
+                      <button class="lnk">View illustration</button>
+                      <button class="lnk off" disabled title="This loved one is with Margaret for review. You can't change it while it's waiting on her.">Re-run</button>
+                      <button class="lnk off" disabled title="This loved one is with Margaret for review. You can't change it while it's waiting on her.">Edit</button>
+                    </div></td>
                   </tr>
-                  <tr>
-                    <td><span class="ln">Elias Whitfield</span><span class="lr">Grandchild &middot; age 8</span></td>
+                  <tr class="locked">
+                    <td><span class="ln">Elias Whitfield</span><span class="lr">Grandchild &middot; age 8</span>
+                      <span class="lockmsg"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Margaret is editing this right now</span></td>
                     <td><span style="color:var(--faint)">Not set</span></td>
                     <td><span class="chip idle">Not run</span><span class="meta">Needs gift amount &amp; health to run</span></td>
                     <td><span class="chip idle">Details incomplete</span></td>
-                    <td><div class="rowacts"><button class="lnk">Complete details</button><button class="lnk mut">Remove</button></div></td>
+                    <td><div class="rowacts">
+                      <button class="lnk off" disabled title="Margaret is in this loved one's details — the giftor has authority while she's in the record.">Complete details</button>
+                      <button class="lnk off" disabled title="Margaret is in this loved one's details — the giftor has authority while she's in the record.">Remove</button>
+                    </div></td>
                   </tr>
                 </tbody>
               </table>
@@ -1051,13 +1060,22 @@
       <li><b>Every change is attributed.</b> Each illustration shows who ran it and when, with giftor-made changes picked out in a distinct colour, so an agent can immediately see that the giftor has been in and changed something.</li>
       <li><b>Illustrations are versioned</b> (&ldquo;Ready &middot; v2&rdquo;) rather than silently replaced, so there is a history when the two parties disagree.</li>
       <li><b>Concurrent access is surfaced and acted on.</b> When ilia detects the giftor inside a loved one&rsquo;s details while the agent is in the same record, <b>authority goes to the giftor</b>: the agent&rsquo;s edit controls for <i>that loved one</i> are disabled, the row is visibly locked, and the banner names who is in and why. Read-only actions (View illustration) stay available. This is the agent-facing half of NIWD-2260.</li>
+      <li><b>Two separate reasons an agent cannot edit a loved one &mdash; do not conflate them.</b>
+        <br><b>(1) Workflow &mdash; "Waiting on giftor".</b> The loved one is complete and with the giftor for review. The agent cannot change it, because the giftor is about to sign off on it. This is a <i>state</i> and can last days.
+        <br><b>(2) Live lock &mdash; the giftor is in the record right now.</b> Momentary, lasts seconds or minutes, and matters mainly while a loved one is still being completed (NIWD-2260).
+        <br>In the mock, Daniel and Sophie show reason 1; Elias shows reason 2. Both disable the same controls but say different things, because the agent&rsquo;s next move differs: with reason 1 they nudge the giftor, with reason 2 they wait.</li>
+      <li><b>Notifications on change &mdash; asymmetric by design.</b>
+        <br><b>Agent edits a loved one</b> &rarr; the giftor is told what changed and what it means. (The loved one too, once invited.)
+        <br><b>Giftor or loved one edits</b> &rarr; the agent is told <b>only when the contribution amount changes.</b> Everything else updates silently in the GWT Center without an email.
+        <br>The asymmetry is deliberate: the giftor is signing off, so they need to know about every change; the agent only needs to know about the number that changes the business.</li>
+      <li><b>All changes from any side must be reflected in the GWT Center</b> without the agent refreshing or hunting &mdash; the list is the agent&rsquo;s source of truth for where each family stands.</li>
       <li><b>The lock is per loved one, not per section.</b> Only the record the giftor is actually inside is locked &mdash; the agent can carry on with every other loved one under that giftor. A whole-section lock would punish the agent for the giftor opening one row.</li>
     </ul>
 
     <h5>Who can do what</h5>
     <ul>
       <li><b>Only the giftor can send an invitation to a loved one.</b> The agent has no Send control anywhere in this screen &mdash; deliberately. The agent prepares; the giftor signs off and sends; NIW admin approves. The green panel states this in plain language, and the agent&rsquo;s only nudge is &ldquo;Remind [giftor]&rdquo;.</li>
-      <li><b>The giftor is the final sign-off on illustrations.</b> Loved ones the agent has prepared sit at <b>Awaiting giftor</b> until she reviews and sends.</li>
+      <li><b>The giftor is the final sign-off on illustrations.</b> Loved ones the agent has prepared sit at <b>Waiting on giftor</b> until she reviews and sends.</li>
     </ul>
 
     <h5>Open questions</h5>
