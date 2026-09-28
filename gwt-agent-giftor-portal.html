@@ -384,6 +384,9 @@
   .notes ul{margin:0 0 12px;padding-left:17px}
   .notes li{font-size:11.5px;color:var(--muted);margin-bottom:7px;line-height:1.55}
   .notes li b{color:var(--ink)}
+  .notes .trig{display:flex;gap:9px;font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:5px}
+  .notes .trig b{color:var(--ink);flex:none;min-width:74px}
+  .notes .tref{font-size:10.5px;color:var(--faint);margin:14px 0 0;padding-top:11px;border-top:1px solid var(--border)}
   .notes .q{border-left:2.5px solid var(--warn);padding-left:11px;margin-top:12px}
   .notes .q .qh{color:var(--warn);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:6px;font-weight:800}
 
@@ -713,22 +716,27 @@
       </div>
 
       <div class="notes">
-        <h4>What this email must cover</h4>
+        <h4>To the agent — invitation sent</h4>
+        <div class="trig"><b>Triggered by</b><span>the agent submits a GWT giftor invitation</span></div>
+        <div class="trig"><b>Sent to</b><span>the agent who sent it</span></div>
+        <h4 style="margin-top:15px">Must contain</h4>
         <ul>
           <li><b>Who the giftor is</b> &mdash; name and email, so the agent has a record of exactly who was invited.</li>
-          <li><b>Loved ones, if any were added</b> &mdash; count and names when the agent added them during the invitation; an explicit &ldquo;none &mdash; the giftor will add their own&rdquo; when they didn&rsquo;t.</li>
-          <li><b>Who actually invites the loved ones</b> &mdash; short, plain copy making clear the <b>giftor</b> confirms details and sends the invitations from their own portal, after creating their ILIA account.</li>
-          <li><b>Where to track it</b> &mdash; a note that giftor invitations and participants are managed in the GWT Center inside the ILIA agent portal.</li>
-          <li><b>One CTA</b> &mdash; a button that deep-links straight to the GWT Center screen.</li>
+          <li><b>Loved ones, if any were added</b> &mdash; count and names, or an explicit &ldquo;none &mdash; the giftor will add their own&rdquo;.</li>
+          <li><b>Product, carrier and timestamp.</b></li>
+          <li><b>Who actually invites the loved ones</b> &mdash; plain copy making clear the <b>giftor</b> confirms and sends, after creating their ILIA account and subject to admin approval. This is the part agents get wrong.</li>
+          <li><b>Where to track it</b> &mdash; the GWT Center inside the agent portal.</li>
+          <li><b>One CTA</b> deep-linking straight to the GWT Center.</li>
         </ul>
         <div class="q">
-          <span class="qh">Open questions</span>
+          <span class="qh">Still open</span>
           <ul style="margin-bottom:0">
-            <li>Does this replace or sit alongside the existing agent notification in the current four-email send (recipient / agent / giftor / IMO)?</li>
-            <li>Should the IMO copy carry the same summary, or stay as it is?</li>
-            <li>Do we send a second agent email when the giftor actually completes and sends to their loved ones?</li>
+            <li>Does this <b>replace</b> the existing agent email in the current four-email send (recipient / agent / giftor / IMO), or sit alongside it? Recommendation: replace.</li>
+            <li>Should the IMO copy carry the same summary?</li>
+            <li>Do we send a second agent email when the giftor actually sends to their loved ones?</li>
           </ul>
         </div>
+        <p class="tref">Requirements and full copy live in <b>NIWD-2556</b></p>
       </div>
     </div>
       </div><!-- /m-agent -->
@@ -766,22 +774,26 @@
           </div>
         </div>
         <div class="notes">
-          <h4>What this email must cover</h4>
+          <h4>To the giftor — reminder</h4>
+          <div class="trig"><b>Triggered by</b><span>the agent presses <b>Remind [giftor]</b> on the sign-off panel</span></div>
+          <div class="trig"><b>Sent to</b><span>the giftor</span></div>
+          <h4 style="margin-top:15px">Must contain</h4>
           <ul>
             <li><b>Who prepared it</b> &mdash; the giftor should know their agent has done work on their behalf, not that ilia is nagging them.</li>
             <li><b>What is waiting</b> &mdash; how many loved ones, and who they are.</li>
             <li><b>Why only they can act</b> &mdash; restates the sign-off rule in one line. This is the point agents and giftors keep misunderstanding.</li>
             <li><b>What happens after they send</b> &mdash; admin review, then invitations go out.</li>
-            <li><b>One CTA</b> &mdash; deep-links into the giftor&rsquo;s own portal, not the GWT Center.</li>
+            <li><b>One CTA</b> deep-linking into the giftor&rsquo;s own portal, not the GWT Center.</li>
           </ul>
           <div class="q">
-            <span class="qh">Open questions</span>
+            <span class="qh">Still open</span>
             <ul style="margin-bottom:0">
-              <li><b>Rate limiting.</b> Can an agent press Remind repeatedly? Suggest one reminder per giftor per 24&nbsp;hours, with the button disabled and showing when the last one was sent.</li>
+              <li><b>Rate limiting.</b> Suggest one reminder per giftor per 24 hours, with the button disabled and showing when the last one was sent.</li>
               <li>Does the agent see confirmation that the reminder went, and when?</li>
               <li>Should the agent be able to add a short personal note?</li>
             </ul>
           </div>
+          <p class="tref">Requirements and full copy live in <b>NIWD-2556</b></p>
         </div>
       </div>
     </div>
@@ -824,22 +836,26 @@
           </div>
         </div>
         <div class="notes">
-          <h4>What this email must cover</h4>
+          <h4>To the giftor — a loved one was updated</h4>
+          <div class="trig"><b>Triggered by</b><span>the agent edits a loved one that was already complete and waiting on the giftor</span></div>
+          <div class="trig"><b>Sent to</b><span>the giftor</span></div>
+          <h4 style="margin-top:15px">Must contain</h4>
           <ul>
-            <li><b>Exactly what changed</b> &mdash; old value and new value, side by side. A vague &ldquo;details were updated&rdquo; is useless to a giftor about to sign off.</li>
+            <li><b>What changed &mdash; old value beside new value.</b> A vague &ldquo;details were updated&rdquo; is useless to someone about to sign off.</li>
             <li><b>Who changed it and when.</b></li>
             <li><b>That it has gone back to needing their review</b> &mdash; so they understand why it is no longer ready to send.</li>
             <li><b>A route to query it</b> &mdash; if the giftor did not ask for this change, they need to know who to call before sending.</li>
             <li><b>One CTA</b> into their own portal to review and send.</li>
           </ul>
           <div class="q">
-            <span class="qh">Open questions</span>
+            <span class="qh">Still open</span>
             <ul style="margin-bottom:0">
-              <li><b>Batching.</b> If an agent updates three loved ones in one sitting, is that three emails or one? One, listing all three, is almost certainly better.</li>
-              <li><b>Does the loved one get told?</b> Only relevant once they have been invited and are enrolling &mdash; tied to the still-open question about editing after invitations go out.</li>
-              <li>Should the agent be able to add a line of context (&ldquo;as we discussed on the phone&rdquo;)? It would head off a lot of confused replies.</li>
+              <li><b>Batching.</b> Three loved ones updated in one sitting should be <b>one</b> email listing all three, not three emails.</li>
+              <li>Does the loved one get told? Only once they are invited and enrolling &mdash; tied to the open question about editing after invitations go out.</li>
+              <li>Should the agent be able to add a line of context (&ldquo;as we discussed on the phone&rdquo;)?</li>
             </ul>
           </div>
+          <p class="tref">Requirements and full copy live in <b>NIWD-2556</b></p>
         </div>
       </div>
     </div>
@@ -876,19 +892,24 @@
           </div>
         </div>
         <div class="notes">
-          <h4>Decide before writing this</h4>
+          <h4>To the IMO — notifications</h4>
+          <div class="trig"><b>Triggered by</b><span>an IMO-level GWT event &mdash; <b>which events is not yet decided</b></span></div>
+          <div class="trig"><b>Sent to</b><span>the IMO above the agent</span></div>
+          <h4 style="margin-top:15px">Must contain</h4>
           <ul>
-            <li><b>Which events warrant an email?</b> Candidates: a giftor is invited &middot; the giftor creates their account &middot; invitations go out to loved ones &middot; a loved one enrols &middot; a policy goes in force. Some of these are milestones; some are noise.</li>
-            <li><b>One email per event, or a digest?</b> An IMO with forty agents would be buried by per-event emails. A weekly or daily summary may serve them better.</li>
-            <li><b>Who at the IMO receives it?</b> A single mailbox, a named contact, or everyone with an IMO login?</li>
-            <li><b>Is email even the right channel,</b> or is the <b>IMO Giftor Center</b> (still to be designed) the better answer &mdash; they look when they want rather than being told?</li>
+            <li><b>Nothing is specified yet.</b> This email is deliberately unbuilt until its content is agreed &mdash; the questions below come first.</li>
           </ul>
           <div class="q">
-            <span class="qh">Note</span>
+            <span class="qh">Still open</span>
             <ul style="margin-bottom:0">
-              <li>The invite flow already sends an IMO email today (recipient / agent / giftor / IMO). Whatever is decided here should reconcile with that rather than adding a second stream.</li>
+              <li><b>Which events warrant an email?</b> A giftor is invited &middot; the giftor creates their account &middot; invitations go out to loved ones &middot; a loved one enrols &middot; a policy goes in force. Some are milestones; some are noise.</li>
+              <li><b>One email per event, or a digest?</b> An IMO with forty agents would be buried by per-event emails.</li>
+              <li><b>Who at the IMO receives it?</b> A single mailbox, a named contact, or everyone with an IMO login?</li>
+              <li><b>Is email even the right channel,</b> or is the IMO GWT Center the better answer &mdash; they look when they want rather than being told?</li>
+              <li>The invite flow already sends an IMO email today. Whatever is decided should reconcile with that rather than adding a second stream.</li>
             </ul>
           </div>
+          <p class="tref">Requirements and full copy live in <b>NIWD-2556</b></p>
         </div>
       </div>
     </div>
