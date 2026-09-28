@@ -213,6 +213,8 @@
   tr.locked td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
   .lockmsg{display:flex;gap:5px;align-items:center;font-size:10.5px;color:var(--warn);font-weight:700;margin-top:6px;line-height:1.4}
   .lockmsg svg{flex:none;width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.3}
+  .editnote{display:flex;gap:5px;align-items:center;font-size:10.5px;color:var(--accent);font-weight:600;margin-top:6px;line-height:1.4}
+  .editnote svg{flex:none;width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
   .lnk.off{color:var(--faint);cursor:not-allowed;opacity:.65}
   .lnk.off:hover{text-decoration:none}
 
@@ -532,26 +534,26 @@
                 <tbody>
                   <tr>
                     <td><span class="ln">Daniel Whitfield</span><span class="lr">Child &middot; age 29</span>
-                      <span class="lockmsg"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>With the giftor &mdash; you can&rsquo;t edit</span></td>
+                      <span class="editnote"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-1"/></svg>Editing sends this back to Margaret to re-check</span></td>
                     <td>$50,000</td>
                     <td><span class="chip done nodot">Ready &middot; v2</span><span class="meta byg">Re-run by Margaret &middot; 2 hours ago</span></td>
                     <td><span class="chip wait">Waiting on giftor</span></td>
                     <td><div class="rowacts">
                       <button class="lnk">View illustration</button>
-                      <button class="lnk off" disabled title="This loved one is with Margaret for review. You can't change it while it's waiting on her.">Re-run</button>
-                      <button class="lnk off" disabled title="This loved one is with Margaret for review. You can't change it while it's waiting on her.">Edit</button>
+                      <button class="lnk">Re-run</button>
+                      <button class="lnk mut">Edit</button>
                     </div></td>
                   </tr>
                   <tr>
                     <td><span class="ln">Sophie Whitfield</span><span class="lr">Child &middot; age 26</span>
-                      <span class="lockmsg"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>With the giftor &mdash; you can&rsquo;t edit</span></td>
+                      <span class="editnote"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-1"/></svg>Editing sends this back to Margaret to re-check</span></td>
                     <td>$50,000</td>
                     <td><span class="chip done nodot">Ready</span><span class="meta">Run by you &middot; yesterday</span></td>
                     <td><span class="chip wait">Waiting on giftor</span></td>
                     <td><div class="rowacts">
                       <button class="lnk">View illustration</button>
-                      <button class="lnk off" disabled title="This loved one is with Margaret for review. You can't change it while it's waiting on her.">Re-run</button>
-                      <button class="lnk off" disabled title="This loved one is with Margaret for review. You can't change it while it's waiting on her.">Edit</button>
+                      <button class="lnk">Re-run</button>
+                      <button class="lnk mut">Edit</button>
                     </div></td>
                   </tr>
                   <tr class="locked">
@@ -656,6 +658,7 @@
     <div class="subtabs" id="mailTabs">
       <button class="stab on" data-m="agent">To the agent &mdash; invitation sent</button>
       <button class="stab" data-m="remind">To the giftor &mdash; reminder</button>
+      <button class="stab" data-m="update">To the giftor &mdash; a loved one was updated</button>
       <button class="stab" data-m="imo">To the IMO &mdash; notifications</button>
     </div>
     <div class="mailpane" id="m-agent">
@@ -762,6 +765,64 @@
               <li><b>Rate limiting.</b> Can an agent press Remind repeatedly? Suggest one reminder per giftor per 24&nbsp;hours, with the button disabled and showing when the last one was sent.</li>
               <li>Does the agent see confirmation that the reminder went, and when?</li>
               <li>Should the agent be able to add a short personal note?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== a loved one was updated ===== -->
+    <div class="mailpane" id="m-update" hidden>
+      <div class="mailwrap">
+        <div class="mail">
+          <div class="mail-meta">
+            <div class="subj"><span class="tokn">[Loved One First Name]</span>&rsquo;s details were updated &mdash; please take a look</div>
+            <div><b>From:</b> ILIA &lt;no-reply&gt; &nbsp;&middot;&nbsp; <b>To:</b> <span class="tokn">[Giftor Email]</span> &nbsp;&middot;&nbsp; <b>Triggered by:</b> an agent editing a loved one that was already complete</div>
+          </div>
+          <div>
+            <div class="mail-hero">
+              <div class="lg">ilia</div>
+              <h3>Something changed &mdash; worth a look</h3>
+            </div>
+            <div class="mail-in">
+              <p>Hi <span class="tokn">[Giftor First Name]</span>,</p>
+              <p><span class="tokn">[Agent Name]</span> has updated <span class="tokn">[Loved One Name]</span>&rsquo;s details. Because this changes what you&rsquo;ll be sending, we&rsquo;ve put it back for you to review.</p>
+
+              <div class="slab">
+                <div class="sh">What changed</div>
+                <div class="kv"><span class="k">Loved one</span><span class="v tokn">[Loved One Name]</span></div>
+                <div class="kv"><span class="k">Contribution</span><span class="v"><span style="color:var(--faint);text-decoration:line-through">[Old amount]</span> &nbsp;&rarr;&nbsp; <span class="tokn">[New amount]</span></span></div>
+                <div class="kv"><span class="k">Illustration</span><span class="v tokn">[Re-run &middot; now v3]</span></div>
+                <div class="kv"><span class="k">Changed by</span><span class="v tokn">[Agent Name]</span></div>
+                <div class="kv"><span class="k">When</span><span class="v tokn">[Date &amp; time]</span></div>
+              </div>
+
+              <p><b>What this means</b></p>
+              <p class="mu"><span class="tokn">[Loved One First Name]</span> has gone back to <b>needs your review</b>. Nothing is sent until you look at the new figures and confirm &mdash; the same as before. If you asked for this change, it should be exactly what you expected; if it is not, contact <span class="tokn">[Agent Name]</span> before you send.</p>
+
+              <div class="mail-cta"><a href="#">Review and send</a></div>
+            </div>
+            <div class="mail-foot">
+              Sent because a loved one you had ready to send was changed.<br>
+              Questions? Contact <span class="tokn">[Agent Name]</span> or your ILIA support team.
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h4>What this email must cover</h4>
+          <ul>
+            <li><b>Exactly what changed</b> &mdash; old value and new value, side by side. A vague &ldquo;details were updated&rdquo; is useless to a giftor about to sign off.</li>
+            <li><b>Who changed it and when.</b></li>
+            <li><b>That it has gone back to needing their review</b> &mdash; so they understand why it is no longer ready to send.</li>
+            <li><b>A route to query it</b> &mdash; if the giftor did not ask for this change, they need to know who to call before sending.</li>
+            <li><b>One CTA</b> into their own portal to review and send.</li>
+          </ul>
+          <div class="q">
+            <span class="qh">Open questions</span>
+            <ul style="margin-bottom:0">
+              <li><b>Batching.</b> If an agent updates three loved ones in one sitting, is that three emails or one? One, listing all three, is almost certainly better.</li>
+              <li><b>Does the loved one get told?</b> Only relevant once they have been invited and are enrolling &mdash; tied to the still-open question about editing after invitations go out.</li>
+              <li>Should the agent be able to add a line of context (&ldquo;as we discussed on the phone&rdquo;)? It would head off a lot of confused replies.</li>
             </ul>
           </div>
         </div>
@@ -1060,10 +1121,10 @@
       <li><b>Every change is attributed.</b> Each illustration shows who ran it and when, with giftor-made changes picked out in a distinct colour, so an agent can immediately see that the giftor has been in and changed something.</li>
       <li><b>Illustrations are versioned</b> (&ldquo;Ready &middot; v2&rdquo;) rather than silently replaced, so there is a history when the two parties disagree.</li>
       <li><b>Concurrent access is surfaced and acted on.</b> When ilia detects the giftor inside a loved one&rsquo;s details while the agent is in the same record, <b>authority goes to the giftor</b>: the agent&rsquo;s edit controls for <i>that loved one</i> are disabled, the row is visibly locked, and the banner names who is in and why. Read-only actions (View illustration) stay available. This is the agent-facing half of NIWD-2260.</li>
-      <li><b>Two separate reasons an agent cannot edit a loved one &mdash; do not conflate them.</b>
-        <br><b>(1) Workflow &mdash; "Waiting on giftor".</b> The loved one is complete and with the giftor for review. The agent cannot change it, because the giftor is about to sign off on it. This is a <i>state</i> and can last days.
-        <br><b>(2) Live lock &mdash; the giftor is in the record right now.</b> Momentary, lasts seconds or minutes, and matters mainly while a loved one is still being completed (NIWD-2260).
-        <br>In the mock, Daniel and Sophie show reason 1; Elias shows reason 2. Both disable the same controls but say different things, because the agent&rsquo;s next move differs: with reason 1 they nudge the giftor, with reason 2 they wait.</li>
+      <li><b>The agent can always edit &mdash; except while the giftor is literally in the record.</b> An earlier draft blocked editing whenever a loved one was &ldquo;Waiting on giftor&rdquo;. That was wrong: the commonest real case is the <b>giftor phoning their agent</b> and asking them to change a contribution amount. Blocking it leaves the agent telling a client the system won&rsquo;t let them help.
+        <br>What we are actually protecting is not &ldquo;the agent must never edit&rdquo; but <b>&ldquo;the giftor must never send figures they have not seen&rdquo;</b> &mdash; and that does not require blocking anything.</li>
+      <li><b>Editing a &ldquo;Waiting on giftor&rdquo; loved one sends it back for review.</b> The agent edits freely; the loved one returns to needing the giftor&rsquo;s review, and the giftor is emailed exactly what changed (old value &rarr; new value, who, when). The giftor glances, confirms, sends. Agent helps, giftor still sees it first, nobody is blocked. Daniel and Sophie show this.</li>
+      <li><b>The one hard block is the live lock.</b> While the giftor is inside a loved one&rsquo;s record <i>right now</i>, the agent is blocked on that loved one until she leaves. Seconds or minutes, not days, and easy to explain to a client on the phone: &ldquo;she&rsquo;s in there this moment, give her a minute.&rdquo; Elias shows this. This is NIWD-2260.</li>
       <li><b>Notifications on change &mdash; asymmetric by design.</b>
         <br><b>Agent edits a loved one</b> &rarr; the giftor is told what changed and what it means. (The loved one too, once invited.)
         <br><b>Giftor or loved one edits</b> &rarr; the agent is told <b>only when the contribution amount changes.</b> Everything else updates silently in the GWT Center without an email.
@@ -1123,7 +1184,7 @@
   mailTabs.forEach(function(t){
     t.addEventListener('click',function(){
       mailTabs.forEach(function(x){x.classList.toggle('on',x===t);});
-      ['agent','remind','imo'].forEach(function(k){
+      ['agent','remind','update','imo'].forEach(function(k){
         document.getElementById('m-'+k).hidden=(t.dataset.m!==k);
       });
     });
