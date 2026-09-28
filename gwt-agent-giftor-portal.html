@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GWT · Agent Giftor Portal</title>
+<title>GWT Center · Agent Portal</title>
 <style>
   :root{
     --bg:#eef1f6;--surface:#fff;--surface-2:#f6f8fc;--border:#e0e6ef;--border-strong:#c7d0de;
@@ -337,6 +337,11 @@
   .placeholder-note b{color:var(--ink)}
 
   /* ---------- email ---------- */
+  .subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .stab{font-family:inherit;font-size:12px;font-weight:600;border:1px solid var(--border-strong);background:var(--surface);color:var(--muted);border-radius:9px;padding:8px 14px;cursor:pointer}
+  .stab:hover{border-color:var(--accent);color:var(--accent)}
+  .stab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .mailpane[hidden]{display:none}
   .mailwrap{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
   @media (max-width:1000px){.mailwrap{grid-template-columns:1fr}}
   .mail{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
@@ -381,15 +386,15 @@
   <div class="topbar">
     <div>
       <div class="brand">Agent Portal · GWT <span>· Post-invitation workflow</span></div>
-      <h1>Giftor Portal <span class="flag">Design mock</span></h1>
-      <p class="sub">The <b>new Giftor Portal location in the ILIA agent portal</b> &mdash; switch between the <b>default state</b> (no giftors invited yet) and the <b>populated state</b>, where each giftor is a collapsed card that expands to reveal the loved ones tied to them. Tab 2 holds the <b>agent confirmation email</b>, whose call to action lands on this screen.</p>
+      <h1>GWT Center <span class="flag">Design mock</span></h1>
+      <p class="sub">The <b>new GWT Center location in the ILIA agent portal</b> &mdash; switch between the <b>default state</b> (no giftors invited yet) and the <b>populated state</b>, where each giftor is a collapsed card that expands to reveal the loved ones tied to them. Tab 2 holds the <b>emails</b> around this flow &mdash; to the agent, to the giftor, and to the IMO.</p>
     </div>
     <button class="themebtn" id="themeBtn">Theme</button>
   </div>
 
   <div class="tabs">
-    <button class="tab on" data-v="portal">1 &middot; Giftor Portal screen</button>
-    <button class="tab" data-v="email">2 &middot; Agent confirmation email</button>
+    <button class="tab on" data-v="portal">1 &middot; GWT Center screen</button>
+    <button class="tab" data-v="email">2 &middot; Emails</button>
   </div>
 
   <section class="view" id="v-portal">
@@ -406,7 +411,7 @@
           <a href="#"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Agent Dashboard</a>
           <a href="#"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 11a3 3 0 0 0 0-6"/></svg>My Groups</a>
           <a href="#"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7"/></svg>Client Management</a>
-          <a href="#" class="isnew"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 8h20v4H2z"/><path d="M12 22V8"/><path d="M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5h4z"/><path d="M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5h-4z"/></svg>Giftor Portal<span class="newpill">NEW</span></a>
+          <a href="#" class="isnew"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 8h20v4H2z"/><path d="M12 22V8"/><path d="M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5h4z"/><path d="M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5h-4z"/></svg>GWT Center<span class="newpill">NEW</span></a>
           <a href="#"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>Agent Links</a>
           <a href="#"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Action Items</a>
           <a href="#"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>ilia Notifications</a>
@@ -421,7 +426,7 @@
       </aside>
 
       <div class="main">
-        <div class="crumb">Agent Portal &nbsp;&middot;&nbsp; Giftor Portal</div>
+        <div class="crumb">Agent Portal &nbsp;&middot;&nbsp; GWT Center</div>
 
         <div class="statebar">
           <span class="sl">Mock control &mdash; screen state</span>
@@ -434,7 +439,7 @@
 
         <div class="ph">
           <div>
-            <h2>Giftor Portal</h2>
+            <h2>GWT Center</h2>
             <p>Every Greatest Wealth Transfer giftor you&rsquo;ve invited, and the loved ones they&rsquo;re gifting to &mdash; all in one place.</p>
           </div>
           <button class="btn">+ Create a GWT Invitation</button>
@@ -639,6 +644,12 @@
   </section>
 
   <section class="view" id="v-email" hidden>
+    <div class="subtabs" id="mailTabs">
+      <button class="stab on" data-m="agent">To the agent &mdash; invitation sent</button>
+      <button class="stab" data-m="remind">To the giftor &mdash; reminder</button>
+      <button class="stab" data-m="imo">To the IMO &mdash; notifications</button>
+    </div>
+    <div class="mailpane" id="m-agent">
     <div class="mailwrap">
       <div class="mail">
         <div class="mail-meta">
@@ -664,8 +675,8 @@
             <p><b>What happens next</b></p>
             <p class="mu"><span class="tokn">[Giftor First Name]</span> will create their ILIA account from their invitation email. <b>The giftor confirms each loved one&rsquo;s details and sends the actual invitations themselves</b>, from their own giftor portal. Loved ones are not invited until the giftor completes that step and our admin team has approved it &mdash; so nothing goes out on your behalf in the meantime.</p>
             <p><b>Track it any time</b></p>
-            <p class="mu">You can view and manage all of your giftor invitations, and the loved ones tied to them, in the <b>Giftor Portal</b> inside your ILIA agent portal.</p>
-            <div class="mail-cta"><a href="#">Go to my Giftor Portal</a></div>
+            <p class="mu">You can view and manage all of your giftor invitations, and the loved ones tied to them, in the <b>GWT Center</b> inside your ILIA agent portal.</p>
+            <div class="mail-cta"><a href="#">Go to my GWT Center</a></div>
           </div>
           <div class="mail-foot">
             You&rsquo;re receiving this because you sent a Greatest Wealth Transfer invitation in ILIA.<br>
@@ -680,8 +691,8 @@
           <li><b>Who the giftor is</b> &mdash; name and email, so the agent has a record of exactly who was invited.</li>
           <li><b>Loved ones, if any were added</b> &mdash; count and names when the agent added them during the invitation; an explicit &ldquo;none &mdash; the giftor will add their own&rdquo; when they didn&rsquo;t.</li>
           <li><b>Who actually invites the loved ones</b> &mdash; short, plain copy making clear the <b>giftor</b> confirms details and sends the invitations from their own portal, after creating their ILIA account.</li>
-          <li><b>Where to track it</b> &mdash; a note that giftor invitations and participants are managed in the Giftor Portal inside the ILIA agent portal.</li>
-          <li><b>One CTA</b> &mdash; a button that deep-links straight to the Giftor Portal screen.</li>
+          <li><b>Where to track it</b> &mdash; a note that giftor invitations and participants are managed in the GWT Center inside the ILIA agent portal.</li>
+          <li><b>One CTA</b> &mdash; a button that deep-links straight to the GWT Center screen.</li>
         </ul>
         <div class="q">
           <span class="qh">Open questions</span>
@@ -693,7 +704,110 @@
         </div>
       </div>
     </div>
-  </section>
+      </div><!-- /m-agent -->
+
+    <!-- ===== reminder to the giftor ===== -->
+    <div class="mailpane" id="m-remind" hidden>
+      <div class="mailwrap">
+        <div class="mail">
+          <div class="mail-meta">
+            <div class="subj"><span class="tokn">[Giftor First Name]</span>, your loved ones are ready for you to review</div>
+            <div><b>From:</b> ILIA &lt;no-reply&gt; &nbsp;&middot;&nbsp; <b>To:</b> <span class="tokn">[Giftor Email]</span> &nbsp;&middot;&nbsp; <b>Triggered by:</b> the agent&rsquo;s <i>Remind</i> button</div>
+          </div>
+          <div>
+            <div class="mail-hero">
+              <div class="lg">ilia</div>
+              <h3>Ready when you are</h3>
+            </div>
+            <div class="mail-in">
+              <p>Hi <span class="tokn">[Giftor First Name]</span>,</p>
+              <p><span class="tokn">[Agent Name]</span> has prepared everything for the loved ones you&rsquo;re gifting to. They&rsquo;re waiting on you to review and send.</p>
+              <div class="slab">
+                <div class="sh">Waiting for you</div>
+                <div class="kv"><span class="k">Loved ones ready</span><span class="v tokn">[n &mdash; names]</span></div>
+                <div class="kv"><span class="k">Prepared by</span><span class="v tokn">[Agent Name]</span></div>
+                <div class="kv"><span class="k">Last updated</span><span class="v tokn">[Date]</span></div>
+              </div>
+              <p><b>Why this needs you</b></p>
+              <p class="mu"><b>Only you can send these invitations.</b> Your agent can prepare the details and illustrations, but you give the final sign-off. Once you send, our admin team reviews and approves before anything reaches your loved ones.</p>
+              <div class="mail-cta"><a href="#">Review and send</a></div>
+            </div>
+            <div class="mail-foot">
+              Sent because your agent flagged that your loved ones are ready for review.<br>
+              Questions? Contact <span class="tokn">[Agent Name]</span> or your ILIA support team.
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h4>What this email must cover</h4>
+          <ul>
+            <li><b>Who prepared it</b> &mdash; the giftor should know their agent has done work on their behalf, not that ilia is nagging them.</li>
+            <li><b>What is waiting</b> &mdash; how many loved ones, and who they are.</li>
+            <li><b>Why only they can act</b> &mdash; restates the sign-off rule in one line. This is the point agents and giftors keep misunderstanding.</li>
+            <li><b>What happens after they send</b> &mdash; admin review, then invitations go out.</li>
+            <li><b>One CTA</b> &mdash; deep-links into the giftor&rsquo;s own portal, not the GWT Center.</li>
+          </ul>
+          <div class="q">
+            <span class="qh">Open questions</span>
+            <ul style="margin-bottom:0">
+              <li><b>Rate limiting.</b> Can an agent press Remind repeatedly? Suggest one reminder per giftor per 24&nbsp;hours, with the button disabled and showing when the last one was sent.</li>
+              <li>Does the agent see confirmation that the reminder went, and when?</li>
+              <li>Should the agent be able to add a short personal note?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== IMO notifications ===== -->
+    <div class="mailpane" id="m-imo" hidden>
+      <div class="mailwrap">
+        <div class="mail">
+          <div class="mail-meta">
+            <div class="subj">GWT activity &mdash; <span class="tokn">[Agent Name]</span> invited a new giftor</div>
+            <div><b>From:</b> ILIA &lt;no-reply&gt; &nbsp;&middot;&nbsp; <b>To:</b> <span class="tokn">[IMO Email]</span></div>
+          </div>
+          <div>
+            <div class="mail-hero">
+              <div class="lg">ilia</div>
+              <h3>Draft &mdash; content not agreed</h3>
+            </div>
+            <div class="mail-in">
+              <div class="placeholder-note">
+                <b>This one is a placeholder.</b> We have not decided which events an IMO should be told about, or whether they want individual emails at all rather than a digest. The draft below shows one possible shape so the question is easier to answer &mdash; it is not a proposal.
+              </div>
+              <p>Hi <span class="tokn">[IMO Contact]</span>,</p>
+              <p><span class="tokn">[Agent Name]</span> has invited a new Greatest Wealth Transfer giftor.</p>
+              <div class="slab">
+                <div class="sh">Activity</div>
+                <div class="kv"><span class="k">Agent</span><span class="v tokn">[Agent Name]</span></div>
+                <div class="kv"><span class="k">Giftor</span><span class="v tokn">[Giftor Name]</span></div>
+                <div class="kv"><span class="k">Loved ones</span><span class="v tokn">[n]</span></div>
+                <div class="kv"><span class="k">Date</span><span class="v tokn">[Date]</span></div>
+              </div>
+              <div class="mail-cta"><a href="#">Open the IMO Giftor Center</a></div>
+            </div>
+            <div class="mail-foot">Sent to the IMO because an agent beneath them started GWT activity.</div>
+          </div>
+        </div>
+        <div class="notes">
+          <h4>Decide before writing this</h4>
+          <ul>
+            <li><b>Which events warrant an email?</b> Candidates: a giftor is invited &middot; the giftor creates their account &middot; invitations go out to loved ones &middot; a loved one enrols &middot; a policy goes in force. Some of these are milestones; some are noise.</li>
+            <li><b>One email per event, or a digest?</b> An IMO with forty agents would be buried by per-event emails. A weekly or daily summary may serve them better.</li>
+            <li><b>Who at the IMO receives it?</b> A single mailbox, a named contact, or everyone with an IMO login?</li>
+            <li><b>Is email even the right channel,</b> or is the <b>IMO Giftor Center</b> (still to be designed) the better answer &mdash; they look when they want rather than being told?</li>
+          </ul>
+          <div class="q">
+            <span class="qh">Note</span>
+            <ul style="margin-bottom:0">
+              <li>The invite flow already sends an IMO email today (recipient / agent / giftor / IMO). Whatever is decided here should reconcile with that rather than adding a second stream.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
 
   <!-- ============ INVITATION WORKFLOW MODAL ============ -->
   <div class="ovl" id="ovlInvite" hidden>
@@ -907,7 +1021,7 @@
         </div>
       </div>
       <div class="mfoot">
-        <span class="why" style="color:var(--faint)">Shown to agents in the Giftor Portal empty state.</span>
+        <span class="why" style="color:var(--faint)">Shown to agents in the GWT Center empty state.</span>
         <div style="display:flex;gap:9px;margin-left:auto">
           <button class="btn sm" data-close="ovlDyk">Got it</button>
         </div>
@@ -920,13 +1034,15 @@
 
     <h5>Structure</h5>
     <ul>
-      <li><b>Nav placement.</b> &ldquo;Giftor Portal&rdquo; sits directly under <b>Client Management</b> and above <b>Agent Links</b>. The NEW pill is a launch affordance, not permanent.</li>
+      <li><b>Nav placement.</b> &ldquo;GWT Center&rdquo; sits directly under <b>Client Management</b> and above <b>Agent Links</b>. The NEW pill is a launch affordance, not permanent.</li>
       <li><b>One collapsed card per giftor.</b> Collapsed shows the high-level detail an agent scans for: giftor name and email, giftor status, <b>number of loved ones</b>, and last activity. Expanding opens the loved ones section belonging to that giftor.</li>
       <li><b>Loved ones live inside the giftor.</b> There is no flat list of loved ones across giftors &mdash; a loved one only exists in the context of the giftor gifting to them.</li>
       <li><b>Agent functions in the expanded section:</b> add a loved one, run and re-run illustrations, view an illustration, edit details, and see each loved one&rsquo;s status. Enrollment links appear once a loved one is enrolling.</li>
       <li><b>Kai-Zen policy indicator.</b> Each card shows, right beside the giftor&rsquo;s name, whether they already hold a Kai-Zen policy &mdash; ilia knows this at invitation time and it is the single most useful fact about a giftor at a glance. Placed inline with the name rather than in its own column so it reads as an attribute of the person, not as another status to scan.</li>
       <li><b>The policy flag says nothing about Client Management.</b> <b>Every client user appears in Client Management</b> &mdash; giftors, ordinary Kai-Zen clients, and loved ones alike. So holding a Kai-Zen policy is not what puts someone in that list, and an earlier draft that implied otherwise was wrong and has been removed. The badge answers one narrow question: does this giftor hold their own Kai-Zen policy? That matters for auto-populating the existing policy (NIWD-1871) and for what financial data can be shared across (NIWD-2264) &mdash; not for where the person can be found.</li>
-      <li><b>This screen is a lens, not the only home.</b> Because everyone is in Client Management, the Giftor Portal is a GWT-specific view over people who also appear there &mdash; not a separate universe. It should complement Client Management rather than compete with it: an agent who lands here should be able to reach the same person&rsquo;s full client record, and vice versa.</li>
+      <li><b>This screen is a lens, not the only home.</b> Because everyone is in Client Management, the GWT Center is a view over people who also appear there &mdash; not a separate universe. It should complement Client Management rather than compete with it: an agent who lands here should be able to reach the same person&rsquo;s full client record, and vice versa.</li>
+      <li><b>Visibility scope &mdash; DECIDED.</b> The hierarchy is <b>IMO &rarr; Agents</b>. An agent sees <b>only the giftors they personally invited</b> &mdash; not their colleagues&rsquo;, not the wider IMO&rsquo;s. That keeps the list relevant and means the empty state genuinely appears for a new agent.</li>
+      <li><b>An IMO-level view is missing and needs its own design.</b> Scoping agents to their own giftors leaves IMOs with nowhere to see GWT across their agents. A separate <b>IMO Giftor Center</b> is needed: every giftor invited by every agent beneath that IMO, the loved ones under each, and roll-up visibility of where each family stands. Same underlying data, different scope and almost certainly a different layout &mdash; an IMO is looking across agents, not managing individual loved ones. <b>Not designed yet.</b></li>
     </ul>
 
     <h5>The shared, living section</h5>
@@ -982,6 +1098,16 @@
       document.getElementById('v-portal').hidden=(t.dataset.v!=='portal');
       document.getElementById('v-email').hidden=(t.dataset.v!=='email');
       window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+
+  var mailTabs=document.querySelectorAll('#mailTabs .stab');
+  mailTabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      mailTabs.forEach(function(x){x.classList.toggle('on',x===t);});
+      ['agent','remind','imo'].forEach(function(k){
+        document.getElementById('m-'+k).hidden=(t.dataset.m!==k);
+      });
     });
   });
 
