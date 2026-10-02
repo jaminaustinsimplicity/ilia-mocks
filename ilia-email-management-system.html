@@ -236,6 +236,24 @@
   .hist-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(120px,100%),1fr));gap:10px;margin-bottom:14px}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1f2430;color:#fff;padding:11px 18px;border-radius:8px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:50}
   @media (max-width:820px){.i-side{display:none}.i-body{padding:16px 12px}}
+  .eid{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:#eef2f8;border:1px solid #dbe2ee;border-radius:4px;padding:1px 6px;color:#2f3e8f;white-space:nowrap}
+  .eid-l{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+  .rb{font-size:11px;font-weight:700;border-radius:10px;padding:2px 7px;white-space:nowrap}
+  .rb-ok{background:#e6f6ee;color:#2f855a}.rb-mid{background:#fdf3e1;color:#b7791f}.rb-low{background:#fde8e8;color:#c53030}
+  .p-tbd{background:#f1ecff;color:#6a45d1}
+  .missing{color:#c53030;font-weight:600;font-size:12.5px}
+  .ilead{font-size:13px;color:#5d6573;margin:-6px 0 14px}
+  .rules{border:1px solid var(--iline);border-radius:6px;overflow:hidden}
+  .rule{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--iline);font-size:13px}
+  .rule:first-child{border-top:none}
+  .sw{flex:none;width:34px;height:18px;border-radius:10px;background:#cbd2dc;position:relative}
+  .sw:after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff}
+  .sw.on{background:#3466e5}.sw.on:after{left:18px}
+  .step.qw{border-left:4px solid var(--ok)}
+  .step.qw .sn{background:var(--ok)}
+  .decide{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:10px}
+  .dq{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--warn);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--muted)}
+  .dq b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -305,9 +323,9 @@
         <p>A separate service that sends the new Payments Center emails and the daily 90/60/30-day contribution reminders.</p>
       </div>
       <div class="place p3">
-        <div class="n">25+</div>
-        <h3>Spreadsheets &amp; pages</h3>
-        <p>A many-tab spreadsheet plus one-off inventory pages, all kept up by hand. They're the only "maps" we have, and they don't match the code.</p>
+        <div class="n">3</div>
+        <h3>Separate lists</h3>
+        <p>A 25+ tab alerts spreadsheet (origin and owner unclear), a ~209-row export from the code, and a payments-only inventory. They overlap, and <b>none covers every email</b> a user receives.</p>
       </div>
     </div>
     <p class="nobridge"><span class="x">✕</span> None of these are connected, and none of them can be viewed or edited by an admin. Email copy, action items and in-app notifications for the same event also live in separate places.</p>
@@ -400,6 +418,16 @@
         <p>A single event can create an email, an action item and an in-app notification, and each is built and stored separately. No one can see everything a client receives for that event in one view.</p>
         <div class="eg"><b>Example</b>A GWT giftor can receive two different "payment" emails for the same payment.</div>
       </div>
+      <div class="pcard">
+        <div class="top"><div class="num">9</div><h3>Triggers aren't clearly defined</h3></div>
+        <p>Across the board, email triggers are inaccurate, too vague, or not written down at all. Account status (not created, not activated, disabled) usually isn't considered.</p>
+        <div class="eg"><b>Example</b>"When the application is submitted" vs. what's needed: "When the client clicks Submit on the final step and it saves, for active accounts only."</div>
+      </div>
+      <div class="pcard">
+        <div class="top"><div class="num">10</div><h3>No standard process or owner for changes</h3></div>
+        <p>There's no standard way to draft a new email and hand it to dev, no rule that new emails follow a template, and no owner of the change log.</p>
+        <div class="eg"><b>Example</b>Nobody knows who managed the email spreadsheet between past owners.</div>
+      </div>
     </div>
 
     <h2 class="sec">Today vs. where we want to be</h2>
@@ -429,7 +457,7 @@
       </div>
     </div>
 
-    <p class="foot">Discovery stage. Figures come from a read-only review of the ILIA code, Kyle's Payments Center email inventory (Sep 2026), the "NIW Enrollment Email Alerts and Notifications" spreadsheet, and the Oct 2 dev call. They're approximate and will be confirmed with the dev team.</p>
+    <p class="foot">Discovery stage. Figures come from a read-only review of the ILIA code, Kyle's Payments Center email inventory (Sep 2026), the "NIW Enrollment Email Alerts and Notifications" and "Emails from ILIA" spreadsheets, Olivia's notes and draft template (Oct 2), and the Oct 2 dev call. They're approximate and will be confirmed with the dev team.</p>
   </section>
 
   <!-- ============ TAB 2: WHAT'S NEEDED ============ -->
@@ -439,15 +467,36 @@
     <div class="epic">
       <div class="epic-tag">EPIC · DRAFT</div>
       <h2>ILIA Email Management System</h2>
-      <p>Give NIW admins one place inside ILIA to see, group, edit and track every email ILIA sends, built on one email engine with one on-brand design.</p>
-      <div class="epic-meta"><span>Status: <b>Discovery</b></span><span>Stories: <b>8 proposed</b></span><span>Tasks: <b>to be defined</b></span><span>Jira: <b>not created yet (backlog only)</b></span></div>
+      <p>Give NIW admins one place inside ILIA to see, group, edit and track every email ILIA sends, built on one email engine, one on-brand design, and one standard for how emails are defined and changed.</p>
+      <div class="epic-meta"><span>Status: <b>Discovery</b></span><span>Quick wins: <b>4</b></span><span>Stories: <b>8 proposed</b></span><span>Tasks: <b>to be defined</b></span><span>Jira: <b>not created yet (backlog only)</b></span></div>
     </div>
 
-    <h2 class="sec">Proposed building blocks (stories)</h2>
+    <h2 class="sec">Phase 0 · Quick wins we can start now, in parallel</h2>
+    <p class="mnote" style="margin:-4px 2px 12px">Based on Olivia's proposed steps (Oct 2). None of these need the new system to exist first.</p>
+    <div class="steps">
+      <div class="step qw"><div class="sn">A</div><div class="sb">
+        <h3>Copy clean-up pass</h3>
+        <p>Use Claude to fix spelling and grammar across all emails in bulk, and standardize greetings, sign-offs, headers/footers, the phone number and the company name. Anything inside { } fill-in fields is never touched.</p>
+        <div class="solves">Solves #3 · #7</div><div class="tasks">Tasks: TBD</div></div></div>
+      <div class="step qw"><div class="sn">B</div><div class="sb">
+        <h3>One standard for defining emails</h3>
+        <p>Adopt the <b>ILIA Email Inventory standard template</b>: one row per email per recipient, an ID like <b>KZ-ENR-001</b>, a <b>Trigger Rubric</b> every trigger must answer, and a <b>Change Log</b>. No email is added, changed or removed without it.</p>
+        <div class="solves">Solves #1 · #9 · #10</div><div class="tasks">Tasks: TBD</div></div></div>
+      <div class="step qw"><div class="sn">C</div><div class="sb">
+        <h3>Find every place an email is sent</h3>
+        <p>Organize every send point by area: Kai-Zen &amp; GWT enrollment, agent invitations, servicing (invites, ID and contribution reminders), admin action items, payments, and other admin functions. A first pass from the code already found ~150. Ask Mohit to confirm it and pull <b>send logs</b>.</p>
+        <div class="solves">Solves #1 · #5</div><div class="tasks">Tasks: TBD</div></div></div>
+      <div class="step qw"><div class="sn">D</div><div class="sb">
+        <h3>Decide what we <i>want</i> to send, starting with Kai-Zen enrollment</h3>
+        <p>Rather than perfecting a log of everything that exists, start from the top. Define the right triggers and copy for each step, beginning with Kai-Zen enrollment, then work outward area by area.</p>
+        <div class="solves">Solves #2 · #9</div><div class="tasks">Tasks: TBD</div></div></div>
+    </div>
+
+    <h2 class="sec">Phase 1+ · The system (proposed stories)</h2>
     <div class="steps">
       <div class="step"><div class="sn">1</div><div class="sb">
-        <h3>Master email catalog &amp; clean-up</h3>
-        <p>Build one complete, trusted list of every email: workflow, event, recipients, trigger, sender, active or dead. Retire the dead ones and merge the duplicates. Replaces the spreadsheet.</p>
+        <h3>Master email catalog</h3>
+        <p>Load the standardized inventory into ILIA as the single source of truth, replacing the spreadsheets. Each email keeps its ID, area, recipients, trigger rubric, owner and status.</p>
         <div class="solves">Solves #1 · #5</div><div class="tasks">Tasks: TBD</div></div></div>
       <div class="step"><div class="sn">2</div><div class="sb">
         <h3>One email engine</h3>
@@ -455,36 +504,46 @@
         <div class="solves">Solves #4 · #8</div><div class="tasks">Tasks: TBD</div></div></div>
       <div class="step"><div class="sn">3</div><div class="sb">
         <h3>Move email copy out of code</h3>
-        <p>Store subject lines and body copy as editable templates with fill-in fields (e.g. {Client First Name}) instead of hard-coding them, so wording can change without a release.</p>
+        <p>Store subject lines and body copy as editable templates with fill-in fields (e.g. {ClientFirstName}) instead of hard-coding them, so wording can change without a release.</p>
         <div class="solves">Solves #2</div><div class="tasks">Tasks: TBD</div></div></div>
       <div class="step"><div class="sn">4</div><div class="sb">
-        <h3>One shared, on-brand design</h3>
-        <p>A single header, footer, logo, font and sign-off that every email uses, managed in one place.</p>
-        <div class="solves">Solves #3</div><div class="tasks">Tasks: TBD</div></div></div>
+        <h3>One shared, on-brand design + recipient rules</h3>
+        <p>One header, footer, logo, sign-off and contact line for every email. Plus house rules for who is included (e.g. CC the agent? the IMO?) and what never appears in email (SSN, DOB, bank numbers).</p>
+        <div class="solves">Solves #3 · #4</div><div class="tasks">Tasks: TBD</div></div></div>
       <div class="step"><div class="sn">5</div><div class="sb">
         <h3>Admin "Email Management" screen</h3>
-        <p>Browse, search and group every email by workflow → event → recipient. See the real copy, trigger, sender and status. Edit with live preview, send a test, and submit for approval.</p>
+        <p>Browse, filter and group every email by product, area, recipient and status. Edit with live preview, send a test, and submit for approval. Request a new email using the standard template.</p>
         <div class="solves">Solves #1 · #2 · #7</div><div class="tasks">Tasks: TBD</div></div></div>
       <div class="step"><div class="sn">6</div><div class="sb">
         <h3>Send history &amp; delivery tracking</h3>
         <p>Record every email sent and whether it was delivered, opened or bounced, so support can answer "did the client get it?". Includes fixing bounce tracking and filling the reminder-log gaps.</p>
         <div class="solves">Solves #6</div><div class="tasks">Tasks: TBD</div></div></div>
       <div class="step"><div class="sn">7</div><div class="sb">
-        <h3>Plain-language trigger rules</h3>
-        <p>Show, for each email, exactly <b>when and why</b> it sends, including the automatic and scheduled ones. Later phase: let admins adjust rules such as reminder timing.</p>
-        <div class="solves">Solves #5 · #8</div><div class="tasks">Tasks: TBD</div></div></div>
+        <h3>Trigger rules that meet the rubric</h3>
+        <p>Every email shows exactly what fires it, who triggers it, the <b>account status</b> required (not created, disabled…), timing, repeat and stop rules, and overlap protection. Later phase: admins adjust rules such as reminder timing.</p>
+        <div class="solves">Solves #5 · #9</div><div class="tasks">Tasks: TBD</div></div></div>
       <div class="step"><div class="sn">8</div><div class="sb">
         <h3>Link emails, action items &amp; notifications</h3>
         <p>For each event, show the email together with the action item and in-app notification it creates, so admins see everything a client receives in one view.</p>
         <div class="solves">Solves #8</div><div class="tasks">Tasks: TBD</div></div></div>
     </div>
 
+    <h2 class="sec">Decisions needed before we change copy</h2>
+    <div class="decide">
+      <div class="dq"><b>Who owns the email change log</b> going forward, and approves new or changed emails?</div>
+      <div class="dq"><b>Sales feedback:</b> ask Sales for their notes before changing anything, or plan to defend changes after?</div>
+      <div class="dq"><b>Branding:</b> are there Simplicity email or brand guidelines to follow, or should ILIA emails be "Simplicity-agnostic"?</div>
+      <div class="dq"><b>Who's included:</b> do we notify the agent of everything about their client? Include the IMO on every agent email?</div>
+      <div class="dq"><b>Account status:</b> what each email should do when an account is not created, created but not activated, or disabled.</div>
+      <div class="dq"><b>Compliance:</b> what review is required for client-facing wording and anything with sensitive information?</div>
+    </div>
+
     <div class="prereq">
-      <div class="lab">Also needed first</div>
+      <div class="lab">Also needed</div>
       <ul>
         <li>Reliability and security fixes found during discovery (tracked internally, not on this page).</li>
         <li>Unsubscribe and email preferences actually respected before an email sends.</li>
-        <li>Agreement on who approves copy changes (e.g. Compliance for client-facing wording).</li>
+        <li>Mohit's help confirming the full list from the code, plus send logs, and a standard way to write triggers.</li>
       </ul>
     </div>
     <p class="foot">High-level only. Each block becomes a Jira story in the backlog, with tasks, once reviewed. Nothing enters a sprint without sign-off.</p>
@@ -535,121 +594,142 @@
     var h=(location.hash||'').slice(1);if(['problem','needed','goal'].indexOf(h)>-1)show(h);
   })();
 
-  /* ---------- tab 3: Email Management mock ---------- */
+  /* ---------- tab 3: Email Management mock (follows the ILIA Email Inventory standard template) ---------- */
   (function(){
-    var SAMPLE={'{Client First Name}':'Alex','{Client Name}':'Alex Morgan','{Agent Name}':'Jordan Lee','{Strategy}':'Kai-Zen','{Amount}':'$12,500.00','{Due Date}':'Nov 15, 2026','{Tranche}':'71','{Giftor Name}':'Pat Rivera','{Recipient Name}':'Sam Rivera','{Reason}':'the routing number did not match the account','{Request Type}':'Address Change','{Days}':'60','{Policy Number}':'KZ-000123','{IMO Name}':'Summit Financial Group'};
-    var FIELDS=['{Client First Name}','{Client Name}','{Agent Name}','{Strategy}','{Amount}','{Due Date}','{Tranche}','{Giftor Name}','{Reason}'];
-    var SENDER_C='MyIlia <noreply@myilia.com>';
+    var SAMPLE={'{ClientFirstName}':'Alex','{ClientName}':'Alex Morgan','{AgentName}':'Jordan Lee','{Strategy}':'Kai-Zen','{Amount}':'$12,500.00','{DueDate}':'Nov 15, 2026','{Tranche}':'71','{GiftorName}':'Pat Rivera','{RecipientName}':'Sam Rivera','{Reason}':'the routing number did not match the account','{RequestType}':'Address Change','{Days}':'60','{PolicyNumber}':'KZ-000123','{CarrierName}':'National Life'};
+    var FIELDS=['{ClientFirstName}','{ClientName}','{AgentName}','{Strategy}','{Amount}','{DueDate}','{Tranche}','{GiftorName}','{Reason}'];
+    var SENDER='MyIlia <noreply@myilia.com>';
+    var AREAS=['Enrollment','Agent Invitation','Servicing','Admin Action Items','Payments','Other Admin Functions'];
+    var PRODUCTS=['Kai-Zen','GWT','Both'];
+    var BY=['Client action','Agent action','Admin action','Trustee action','System – scheduled','System – status change'];
+    var ACCT=['Any','Account not created','Account created – not activated','Active','Disabled'];
+    var ST={keep:['p-active','Keep as-is'],rewrite:['p-review','Rewrite'],tbd:['p-tbd','Not reviewed (TBD)'],'new':['p-draft','New'],retired:['p-retired','Retired']};
+    function R(o){return o;}
     var E=[
-      {id:'inv-client',name:'Client invitation to enroll',wf:'Enrollment',status:'active',auto:false,when:'An agent invites a new client from the Add Client screen.',why:'Starts enrollment: gives the client a secure link to create their ILIA account.',sched:'Immediately, once per invite (re-sent if the admin clicks Resend).',sent:412,deliv:98.9,open:71,bounce:5,updated:'Sep 30, 2026',
-        v:[{role:'Client',subject:'{Agent Name} has invited you to learn about {Strategy}',body:'Dear {Client First Name},\n\nYour agent {Agent Name} has invited you to learn about {Strategy} and start your enrollment in ILIA.\n\nClick below to create your secure account. The link expires in 30 days.',cta:'Create your account'}],
-        linked:[{t:'notif',h:'Agent dashboard alert',p:'"Invite sent to {Client Name}" appears on the agent\'s dashboard.'},{t:'status',h:'Participant status → Client Invited',p:'Status shown in Account Management and on the case.'}]},
-      {id:'enr-started',name:'Enrollment started',wf:'Enrollment',status:'active',auto:false,when:'The client opens the estimator and confirms a contribution for the first time.',why:'Lets everyone involved in the case know the client has begun.',sched:'Immediately, once per enrollment.',sent:305,deliv:99.1,open:64,bounce:2,updated:'Aug 14, 2026',
-        v:[{role:'Client',subject:'Your {Strategy} enrollment has started',body:'Dear {Client First Name},\n\nThank you for starting your {Strategy} enrollment. You can pick up where you left off at any time from your ILIA dashboard.',cta:'Continue enrollment'},
-           {role:'Agent',subject:'{Client Name} has started their {Strategy} enrollment',body:'Dear {Agent Name},\n\nYour client {Client Name} has started their {Strategy} enrollment. No action is needed from you yet.',cta:'View client'},
-           {role:'IMO',subject:'{Agent Name}\'s client {Client Name} started enrollment',body:'{Agent Name}\'s client {Client Name} has started their {Strategy} enrollment.',cta:'View case'},
-           {role:'NIW Admin',subject:'Enrollment started: {Client Name}',body:'{Client Name} (agent {Agent Name}) has started a {Strategy} enrollment.',cta:'Open case'}],
-        linked:[{t:'status',h:'Participant status → Enrollment Started',p:'Updates the case status for all roles.'},{t:'notif',h:'Agent in-app notification',p:'"{Client Name} started enrollment."'}]},
-      {id:'docs-carrier',name:'Final documents to carrier',wf:'Enrollment',status:'review',auto:false,when:'An admin clicks Submit on the "Submit Carrier Final Docs" action item.',why:'Delivers the executed application package to the insurance carrier.',sched:'Immediately, with documents attached.',sent:58,deliv:100,open:0,bounce:0,updated:'Jun 2, 2026',note:'Two versions exist (old and new system). The new one doesn\'t attach the documents yet.',
-        v:[{role:'Carrier',subject:'Final Docs for {Client Name}',body:'Hello,\n\nPlease find attached the final policy documents for client {Client Name}.\n\nThank you,\nSimplicity-NIW',cta:''}],
-        linked:[{t:'action',h:'Action item closes: Submit Carrier Final Docs',p:'Removed from NIW Action Items when sent.'}]},
-      {id:'pay-confirm',name:'Payment confirmation',wf:'Payments',status:'active',auto:false,when:'An admin adds a payment with status Received and "Send confirmation" checked.',why:'Confirms to the client that their contribution arrived and was applied.',sched:'Immediately, once per payment.',sent:688,deliv:99.4,open:58,bounce:4,updated:'Sep 25, 2026',
-        v:[{role:'Client',subject:'Payment Confirmation',body:'Dear {Client First Name},\n\nYour premium contribution of {Amount} has been received and applied to your policy.\n\nThank you.',cta:'View payments'},
-           {role:'Agent (CC)',subject:'Payment Confirmation for {Client Name}',body:'Dear {Agent Name},\n\nA premium contribution of {Amount} for your client {Client Name} has been received and applied.',cta:''},
-           {role:'IMO (CC)',subject:'Payment Confirmation for {Client Name}',body:'A premium contribution of {Amount} for {Agent Name}\'s client {Client Name} has been received and applied.',cta:''}],
-        linked:[{t:'log',h:'Payments Center → Payment Communications',p:'Logged with delivery status (Delivered / Opened / Bounced).'}]},
-      {id:'pay-reject',name:'Payment rejected (check / wire)',wf:'Payments',status:'review',auto:false,when:'An admin rejects a check or wire payment.',why:'Tells the client the payment couldn\'t be processed and how to fix it.',sched:'Immediately, once per rejection.',sent:41,deliv:97.6,open:80,bounce:1,updated:'Jul 9, 2026',note:'Flagged: the same event sends a second, older "rejection" email. Merge into one.',
-        v:[{role:'Client',subject:'Your contribution could not be processed',body:'Dear {Client First Name},\n\nWe could not process your wire because {Reason}.\n\nPlease reissue the payment, or log in to ILIA to pay by ePay.',cta:'Make a payment'},
-           {role:'Agent',subject:'Payment for {Client Name} could not be processed',body:'Dear {Agent Name},\n\nThe wire payment for your client {Client Name} could not be processed because {Reason}. Please contact your client.',cta:''},
-           {role:'IMO',subject:'Payment for {Client Name} could not be processed',body:'The wire payment for {Agent Name}\'s client {Client Name} could not be processed because {Reason}.',cta:''},
-           {role:'Trustee',subject:'Wire rejected: {Client Name}',body:'NIW could not process the wire for {Client Name} (Tranche {Tranche}). Reason: {Reason}.',cta:''}],
-        linked:[{t:'action',h:'Client action item: Resubmit payment',p:'Appears in the client\'s Action Items.'},{t:'notif',h:'Agent in-app notification',p:'"Payment rejected for {Client Name}."'}]},
-      {id:'pay-annual',name:'Annual contribution reminder',wf:'Payments',status:'active',auto:true,when:'Daily job checks annual-pay policies with an amount still due.',why:'Reminds clients ahead of their anniversary so contributions arrive on time.',sched:'90, 60 and 30 days before the due date (at most once every 30 days).',sent:1290,deliv:98.2,open:62,bounce:19,updated:'Sep 18, 2026',
-        v:[{role:'Client',subject:'Your {Strategy} contribution is due {Due Date}',body:'Dear {Client First Name},\n\nThis is a reminder that your upcoming contribution of {Amount} for Tranche {Tranche} is due on {Due Date}.\n\nYou can pay by check, wire or ePay.',cta:'Pay with ePay'}],
-        linked:[{t:'log',h:'Payments Center → Payment Communications',p:'Each reminder (90 / 60 / 30) is logged, so nothing goes missing.'},{t:'notif',h:'Admin daily summary',p:'One daily report of reminders sent.'}]},
-      {id:'pay-monthly',name:'Monthly draft notice',wf:'Payments',status:'draft',auto:true,when:'Daily job checks monthly-pay policies before each automatic draft.',why:'Warns clients a draft is coming so the account has enough funds.',sched:'7 days before each draft date.',sent:0,deliv:0,open:0,bounce:0,updated:'Oct 1, 2026',note:'Copy rewrite in progress, waiting for approval.',
-        v:[{role:'Client',subject:'Upcoming automatic draft on {Due Date}',body:'Dear {Client First Name},\n\nYour monthly contribution of {Amount} will be drafted on {Due Date}. Please make sure funds are available.',cta:''}],
-        linked:[{t:'log',h:'Payments Center → Payment Communications',p:'Logged per policy.'}]},
-      {id:'status-inforce',name:'Policy is now in force',wf:'Status Changes',status:'active',auto:false,when:'The case status changes to In Force.',why:'Celebrates the milestone and moves the client to their servicing portal.',sched:'Immediately, once per policy.',sent:96,deliv:100,open:83,bounce:0,updated:'Aug 2, 2026',
-        v:[{role:'Client',subject:'Your {Strategy} policy is now in force',body:'Dear {Client First Name},\n\nGreat news: your {Strategy} policy {Policy Number} is now in force. You now have access to your ILIA Servicing Portal.',cta:'Open my servicing portal'},
-           {role:'Agent',subject:'{Client Name}\'s policy is now in force',body:'Dear {Agent Name},\n\nYour client {Client Name}\'s {Strategy} policy is now in force.',cta:'View client'}],
-        linked:[{t:'status',h:'Participant status → In Force',p:'Client is redirected to the servicing portal at next login.'}]},
-      {id:'srv-received',name:'Change request received',wf:'Servicing',status:'active',auto:false,when:'A client submits an information change (address, name, beneficiary) in the servicing portal.',why:'Confirms the request so the client knows NIW is working on it.',sched:'Immediately, once per request.',sent:133,deliv:99.2,open:74,bounce:1,updated:'Sep 3, 2026',
-        v:[{role:'Client',subject:'We received your {Request Type} request',body:'Dear {Client First Name},\n\nWe have received your {Request Type} request. NIW will review it and let you know once it is processed.',cta:''},
-           {role:'NIW Admin',subject:'New servicing request: {Request Type} for {Client Name}',body:'{Client Name} submitted a {Request Type} request. Review it in NIW Action Items.',cta:'Open action item'}],
-        linked:[{t:'action',h:'NIW action item: Review servicing request',p:'Created for the servicing team.'},{t:'notif',h:'Client in-app notice',p:'"Your request is being processed."'}]},
-      {id:'srv-id',name:'ID renewal reminder',wf:'Servicing',status:'review',auto:true,when:'Daily job finds a client ID that expires before the next tranche anniversary.',why:'Keeps client ID documents current, which the carrier and trust require.',sched:'120, 90 and 60 days before the anniversary.',sent:212,deliv:97.1,open:55,bounce:6,updated:'May 20, 2026',note:'Sender is outside the main code. Confirm the schedule with the dev team.',
-        v:[{role:'Client',subject:'Action Required: Upload Your Renewed ID',body:'Dear {Client First Name},\n\nOur records show your ID expires soon. Please upload a renewed ID in your servicing portal within {Days} days.',cta:'Upload documents'}],
-        linked:[{t:'action',h:'Client action item: Upload renewed ID',p:'Shown in the client\'s Personal Documents.'}]},
-      {id:'gwt-invite',name:'GWT invitation to giftor',wf:'GWT',status:'active',auto:false,when:'An agent sends a Greatest Wealth Transfer invite to a giftor.',why:'Invites the giftor to set up their account and start the gift.',sched:'Immediately, once per invite.',sent:77,deliv:98.7,open:79,bounce:1,updated:'Sep 28, 2026',
-        v:[{role:'Giftor',subject:'{Agent Name}\'s invitation to start the Greatest Wealth Transfer',body:'Dear {Giftor Name},\n\nYour agent {Agent Name} has invited you to start the Greatest Wealth Transfer with {Strategy}.\n\nCreate your ILIA account to get started.',cta:'Create your ILIA account'},
-           {role:'Agent',subject:'Invitation to the Greatest Wealth Transfer sent to {Giftor Name}',body:'Dear {Agent Name},\n\nYour invitation was sent to {Giftor Name}.',cta:''},
-           {role:'IMO',subject:'{Agent Name}\'s GWT invitation sent to {Giftor Name}',body:'{Agent Name} sent a Greatest Wealth Transfer invitation to {Giftor Name}.',cta:''}],
-        linked:[{t:'status',h:'Giftor status → Invited',p:'Visible on the agent\'s GWT dashboard.'}]},
-      {id:'gwt-thanks',name:'Contribution received: thank you',wf:'GWT',status:'active',auto:false,when:'An admin or trustee marks a GWT payment as received.',why:'Thanks the giftor and confirms the gift is funded.',sched:'Immediately, once per payment.',sent:39,deliv:100,open:88,bounce:0,updated:'Aug 22, 2026',
-        v:[{role:'Giftor',subject:'Contribution Received - Thank You',body:'Hi {Giftor Name},\n\nThank you for your {Strategy} contribution on behalf of {Recipient Name}. Your payment has been received and confirmed.',cta:''}],
-        linked:[{t:'status',h:'Participant status → Payment Complete',p:'Updates for the giftor and the recipient.'}]},
-      {id:'acct-agent',name:'Agent registration approved',wf:'Accounts & Invitations',status:'active',auto:false,when:'An NIW admin approves an agent registration request.',why:'Welcomes the new agent and tells them how to log in.',sched:'Immediately, once per approval.',sent:64,deliv:98.4,open:90,bounce:1,updated:'Jul 30, 2026',
-        v:[{role:'Agent',subject:'Great news! Your agent registration has been approved',body:'Dear {Agent Name},\n\nYour agent registration has been approved. You can now log in to ILIA and start inviting clients.',cta:'Log in to ILIA'},
-           {role:'NIW Sales Admin',subject:'Agent {Agent Name} has been approved',body:'Agent {Agent Name} has been approved and can now log in to ILIA.',cta:''}],
-        linked:[{t:'action',h:'Action item closes: Approve agent',p:'Removed from NIW Action Items.'}]},
-      {id:'acct-expired',name:'Account expired (never logged in)',wf:'Accounts & Invitations',status:'draft',auto:true,when:'Daily job finds client accounts still "Delivered" or "Opened Invite" after 1 year.',why:'Cleans up unused accounts and tells the client how to come back.',sched:'Once, on day 365 after the invite.',sent:0,deliv:0,open:0,bounce:0,updated:'Oct 2, 2026',note:'New email, not live yet. Waiting for copy approval.',
-        v:[{role:'Client',subject:'Your ILIA account has expired',body:'Dear {Client First Name},\n\nYour ILIA account was never activated and has now expired. If you would still like to enroll, contact your agent {Agent Name}.',cta:''}],
-        linked:[{t:'status',h:'Account status → Deactivated',p:'Account is removed from active lists.'}]},
-      {id:'int-bug',name:'Bug / feedback report',wf:'Internal',status:'active',auto:false,when:'Any user submits the Bug / Feedback form.',why:'Routes the report to the support and dev inboxes.',sched:'Immediately.',sent:147,deliv:100,open:96,bounce:0,updated:'Jun 12, 2026',
-        v:[{role:'NIW Support',subject:'New {Request Type} from ILIA',body:'A user submitted a report from ILIA. Details and screenshots are attached.',cta:''}],
-        linked:[{t:'action',h:'Jira ticket created',p:'Lands in the Reported Bugs intake queue.'}]},
-      {id:'brd-move',name:'"We have moved" office notice',wf:'Internal',status:'retired',auto:false,when:'One-off broadcast sent by script.',why:'Announced the Nov 2025 office move. No longer needed.',sched:'Not scheduled (retired).',sent:0,deliv:0,open:0,bounce:0,updated:'Retired Jan 5, 2026',
-        v:[{role:'All users',subject:'Simplicity-NIW is moving to a new address',body:'We are excited to share that our office is moving.',cta:''}],linked:[]},
-      {id:'enr-help',name:'Need enrollment help',wf:'Enrollment',status:'retired',auto:false,when:'Nothing triggers this email any more.',why:'Found during clean-up. Kept for history, never sent.',sched:'Not scheduled (retired).',sent:0,deliv:0,open:0,bounce:0,updated:'Retired Oct 2, 2026',
-        v:[{role:'Client',subject:'Need Enrollment Help',body:'Need help with your enrollment? Contact your agent {Agent Name}.',cta:''}],linked:[]}
+      R({id:'KZ-INV-001',name:'Client invitation to enroll',product:'Kai-Zen',area:'Agent Invitation',status:'keep',by:'Agent action',ev:'Agent clicks Send Invite on the Add Client screen and the client record saves.',acct:'Account not created',cond:'Not sent if the email already belongs to another ILIA account.',timing:'Immediately',rep:'Sends once; admin can Resend manually.',to:'Client',cc:'None',merge:'{ClientFirstName}, {AgentName}, {Strategy}. If a name is empty: "Hello,"',overlap:'Never sends together with the GWT giftor invite.',sens:'No',owner:'Client Services',jira:'NIWD-0000',appr:'Compliance · Sep 30, 2026',why:'Starts enrollment: gives the client a secure link to create their ILIA account.',sent:412,deliv:98.9,open:71,bounce:5,
+        v:[{role:'Client',subject:'{AgentName} has invited you to learn about {Strategy}',body:'Dear {ClientFirstName},\n\nYour agent {AgentName} has invited you to learn about {Strategy} and start your enrollment in ILIA.\n\nClick below to create your secure account. The link expires in 30 days.',cta:'Create your account'}],
+        linked:[{t:'notif',h:'Agent dashboard alert',p:'"Invite sent to {ClientName}" appears on the agent\'s dashboard.'},{t:'status',h:'Participant status → Client Invited',p:'Shown in Account Management and on the case.'}]}),
+      R({id:'KZ-ENR-001',name:'Enrollment started',product:'Kai-Zen',area:'Enrollment',status:'rewrite',by:'Client action',ev:'Client confirms a contribution in the estimator for the first time.',acct:'Active',cond:'',timing:'Immediately',rep:'Sends once per enrollment.',to:'Client · Agent · IMO · NIW Admin',cc:'',merge:'{ClientName}, {Strategy}, {CarrierName}',overlap:'',sens:'No',owner:'Client Services',jira:'',appr:'',why:'Lets everyone on the case know the client has begun.',note:'Rewrite: subject lines start with a long "status change for…" prefix, and the rubric is missing CC rules, conditions and overlap.',sent:305,deliv:99.1,open:64,bounce:2,
+        v:[{role:'Client',subject:'Your {Strategy} enrollment has started',body:'Dear {ClientFirstName},\n\nThank you for starting your {Strategy} enrollment. You can pick up where you left off at any time from your ILIA dashboard.',cta:'Continue enrollment'},
+           {role:'Agent',subject:'{ClientName} has started their {Strategy} enrollment',body:'Dear {AgentName},\n\n{ClientName} has started their {Strategy} enrollment with {CarrierName}. No action is needed from you yet.',cta:'View client'},
+           {role:'IMO',subject:'{AgentName}\'s client {ClientName} started enrollment',body:'{AgentName}\'s client {ClientName} has started their {Strategy} enrollment.',cta:'View case'},
+           {role:'NIW Admin',subject:'Enrollment started: {ClientName}',body:'{ClientName} (agent {AgentName}) has started a {Strategy} enrollment.',cta:'Open case'}],
+        linked:[{t:'status',h:'Participant status → Enrollment Started',p:'Updates the case status for all roles.'},{t:'notif',h:'Agent in-app notification',p:'"{ClientName} started enrollment."'}]}),
+      R({id:'KZ-ENR-014',name:'Final documents to carrier',product:'Kai-Zen',area:'Enrollment',status:'tbd',by:'Admin action',ev:'Admin clicks Submit on the "Submit Carrier Final Docs" action item.',acct:'Any',cond:'',timing:'Immediately',rep:'',to:'Carrier',cc:'',merge:'{ClientName}',overlap:'',sens:'Yes',owner:'',jira:'',appr:'',why:'Delivers the executed application package to the insurance carrier.',note:'Not reviewed. Two versions exist (old and new system), and the attachments contain sensitive information, so this needs Compliance review.',sent:58,deliv:100,open:0,bounce:0,
+        v:[{role:'Carrier',subject:'Final Docs for {ClientName}',body:'Hello,\n\nPlease find attached the final policy documents for client {ClientName}.\n\nThank you.',cta:''}],
+        linked:[{t:'action',h:'Action item closes: Submit Carrier Final Docs',p:'Removed from NIW Action Items when sent.'}]}),
+      R({id:'KZ-AAI-001',name:'Request documents (new business)',product:'Kai-Zen',area:'Admin Action Items',status:'keep',by:'Admin action',ev:'Admin submits "Request Docs" on a case whose policy is not issued yet.',acct:'Active',cond:'Policy not issued. If issued, the servicing version (KZ-SVC-006) sends instead.',timing:'Immediately',rep:'Reminder after 3 business days, up to 2 times; stops when the client uploads.',to:'Client',cc:'Agent (CC)',merge:'{ClientFirstName}, {Reason}',overlap:'Suppressed if a document request was sent in the last 24 hours.',sens:'No',owner:'Client Services',jira:'NIWD-0000',appr:'Compliance · Aug 18, 2026',why:'Asks the client for the documents needed to keep the case moving.',sent:96,deliv:99.0,open:77,bounce:1,
+        v:[{role:'Client',subject:'Your Kai-Zen enrollment: please upload documents',body:'Dear {ClientFirstName},\n\nWe\'re reaching out from Simplicity-NIW. To keep your enrollment moving we need a few documents from you:\n\n{Reason}\n\nPlease log in and upload them from your Action Items.',cta:'Upload documents'}],
+        linked:[{t:'action',h:'Client action item: Upload requested documents',p:'Button in the client\'s Action Items tab.'},{t:'notif',h:'Agent in-app notification',p:'"Documents requested from {ClientName}."'}]}),
+      R({id:'KZ-ENR-012',name:'Policy is now in force',product:'Kai-Zen',area:'Enrollment',status:'keep',by:'System – status change',ev:'Case status changes to In Force.',acct:'Active',cond:'Kai-Zen only.',timing:'Immediately',rep:'Sends once per policy.',to:'Client · Agent',cc:'None',merge:'{ClientFirstName}, {Strategy}, {PolicyNumber}',overlap:'Replaces the old "servicing portal access" email.',sens:'No',owner:'Client Services',jira:'NIWD-0000',appr:'Compliance · Aug 2, 2026',why:'Celebrates the milestone and moves the client to their servicing portal.',sent:96,deliv:100,open:83,bounce:0,
+        v:[{role:'Client',subject:'Your {Strategy} policy is now in force',body:'Dear {ClientFirstName},\n\nGreat news: your {Strategy} policy {PolicyNumber} is now in force. You now have access to your ILIA Servicing Portal.',cta:'Open my servicing portal'},
+           {role:'Agent',subject:'{ClientName}\'s policy is now in force',body:'Dear {AgentName},\n\nYour client {ClientName}\'s {Strategy} policy is now in force.',cta:'View client'}],
+        linked:[{t:'status',h:'Participant status → In Force',p:'Client is redirected to the servicing portal at next login.'}]}),
+      R({id:'ALL-PAY-001',name:'Payment confirmation',product:'Both',area:'Payments',status:'keep',by:'Admin action',ev:'Admin adds a payment with status Received and "Send confirmation" checked.',acct:'Any',cond:'GWT: sent to the giftor instead of the recipient.',timing:'Immediately',rep:'Sends once per payment.',to:'Client (or Giftor)',cc:'Agent, IMO',merge:'{ClientFirstName}, {Amount}',overlap:'Replaces the older "Contribution Received" email for the same event.',sens:'No',owner:'Payments team',jira:'NIWD-0000',appr:'Compliance · Sep 25, 2026',why:'Confirms the contribution arrived and was applied.',sent:688,deliv:99.4,open:58,bounce:4,
+        v:[{role:'Client',subject:'Payment confirmation',body:'Dear {ClientFirstName},\n\nYour premium contribution of {Amount} has been received and applied to your policy.\n\nThank you.',cta:'View payments'},
+           {role:'Agent (CC)',subject:'Payment confirmation for {ClientName}',body:'Dear {AgentName},\n\nA premium contribution of {Amount} for your client {ClientName} has been received and applied.',cta:''}],
+        linked:[{t:'log',h:'Payments Center → Payment Communications',p:'Logged with delivery status (Delivered / Opened / Bounced).'}]}),
+      R({id:'ALL-PAY-006',name:'Payment rejected (check / wire)',product:'Both',area:'Payments',status:'rewrite',by:'Admin action',ev:'Admin rejects a check or wire payment.',acct:'Any',cond:'',timing:'Immediately',rep:'Sends once per rejection.',to:'Client · Agent · IMO · Trustee',cc:'',merge:'{ClientFirstName}, {Reason}, {Tranche}',overlap:'',sens:'No',owner:'Payments team',jira:'',appr:'',why:'Tells the client the payment couldn\'t be processed and how to fix it.',note:'Rewrite: the same event also sends an older rejection email, and the copy contains a literal "[check/ wire]" placeholder. Merge into one.',sent:41,deliv:97.6,open:80,bounce:1,
+        v:[{role:'Client',subject:'Your contribution could not be processed',body:'Dear {ClientFirstName},\n\nWe could not process your wire because {Reason}.\n\nPlease reissue the payment, or log in to ILIA to pay by ePay.',cta:'Make a payment'},
+           {role:'Agent',subject:'Payment for {ClientName} could not be processed',body:'Dear {AgentName},\n\nThe wire payment for your client {ClientName} could not be processed because {Reason}. Please contact your client.',cta:''},
+           {role:'Trustee',subject:'Wire rejected: {ClientName}',body:'The wire for {ClientName} (Tranche {Tranche}) could not be processed. Reason: {Reason}.',cta:''}],
+        linked:[{t:'action',h:'Client action item: Resubmit payment',p:'Appears in the client\'s Action Items.'},{t:'notif',h:'Agent in-app notification',p:'"Payment rejected for {ClientName}."'}]}),
+      R({id:'KZ-PAY-010',name:'Annual contribution reminder',product:'Kai-Zen',area:'Payments',status:'keep',by:'System – scheduled',ev:'Daily job finds annual-pay, in-force policies with an amount still due.',acct:'Active',cond:'Year 1 fully paid; skip policies in Withdrawn status.',timing:'90, 60 and 30 days before the due date.',rep:'At most once every 30 days; stops once the contribution is received.',to:'Client',cc:'Agent, IMO, NIW admin inbox',merge:'{ClientFirstName}, {Amount}, {DueDate}, {Tranche}',overlap:'Not sent if a payment for that year was logged in the last 7 days.',sens:'No',owner:'Payments team',jira:'NIWD-0000',appr:'Compliance · Sep 18, 2026',why:'Reminds clients ahead of their anniversary so contributions arrive on time.',sent:1290,deliv:98.2,open:62,bounce:19,
+        v:[{role:'Client',subject:'Your {Strategy} contribution is due {DueDate}',body:'Dear {ClientFirstName},\n\nThis is a reminder that your upcoming contribution of {Amount} for Tranche {Tranche} is due on {DueDate}.\n\nYou can pay by check, wire or ePay.',cta:'Pay with ePay'}],
+        linked:[{t:'log',h:'Payments Center → Payment Communications',p:'Each reminder (90 / 60 / 30) is logged, so nothing goes missing.'},{t:'notif',h:'Admin daily summary',p:'One daily report of reminders sent.'}]}),
+      R({id:'KZ-PAY-011',name:'Monthly draft notice',product:'Kai-Zen',area:'Payments',status:'new',by:'System – scheduled',ev:'Daily job finds monthly-pay policies with a draft in 7 days.',acct:'Active',cond:'Monthly-pay only.',timing:'7 days before each draft date.',rep:'Once per draft.',to:'Client',cc:'None',merge:'{ClientFirstName}, {Amount}, {DueDate}',overlap:'None.',sens:'No',owner:'Payments team',jira:'NIWD-0000',appr:'',why:'Warns clients a draft is coming so the account has enough funds.',note:'New version, waiting for approval before it goes live.',sent:0,deliv:0,open:0,bounce:0,
+        v:[{role:'Client',subject:'Upcoming automatic draft on {DueDate}',body:'Dear {ClientFirstName},\n\nYour monthly contribution of {Amount} will be drafted on {DueDate}. Please make sure funds are available.',cta:''}],
+        linked:[{t:'log',h:'Payments Center → Payment Communications',p:'Logged per policy.'}]}),
+      R({id:'ALL-SVC-001',name:'Change request received',product:'Both',area:'Servicing',status:'keep',by:'Client action',ev:'Client submits an information change (address, name, beneficiary) in the servicing portal.',acct:'Active',cond:'Not sent if an admin entered the change for the client.',timing:'Immediately',rep:'Sends once per request.',to:'Client · NIW Admin',cc:'None',merge:'{ClientFirstName}, {RequestType}',overlap:'None.',sens:'No',owner:'Servicing team',jira:'NIWD-0000',appr:'Compliance · Sep 3, 2026',why:'Confirms the request so the client knows NIW is working on it.',sent:133,deliv:99.2,open:74,bounce:1,
+        v:[{role:'Client',subject:'We received your {RequestType} request',body:'Dear {ClientFirstName},\n\nWe have received your {RequestType} request. NIW will review it and let you know once it is processed.',cta:''},
+           {role:'NIW Admin',subject:'New servicing request: {RequestType} for {ClientName}',body:'{ClientName} submitted a {RequestType} request. Review it in NIW Action Items.',cta:'Open action item'}],
+        linked:[{t:'action',h:'NIW action item: Review servicing request',p:'Created for the servicing team.'},{t:'notif',h:'Client in-app notice',p:'"Your request is being processed."'}]}),
+      R({id:'ALL-SVC-004',name:'ID renewal reminder',product:'Both',area:'Servicing',status:'tbd',by:'System – scheduled',ev:'Daily job finds a client ID that expires before the next tranche anniversary.',acct:'',cond:'',timing:'120, 90 and 60 days before the anniversary.',rep:'',to:'Client',cc:'NIW info inbox',merge:'{ClientFirstName}, {Days}',overlap:'',sens:'No',owner:'',jira:'',appr:'',why:'Keeps client ID documents current, which the carrier and trust require.',note:'Not reviewed. It\'s sent by a job outside the main code; confirm with Mohit.',sent:212,deliv:97.1,open:55,bounce:6,
+        v:[{role:'Client',subject:'Action required: upload your renewed ID',body:'Dear {ClientFirstName},\n\nOur records show your ID expires soon. Please upload a renewed ID in your servicing portal within {Days} days.',cta:'Upload documents'}],
+        linked:[{t:'action',h:'Client action item: Upload renewed ID',p:'Shown in the client\'s Personal Documents.'}]}),
+      R({id:'GWT-INV-001',name:'GWT invitation to giftor',product:'GWT',area:'Agent Invitation',status:'keep',by:'Agent action',ev:'Agent sends a Greatest Wealth Transfer invite and answers "No" to Add Recipient.',acct:'Account not created',cond:'A different version sends when recipients are added.',timing:'Immediately',rep:'Sends once.',to:'Giftor',cc:'NIW info inbox',merge:'{GiftorName}, {AgentName}, {Strategy}',overlap:'Never sends with the Kai-Zen client invite.',sens:'No',owner:'GWT team',jira:'NIWD-0000',appr:'Compliance · Sep 28, 2026',why:'Invites the giftor to set up their account and start the gift.',sent:77,deliv:98.7,open:79,bounce:1,
+        v:[{role:'Giftor',subject:'{AgentName}\'s invitation to start the Greatest Wealth Transfer',body:'Dear {GiftorName},\n\nYour agent {AgentName} has invited you to start the Greatest Wealth Transfer with {Strategy}.\n\nCreate your ILIA account to get started.',cta:'Create your ILIA account'},
+           {role:'Agent',subject:'Invitation to the Greatest Wealth Transfer sent to {GiftorName}',body:'Dear {AgentName},\n\nYour invitation was sent to {GiftorName}.',cta:''}],
+        linked:[{t:'status',h:'Giftor status → Invited',p:'Visible on the agent\'s GWT dashboard.'}]}),
+      R({id:'GWT-PAY-003',name:'Contribution received: thank you',product:'GWT',area:'Payments',status:'rewrite',by:'Admin action',ev:'Admin or trustee marks a GWT payment as received.',acct:'Active',cond:'',timing:'Immediately',rep:'',to:'Giftor',cc:'',merge:'{GiftorName}, {RecipientName}, {Strategy}',overlap:'Can be sent twice if two screens mark the same payment.',sens:'No',owner:'GWT team',jira:'',appr:'',why:'Thanks the giftor and confirms the gift is funded.',note:'Rewrite: it promises a follow-up email that doesn\'t exist.',sent:39,deliv:100,open:88,bounce:0,
+        v:[{role:'Giftor',subject:'Contribution received: thank you',body:'Hi {GiftorName},\n\nThank you for your {Strategy} contribution on behalf of {RecipientName}. Your payment has been received and confirmed.',cta:''}],
+        linked:[{t:'status',h:'Participant status → Payment Complete',p:'Updates for the giftor and the recipient.'}]}),
+      R({id:'ALL-ADM-002',name:'Agent registration approved',product:'Both',area:'Other Admin Functions',status:'keep',by:'Admin action',ev:'NIW admin approves an agent registration request.',acct:'Account created – not activated',cond:'',timing:'Immediately',rep:'Sends once.',to:'Agent · NIW Sales Admin',cc:'None',merge:'{AgentName}',overlap:'None.',sens:'No',owner:'Agent Support',jira:'NIWD-0000',appr:'Compliance · Jul 30, 2026',why:'Welcomes the new agent and tells them how to log in.',sent:64,deliv:98.4,open:90,bounce:1,
+        v:[{role:'Agent',subject:'Your agent registration has been approved',body:'Dear {AgentName},\n\nYour agent registration has been approved. You can now log in to ILIA and start inviting clients.',cta:'Log in to ILIA'},
+           {role:'NIW Sales Admin',subject:'Agent {AgentName} has been approved',body:'Agent {AgentName} has been approved and can now log in to ILIA.',cta:''}],
+        linked:[{t:'action',h:'Action item closes: Approve agent',p:'Removed from NIW Action Items.'}]}),
+      R({id:'ALL-ADM-007',name:'Account expired (never logged in)',product:'Both',area:'Other Admin Functions',status:'new',by:'System – scheduled',ev:'Daily job finds client accounts still "Delivered" or "Opened Invite" 365 days after the invite.',acct:'Account not created',cond:'Clients only.',timing:'On day 365 after the invite.',rep:'Sends once; the account is then deactivated.',to:'Client',cc:'NIW info inbox',merge:'{ClientFirstName}, {AgentName}',overlap:'None.',sens:'No',owner:'Client Services',jira:'NIWD-0000',appr:'',why:'Cleans up unused accounts and tells the client how to come back.',note:'New email, not live yet. Waiting for copy approval.',sent:0,deliv:0,open:0,bounce:0,
+        v:[{role:'Client',subject:'Your ILIA account has expired',body:'Dear {ClientFirstName},\n\nYour ILIA account was never activated and has now expired. If you would still like to enroll, contact your agent {AgentName}.',cta:''}],
+        linked:[{t:'status',h:'Account status → Deactivated',p:'Account is removed from active lists.'}]}),
+      R({id:'ALL-ADM-010',name:'Bug / feedback report',product:'Both',area:'Other Admin Functions',status:'keep',by:'Client action',ev:'Any user submits the Bug / Feedback form.',acct:'Active',cond:'',timing:'Immediately',rep:'Sends once.',to:'NIW Support',cc:'Support ticket inbox',merge:'{RequestType}',overlap:'None.',sens:'No',owner:'Support',jira:'NIWD-0000',appr:'Internal · Jun 12, 2026',why:'Routes the report to the support and dev inboxes.',sent:147,deliv:100,open:96,bounce:0,
+        v:[{role:'NIW Support',subject:'New {RequestType} from ILIA',body:'A user submitted a report from ILIA. Details and screenshots are attached.',cta:''}],
+        linked:[{t:'action',h:'Jira ticket created',p:'Lands in the Reported Bugs intake queue.'}]}),
+      R({id:'ALL-ADM-015',name:'"We have moved" office notice',product:'Both',area:'Other Admin Functions',status:'retired',by:'Admin action',ev:'One-off broadcast sent by script.',acct:'Any',cond:'',timing:'Not scheduled (retired).',rep:'—',to:'All users',cc:'None',merge:'—',overlap:'—',sens:'No',owner:'—',jira:'',appr:'Retired · Jan 5, 2026',why:'Announced the Nov 2025 office move. No longer needed.',sent:0,deliv:0,open:0,bounce:0,
+        v:[{role:'All users',subject:'Simplicity-NIW is moving to a new address',body:'We are excited to share that our office is moving.',cta:''}],linked:[]}),
+      R({id:'KZ-ENR-020',name:'Need enrollment help',product:'Kai-Zen',area:'Enrollment',status:'retired',by:'System – status change',ev:'Nothing triggers this email any more.',acct:'Any',cond:'',timing:'Not scheduled (retired).',rep:'—',to:'Client',cc:'None',merge:'{AgentName}',overlap:'—',sens:'No',owner:'—',jira:'',appr:'Retired · Oct 2, 2026',why:'Found during clean-up. Kept for history, never sent.',sent:0,deliv:0,open:0,bounce:0,
+        v:[{role:'Client',subject:'Need enrollment help',body:'Need help with your enrollment? Contact your agent {AgentName}.',cta:''}],linked:[]})
     ];
-    var ST={active:['p-active','Active'],draft:['p-draft','Draft'],review:['p-review','Needs review'],retired:['p-retired','Retired']};
-    var state={view:'list',q:'',wf:'',role:'',status:'',trig:'',group:'wf',id:null,dtab:'copy',ver:0,drafts:{}};
+    var RUBRIC=[['ev','Trigger event (exact action)'],['by','Triggered by'],['acct','Account status required'],['cond','Other conditions'],['timing','Timing / delay'],['rep','Repeats & stop rule'],['to','To (roles)'],['cc','CC / BCC (roles)'],['merge','Merge fields used (+ empty fallback)'],['overlap','Could it fire twice or overlap?']];
+    var CLEAN=[
+      {k:'Sign-offs differ',b:'"MyIlia" · "Simplicity-NIW" · "Ilia Team" · "Kaizen Plan Servicing, LLC" · (none)',a:'One sign-off from the shared layout',n:41},
+      {k:'Greetings differ',b:'"Dear…" · "Hi…" · "Hello," · (none)',a:'"Dear {ClientFirstName},"',n:52},
+      {k:'Phone number differs',b:'"800-294-9940 ext-216" · "(972) 755-1582" · "972-755-1582"',a:'One approved number and format (decision needed)',n:23},
+      {k:'Company / product name differs',b:'"Simplicity-NIW" · "Simplicity NIW" · "NIW" · "Ilia" / "ilia" / "ILIA" · "Kaizen" / "Kai-Zen"',a:'"Simplicity-NIW" · "ILIA" · "Kai-Zen"',n:64},
+      {k:'Spelling & grammar',b:'"upto" · "dueto" · "You next payment" · "has been inforced" · "this clients details page"',a:'"up to" · "due to" · "Your next payment" · "is now in force" · "this client\'s details page"',n:9},
+      {k:'Placeholder text sent literally',b:'"Contribution [check/ wire] Rejected"',a:'Fill in the real payment type',n:3},
+      {k:'"Please reply" on a no-reply address',b:'"…reply with the requested documents…"',a:'"…upload them in ILIA, or contact us at…"',n:2}
+    ];
+    var state={view:'list',q:'',area:'',product:'',role:'',status:'',by:'',group:'area',id:null,dtab:'copy',ver:0,drafts:{},cleaned:{}};
     var app=document.getElementById('emApp');
-    function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-    function fill(s){return esc(s).replace(/\{[^}]+\}/g,function(m){var k=m.replace(/&#39;/g,"'");return SAMPLE[k]?'<span class="tok">'+esc(SAMPLE[k])+'</span>':m;});}
+    function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+    function fill(s){return esc(s).replace(/\{[^}]+\}/g,function(m){return SAMPLE[m]?'<span class="tok">'+esc(SAMPLE[m])+'</span>':m;});}
     function pill(s){return '<span class="pill '+ST[s][0]+'">'+ST[s][1]+'</span>';}
-    function toast(m){var t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove();},2600);}
-    function roles(){var r={};E.forEach(function(e){e.v.forEach(function(x){r[x.role.replace(' (CC)','')]=1;});});return Object.keys(r).sort();}
+    function toast(m){var t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove();},2800);}
+    function base(r){return r.replace(' (CC)','');}
+    function roles(){var r={};E.forEach(function(e){e.v.forEach(function(x){r[base(x.role)]=1;});});return Object.keys(r).sort();}
     function opts(list,cur,all){return '<option value="">'+all+'</option>'+list.map(function(x){return '<option'+(x===cur?' selected':'')+'>'+esc(x)+'</option>';}).join('');}
-    var WFS=['Enrollment','Payments','Status Changes','Servicing','GWT','Accounts & Invitations','Internal'];
+    function score(e){return RUBRIC.filter(function(r){return e[r[0]]&&e[r[0]].trim();}).length;}
+    function rub(e){var s=score(e),cls=s===RUBRIC.length?'rb-ok':s>=7?'rb-mid':'rb-low';return '<span class="rb '+cls+'" title="Trigger rubric answered">'+s+'/'+RUBRIC.length+'</span>';}
+    function bar(crumb,btns){return '<div class="i-bar"><div class="i-crumb">'+crumb+'</div><div class="i-btns">'+btns+'</div></div>';}
+    var BACK='<button class="ibtn ghost" data-act="back">← All emails</button>';
 
     function list(){
       var f=E.filter(function(e){
-        if(state.wf&&e.wf!==state.wf)return false;
+        if(state.area&&e.area!==state.area)return false;
+        if(state.product&&e.product!==state.product)return false;
         if(state.status&&e.status!==state.status)return false;
-        if(state.trig==='auto'&&!e.auto)return false;if(state.trig==='event'&&e.auto)return false;
-        if(state.role&&!e.v.some(function(x){return x.role.replace(' (CC)','')===state.role;}))return false;
-        if(state.q){var q=state.q.toLowerCase();var hay=(e.name+' '+e.when+' '+e.v.map(function(x){return x.subject+' '+x.body;}).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}
+        if(state.by&&e.by!==state.by)return false;
+        if(state.role&&!e.v.some(function(x){return base(x.role)===state.role;}))return false;
+        if(state.q){var q=state.q.toLowerCase();var hay=(e.id+' '+e.name+' '+e.ev+' '+e.v.map(function(x){return x.subject+' '+x.body;}).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}
         return true;});
-      var h='<div class="i-bar"><div class="i-crumb"><b>Email Management</b></div><div class="i-btns">'+
-        '<button class="ibtn" data-act="layout">✉ Email Layout</button><button class="ibtn" data-act="history">⟲ Send History</button><button class="ibtn" data-act="export">⇩ Export Catalog</button></div></div>';
+      var h=bar('<b>Email Management</b>','<button class="ibtn" data-act="request">＋ Request New Email</button><button class="ibtn" data-act="clean">✨ Copy Clean-up</button><button class="ibtn" data-act="layout">✉ Layout &amp; Rules</button><button class="ibtn" data-act="history">⟲ Send History</button>');
       h+='<div class="istats">'+
         '<div class="istat" data-st=""><div class="v">152</div><div class="l">Emails in ILIA</div></div>'+
-        '<div class="istat ok" data-st="active"><div class="v">104</div><div class="l">Active</div></div>'+
-        '<div class="istat" data-st="draft"><div class="v">6</div><div class="l">Drafts awaiting approval</div></div>'+
-        '<div class="istat warn" data-st="review"><div class="v">14</div><div class="l">Needs review</div></div>'+
+        '<div class="istat ok" data-st="keep"><div class="v">58</div><div class="l">Keep as-is</div></div>'+
+        '<div class="istat warn" data-st="rewrite"><div class="v">37</div><div class="l">Rewrite</div></div>'+
+        '<div class="istat" data-st="tbd"><div class="v">23</div><div class="l">Not reviewed (TBD)</div></div>'+
+        '<div class="istat" data-st="new"><div class="v">6</div><div class="l">New, awaiting approval</div></div>'+
         '<div class="istat" data-st="retired"><div class="v">28</div><div class="l">Retired</div></div>'+
         '<div class="istat ok" data-act="history"><div class="v">98.6%</div><div class="l">Delivered (30 days)</div></div>'+
         '<div class="istat bad" data-act="history"><div class="v">37</div><div class="l">Bounced (30 days)</div></div></div>';
       h+='<div class="icard"><div class="ititle">All Emails</div><div class="ifilters">'+
-        '<div class="ifld"><label>Workflow</label><select data-f="wf">'+opts(WFS,state.wf,'All workflows')+'</select></div>'+
+        '<div class="ifld"><label>Product</label><select data-f="product">'+opts(PRODUCTS,state.product,'All products')+'</select></div>'+
+        '<div class="ifld"><label>Area</label><select data-f="area">'+opts(AREAS,state.area,'All areas')+'</select></div>'+
         '<div class="ifld"><label>Recipient</label><select data-f="role">'+opts(roles(),state.role,'All recipients')+'</select></div>'+
+        '<div class="ifld"><label>Triggered by</label><select data-f="by">'+opts(BY,state.by,'Anyone / anything')+'</select></div>'+
         '<div class="ifld"><label>Status</label><select data-f="status"><option value="">All statuses</option>'+Object.keys(ST).map(function(k){return '<option value="'+k+'"'+(state.status===k?' selected':'')+'>'+ST[k][1]+'</option>';}).join('')+'</select></div>'+
-        '<div class="ifld"><label>Trigger</label><select data-f="trig"><option value="">Any trigger</option><option value="event"'+(state.trig==='event'?' selected':'')+'>When something happens</option><option value="auto"'+(state.trig==='auto'?' selected':'')+'>Automatic / scheduled</option></select></div>'+
-        '<div class="ifld" style="grid-column:span 2"><input data-f="q" placeholder="Search by email name, subject or wording…" value="'+esc(state.q)+'"></div></div>';
-      h+='<div class="igroupby">Group by: '+[['wf','Workflow'],['role','Recipient'],['status','Status'],['none','None']].map(function(g){return '<button data-g="'+g[0]+'" class="'+(state.group===g[0]?'on':'')+'">'+g[1]+'</button>';}).join('')+'<span style="margin-left:auto">Showing '+f.length+' of 152 (sample)</span></div>';
-      h+='<div class="itable-wrap"><table class="itable"><thead><tr><th>Email</th><th>Workflow</th><th>Recipients</th><th>Trigger</th><th>Status</th><th>Sent (30d)</th><th>Last updated</th></tr></thead><tbody>';
+        '<div class="ifld"><input data-f="q" placeholder="Search ID, name, subject or wording…" value="'+esc(state.q)+'"></div></div>';
+      h+='<div class="igroupby">Group by: '+[['area','Area'],['product','Product'],['role','Recipient'],['status','Status'],['none','None']].map(function(g){return '<button data-g="'+g[0]+'" class="'+(state.group===g[0]?'on':'')+'">'+g[1]+'</button>';}).join('')+'<span style="margin-left:auto">Showing '+f.length+' of 152 (sample)</span></div>';
+      h+='<div class="itable-wrap"><table class="itable"><thead><tr><th>Email ID</th><th>Email</th><th>Product · Area</th><th>Recipients</th><th>Triggered by</th><th>Rubric</th><th>Status</th><th>Sent (30d)</th></tr></thead><tbody>';
       var groups=[];
       if(state.group==='none')groups=[[null,f]];
-      else{var keys=state.group==='wf'?WFS:state.group==='status'?Object.keys(ST):roles();
-        keys.forEach(function(k){var g=f.filter(function(e){return state.group==='wf'?e.wf===k:state.group==='status'?e.status===k:e.v.some(function(x){return x.role.replace(' (CC)','')===k;});});if(g.length)groups.push([state.group==='status'?ST[k][1]:k,g]);});}
-      if(!f.length)h+='<tr><td colspan="7" class="iempty">No emails match these filters.</td></tr>';
+      else{var keys=state.group==='area'?AREAS:state.group==='product'?PRODUCTS:state.group==='status'?Object.keys(ST):roles();
+        keys.forEach(function(k){var g=f.filter(function(e){return state.group==='area'?e.area===k:state.group==='product'?e.product===k:state.group==='status'?e.status===k:e.v.some(function(x){return base(x.role)===k;});});if(g.length)groups.push([state.group==='status'?ST[k][1]:k,g]);});}
+      if(!f.length)h+='<tr><td colspan="8" class="iempty">No emails match these filters.</td></tr>';
       groups.forEach(function(g){
-        if(g[0])h+='<tr class="grp"><td colspan="7">'+esc(g[0])+'<span>'+g[1].length+' email'+(g[1].length>1?'s':'')+'</span></td></tr>';
+        if(g[0])h+='<tr class="grp"><td colspan="8">'+esc(g[0])+'<span>'+g[1].length+' email'+(g[1].length>1?'s':'')+'</span></td></tr>';
         g[1].forEach(function(e){
-          h+='<tr class="row" data-id="'+e.id+'"><td><span class="ilink">'+esc(e.name)+'</span><span class="isubj">'+esc(e.v[0].subject)+'</span></td><td>'+esc(e.wf)+'</td><td>'+e.v.map(function(x){return '<span class="rchip">'+esc(x.role)+'</span>';}).join('')+'</td><td style="max-width:240px;font-size:12.5px">'+(e.auto?'<span class="auto">⏱ Automatic</span><br>':'')+esc(e.sched)+'</td><td>'+pill(e.status)+'</td><td>'+(e.sent?e.sent.toLocaleString():'—')+'</td><td style="font-size:12.5px;color:#5d6573">'+esc(e.updated)+'</td></tr>';});
+          h+='<tr class="row" data-id="'+e.id+'"><td><code class="eid">'+e.id+'</code></td><td><span class="ilink">'+esc(e.name)+'</span><span class="isubj">'+esc(e.v[0].subject)+'</span></td><td style="font-size:12.5px">'+esc(e.product)+'<br><span style="color:#5d6573">'+esc(e.area)+'</span></td><td>'+e.v.map(function(x){return '<span class="rchip">'+esc(x.role)+'</span>';}).join('')+'</td><td style="font-size:12.5px">'+(e.by.indexOf('System – scheduled')===0?'<span class="auto">⏱ </span>':'')+esc(e.by)+'</td><td>'+rub(e)+'</td><td>'+pill(e.status)+'</td><td>'+(e.sent?e.sent.toLocaleString():'—')+'</td></tr>';});
       });
       h+='</tbody></table></div></div>';
       app.innerHTML=h;
@@ -658,29 +738,31 @@
     function preview(e,v,subj,body,cta){
       return '<div class="prev-lab"><span>Live preview · sample data</span><span style="font-weight:400;color:#8a94a6">Uses the shared ILIA layout</span></div><div class="prev"><div class="em">'+
         '<div class="em-h"><span class="w">ilia</span><span class="d"><i style="background:#6f8cff"></i><i style="background:#22a06b"></i><i style="background:#e5484d"></i><i style="background:#f2b13b"></i></span></div>'+
-        '<div class="em-meta"><b>From:</b> '+esc(e.wf==='Internal'?'ILIA Support <support@myilia.com>':SENDER_C)+'<br><b>To:</b> '+esc(v.role)+'<br><b>Subject:</b> '+fill(subj)+'</div>'+
+        '<div class="em-meta"><b>From:</b> '+esc(SENDER)+'<br><b>To:</b> '+esc(v.role)+'<br><b>Subject:</b> '+fill(subj)+'</div>'+
         '<div class="em-b">'+fill(body)+'</div>'+(cta?'<span class="em-cta">'+esc(cta)+'</span>':'')+
         '<div class="em-f">Sincerely, Simplicity-NIW<br>5850 Granite Parkway, Suite 800, Plano, TX 75024 · (972) 755-1582<br>This is an automated message. Questions? Contact niw.info@simplicitygroup.com · <u>Email preferences</u></div></div></div>';
     }
 
     function detail(){
       var e=E.find(function(x){return x.id===state.id;});var v=e.v[state.ver]||e.v[0];
-      var key=e.id+':'+state.ver;var d=state.drafts[key]||{subject:v.subject,body:v.body,cta:v.cta};
-      var h='<div class="i-bar"><div class="i-crumb"><a data-act="back">Email Management</a> / <b>'+esc(e.name)+'</b></div><div class="i-btns"><button class="ibtn ghost" data-act="back">← All emails</button></div></div>';
-      h+='<div class="icard"><div class="dhead"><div><h2>'+esc(e.name)+'</h2><div class="dmeta"><span>Workflow: <b>'+esc(e.wf)+'</b></span><span>Recipients: <b>'+e.v.length+' version'+(e.v.length>1?'s':'')+'</b></span><span>Sender: <b>'+esc(e.wf==='Internal'?'ILIA Support':'MyIlia (noreply)')+'</b></span><span>Last updated: <b>'+esc(e.updated)+'</b></span></div></div>'+pill(e.status)+'</div>';
+      var d=state.drafts[e.id+':'+state.ver]||{subject:v.subject,body:v.body,cta:v.cta};
+      var h=bar('<a data-act="back">Email Management</a> / <b>'+e.id+'</b>',BACK);
+      h+='<div class="icard"><div class="dhead"><div><div class="eid-l"><code class="eid">'+e.id+'</code> '+rub(e)+'</div><h2>'+esc(e.name)+'</h2><div class="dmeta"><span>Product: <b>'+esc(e.product)+'</b></span><span>Area: <b>'+esc(e.area)+'</b></span><span>Versions: <b>'+e.v.length+'</b></span><span>Owner: <b>'+esc(e.owner||'Unassigned')+'</b></span><span>Jira: <b>'+esc(e.jira||'—')+'</b></span><span>Sensitive info: <b'+(e.sens==='Yes'?' style="color:#c53030"':'')+'>'+esc(e.sens)+'</b></span></div></div>'+pill(e.status)+'</div>';
       if(e.note)h+='<div class="why" style="background:#fdf3e1;border-color:#f0d39a"><b style="color:#b7791f">Review note:</b> '+esc(e.note)+'</div>';
-      h+='<div class="dtabs">'+[['copy','Copy & Preview'],['rules','When & Why'],['linked','Linked to this event'],['hist','Send History'],['vers','Versions & Approval']].map(function(t){return '<button data-dt="'+t[0]+'" class="'+(state.dtab===t[0]?'on':'')+'">'+t[1]+'</button>';}).join('')+'</div>';
+      h+='<div class="dtabs">'+[['copy','Copy & Preview'],['rules','Trigger Rubric'],['linked','Linked to this event'],['hist','Send History'],['vers','Change Log & Approval']].map(function(t){return '<button data-dt="'+t[0]+'" class="'+(state.dtab===t[0]?'on':'')+'">'+t[1]+'</button>';}).join('')+'</div>';
       if(state.dtab==='copy'){
         h+='<div class="vers">'+e.v.map(function(x,i){return '<button data-ver="'+i+'" class="'+(i===state.ver?'on':'')+'">'+esc(x.role)+' version</button>';}).join('')+'</div>';
         h+='<div class="dgrid"><div class="ed"><label>Subject line</label><input id="edS" value="'+esc(d.subject)+'"><label>Email body</label><textarea id="edB">'+esc(d.body)+'</textarea>'+
           '<div class="mf"><span style="font-size:11.5px;color:#5d6573;margin-right:2px">Insert field:</span>'+FIELDS.map(function(x){return '<button data-mf="'+esc(x)+'">'+esc(x)+'</button>';}).join('')+'</div>'+
           '<label>Button text (optional)</label><input id="edC" value="'+esc(d.cta||'')+'">'+
-          '<div class="edbtns"><button class="ibtn sm" data-act="save">Save draft</button><button class="ibtn sm ghost" data-act="test">Send test to me</button><button class="ibtn sm ghost" data-act="submit">Submit for approval</button></div></div>'+
+          '<div class="edbtns"><button class="ibtn sm" data-act="save">Save draft</button><button class="ibtn sm ghost" data-act="test">Send test to me</button><button class="ibtn sm ghost" data-act="submit">Submit for approval</button></div>'+
+          '<p style="font-size:11.5px;color:#5d6573;margin:10px 0 0">Saving never changes what clients get. Changes go live only after approval, and are recorded in the Change Log.</p></div>'+
           '<div id="pv">'+preview(e,v,d.subject,d.body,d.cta)+'</div></div>';
       }else if(state.dtab==='rules'){
         h+='<div class="why"><b>Why we send it:</b> '+esc(e.why)+'</div>';
-        h+='<div class="kv"><div class="k">What triggers it</div><div>'+esc(e.when)+'</div><div class="k">Type</div><div>'+(e.auto?'⏱ Automatic / scheduled job':'⚡ When something happens in ILIA')+'</div><div class="k">Timing</div><div>'+esc(e.sched)+'</div><div class="k">Sent from</div><div>'+esc(e.wf==='Internal'?'ILIA Support <support@myilia.com>':SENDER_C)+'</div><div class="k">Recipients</div><div>'+e.v.map(function(x){return '<span class="rchip">'+esc(x.role)+'</span>';}).join('')+'</div><div class="k">Respects unsubscribe</div><div>'+(e.wf==='Internal'?'No (internal)':'Yes, for marketing preferences. Service emails always send.')+'</div><div class="k">Email engine</div><div>Unified ILIA email service</div></div>';
-        h+='<p style="font-size:12px;color:#5d6573;margin:12px 0 0">Phase 2: admins can adjust timing (e.g. move the 30-day reminder to 21 days) with approval.</p>';
+        h+='<div class="kv">';RUBRIC.forEach(function(r){var val=e[r[0]];h+='<div class="k">'+r[1]+'</div><div>'+(val&&val.trim()?esc(val):'<span class="missing">Not defined yet</span>')+'</div>';});
+        h+='<div class="k">Contains sensitive info?</div><div>'+esc(e.sens)+(e.sens==='Yes'?' · <span class="missing">Needs Compliance review</span>':'')+'</div><div class="k">Sent from</div><div>'+esc(SENDER)+'</div></div>';
+        h+='<p style="font-size:12px;color:#5d6573;margin:12px 0 0">Every trigger must answer all '+RUBRIC.length+' rubric questions before it can be approved. Phase 2: admins can adjust timing (e.g. move the 30-day reminder to 21 days), with approval.</p>';
       }else if(state.dtab==='linked'){
         h+='<p style="font-size:13px;color:#5d6573;margin:0 0 12px">Everything ILIA does when this event happens, in one place:</p><div class="tl">';
         h+='<div class="tli"><div class="ic" style="background:#e9effc">✉</div><div><h4>This email</h4><p>'+e.v.length+' version(s): '+e.v.map(function(x){return esc(x.role);}).join(', ')+'</p></div></div>';
@@ -691,10 +773,13 @@
         h+=histBlock(e);
       }else{
         var hasDraft=Object.keys(state.drafts).some(function(k){return k.indexOf(e.id+':')===0;});
-        h+='<div class="tl">'+(hasDraft?'<div class="tli"><div class="ic" style="background:#ebf1ff">✎</div><div><h4>v4 · Draft by you · today</h4><p>Waiting for approval from Compliance. Not live yet.</p></div></div>':'')+
-          '<div class="tli"><div class="ic" style="background:#e6f6ee">✓</div><div><h4>v3 · Live since '+esc(e.updated.replace('Retired ',''))+'</h4><p>Approved by Compliance. Current version.</p></div></div>'+
-          '<div class="tli"><div class="ic" style="background:#eff1f4">↺</div><div style="flex:1"><h4>v2 · Mar 4, 2026</h4><p>Subject line shortened.</p></div><button class="ibtn sm ghost" data-act="restore">Restore</button></div>'+
-          '<div class="tli"><div class="ic" style="background:#eff1f4">↺</div><div style="flex:1"><h4>v1 · Imported from code</h4><p>Original wording moved out of code during clean-up.</p></div><button class="ibtn sm ghost" data-act="restore">Restore</button></div></div>';
+        h+='<div class="kv" style="margin-bottom:14px"><div class="k">Owner</div><div>'+esc(e.owner||'Unassigned')+'</div><div class="k">Approved by</div><div>'+(e.appr?esc(e.appr):'<span class="missing">Not approved yet</span>')+'</div><div class="k">Jira ticket</div><div>'+esc(e.jira||'—')+'</div></div>';
+        h+='<div class="itable-wrap"><table class="itable" style="min-width:640px"><thead><tr><th>Date</th><th>Change type</th><th>What changed (before → after)</th><th>Requested by</th><th>Approved by</th></tr></thead><tbody>'+
+          (hasDraft?'<tr><td>Today</td><td>Rewrite</td><td>Copy edited in ILIA (draft)</td><td>You</td><td><span class="pill p-draft">Pending</span></td></tr>':'')+
+          '<tr><td>Sep 12, 2026</td><td>Rewrite</td><td>Subject shortened; greeting standardized → "Dear {ClientFirstName},"</td><td>Client Services</td><td>Compliance</td></tr>'+
+          '<tr><td>Aug 4, 2026</td><td>Copy clean-up</td><td>Phone number and sign-off standardized</td><td>Copy Clean-up</td><td>Compliance</td></tr>'+
+          '<tr><td>Jul 1, 2026</td><td>Imported</td><td>Wording moved out of code into ILIA</td><td>Dev</td><td>—</td></tr></tbody></table></div>'+
+          '<div class="edbtns"><button class="ibtn sm ghost" data-act="restore">Restore an earlier version</button></div>';
       }
       h+='</div>';app.innerHTML=h;
     }
@@ -705,45 +790,79 @@
       var h='';
       if(e)h+='<div class="hist-sum"><div class="istat"><div class="v">'+(e.sent||0).toLocaleString()+'</div><div class="l">Sent (30 days)</div></div><div class="istat ok"><div class="v">'+(e.sent?e.deliv+'%':'—')+'</div><div class="l">Delivered</div></div><div class="istat"><div class="v">'+(e.sent?e.open+'%':'—')+'</div><div class="l">Opened</div></div><div class="istat bad"><div class="v">'+(e.bounce||0)+'</div><div class="l">Bounced</div></div></div>';
       if(e&&!e.sent)return h+'<div class="iempty">Not sent in the last 30 days.</div>';
-      h+='<div class="itable-wrap"><table class="itable" style="min-width:560px"><thead><tr><th>Sent</th>'+(e?'':'<th>Email</th>')+'<th>Recipient</th><th>To</th><th>Result</th><th></th></tr></thead><tbody>';
-      rows.forEach(function(r,i){var em=e||E[i%6];h+='<tr><td>'+r[0]+'</td>'+(e?'':'<td>'+esc(em.name)+'</td>')+'<td>'+esc(em.v[i%em.v.length].role)+'</td><td>'+r[1]+'</td><td><span class="pill '+pc[r[2]]+'">'+r[2]+'</span></td><td>'+(r[2]==='Bounced'?'<button class="ibtn sm ghost" data-act="resend">Fix address &amp; resend</button>':'<span class="ilink" style="font-size:12.5px;cursor:pointer" data-act="viewsent">View sent copy</span>')+'</td></tr>';});
+      h+='<div class="itable-wrap"><table class="itable" style="min-width:600px"><thead><tr><th>Sent</th>'+(e?'':'<th>Email</th>')+'<th>Recipient</th><th>To</th><th>Result</th><th></th></tr></thead><tbody>';
+      rows.forEach(function(r,i){var em=e||E[i%6];h+='<tr><td>'+r[0]+'</td>'+(e?'':'<td><code class="eid">'+em.id+'</code> '+esc(em.name)+'</td>')+'<td>'+esc(em.v[i%em.v.length].role)+'</td><td>'+r[1]+'</td><td><span class="pill '+pc[r[2]]+'">'+r[2]+'</span></td><td>'+(r[2]==='Bounced'?'<button class="ibtn sm ghost" data-act="resend">Fix address &amp; resend</button>':'<span class="ilink" style="font-size:12.5px;cursor:pointer" data-act="viewsent">View sent copy</span>')+'</td></tr>';});
       return h+'</tbody></table></div>';
     }
 
     function history(){
-      app.innerHTML='<div class="i-bar"><div class="i-crumb"><a data-act="back">Email Management</a> / <b>Send History</b></div><div class="i-btns"><button class="ibtn ghost" data-act="back">← All emails</button></div></div>'+
-        '<div class="icard"><div class="ititle">Send History</div><p style="font-size:13px;color:#5d6573;margin:-6px 0 14px">"Did the client get it?" Search any person to see every email ILIA sent them and whether it arrived.</p>'+
+      app.innerHTML=bar('<a data-act="back">Email Management</a> / <b>Send History</b>',BACK)+
+        '<div class="icard"><div class="ititle">Send History</div><p class="ilead">"Did the client get it?" Search any person to see every email ILIA sent them and whether it arrived.</p>'+
         '<div class="ifilters"><div class="ifld" style="grid-column:span 2"><input placeholder="Search by client, agent or email address…"></div><div class="ifld"><label>Result</label><select><option>All results</option><option>Delivered</option><option>Opened</option><option>Bounced</option></select></div><div class="ifld"><label>Date range</label><select><option>Last 30 days</option><option>Last 7 days</option><option>This year</option></select></div></div>'+histBlock(null)+'</div>';
     }
 
+    function clean(){
+      var h=bar('<a data-act="back">Email Management</a> / <b>Copy Clean-up</b>',BACK)+'<div class="icard"><div class="ititle">Copy Clean-up</div><p class="ilead">Claude scanned all 152 emails for inconsistencies. Review each fix, then apply it in bulk. Applied fixes become <b>drafts for approval</b>, and text inside { } fill-in fields is never changed.</p>';
+      h+='<div class="itable-wrap"><table class="itable" style="min-width:760px"><thead><tr><th>Issue</th><th>Found today</th><th>Proposed standard</th><th>Emails</th><th></th></tr></thead><tbody>';
+      CLEAN.forEach(function(c,i){var done=state.cleaned[i];h+='<tr><td><b>'+esc(c.k)+'</b></td><td style="font-size:12.5px;color:#9b2c2c">'+esc(c.b)+'</td><td style="font-size:12.5px;color:#2f855a">'+esc(c.a)+'</td><td>'+c.n+'</td><td style="white-space:nowrap">'+(done?'<span class="pill p-draft">'+(done==='skip'?'Skipped':'Drafts created')+'</span>':'<button class="ibtn sm" data-cl="'+i+'">Review &amp; apply</button> <button class="ibtn sm ghost" data-cs="'+i+'">Skip</button>')+'</td></tr>';});
+      h+='</tbody></table></div></div>';app.innerHTML=h;
+    }
+
+    function request(){
+      function sel(id,l,list){return '<div class="ifld"><label>'+l+'</label><select id="'+id+'">'+list.map(function(x){return '<option>'+esc(x)+'</option>';}).join('')+'</select></div>';}
+      function inp(id,l,ph){return '<label>'+l+'</label><input id="'+id+'" placeholder="'+esc(ph)+'">';}
+      app.innerHTML=bar('<a data-act="back">Email Management</a> / <b>Request New Email</b>',BACK)+
+        '<div class="icard"><div class="ititle">Request a New Email</div><p class="ilead">Uses the standard template. Every trigger question must be answered (the "too vague" examples are greyed out as hints). On submit, ILIA assigns an ID, sets status to <b>New</b>, logs it in the Change Log, and drafts a <b>backlog</b> Jira ticket for review.</p>'+
+        '<div class="ifilters">'+sel('rqP','Product',PRODUCTS)+sel('rqA','Area',AREAS)+sel('rqB','Triggered by',BY)+sel('rqS','Account status required',ACCT)+'</div>'+
+        '<div class="dgrid"><div class="ed">'+inp('rqN','Email name','e.g. Application received')+inp('rqE','Trigger event (exact action)','Too vague: "When the application is submitted"')+inp('rqC','Other conditions','e.g. Kai-Zen only; skip if the case is Withdrawn')+inp('rqT','Timing / delay','e.g. Immediately, or 3 business days after invite if not accepted')+inp('rqR','Repeats & stop rule','e.g. Every 7 days up to 3 times; stops when the client completes it')+'</div>'+
+        '<div class="ed">'+inp('rqTo','To (roles)','e.g. Client')+inp('rqCc','CC / BCC (roles)','e.g. Agent (CC). Not sent to IMO.')+inp('rqSu','Subject line','e.g. Your application has been received')+'<label>Body copy</label><textarea id="rqBo" style="min-height:110px" placeholder="Hi {ClientFirstName}, …"></textarea>'+inp('rqO','Could it fire twice or overlap?','e.g. Suppressed if KZ-SVC-003 sent in the last 24 hours')+
+        '<label>Contains sensitive info?</label><select id="rqX" style="width:100%;border:1px solid #c4c9d2;border-radius:4px;padding:10px"><option>No</option><option>Yes</option></select></div></div>'+
+        '<div class="edbtns"><button class="ibtn" data-act="rqsubmit">Submit request</button><button class="ibtn ghost" data-act="back">Cancel</button></div></div>';
+    }
+
     function layout(){
-      app.innerHTML='<div class="i-bar"><div class="i-crumb"><a data-act="back">Email Management</a> / <b>Email Layout</b></div><div class="i-btns"><button class="ibtn ghost" data-act="back">← All emails</button></div></div>'+
-        '<div class="icard"><div class="ititle">Shared Email Layout</div><p style="font-size:13px;color:#5d6573;margin:-6px 0 14px">One header, footer and sign-off used by <b>all 152 emails</b>. Change it once and every email updates.</p>'+
-        '<div class="dgrid"><div class="ed"><label>Logo</label><input value="ILIA logo (approved brand file)" disabled><label>Brand colour</label><input value="#2F3E8F"><label>Sign-off</label><input value="Sincerely, Simplicity-NIW"><label>Footer</label><textarea style="min-height:110px">5850 Granite Parkway, Suite 800, Plano, TX 75024 · (972) 755-1582\nThis is an automated message. Questions? Contact niw.info@simplicitygroup.com</textarea><label>Default sender</label><input value="MyIlia <noreply@myilia.com>"><div class="edbtns"><button class="ibtn sm" data-act="save">Save draft</button><button class="ibtn sm ghost" data-act="submit">Submit for approval</button></div></div>'+
+      function tog(l,on,dec){return '<div class="rule"><span>'+l+'</span>'+(dec?'<span class="pill p-review">Decision needed</span>':'<span class="sw'+(on?' on':'')+'"></span>')+'</div>';}
+      app.innerHTML=bar('<a data-act="back">Email Management</a> / <b>Layout &amp; Rules</b>',BACK)+
+        '<div class="icard"><div class="ititle">Shared Layout &amp; House Rules</div><p class="ilead">One header, footer and sign-off used by <b>all 152 emails</b>, plus the rules every email follows. Change them once and every email updates, after approval.</p>'+
+        '<div class="dgrid"><div class="ed"><label>Brand</label><select style="width:100%;border:1px solid #c4c9d2;border-radius:4px;padding:10px"><option>ILIA (Simplicity-agnostic)</option><option>Simplicity-NIW branded</option></select><p style="font-size:11.5px;color:#b7791f;margin:4px 0 0">Decision needed: follow Simplicity brand guidelines, or keep ILIA emails Simplicity-agnostic?</p>'+
+        '<label>Sign-off</label><input value="Sincerely, Simplicity-NIW"><label>Company phone (one number everywhere)</label><input value="(972) 755-1582"><label>Footer</label><textarea style="min-height:90px">5850 Granite Parkway, Suite 800, Plano, TX 75024\nThis is an automated message. Questions? Contact niw.info@simplicitygroup.com</textarea><label>Default sender</label><input value="MyIlia <noreply@myilia.com>">'+
+        '<label style="margin-top:16px">Recipient &amp; content rules</label><div class="rules">'+
+        tog('CC the agent on every client email',false,true)+tog('Include the IMO on every agent email',false,true)+tog('Never include SSN, date of birth or bank numbers',true)+tog('Don\'t send to disabled accounts',true)+tog('Respect unsubscribe for non-service emails',true)+tog('Block "please reply" wording on no-reply senders',true)+
+        '</div><div class="edbtns"><button class="ibtn sm" data-act="save">Save draft</button><button class="ibtn sm ghost" data-act="submit">Submit for approval</button></div></div>'+
         '<div>'+preview(E[0],E[0].v[0],E[0].v[0].subject,E[0].v[0].body,E[0].v[0].cta)+'</div></div></div>';
     }
 
-    function render(){({list:list,detail:detail,history:history,layout:layout})[state.view]();}
+    function render(){({list:list,detail:detail,history:history,layout:layout,clean:clean,request:request})[state.view]();}
+    function go(v){state.view=v;render();app.scrollIntoView({behavior:'smooth',block:'start'});}
 
     app.addEventListener('click',function(ev){
-      var t=ev.target.closest('[data-act],[data-id],[data-g],[data-dt],[data-ver],[data-mf],[data-st]');if(!t)return;
+      var t=ev.target.closest('[data-act],[data-id],[data-g],[data-dt],[data-ver],[data-mf],[data-st],[data-cl],[data-cs]');if(!t)return;
       if(t.dataset.st!==undefined&&!t.dataset.act){state.status=t.dataset.st;render();return;}
-      if(t.dataset.id){state.view='detail';state.id=t.dataset.id;state.dtab='copy';state.ver=0;render();app.scrollIntoView({behavior:'smooth',block:'start'});return;}
+      if(t.dataset.id){state.id=t.dataset.id;state.dtab='copy';state.ver=0;go('detail');return;}
       if(t.dataset.g){state.group=t.dataset.g;render();return;}
       if(t.dataset.dt){state.dtab=t.dataset.dt;render();return;}
       if(t.dataset.ver){state.ver=+t.dataset.ver;render();return;}
+      if(t.dataset.cl){state.cleaned[t.dataset.cl]='done';render();toast(CLEAN[t.dataset.cl].n+' drafts created for approval.');return;}
+      if(t.dataset.cs){state.cleaned[t.dataset.cs]='skip';render();return;}
       if(t.dataset.mf){var b=document.getElementById('edB');var s=b.selectionStart,en=b.selectionEnd;b.value=b.value.slice(0,s)+t.dataset.mf+b.value.slice(en);b.focus();b.selectionStart=b.selectionEnd=s+t.dataset.mf.length;b.dispatchEvent(new Event('input',{bubbles:true}));return;}
       var a=t.dataset.act;
-      if(a==='back'){state.view='list';render();}
-      else if(a==='history'){state.view='history';render();}
-      else if(a==='layout'){state.view='layout';render();}
-      else if(a==='export')toast('Mock: downloads the full email catalog as a spreadsheet.');
+      if(a==='back')go('list');
+      else if(['history','layout','clean','request'].indexOf(a)>-1)go(a);
       else if(a==='save'){if(state.view==='detail'){var e=E.find(function(x){return x.id===state.id;});state.drafts[e.id+':'+state.ver]={subject:document.getElementById('edS').value,body:document.getElementById('edB').value,cta:document.getElementById('edC').value};}toast('Draft saved. Nothing changes for clients until it\'s approved.');}
       else if(a==='test')toast('Mock: test email sent to you with sample data.');
       else if(a==='submit')toast('Submitted for approval. The approver gets a notification.');
-      else if(a==='restore')toast('Mock: older version loaded as a new draft for approval.');
+      else if(a==='restore')toast('Mock: an older version is loaded as a new draft for approval.');
       else if(a==='resend')toast('Mock: update the address, then resend. The bounce is logged on the account.');
       else if(a==='viewsent')toast('Mock: shows the exact email as it was sent.');
+      else if(a==='rqsubmit'){
+        var gv=function(id){return (document.getElementById(id).value||'').trim();};
+        var miss=[['rqN','Email name'],['rqE','Trigger event'],['rqT','Timing'],['rqR','Repeats & stop rule'],['rqTo','To'],['rqSu','Subject']].filter(function(x){return !gv(x[0]);});
+        if(miss.length){toast('Please answer: '+miss.map(function(x){return x[1];}).join(', '));return;}
+        var P={'Kai-Zen':'KZ','GWT':'GWT','Both':'ALL'}[gv('rqP')],A={'Enrollment':'ENR','Agent Invitation':'INV','Servicing':'SVC','Admin Action Items':'AAI','Payments':'PAY','Other Admin Functions':'ADM'}[gv('rqA')];
+        var id=P+'-'+A+'-0'+(30+E.length);
+        E.unshift({id:id,name:gv('rqN'),product:gv('rqP'),area:gv('rqA'),status:'new',by:gv('rqB'),ev:gv('rqE'),acct:gv('rqS'),cond:gv('rqC'),timing:gv('rqT'),rep:gv('rqR'),to:gv('rqTo'),cc:gv('rqCc'),merge:(gv('rqBo').match(/\{[^}]+\}/g)||[]).join(', '),overlap:gv('rqO'),sens:gv('rqX'),owner:'You',jira:'Draft (backlog)',appr:'',why:'Requested by an admin.',note:'New request, waiting for review and approval.',sent:0,deliv:0,open:0,bounce:0,v:[{role:gv('rqTo'),subject:gv('rqSu'),body:gv('rqBo'),cta:''}],linked:[]});
+        state.status='';state.area='';state.product='';state.q='';go('list');toast(id+' created with status New. A backlog Jira ticket was drafted for review.');
+      }
     });
     app.addEventListener('input',function(ev){
       var f=ev.target.dataset.f;
@@ -757,5 +876,6 @@
     render();
   })();
 </script>
+
 </body>
 </html>
