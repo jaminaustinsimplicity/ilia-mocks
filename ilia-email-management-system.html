@@ -254,6 +254,29 @@
   .decide{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:10px}
   .dq{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--warn);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--muted)}
   .dq b{color:var(--ink)}
+
+  /* tab 4 */
+  .ask,.access{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:10px}
+  .ak,.ac{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+  .ak p,.ac p{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
+  .ak b,.ac b{font-size:13.5px}
+  .ai{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;color:#fff}
+  .done .ai,.ok .ai{background:var(--ok)}.part .ai{background:var(--warn)}.no .ai{background:var(--faint)}
+  .ac.no{background:var(--surface-2);border-style:dashed}
+  .stbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+  table.stbl{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+  .stbl th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);padding:11px 14px;border-bottom:1px solid var(--border)}
+  .stbl td{padding:10px 14px;border-bottom:1px solid var(--border)}
+  .stbl .num{text-align:right;font-variant-numeric:tabular-nums}
+  .stbl tr.tot td{font-weight:700;border-bottom:none;background:var(--surface-2)}
+  .a-Keep{color:var(--ok)}.a-Fixfirst{color:var(--bad);font-weight:600}.a-Decide{color:var(--warn)}.a-Merge{color:var(--ilia)}.a-Retire{color:var(--faint)}
+  .shrink{margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 20px}
+  .shrink>div{display:flex;flex-direction:column}
+  .shrink b{font-size:28px;letter-spacing:-.02em}
+  .shrink span{font-size:12px;color:var(--muted);max-width:44ch}
+  .shrink .arr{font-size:26px;color:var(--faint)}
+  .shrink .to b{color:var(--ok)}
+  ol.next{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:7px;font-size:13.5px}
 </style>
 </head>
 <body>
@@ -270,6 +293,7 @@
     <button class="active" role="tab" data-tab="problem" aria-selected="true">1 · The Problem</button>
     <button role="tab" data-tab="needed" aria-selected="false">2 · What's Needed</button>
     <button role="tab" data-tab="goal" aria-selected="false">3 · The Goal</button>
+    <button role="tab" data-tab="status" aria-selected="false">4 · Where We Are</button>
   </nav>
 
   <section id="tab-problem">
@@ -549,6 +573,58 @@
     <p class="foot">High-level only. Each block becomes a Jira story in the backlog, with tasks, once reviewed. Nothing enters a sprint without sign-off.</p>
   </section>
 
+  <!-- ============ TAB 4: WHERE WE ARE ============ -->
+  <section id="tab-status" hidden>
+    <p class="hint">→ Real status as of Oct 2, 2026: what we can see today, what we've found so far, and what Monday's repo access unlocks. Counts are real (first pass); email-level detail lives in the internal inventory sheet.</p>
+
+    <div class="hero" style="border-left-color:var(--ok)">
+      <div class="lab" style="color:var(--ok)">Where we are in one sentence</div>
+      <p>From the code we can already see, Claude has mapped <b>162 emails</b>, broken out by type with their trigger, recipients and subject line. The proposal so far would shrink the list to <b>about 74–91</b>. Repo access from Mohit on <b>Monday, Oct 5</b> lets us finish the list, pull full email content, and confirm what's really live.</p>
+    </div>
+
+    <h2 class="sec">The ask: list, content and triggers, by type</h2>
+    <div class="ask">
+      <div class="ak done"><span class="ai">✓</span><div><b>The list</b><p>162 emails found across all sending systems (first pass).</p></div></div>
+      <div class="ak done"><span class="ai">✓</span><div><b>Broken out by type</b><p>Kai-Zen enrollment, GWT enrollment, payments, servicing, carrier &amp; trustee, accounts &amp; invitations, admin &amp; internal.</p></div></div>
+      <div class="ak part"><span class="ai">◐</span><div><b>Triggers</b><p>What fires each email and who triggers it: done. Account status, conditions and repeat/stop rules: gaps to fill with the trigger rubric.</p></div></div>
+      <div class="ak part"><span class="ai">◐</span><div><b>Content</b><p>Subject lines: done. Full body copy: extracted after the code refresh on Monday.</p></div></div>
+    </div>
+
+    <h2 class="sec">What we can see today</h2>
+    <div class="access">
+      <div class="ac ok"><span class="ai">✓</span><div><b>ILIA main backend code</b> (original + newer)<p>Read-only. Local copy is from June 12, so it needs a refresh.</p></div></div>
+      <div class="ac ok"><span class="ai">✓</span><div><b>ILIA admin site code</b><p>Read-only. Local copy from July 28.</p></div></div>
+      <div class="ac ok"><span class="ai">✓</span><div><b>Existing email lists</b><p>The alerts spreadsheet, the "Emails from ILIA" export, and Olivia's standard template.</p></div></div>
+      <div class="ac part"><span class="ai">◐</span><div><b>Payments service</b><p>Covered through Kyle's payments inventory (Sep 25). Not yet in our own folder.</p></div></div>
+      <div class="ac no"><span class="ai">✕</span><div><b>Other ILIA repos</b> (payments, app, serverless, enrollment, feeds)<p>Coming Monday, Oct 5, from Mohit.</p></div></div>
+      <div class="ac no"><span class="ai">✕</span><div><b>Send logs</b> (SendGrid / Amazon SES)<p>Needed to prove which emails actually go out vs. which only exist in code.</p></div></div>
+      <div class="ac no"><span class="ai">✕</span><div><b>Settings outside the code</b><p>Password-reset emails (AWS Cognito), alert subscriber lists, background reminder jobs.</p></div></div>
+    </div>
+
+    <h2 class="sec">What we've found so far, by type</h2>
+    <div class="stbl-wrap"><table class="stbl"><thead><tr><th>Type</th><th class="num">Emails</th><th class="num">Keep</th><th class="num">Fix first</th><th class="num">Decide</th><th class="num">Merge</th><th class="num">Retire</th></tr></thead><tbody><tr><td><b>Enrollment – Kai-Zen</b></td><td class="num">28</td><td class="num a-Keep">17</td><td class="num a-Fixfirst">2</td><td class="num a-Decide">1</td><td class="num a-Merge">·</td><td class="num a-Retire">8</td></tr><tr><td><b>Enrollment – GWT</b></td><td class="num">22</td><td class="num a-Keep">11</td><td class="num a-Fixfirst">1</td><td class="num a-Decide">·</td><td class="num a-Merge">8</td><td class="num a-Retire">2</td></tr><tr><td><b>Payments</b></td><td class="num">29</td><td class="num a-Keep">7</td><td class="num a-Fixfirst">5</td><td class="num a-Decide">5</td><td class="num a-Merge">11</td><td class="num a-Retire">1</td></tr><tr><td><b>Servicing</b></td><td class="num">25</td><td class="num a-Keep">10</td><td class="num a-Fixfirst">·</td><td class="num a-Decide">5</td><td class="num a-Merge">4</td><td class="num a-Retire">6</td></tr><tr><td><b>Carrier & Trustee</b></td><td class="num">6</td><td class="num a-Keep">4</td><td class="num a-Fixfirst">·</td><td class="num a-Decide">·</td><td class="num a-Merge">2</td><td class="num a-Retire">·</td></tr><tr><td><b>Accounts & Invitations</b></td><td class="num">32</td><td class="num a-Keep">10</td><td class="num a-Fixfirst">·</td><td class="num a-Decide">3</td><td class="num a-Merge">12</td><td class="num a-Retire">7</td></tr><tr><td><b>Admin & Internal</b></td><td class="num">20</td><td class="num a-Keep">7</td><td class="num a-Fixfirst">·</td><td class="num a-Decide">3</td><td class="num a-Merge">5</td><td class="num a-Retire">5</td></tr><tr class="tot"><td>All emails</td><td class="num">162</td><td class="num">66</td><td class="num">8</td><td class="num">17</td><td class="num">42</td><td class="num">29</td></tr></tbody></table></div>
+    <p class="mnote"><b>Keep</b> = core email, review the copy. <b>Fix first</b> = live but wrong (wrong timing, wrong recipient, broken). <b>Decide</b> = needs a business decision. <b>Merge</b> = a duplicate of another email. <b>Retire</b> = nothing triggers it, or it's a stale one-off. These are <b>proposals for the team to review</b>, not decisions.</p>
+
+    <h2 class="sec">Where they come from</h2>
+    <div class="sumrow"><div class="sumb"><b>121</b><span>Original backend (Node) · 101 with a live trigger in code</span></div><div class="sumb"><b>28</b><span>Newer backend (Go) · 24 with a live trigger in code</span></div><div class="sumb"><b>8</b><span>Payments service · 8 with a live trigger in code</span></div><div class="sumb"><b>5</b><span>Outside ILIA email code · 2 with a live trigger in code</span></div></div>
+
+    <div class="shrink">
+      <div><b>162</b><span>emails today</span></div>
+      <div class="arr">→</div>
+      <div class="to"><b>74–91</b><span>if we follow the proposal (42 merged, 29 retired, 17 to decide)</span></div>
+    </div>
+
+    <h2 class="sec">Next steps</h2>
+    <ol class="next">
+      <li><b>Mon Oct 5:</b> repo access from Mohit, then refresh the code and add the remaining repos.</li>
+      <li>Re-run the inventory on the full, current code, and pull <b>full email content</b> for every email.</li>
+      <li>Get <b>send logs</b> (SendGrid / SES) to mark each email truly live or dead.</li>
+      <li>Team review of the proposed Keep / Merge / Retire list, starting with <b>Kai-Zen enrollment</b>.</li>
+      <li>Fill trigger gaps with the rubric (account status, conditions, repeat/stop rules).</li>
+    </ol>
+    <p class="foot">Source: read-only review of the ILIA code (local snapshot June 2026), Kyle's Payments Center inventory (Sep 2026), and the existing email lists. Full email-by-email detail is in the internal "ILIA Email Inventory — Code Review Draft" sheet (Olivia's standard template).</p>
+  </section>
+
   <!-- ============ TAB 3: THE GOAL (ILIA ADMIN MOCK) ============ -->
   <section id="tab-goal" hidden>
     <p class="hint">→ What the admin would see inside ILIA if email management worked. Clickable mock with sample data: open any email to see its copy, rules, linked items and history.</p>
@@ -587,11 +663,11 @@
     var btns=document.querySelectorAll('.tabs [data-tab]');
     function show(t){
       btns.forEach(function(b){var on=b.dataset.tab===t;b.classList.toggle('active',on);b.setAttribute('aria-selected',on);});
-      ['problem','needed','goal'].forEach(function(k){document.getElementById('tab-'+k).hidden=(k!==t);});
+      ['problem','needed','goal','status'].forEach(function(k){document.getElementById('tab-'+k).hidden=(k!==t);});
       try{history.replaceState(null,'','#'+t);}catch(e){}
     }
     btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.tab);});});
-    var h=(location.hash||'').slice(1);if(['problem','needed','goal'].indexOf(h)>-1)show(h);
+    var h=(location.hash||'').slice(1);if(['problem','needed','goal','status'].indexOf(h)>-1)show(h);
   })();
 
   /* ---------- tab 3: Email Management mock (follows the ILIA Email Inventory standard template) ---------- */
