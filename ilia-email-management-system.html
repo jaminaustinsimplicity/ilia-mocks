@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ILIA Email Management System</title>
+<style>
+  :root{
+    --bg:#eef1f6;--surface:#fff;--surface-2:#f5f7fb;--border:#dde3ec;--border-strong:#c5cddb;
+    --ink:#151c2a;--muted:#5b6675;--faint:#8b95a5;
+    --ilia:#2f6beb;--ilia-soft:#e7effd;--ok:#0e9c69;--warn:#c07a12;--warn-soft:#fbf1e0;--marissa:#2f45c5;--bad:#c0392b;
+    --radius:14px;--shadow:0 1px 2px rgba(17,24,39,.06),0 10px 30px rgba(17,24,39,.07);
+    --ff:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0c121c;--surface:#141d29;--surface-2:#0f1722;--border:#27313f;--border-strong:#3a4757;
+    --ink:#e8edf4;--muted:#9aa6b6;--faint:#6b7686;
+    --ilia:#5a8cf5;--ilia-soft:#16243c;--ok:#31c48d;--warn:#e0a23a;--warn-soft:#2a2110;--marissa:#6d84ff;--bad:#f0736f;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.4);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0c121c;--surface:#141d29;--surface-2:#0f1722;--border:#27313f;--border-strong:#3a4757;
+    --ink:#e8edf4;--muted:#9aa6b6;--faint:#6b7686;
+    --ilia:#5a8cf5;--ilia-soft:#16243c;--ok:#31c48d;--warn:#e0a23a;--warn-soft:#2a2110;--marissa:#6d84ff;--bad:#f0736f;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);line-height:1.45;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
+  header.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:14px}
+  h1{font-size:23px;margin:0 0 6px;letter-spacing:-.01em}
+  .desc{margin:0;color:var(--muted);font-size:13.5px;max-width:88ch}
+  .desc b{color:var(--ink)}
+  button{font-family:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);font-size:13px;padding:8px 12px}
+  .tabs{display:flex;gap:2px;margin:18px 0 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .tabs button{border:none;background:none;border-bottom:2px solid transparent;border-radius:0;padding:11px 15px;font-weight:600;color:var(--muted);font-size:13.5px}
+  .tabs button.active{color:var(--ink);border-bottom-color:var(--marissa)}
+  .hint{font-size:11.5px;color:var(--faint);margin:16px 2px 14px}
+
+  .hero{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--bad);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;margin-bottom:22px}
+  .hero .lab{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--bad);margin-bottom:8px}
+  .hero p{margin:0;font-size:17px;line-height:1.5;max-width:80ch}
+  .hero p b{color:var(--ink)}
+
+  h2.sec{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:26px 2px 12px}
+
+  /* where emails live */
+  .scatter{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .place{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--ilia);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+  .place.p2{border-top-color:var(--marissa)}
+  .place.p3{border-top-color:var(--warn)}
+  .place.p4{border-top-color:var(--faint)}
+  .place .n{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .place h3{margin:2px 0 4px;font-size:15px}
+  .place p{margin:0;font-size:12.5px;color:var(--muted)}
+  .nobridge{margin:14px 2px 0;font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center}
+  .nobridge .x{color:var(--bad);font-weight:700}
+
+  /* problem cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+  .pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+  .pcard .top{display:flex;gap:12px;align-items:center}
+  .pcard .num{width:30px;height:30px;border-radius:50%;background:var(--bad);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;flex:none}
+  .pcard h3{margin:0;font-size:16px;letter-spacing:-.01em}
+  .pcard p{margin:0;font-size:13px;color:var(--muted)}
+  .pcard .eg{font-size:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:9px 11px;color:var(--ink)}
+  .pcard .eg b{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:3px}
+
+  /* today vs goal */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:720px){.vs{grid-template-columns:1fr}}
+  .col{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 20px}
+  .col h3{margin:0 0 10px;font-size:14px}
+  .col.today h3{color:var(--bad)}
+  .col.goal h3{color:var(--ok)}
+  .col ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px}
+  .col li{font-size:13px}
+  .foot{margin:28px 2px 0;font-size:11.5px;color:var(--faint);max-width:90ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>ILIA Email Management System</h1>
+      <p class="desc">One place for NIW admins to <b>see, understand, and update every email ILIA sends</b>: what it says, who receives it, what triggers it, which address it comes from, and whether it's still in use. Copy changes would no longer need a developer. This page is the living project overview, built one tab at a time.</p>
+    </div>
+    <button id="themeBtn" type="button">Theme</button>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="active" role="tab" aria-selected="true">The Problem</button>
+  </nav>
+
+  <p class="hint">→ Why this project exists, in plain language. Based on a first-pass review of the ILIA code and the current email spreadsheet (Oct 2026).</p>
+
+  <section>
+    <div class="hero">
+      <div class="lab">The problem in one sentence</div>
+      <p>ILIA sends <b>dozens of different emails</b> to clients, agents, giftors, trustees, IMOs and carriers, but <b>nobody can see them all in one place</b>. The wording is buried in code, scattered across three systems, styled inconsistently, and tracked by hand in a spreadsheet that drifts from reality. <b>Changing a single sentence requires a developer.</b></p>
+    </div>
+
+    <h2 class="sec">Where ILIA's emails live today</h2>
+    <div class="scatter">
+      <div class="place">
+        <div class="n">~49</div>
+        <h3>The original backend</h3>
+        <p>The oldest set of email templates. It still sends most of what clients and agents receive.</p>
+      </div>
+      <div class="place p2">
+        <div class="n">28</div>
+        <h3>The newer backend</h3>
+        <p>A partial rebuild of those emails. Some have no live trigger, and some are only half-finished.</p>
+      </div>
+      <div class="place p2">
+        <div class="n">+1</div>
+        <h3>The payments service</h3>
+        <p>A separate service that sends the new Payments Center emails and the daily 90/60/30-day contribution reminders.</p>
+      </div>
+      <div class="place p3">
+        <div class="n">25+</div>
+        <h3>Spreadsheets &amp; pages</h3>
+        <p>A many-tab spreadsheet plus one-off inventory pages, all kept up by hand. They're the only "maps" we have, and they don't match the code.</p>
+      </div>
+    </div>
+    <p class="nobridge"><span class="x">✕</span> None of these are connected, and none of them can be viewed or edited by an admin. Email copy, action items and in-app notifications for the same event also live in separate places.</p>
+
+    <div class="hero" style="border-left-color:var(--warn);margin-top:20px">
+      <div class="lab" style="color:var(--warn)">Zoom in: payments alone</div>
+      <p style="font-size:14.5px">A recent inventory of just the Payments Center found <b>about 28 payment-related emails sent by 3 different systems</b>. They look different, some events send <b>two overlapping emails</b>, and the communications log can only say "Queued" or "Failed", <b>never whether an email was actually delivered</b>. That's one workflow; ILIA has many.</p>
+    </div>
+
+    <h2 class="sec">What that causes</h2>
+    <div class="grid">
+      <div class="pcard">
+        <div class="top"><div class="num">1</div><h3>No single list of our emails</h3></div>
+        <p>To answer "what emails do we send a giftor?" someone has to dig through code or a multi-tab spreadsheet, and neither is complete.</p>
+        <div class="eg"><b>Example</b>Some emails in the spreadsheet don't exist in code. Some emails in code aren't in the spreadsheet.</div>
+      </div>
+      <div class="pcard">
+        <div class="top"><div class="num">2</div><h3>Every wording change needs a developer</h3></div>
+        <p>Subject lines and body copy are written directly into code. Fixing a typo or updating a date means a ticket, a sprint slot, and a release.</p>
+        <div class="eg"><b>Example</b>An office-move notice and "pilot program" language are still hard-coded in live templates.</div>
+      </div>
+      <div class="pcard">
+        <div class="top"><div class="num">3</div><h3>Emails don't look like one brand</h3></div>
+        <p>There's no shared header, footer, or logo. Fonts, colours, and sign-offs differ from email to email.</p>
+        <div class="eg"><b>Example</b>Emails sign off as "MyIlia", "Simplicity-NIW", "Ilia Team", or nothing at all.</div>
+      </div>
+      <div class="pcard">
+        <div class="top"><div class="num">4</div><h3>Too many "from" addresses</h3></div>
+        <p>Different emails come from different no-reply senders, and the two systems disagree on which address to use, which confuses recipients and hurts deliverability.</p>
+        <div class="eg"><b>Example</b>The old and new systems are set up with different default sender addresses.</div>
+      </div>
+      <div class="pcard">
+        <div class="top"><div class="num">5</div><h3>We can't tell what's alive and what's dead</h3></div>
+        <p>Many templates have no active trigger, and others are only half-wired. Nobody knows which are safe to retire and which clients still receive.</p>
+        <div class="eg"><b>Example</b>Several templates in the newer system are never called by anything.</div>
+      </div>
+      <div class="pcard">
+        <div class="top"><div class="num">6</div><h3>No record of what was sent</h3></div>
+        <p>ILIA doesn't keep a history of the emails it sends, or whether they were delivered or bounced. When a client says "I never got it," support has nothing to check.</p>
+        <div class="eg"><b>Example</b>Gaps were found in the payment reminder logs for the 90, 60 and 30-day notices. Bounce notices from the email provider are received but not saved.</div>
+      </div>
+      <div class="pcard">
+        <div class="top"><div class="num">7</div><h3>Copy quality slips through</h3></div>
+        <p>With no preview or review step, typos, unfilled placeholders, and "please reply" lines on no-reply addresses reach real clients. The preview an admin sees can differ from what's actually sent.</p>
+        <div class="eg"><b>Example</b>Some payment emails go out with bracketed placeholder text instead of the real word.</div>
+      </div>
+      <div class="pcard">
+        <div class="top"><div class="num">8</div><h3>One event, many disconnected messages</h3></div>
+        <p>A single event can create an email, an action item and an in-app notification, and each is built and stored separately. No one can see everything a client receives for that event in one view.</p>
+        <div class="eg"><b>Example</b>A GWT giftor can receive two different "payment" emails for the same payment.</div>
+      </div>
+    </div>
+
+    <h2 class="sec">Today vs. where we want to be</h2>
+    <div class="vs">
+      <div class="col today">
+        <h3>Today</h3>
+        <ul>
+          <li>Emails spread across three systems, the code, and hand-kept spreadsheets</li>
+          <li>Copy changes need a developer and a release</li>
+          <li>Inconsistent design and sign-offs</li>
+          <li>Multiple, conflicting sender addresses</li>
+          <li>Unknown which emails are active or dead</li>
+          <li>No send / delivery history</li>
+        </ul>
+      </div>
+      <div class="col goal">
+        <h3>The goal</h3>
+        <ul>
+          <li>One admin screen listing every email, grouped by workflow, with the action items and notifications each event creates</li>
+          <li>See the real copy, recipient type, trigger and sender for each</li>
+          <li>Admins edit copy themselves, with preview and approval</li>
+          <li>One shared, on-brand email design</li>
+          <li>Each email clearly marked Active or Retired</li>
+          <li>A history of what was sent, to whom, and whether it arrived</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="foot">Discovery stage. Figures come from a read-only review of the ILIA code, Kyle's Payments Center email inventory (Sep 2026), the "NIW Enrollment Email Alerts and Notifications" spreadsheet, and the Oct 2 dev call. They're approximate and will be confirmed with the dev team.</p>
+  </section>
+</div>
+<script>
+  (function(){
+    var root=document.documentElement,btn=document.getElementById('themeBtn');
+    try{var s=localStorage.getItem('ilia-email-theme');if(s)root.setAttribute('data-theme',s);}catch(e){}
+    btn.addEventListener('click',function(){
+      var cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+      var next=cur==='dark'?'light':'dark';root.setAttribute('data-theme',next);
+      try{localStorage.setItem('ilia-email-theme',next);}catch(e){}
+    });
+  })();
+</script>
+</body>
+</html>
