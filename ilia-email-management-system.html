@@ -579,15 +579,17 @@
 
     <div class="hero" style="border-left-color:var(--ok)">
       <div class="lab" style="color:var(--ok)">Where we are in one sentence</div>
-      <p>From the code we can already see, Claude has mapped <b>162 emails</b>, broken out by type with their trigger, recipients and subject line. The proposal so far would shrink the list to <b>about 74–91</b>. Repo access from Mohit on <b>Monday, Oct 5</b> lets us finish the list, pull full email content, and confirm what's really live.</p>
+      <p>From the code we can already see, Claude has mapped <b>162 emails</b> (308 recipient versions), broken out by type with their trigger, recipients, subject line <b>and full email copy</b>. The proposal so far would shrink the list to <b>about 74–91</b>. Repo access from Mohit on <b>Monday, Oct 5</b> lets us finish the list, pull full email content, and confirm what's really live.</p>
+      <a class="sheetbtn" href="https://docs.google.com/spreadsheets/d/1nuoKMHxGhbD15ncjkhuNOYavmP5xSg9-Bjnf7JY9lr0/edit" target="_blank" rel="noopener">Open the email inventory (Google Sheet) ↗</a>
+      <p class="sheetnote">Internal Simplicity access only. One tab per type, plus the full inventory in Olivia's standard template.</p>
     </div>
 
     <h2 class="sec">The ask: list, content and triggers, by type</h2>
     <div class="ask">
-      <div class="ak done"><span class="ai">✓</span><div><b>The list</b><p>162 emails found across all sending systems (first pass).</p></div></div>
-      <div class="ak done"><span class="ai">✓</span><div><b>Broken out by type</b><p>Kai-Zen enrollment, GWT enrollment, payments, servicing, carrier &amp; trustee, accounts &amp; invitations, admin &amp; internal.</p></div></div>
+      <div class="ak done"><span class="ai">✓</span><div><b>The list</b><p>162 emails found across all sending systems (first pass), in a <a href="https://docs.google.com/spreadsheets/d/1nuoKMHxGhbD15ncjkhuNOYavmP5xSg9-Bjnf7JY9lr0/edit" target="_blank" rel="noopener">shared Google Sheet</a>.</p></div></div>
+      <div class="ak done"><span class="ai">✓</span><div><b>Broken out by type</b><p>One tab per type in the sheet: Kai-Zen enrollment, GWT enrollment, payments, servicing, carrier &amp; trustee, accounts &amp; invitations, admin &amp; internal.</p></div></div>
       <div class="ak part"><span class="ai">◐</span><div><b>Triggers</b><p>What fires each email and who triggers it: done. Account status, conditions and repeat/stop rules: gaps to fill with the trigger rubric.</p></div></div>
-      <div class="ak part"><span class="ai">◐</span><div><b>Content</b><p>Subject lines: done. Full body copy: extracted after the code refresh on Monday.</p></div></div>
+      <div class="ak done"><span class="ai">✓</span><div><b>Content</b><p>Subject line and full body copy for every email, one row per recipient (308 versions), word-for-word from the code. Re-checked after Monday's refresh.</p></div></div>
     </div>
 
     <h2 class="sec">What we can see today</h2>
@@ -617,12 +619,12 @@
     <h2 class="sec">Next steps</h2>
     <ol class="next">
       <li><b>Mon Oct 5:</b> repo access from Mohit, then refresh the code and add the remaining repos.</li>
-      <li>Re-run the inventory on the full, current code, and pull <b>full email content</b> for every email.</li>
+      <li>Re-run the inventory on the full, current code, and re-check the email content against it.</li>
       <li>Get <b>send logs</b> (SendGrid / SES) to mark each email truly live or dead.</li>
       <li>Team review of the proposed Keep / Merge / Retire list, starting with <b>Kai-Zen enrollment</b>.</li>
       <li>Fill trigger gaps with the rubric (account status, conditions, repeat/stop rules).</li>
     </ol>
-    <p class="foot">Source: read-only review of the ILIA code (local snapshot June 2026), Kyle's Payments Center inventory (Sep 2026), and the existing email lists. Full email-by-email detail is in the internal "ILIA Email Inventory — Code Review Draft" sheet (Olivia's standard template).</p>
+    <p class="foot">Source: read-only review of the ILIA code (local snapshot June 2026), Kyle's Payments Center inventory (Sep 2026), and the existing email lists. Full email-by-email detail is in the internal <a href="https://docs.google.com/spreadsheets/d/1nuoKMHxGhbD15ncjkhuNOYavmP5xSg9-Bjnf7JY9lr0/edit" target="_blank" rel="noopener">ILIA Email Inventory — Code Review Draft</a> Google Sheet (Olivia's standard template).</p>
   </section>
 
   <!-- ============ TAB 3: THE GOAL (ILIA ADMIN MOCK) ============ -->
