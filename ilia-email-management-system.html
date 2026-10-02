@@ -45,7 +45,7 @@
   h2.sec{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:26px 2px 12px}
 
   /* where emails live */
-  .scatter{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .scatter{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:14px}
   .place{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--ilia);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
   .place.p2{border-top-color:var(--marissa)}
   .place.p3{border-top-color:var(--warn)}
@@ -57,7 +57,7 @@
   .nobridge .x{color:var(--bad);font-weight:700}
 
   /* problem cards */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:16px}
   .pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;display:flex;flex-direction:column;gap:10px}
   .pcard .top{display:flex;gap:12px;align-items:center}
   .pcard .num{width:30px;height:30px;border-radius:50%;background:var(--bad);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;flex:none}
@@ -65,6 +65,27 @@
   .pcard p{margin:0;font-size:13px;color:var(--muted)}
   .pcard .eg{font-size:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:9px 11px;color:var(--ink)}
   .pcard .eg b{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:3px}
+
+  /* workflow sources */
+  .wf{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:12px}
+  .wfc{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+  .wfc .wh{font-weight:700;font-size:14px}
+  .wfc p{margin:0;font-size:12.5px;color:var(--muted)}
+  .wfc p b{color:var(--ink)}
+  .wfc .who{font-size:11px;color:var(--ilia);background:var(--ilia-soft);border-radius:20px;padding:3px 9px;align-self:flex-start}
+  .wfc.auto{border-color:var(--warn);background:var(--warn-soft)}
+  .wfc.auto .wh{color:var(--warn)}
+  .mult{margin-top:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 20px}
+  .mlab{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+  .mrow{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px}
+  .mbox{flex:1 1 150px;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+  .mbox b{font-size:16px}
+  .mbox span{font-size:11.5px;color:var(--muted)}
+  .mbox.big{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,transparent)}
+  .mbox.big b{color:var(--bad)}
+  .mop{align-self:center;font-size:20px;font-weight:700;color:var(--faint)}
+  .mnote{margin:12px 0 0;font-size:13px;color:var(--muted)}
+  .mnote b{color:var(--ink)}
 
   /* today vs goal */
   .vs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -97,15 +118,41 @@
   <section>
     <div class="hero">
       <div class="lab">The problem in one sentence</div>
-      <p>ILIA sends <b>dozens of different emails</b> to clients, agents, giftors, trustees, IMOs and carriers, but <b>nobody can see them all in one place</b>. The wording is buried in code, scattered across three systems, styled inconsistently, and tracked by hand in a spreadsheet that drifts from reality. <b>Changing a single sentence requires a developer.</b></p>
+      <p>ILIA doesn't send dozens of emails. It sends <b>well over a hundred distinct emails, and hundreds of versions</b> once you count each recipient's copy. They're fired by every workflow (enrollment, payments, status changes, servicing, GWT, invitations) and by automatic background jobs that no one can easily explain. Yet <b>nobody can see, group or manage them in one place</b>. The wording is buried in code across three systems, styled inconsistently, and tracked by hand in a spreadsheet that drifts from reality. <b>Changing a single sentence requires a developer.</b></p>
+    </div>
+
+    <h2 class="sec">Why it's so complex: emails come from every corner of ILIA</h2>
+    <div class="wf">
+      <div class="wfc"><div class="wh">Enrollment</div><p>Invites, application and signature steps, proposals, reminders to finish, documents to the carrier.</p><span class="who">Client · Agent · IMO · Trustee · Carrier</span></div>
+      <div class="wfc"><div class="wh">Payments</div><p>Confirmations, rejections, wire and check notices, ePay, document requests.</p><span class="who">Client · Giftor · Agent · IMO · Trustee</span></div>
+      <div class="wfc"><div class="wh">Status changes</div><p>A message when a case or participant status moves, often with a different version for each role.</p><span class="who">Client · Agent · Admin · IMO · Trustee · Carrier</span></div>
+      <div class="wfc"><div class="wh">Servicing</div><p>Change requests, address and email updates, beneficiary changes, ID renewals, DBR notices.</p><span class="who">Client · Agent · Trustee · Admin</span></div>
+      <div class="wfc"><div class="wh">GWT</div><p>Giftor and recipient invites, completion notices, document rejections, contribution updates.</p><span class="who">Giftor · Recipient · Agent · IMO</span></div>
+      <div class="wfc"><div class="wh">Accounts &amp; invitations</div><p>A separate invite for each account type, plus agent approvals, deactivations and email changes.</p><span class="who">Every account type</span></div>
+      <div class="wfc auto"><div class="wh">Automatic / background</div><p>Daily 90/60/30-day reminders, nudges, re-targeting, admin reports, batch notices. Often <b>no one can say exactly why or when they send</b>.</p><span class="who">Client · Agent · IMO · internal inboxes</span></div>
+      <div class="wfc"><div class="wh">Internal &amp; partners</div><p>Support and bug inboxes, carrier and trustee hand-offs, marketing and one-off broadcasts.</p><span class="who">NIW staff · Carriers · Trustee</span></div>
+    </div>
+
+    <div class="mult">
+      <div class="mlab">Why the count explodes</div>
+      <div class="mrow">
+        <div class="mbox"><b>1 event</b><span>e.g. "payment rejected"</span></div>
+        <div class="mop">×</div>
+        <div class="mbox"><b>3–5 recipients</b><span>client, agent, IMO, trustee, CC inbox, each with its own wording</span></div>
+        <div class="mop">×</div>
+        <div class="mbox"><b>2–3 versions</b><span>old system, new system, payments service</span></div>
+        <div class="mop">=</div>
+        <div class="mbox big"><b>6–15 emails</b><span>for one thing that happened</span></div>
+      </div>
+      <p class="mnote">Add it up and ILIA has <b>roughly 150 distinct emails</b> across its systems, and several hundred versions once each recipient's copy is counted. That's why the email spreadsheet already has <b>25+ tabs and roughly 360 rows</b> and is still incomplete. To manage this we need to <b>group</b> emails by workflow, event and recipient, and see each group as one thing, not hundreds of loose parts.</p>
     </div>
 
     <h2 class="sec">Where ILIA's emails live today</h2>
     <div class="scatter">
       <div class="place">
-        <div class="n">~49</div>
+        <div class="n">120</div>
         <h3>The original backend</h3>
-        <p>The oldest set of email templates. It still sends most of what clients and agents receive.</p>
+        <p>Distinct emails in the oldest system (about 88 still live, about 28 with nothing that sends them). It still sends most of what clients and agents receive.</p>
       </div>
       <div class="place p2">
         <div class="n">28</div>
@@ -155,7 +202,7 @@
       <div class="pcard">
         <div class="top"><div class="num">5</div><h3>We can't tell what's alive and what's dead</h3></div>
         <p>Many templates have no active trigger, and others are only half-wired. Nobody knows which are safe to retire and which clients still receive.</p>
-        <div class="eg"><b>Example</b>Several templates in the newer system are never called by anything.</div>
+        <div class="eg"><b>Example</b>About 1 in 4 emails in the original system has nothing that triggers it any more, and a few one-off notices with hard-coded dates are still live.</div>
       </div>
       <div class="pcard">
         <div class="top"><div class="num">6</div><h3>No record of what was sent</h3></div>
@@ -190,7 +237,8 @@
       <div class="col goal">
         <h3>The goal</h3>
         <ul>
-          <li>One admin screen listing every email, grouped by workflow, with the action items and notifications each event creates</li>
+          <li>One admin screen listing every email, grouped by workflow → event → recipient, with the action items and notifications each event creates</li>
+          <li>Every automatic email explains why and when it sends</li>
           <li>See the real copy, recipient type, trigger and sender for each</li>
           <li>Admins edit copy themselves, with preview and approval</li>
           <li>One shared, on-brand email design</li>
