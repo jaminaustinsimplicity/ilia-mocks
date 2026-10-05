@@ -47,6 +47,9 @@
   .ta-req{padding:2px 14px 13px 36px;font-size:11.5px;color:var(--muted);line-height:1.55;border-top:1px solid var(--border)}
   .ta-req .rqlab{display:block;font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--marissa);margin:9px 0 4px}
   .ta-req b{color:var(--ink)}
+  .ta-owner{flex:none;align-self:center;margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#fff;background:var(--ilia);border-radius:20px;padding:2px 9px;white-space:nowrap}
+  .owner-key{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-left:10px}
+  .owner-key .ok-pill{font-size:9.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#fff;background:var(--ilia);border-radius:20px;padding:2px 9px}
   [hidden]{display:none!important}
   .hint{font-size:11.5px;color:var(--faint);margin:16px 2px 8px;display:flex;align-items:center;gap:6px}
   .jump{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin:12px 2px 6px;padding-bottom:3px}
@@ -544,7 +547,7 @@
         <span class="ep-badge">Living snapshot &mdash; updated as requirements change</span>
       </div>
 
-      <p class="scope-note">The Epic above, the Stories that slice it, and the likely tasks under each &mdash; based on where requirements stand today. Click any task to expand the expected requirements for devs.</p>
+      <p class="scope-note">The Epic above, the Stories that slice it, and the likely tasks under each &mdash; based on where requirements stand today. Click any task to expand the expected requirements for devs.<span class="owner-key"><span class="ok-pill">Ben</span> = owned by Ben (the scraper)</span></p>
 
       <div class="story">
         <div class="story-h">Story 1 &mdash; DBR Trigger &amp; Eligibility Detection</div>
@@ -573,7 +576,7 @@
           <div class="ta-req"><span class="rqlab">Expected requirements</span>Templated carrier email &middot; state the 50% rule + which amount comes off the term rider vs the base &middot; include low points &middot; destination: Mohit's AWS landing spot.</div>
         </details>
         <details class="task-acc">
-          <summary><span class="ta-main"><span class="ta-t">Scraper reads illustrations from AWS &amp; derives the revised DBR</span><span class="ta-d">Parse the files, pull low points, compute the allowable DBR.</span></span></summary>
+          <summary><span class="ta-main"><span class="ta-t">Scraper reads illustrations from AWS &amp; derives the revised DBR</span><span class="ta-d">Parse the files, pull low points, compute the allowable DBR.</span></span><span class="ta-owner">Ben</span></summary>
           <div class="ta-req"><span class="rqlab">Expected requirements</span>Read from the AWS landing spot &middot; parse illustration data &middot; 50% max rule &middot; term-rider-first &middot; compute allowable DBR &middot; owner: Ben (follow-on after the Friday Judy session).</div>
         </details>
         <details class="task-acc">
