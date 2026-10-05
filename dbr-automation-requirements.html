@@ -488,43 +488,7 @@
   .reflow .sub{font-size:12px;color:var(--muted);margin:0 0 12px}
   .reflow ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
   .reflow li{font-size:12.5px;line-height:1.5}.reflow li b{color:var(--ink)}
-  /* Current Epic Scope badge + modal */
-  .epic-badge{font-family:inherit;font-size:12.5px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--marissa),var(--ilia));border:none;border-radius:20px;padding:8px 15px;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}
-  .epic-badge:hover{filter:brightness(1.07)}
-  #epicModal{border:1px solid var(--border-strong);border-radius:var(--radius);padding:0;background:var(--surface);color:var(--ink);max-width:680px;width:94vw;box-shadow:var(--shadow)}
-  #epicModal::backdrop{background:rgba(6,10,18,.55)}
-  .es-epic{background:linear-gradient(135deg,var(--marissa),var(--ilia));color:#fff;padding:16px 18px}
-  .es-epic .k{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
-  .es-epic h3{margin:3px 0 5px;font-size:17px;color:#fff}
-  .es-epic p{margin:0;font-size:12px;opacity:.92;line-height:1.5}
-  .es-epic .badge{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:2px 9px}
-  .es-body{padding:14px 18px;max-height:62vh;overflow:auto}
-  .es-wave{margin-bottom:12px}
-  .es-wave-h{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-  .es-wave-h .n{flex:none;width:22px;height:22px;border-radius:7px;background:var(--ilia);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
-  .es-wave.def .es-wave-h .n{background:var(--faint)}
-  .es-wave-h b{font-size:12.5px}
-  .es-wave ul{margin:3px 0 0 30px;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px}
-  .es-wave li{font-size:11.5px;color:var(--muted)}.es-wave li b{color:var(--ink)}
-  .es-note{font-size:11px;color:var(--faint);font-style:italic;margin:4px 0 0}
-  /* JIRA-structured epic view */
-  .it{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:2px 6px;color:#fff;white-space:nowrap}
-  .it.epic{background:#8257e6}.it.story{background:var(--ok)}.it.task{background:var(--ilia)}.it.sub{background:#6b7686}
-  .it-key{font-family:var(--fm);font-size:10px;color:var(--faint)}
-  .jstory{border:1px solid var(--border);border-left:4px solid var(--ok);border-radius:10px;padding:11px 13px;margin:0 0 10px;background:var(--surface)}
-  .jstory-h{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-  .jstory-sum{font-size:13px;font-weight:700;margin:5px 0 1px}
-  .jstory-desc{font-size:11px;color:var(--muted);margin:0 0 7px;line-height:1.5}
-  .jtask{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--border)}
-  .jtask:first-of-type{border-top:none}
-  .jtask .jt-b{flex:1;min-width:0}
-  .jtask .jt-sum{font-size:12px;font-weight:600;color:var(--ink)}
-  .jtask .jt-det{font-size:11px;color:var(--muted);margin-top:1px;line-height:1.45}
-  .jtask .jt-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
-  .jt-tag{font-size:8.5px;font-weight:700;border-radius:20px;padding:1px 6px;border:1px solid;white-space:nowrap}
-  .jt-tag.own{color:var(--marissa);border-color:var(--marissa)}
-  .jt-tag.reuse{color:var(--ilia);border-color:var(--ilia)}
-  .jt-tag.new{color:var(--ok);border-color:var(--ok)}
+</style>
 
 <div class="wrap">
   <header class="top">
@@ -532,10 +496,7 @@
       <h1>DBR Automation Requirements</h1>
       <p class="desc">Automating the <b>Death Benefit Reduction (DBR)</b> process for Kai-Zen IUL policies in Policy Years 11–15 (early cohorts start Year 10). Today it's run manually by ops; this project makes <b>ILIA</b> proactively detect eligible policies, notify clients on a schedule, collect their election — the client picks one of <b>3 ready illustrations (Full / Half / No reduction)</b> via DocuSign — and let <b>Marissa manage every case from Tranche Management</b>. This page is the living requirements — built event by event.</p>
     </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-      <button id="epicScopeBtn" class="epic-badge">📋 Current Epic Scope</button>
-      <button id="themeBtn">Theme</button>
-    </div>
+    <button id="themeBtn">Theme</button>
   </header>
 
   <nav class="tabs" role="tablist">
@@ -1666,93 +1627,6 @@
   <div class="ux-ft"><button id="envOk" class="btn-primary">Got it</button></div>
 </dialog>
 
-<dialog id="epicModal">
-  <div class="es-epic">
-    <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><span class="it epic">Epic</span><span class="it-key" style="color:rgba(255,255,255,.82)">DBR-EPIC</span><span style="margin-left:auto;font-size:10px;opacity:.82">not created in Jira — current snapshot</span></div>
-    <h3>DBR Automation — Kai-Zen IUL (PY 11–15 · early cohorts Yr 10)</h3>
-    <p>Detect eligible policies → request carrier illustrations (AWS + Ben's scraper) → send 120/90/60 notices → capture the election (Full / Half / No) → apply &amp; route trustee → carrier → bank report, all visible in Tranche Management &amp; Case Details. <b>7 stories · ~26 tasks</b> — what we'd create in Jira. Living snapshot; updated each iteration.</p>
-  </div>
-  <div class="es-body">
-
-    <div class="jstory">
-      <div class="jstory-h"><span class="it story">Story</span><span class="it-key">DBR-1</span></div>
-      <div class="jstory-sum">DBR data &amp; Case Details fields</div>
-      <div class="jstory-desc">Clean DBR data + the per‑policy‑year DBR section in Case Details that everything reads &amp; writes.</div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Validate &amp; populate clean DBR data (settlor = insured)</div><div class="jt-det">Phase‑1 accounts; the trigger fires off this data.</div><div class="jt-tags"><span class="jt-tag own">Data team</span><span class="jt-tag reuse">reuse NIWD‑1767</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Add DBR fields to Case Details — per policy year</div><div class="jt-det">Current DB, term/base, Full/Half/No, low points, in‑force rate, status, elected option, pre/post‑election.</div><div class="jt-tags"><span class="jt-tag own">Mohit</span><span class="jt-tag reuse">NIWD‑784 + 2511</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">DBR eligibility &amp; cohort start‑year (Yr 10 vs 11)</div><div class="jt-det">Eligibility + which year DBR begins by cohort; reconcile NIWD‑2299 window.</div><div class="jt-tags"><span class="jt-tag own">dev</span><span class="jt-tag new">decision — Judy</span></div></div></div>
-    </div>
-
-    <div class="jstory">
-      <div class="jstory-h"><span class="it story">Story</span><span class="it-key">DBR-2</span><span style="font-size:9px;color:var(--faint);font-weight:700">· linchpin</span></div>
-      <div class="jstory-sum">Carrier illustration pipeline (scraper)</div>
-      <div class="jstory-desc">Request illustrations → land in AWS → scrape, validate, and <b>derive the revised DBR</b>.</div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Stand up the AWS landing spot</div><div class="jt-det">Carrier illustration emails copied here for the scraper.</div><div class="jt-tags"><span class="jt-tag own">Mohit</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Carrier in‑force request email</div><div class="jt-det">3‑way + 50% rule + low point at 0% + participating loan + run to age 100.</div><div class="jt-tags"><span class="jt-tag own">Jamin / Chris</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Sample illustrations for the parser</div><div class="jt-det">Flex Life / National Life / Allianz + ordering emails.</div><div class="jt-tags"><span class="jt-tag own">Paul</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Scraper — read 6 illustrations, validate, derive revised DBR</div><div class="jt-det">3 reduction + 3 low points; derives the allowable revised DBR (no separate formula).</div><div class="jt-tags"><span class="jt-tag own">Ben</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Scraper data mapping</div><div class="jt-det">→ Case Details · election form · carrier change form · bank report.</div><div class="jt-tags"><span class="jt-tag own">Ben</span><span class="jt-tag new">new</span></div></div></div>
-    </div>
-
-    <div class="jstory">
-      <div class="jstory-h"><span class="it story">Story</span><span class="it-key">DBR-3</span></div>
-      <div class="jstory-sum">DBR election form (DocuSign)</div>
-      <div class="jstory-desc">The one‑envelope election form the client reviews &amp; signs.</div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Finalize the new election form</div><div class="jt-det">3 options, in‑force explanation, Hold Harmless page. Draft built.</div><div class="jt-tags"><span class="jt-tag own">Jamin / Marissa</span><span class="jt-tag new">in progress</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Build the DocuSign template — field tabs + routing</div><div class="jt-det">dbr_election = full/half/none; signatures; sequential recipients.</div><div class="jt-tags"><span class="jt-tag own">Chris</span><span class="jt-tag reuse">NIWD‑1770 / 1742</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Map form fields from scraper + Case Details</div><div class="jt-det">3 choices + in‑force rate auto‑populate.</div><div class="jt-tags"><span class="jt-tag own">dev</span><span class="jt-tag reuse">extends NIWD‑1024</span></div></div></div>
-    </div>
-
-    <div class="jstory">
-      <div class="jstory-h"><span class="it story">Story</span><span class="it-key">DBR-4</span></div>
-      <div class="jstory-sum">Notices &amp; scheduler</div>
-      <div class="jstory-desc">Detect eligible policies and send the 120/90/60 notices.</div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Eligibility &amp; trigger scheduler (120/90/60)</div><div class="jt-det">Daily scan; cohort start‑year aware; deadline off tranche funding date.</div><div class="jt-tags"><span class="jt-tag own">dev</span><span class="jt-tag reuse">extends NIWD‑1023</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Notice email copy (Full / Half / No + health prompt)</div><div class="jt-tags"><span class="jt-tag own">Marissa</span><span class="jt-tag reuse">NIWD‑1026 / 1025</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Assemble &amp; send one DocuSign envelope</div><div class="jt-det">Election + 3 illustrations + comparison; stop reminders on signed; audit log.</div><div class="jt-tags"><span class="jt-tag own">dev / Chris</span><span class="jt-tag new">new</span></div></div></div>
-    </div>
-
-    <div class="jstory">
-      <div class="jstory-h"><span class="it story">Story</span><span class="it-key">DBR-5</span></div>
-      <div class="jstory-sum">Election capture &amp; outcomes</div>
-      <div class="jstory-desc">Read the client's choice, apply it, and handle re‑offers &amp; changes.</div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">DocuSign completion capture (webhook vs polling)</div><div class="jt-det">Read dbr_election + store the signed PDF. (B3.)</div><div class="jt-tags"><span class="jt-tag own">Chris</span><span class="jt-tag reuse">NIWD‑1770</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Election routing + status</div><div class="jt-det">Full/Half → apply; None → re‑offer; no‑response → re‑offer.</div><div class="jt-tags"><span class="jt-tag own">dev</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Apply reduction + write elected low point to Case Details</div><div class="jt-det">Low Point field → Chris's bank report.</div><div class="jt-tags"><span class="jt-tag own">dev</span><span class="jt-tag reuse">relates 2053/2185</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Re‑offer scheduler (through Yr 15, skip Health)</div><div class="jt-tags"><span class="jt-tag own">dev</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Re‑election ("changed my mind") handling</div><div class="jt-det">Edit election in Case Details → new signed form → "Re‑election — awaiting signature".</div><div class="jt-tags"><span class="jt-tag own">dev / Chris</span><span class="jt-tag new">new</span></div></div></div>
-    </div>
-
-    <div class="jstory">
-      <div class="jstory-h"><span class="it story">Story</span><span class="it-key">DBR-6</span></div>
-      <div class="jstory-sum">Fulfillment (trustee → carrier → bank)</div>
-      <div class="jstory-desc">Drive the signed reduction to the carrier and produce the bank report.</div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Populate the carrier change form with the elected amount</div><div class="jt-tags"><span class="jt-tag own">dev / Chris</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Sequential envelope routing — trustee then carrier</div><div class="jt-tags"><span class="jt-tag own">Chris</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Carrier receipt confirmation (feed vs manual)</div><div class="jt-tags"><span class="jt-tag own">dev</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Bank report package + upload</div><div class="jt-det">Signed change form + illustration + low point + election + Hold Harmless.</div><div class="jt-tags"><span class="jt-tag own">Chris</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">Fulfillment statuses in Tranche Management</div><div class="jt-tags"><span class="jt-tag own">dev</span><span class="jt-tag new">new</span></div></div></div>
-    </div>
-
-    <div class="jstory">
-      <div class="jstory-h"><span class="it story">Story</span><span class="it-key">DBR-7</span></div>
-      <div class="jstory-sum">Admin surfacing</div>
-      <div class="jstory-desc">What Marissa / processing see &amp; manage.</div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">DBR Status column in Tranche Management</div><div class="jt-tags"><span class="jt-tag own">dev</span><span class="jt-tag new">new</span></div></div></div>
-      <div class="jtask"><span class="it task">Task</span><div class="jt-b"><div class="jt-sum">DBR section in Case Details (pre/post‑election, edit, history)</div><div class="jt-tags"><span class="jt-tag own">Mohit / dev</span><span class="jt-tag reuse">NIWD‑2511</span></div></div></div>
-    </div>
-
-    <div class="jstory" style="border-left-color:var(--faint);opacity:.9">
-      <div class="jstory-h"><span class="it sub">Deferred</span><span class="it-key">Phase 2</span></div>
-      <div class="jstory-sum">Not in this Epic (yet)</div>
-      <div class="jstory-desc">Settlor ≠ insured (NIWD‑1771 / B4) · custom amounts · extended signing chain (Settlor → NIW QC → Bank).</div>
-    </div>
-
-    <p class="es-note">Nothing created in Jira yet — this is the current snapshot of what we'd create. Same breakdown lives in the JIRA plan tab (sequenced into waves).</p>
-  </div>
-  <div class="ux-ft"><button id="epicOpenPlan" class="btn-primary">Open full JIRA plan →</button><button id="epicClose" class="btn" style="margin-left:8px">Close</button></div>
-</dialog>
-
 <script>
 const TM_ROWS=[
  {f:'Carey',l:'Finn',imo:'The CFS Group',dbr:{k:'awaiting',l1:'Reminder 2 of 3 · 90-day sent',label:'Notice sent — awaiting response',act:'Resend',hl:true}},
@@ -2057,13 +1931,6 @@ function openUX(n){
 document.querySelectorAll('.ux-link').forEach(b=>b.addEventListener('click',()=>openUX(b.dataset.ux)));
 document.querySelectorAll('[data-tmlink]').forEach(b=>b.addEventListener('click',()=>showTab('tm')));
 document.querySelectorAll('[data-adminlink]').forEach(b=>b.addEventListener('click',()=>showTab('admin')));
-(function(){
-  const em=document.getElementById('epicModal');
-  const ob=document.getElementById('epicScopeBtn');
-  if(ob&&em)ob.addEventListener('click',()=>{if(typeof em.showModal==='function')em.showModal();else alert('Current Epic Scope');});
-  const ec=document.getElementById('epicClose');if(ec)ec.addEventListener('click',()=>em.close());
-  const op=document.getElementById('epicOpenPlan');if(op)op.addEventListener('click',()=>{em.close();showTab('plan');});
-})();
 
 const DOCP={
  election:{name:"DBR Election Form",what:"The one-page form the client checks a box on and signs — the form shown on this tab.",kind:"election"},
