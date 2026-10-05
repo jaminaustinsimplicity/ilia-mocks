@@ -488,7 +488,25 @@
   .reflow .sub{font-size:12px;color:var(--muted);margin:0 0 12px}
   .reflow ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
   .reflow li{font-size:12.5px;line-height:1.5}.reflow li b{color:var(--ink)}
-</style>
+  /* Current Epic Scope badge + modal */
+  .epic-badge{font-family:inherit;font-size:12.5px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--marissa),var(--ilia));border:none;border-radius:20px;padding:8px 15px;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}
+  .epic-badge:hover{filter:brightness(1.07)}
+  #epicModal{border:1px solid var(--border-strong);border-radius:var(--radius);padding:0;background:var(--surface);color:var(--ink);max-width:680px;width:94vw;box-shadow:var(--shadow)}
+  #epicModal::backdrop{background:rgba(6,10,18,.55)}
+  .es-epic{background:linear-gradient(135deg,var(--marissa),var(--ilia));color:#fff;padding:16px 18px}
+  .es-epic .k{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+  .es-epic h3{margin:3px 0 5px;font-size:17px;color:#fff}
+  .es-epic p{margin:0;font-size:12px;opacity:.92;line-height:1.5}
+  .es-epic .badge{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:2px 9px}
+  .es-body{padding:14px 18px;max-height:62vh;overflow:auto}
+  .es-wave{margin-bottom:12px}
+  .es-wave-h{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .es-wave-h .n{flex:none;width:22px;height:22px;border-radius:7px;background:var(--ilia);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+  .es-wave.def .es-wave-h .n{background:var(--faint)}
+  .es-wave-h b{font-size:12.5px}
+  .es-wave ul{margin:3px 0 0 30px;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px}
+  .es-wave li{font-size:11.5px;color:var(--muted)}.es-wave li b{color:var(--ink)}
+  .es-note{font-size:11px;color:var(--faint);font-style:italic;margin:4px 0 0}
 
 <div class="wrap">
   <header class="top">
@@ -496,7 +514,10 @@
       <h1>DBR Automation Requirements</h1>
       <p class="desc">Automating the <b>Death Benefit Reduction (DBR)</b> process for Kai-Zen IUL policies in Policy Years 11–15 (early cohorts start Year 10). Today it's run manually by ops; this project makes <b>ILIA</b> proactively detect eligible policies, notify clients on a schedule, collect their election — the client picks one of <b>3 ready illustrations (Full / Half / No reduction)</b> via DocuSign — and let <b>Marissa manage every case from Tranche Management</b>. This page is the living requirements — built event by event.</p>
     </div>
-    <button id="themeBtn">Theme</button>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <button id="epicScopeBtn" class="epic-badge">📋 Current Epic Scope</button>
+      <button id="themeBtn">Theme</button>
+    </div>
   </header>
 
   <nav class="tabs" role="tablist">
@@ -1627,6 +1648,33 @@
   <div class="ux-ft"><button id="envOk" class="btn-primary">Got it</button></div>
 </dialog>
 
+<dialog id="epicModal">
+  <div class="es-epic">
+    <div class="k">Current Epic Scope · living</div>
+    <h3>DBR Automation — Kai-Zen IUL (PY 11–15 · early cohorts Yr 10)</h3>
+    <p>Detect eligible policies → request carrier illustrations (AWS + Ben's scraper) → send 120/90/60 notices → capture the election (Full / Half / No) → apply &amp; route trustee → carrier → bank report, all visible in Tranche Management &amp; Case Details.</p>
+    <span class="badge">Draft — create when requirements lock + Judy sign-off · 8 stories · ~30 tasks</span>
+  </div>
+  <div class="es-body">
+    <div class="es-wave"><div class="es-wave-h"><span class="n">0</span><b>Foundations &amp; decisions</b></div>
+      <ul><li><b>Story A</b> — DBR data &amp; Case Details fields (per-policy-year section; NIWD-784 + 2511)</li></ul></div>
+    <div class="es-wave"><div class="es-wave-h"><span class="n">1</span><b>Carrier illustration pipeline</b> <span style="font-size:10px;color:var(--faint)">linchpin</span></div>
+      <ul><li><b>Story B</b> — carrier request → AWS landing spot → Ben's scraper (now also <b>derives the revised DBR</b>); maps to Case Details / election form / carrier change form / bank report</li></ul></div>
+    <div class="es-wave"><div class="es-wave-h"><span class="n">2</span><b>Election form + notices</b></div>
+      <ul><li><b>Story C</b> — DBR election form (DocuSign)</li><li><b>Story D</b> — notices &amp; 120/90/60 scheduler</li></ul></div>
+    <div class="es-wave"><div class="es-wave-h"><span class="n">3</span><b>Capture, routing &amp; outcomes</b></div>
+      <ul><li><b>Story E</b> — election capture + apply/re-offer + write low point; <b>re-election</b> (change-my-mind) path</li></ul></div>
+    <div class="es-wave"><div class="es-wave-h"><span class="n">4</span><b>Fulfillment + bank</b></div>
+      <ul><li><b>Story F</b> — carrier change form → trustee → carrier → bank report + TM fulfillment statuses</li></ul></div>
+    <div class="es-wave"><div class="es-wave-h"><span class="n">5</span><b>Admin surfacing</b></div>
+      <ul><li><b>Story G</b> — DBR Status column in TM + DBR section in Case Details (pre/post-election)</li></ul></div>
+    <div class="es-wave def"><div class="es-wave-h"><span class="n">P2</span><b>Deferred (Phase 2)</b></div>
+      <ul><li>Settlor ≠ insured (B4) · custom amounts · extended signing chain (Settlor → NIW QC → Bank)</li></ul></div>
+    <p class="es-note">Living scope — updated with each iteration. Full breakdown (owners, NIWD refs, status) is in the JIRA plan tab.</p>
+  </div>
+  <div class="ux-ft"><button id="epicOpenPlan" class="btn-primary">Open full JIRA plan →</button><button id="epicClose" class="btn" style="margin-left:8px">Close</button></div>
+</dialog>
+
 <script>
 const TM_ROWS=[
  {f:'Carey',l:'Finn',imo:'The CFS Group',dbr:{k:'awaiting',l1:'Reminder 2 of 3 · 90-day sent',label:'Notice sent — awaiting response',act:'Resend',hl:true}},
@@ -1931,6 +1979,13 @@ function openUX(n){
 document.querySelectorAll('.ux-link').forEach(b=>b.addEventListener('click',()=>openUX(b.dataset.ux)));
 document.querySelectorAll('[data-tmlink]').forEach(b=>b.addEventListener('click',()=>showTab('tm')));
 document.querySelectorAll('[data-adminlink]').forEach(b=>b.addEventListener('click',()=>showTab('admin')));
+(function(){
+  const em=document.getElementById('epicModal');
+  const ob=document.getElementById('epicScopeBtn');
+  if(ob&&em)ob.addEventListener('click',()=>{if(typeof em.showModal==='function')em.showModal();else alert('Current Epic Scope');});
+  const ec=document.getElementById('epicClose');if(ec)ec.addEventListener('click',()=>em.close());
+  const op=document.getElementById('epicOpenPlan');if(op)op.addEventListener('click',()=>{em.close();showTab('plan');});
+})();
 
 const DOCP={
  election:{name:"DBR Election Form",what:"The one-page form the client checks a box on and signs — the form shown on this tab.",kind:"election"},
