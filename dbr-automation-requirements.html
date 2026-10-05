@@ -29,6 +29,12 @@
   .tabs button{border:none;background:none;border-bottom:2px solid transparent;border-radius:0;padding:11px 15px;font-weight:600;color:var(--muted);font-size:13.5px}
   .tabs button:hover{color:var(--ink)}
   .tabs button.active{color:var(--ink);border-bottom-color:var(--marissa)}
+  .hdr-actions{display:flex;gap:10px;align-items:flex-start;flex:none}
+  .scope-link{font-weight:700;color:var(--marissa);border-color:var(--marissa)}
+  .scope-link:hover{background:color-mix(in srgb,var(--marissa) 8%,transparent)}
+  .scope-back{margin:16px 0 4px;font-weight:600}
+  .scope-note{font-size:12.5px;color:var(--muted);max-width:1000px;margin:10px 0 2px;line-height:1.5}
+  .story-tasklab{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:10px 0 2px}
   [hidden]{display:none!important}
   .hint{font-size:11.5px;color:var(--faint);margin:16px 2px 8px;display:flex;align-items:center;gap:6px}
   .jump{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin:12px 2px 6px;padding-bottom:3px}
@@ -496,7 +502,10 @@
       <h1>DBR Automation Requirements</h1>
       <p class="desc">Automating the <b>Death Benefit Reduction (DBR)</b> process for Kai-Zen IUL policies in Policy Years 11–15 (early cohorts start Year 10). Today it's run manually by ops; this project makes <b>ILIA</b> proactively detect eligible policies, notify clients on a schedule, collect their election — the client picks one of <b>3 ready illustrations (Full / Half / No reduction)</b> via DocuSign — and let <b>Marissa manage every case from Tranche Management</b>. This page is the living requirements — built event by event.</p>
     </div>
-    <button id="themeBtn">Theme</button>
+    <div class="hdr-actions">
+      <button id="jiraScopeBtn" class="scope-link">Current JIRA scope</button>
+      <button id="themeBtn">Theme</button>
+    </div>
   </header>
 
   <nav class="tabs" role="tablist">
@@ -511,6 +520,121 @@
     <button id="tabPlan">JIRA plan</button>
     <button id="tabElect">New DBR election form</button>
   </nav>
+
+  <!-- ============ CURRENT JIRA SCOPE (full-page, opened from header) ============ -->
+  <section id="view-jirascope" hidden>
+    <button id="jiraScopeBack" class="scope-back">&larr; Back to requirements</button>
+    <div class="plan-wrap">
+      <div class="epic-banner">
+        <div class="ep-k">Epic</div>
+        <h3>DBR Automation for Kai-Zen IUL Policies</h3>
+        <p>Automate the Death Benefit Reduction process ops runs manually today. For Kai-Zen IUL policies in Years 11&ndash;15 (early cohorts Year 10), ILIA will proactively detect eligible policies, request carrier illustrations, notify clients on schedule, collect their election via DocuSign (Full / Half / No reduction), apply the outcome, and give Marissa one place in Tranche Management to manage every case.</p>
+        <span class="ep-badge">Living snapshot &mdash; updated as requirements change</span>
+      </div>
+
+      <p class="scope-note">The Epic above, the Stories that slice it, and the most-likely first task for each &mdash; based on where requirements stand today.</p>
+
+      <div class="story">
+        <div class="story-h">Story 1 &mdash; DBR Trigger &amp; Eligibility Detection</div>
+        <p class="story-sub">ILIA scans daily for policies approaching their DBR window and starts the process automatically &mdash; no manual kickoff.</p>
+        <div class="story-tasklab">Most-likely first task</div>
+        <div class="ptask">
+          <div class="pn">T</div>
+          <div class="pbody">
+            <div class="pt">Build daily eligibility scan for DBR-eligible policies</div>
+            <div class="pd"><b>Description:</b> Scheduled job flags Kai-Zen IUL policies entering the Year 10/11 &rarr; Year 15 DBR window.</div>
+            <div class="pd"><b>Requirements:</b> cohort / year logic &middot; skip already-processed policies &middot; write eligible list &middot; configurable window &amp; schedule.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-h">Story 2 &mdash; Carrier Illustration Request &amp; Scraper Intake</div>
+        <p class="story-sub">Before client notices go out, request the 3-way in-force illustrations from the carrier; Ben's scraper reads them from Mohit's AWS landing spot and derives the revised DBR.</p>
+        <div class="story-tasklab">Most-likely first task</div>
+        <div class="ptask">
+          <div class="pn">T</div>
+          <div class="pbody">
+            <div class="pt">Scraper reads carrier illustrations from AWS and derives the revised DBR</div>
+            <div class="pd"><b>Description:</b> Parse the Full / Half / No illustrations, pull the low points, compute the allowable DBR, and write the values to Case Details and the election form.</div>
+            <div class="pd"><b>Requirements:</b> read from the AWS landing spot &middot; 50% max rule &middot; term-rider-first &middot; populate the 3 options &middot; owner: Ben (follow-on after the Friday Judy session).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-h">Story 3 &mdash; Client DBR Notice &amp; Election (DocuSign)</div>
+        <p class="story-sub">Notify the client on schedule and collect their signed election &mdash; one of 3 ready illustrations.</p>
+        <div class="story-tasklab">Most-likely first task</div>
+        <div class="ptask">
+          <div class="pn">T</div>
+          <div class="pbody">
+            <div class="pt">Send DBR notice + DocuSign election packet</div>
+            <div class="pd"><b>Description:</b> Scheduled client emails with the DocuSign envelope offering Full / Half / No reduction.</div>
+            <div class="pd"><b>Requirements:</b> 90 / 60-day reminders &middot; dynamic policy year &middot; in-force explanation + Hold Harmless &middot; non-standard amounts route to &ldquo;call a specialist&rdquo;.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-h">Story 4 &mdash; Election Outcomes &amp; Processing</div>
+        <p class="story-sub">When the client signs, ILIA reads the choice and routes it automatically.</p>
+        <div class="story-tasklab">Most-likely first task</div>
+        <div class="ptask">
+          <div class="pn">T</div>
+          <div class="pbody">
+            <div class="pt">Read election + apply the DBR outcome</div>
+            <div class="pd"><b>Description:</b> On DocuSign completion, read the election (full / half / none), apply the reduction, write the Low Point, store the signed PDF, and hand off to fulfillment.</div>
+            <div class="pd"><b>Requirements:</b> DocuSign webhook &middot; apply reduction to the policy &middot; write to Case Details &middot; store PDF on the case record &middot; handoff to trustee / carrier.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-h">Story 5 &mdash; DBR in Case Details</div>
+        <p class="story-sub">Give processing a DBR section in Case Details &mdash; per policy year, with pre-election (illustrated) and post-election (record + carry-forward) data.</p>
+        <div class="story-tasklab">Most-likely first task</div>
+        <div class="ptask">
+          <div class="pn">T</div>
+          <div class="pbody">
+            <div class="pt">Add DBR fields to Case Details per policy year</div>
+            <div class="pd"><b>Description:</b> DBR fields co-located inside each policy-year breakdown.</div>
+            <div class="pd"><b>Requirements:</b> status &middot; illustrated vs elected values &middot; carry-forward &middot; unblock the location decision.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-h">Story 6 &mdash; DBR in Tranche Management</div>
+        <p class="story-sub">One place for Marissa to see and manage every DBR case.</p>
+        <div class="story-tasklab">Most-likely first task</div>
+        <div class="ptask">
+          <div class="pn">T</div>
+          <div class="pbody">
+            <div class="pt">DBR status column + case view in Tranche Management</div>
+            <div class="pd"><b>Description:</b> Surface each policy's DBR status and the actions Marissa takes.</div>
+            <div class="pd"><b>Requirements:</b> one record / one status model &middot; status lifecycle &middot; filter &amp; sort by DBR status.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-h">Story 7 &mdash; DBR Admin Management &amp; Re-election</div>
+        <p class="story-sub">How Tranche Management + Case Details work together, plus the governed &ldquo;I changed my mind&rdquo; flow.</p>
+        <div class="story-tasklab">Most-likely first task</div>
+        <div class="ptask">
+          <div class="pn">T</div>
+          <div class="pbody">
+            <div class="pt">Governed re-election (edit election) flow</div>
+            <div class="pd"><b>Description:</b> Admin edits an election &mdash; new signed form + illustration upload, resend notice, full audit trail.</div>
+            <div class="pd"><b>Requirements:</b> edit election &middot; upload new illustration / form &middot; resend DBR notice &middot; history / audit &middot; one source of truth.</div>
+          </div>
+        </div>
+      </div>
+
+      <button id="jiraScopeBack2" class="scope-back">&larr; Back to requirements</button>
+    </div>
+  </section>
 
   <!-- ============ TAB 1: EVENT CARDS ============ -->
   <section id="view-cards">
@@ -1684,6 +1808,31 @@ document.getElementById('tabEmails').addEventListener('click',()=>showTab('email
 document.getElementById('tabBlockers').addEventListener('click',()=>showTab('blockers'));
 document.getElementById('tabPlan').addEventListener('click',()=>showTab('plan'));
 document.getElementById('tabElect').addEventListener('click',()=>showTab('electform'));
+(function(){
+  var btn=document.getElementById('jiraScopeBtn');
+  var view=document.getElementById('view-jirascope');
+  var nav=document.querySelector('nav.tabs');
+  var backs=[document.getElementById('jiraScopeBack'),document.getElementById('jiraScopeBack2')];
+  var viewIds=['view-cards','view-tm','view-case','view-admin','view-forms','view-scraper','view-emails','view-blockers','view-plan','view-electform'];
+  var tabMap={tabCards:'cards',tabTm:'tm',tabCase:'case',tabAdmin:'admin',tabForms:'forms',tabScraper:'scraper',tabEmails:'emails',tabBlockers:'blockers',tabPlan:'plan',tabElect:'electform'};
+  function open(){
+    if(nav)nav.hidden=true;
+    viewIds.forEach(function(id){var el=document.getElementById(id);if(el)el.hidden=true;});
+    view.hidden=false;
+    if(btn)btn.classList.add('active');
+    window.scrollTo(0,0);
+  }
+  function close(){
+    view.hidden=true;
+    if(nav)nav.hidden=false;
+    if(btn)btn.classList.remove('active');
+    var active=document.querySelector('nav.tabs button.active');
+    showTab(active?tabMap[active.id]:'cards');
+    window.scrollTo(0,0);
+  }
+  if(btn)btn.addEventListener('click',open);
+  backs.forEach(function(b){if(b)b.addEventListener('click',close);});
+})();
 document.addEventListener('click',function(e){
   const aj=e.target.closest('.askjudy');
   document.querySelectorAll('.askjudy.open').forEach(function(x){if(x!==aj){x.classList.remove('open');x.classList.remove('aj-right');}});
