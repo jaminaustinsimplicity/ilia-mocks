@@ -35,6 +35,18 @@
   .scope-back{margin:16px 0 4px;font-weight:600}
   .scope-note{font-size:12.5px;color:var(--muted);max-width:1000px;margin:10px 0 2px;line-height:1.5}
   .story-tasklab{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:10px 0 2px}
+  .task-acc{border:1px solid var(--border-strong);border-radius:9px;background:var(--surface-2);margin:8px 0 0}
+  .task-acc>summary{list-style:none;cursor:pointer;padding:10px 13px;display:flex;align-items:flex-start;gap:10px}
+  .task-acc>summary::-webkit-details-marker{display:none}
+  .task-acc>summary::before{content:"\25B8";color:var(--marissa);font-size:13px;line-height:1.3;margin-top:1px;transition:transform .15s;flex:none}
+  .task-acc[open]>summary::before{transform:rotate(90deg)}
+  .task-acc>summary:hover{background:color-mix(in srgb,var(--marissa) 5%,transparent);border-radius:9px}
+  .ta-main{flex:1;min-width:0}
+  .ta-t{display:block;font-size:12.5px;font-weight:700;color:var(--ink)}
+  .ta-d{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+  .ta-req{padding:2px 14px 13px 36px;font-size:11.5px;color:var(--muted);line-height:1.55;border-top:1px solid var(--border)}
+  .ta-req .rqlab{display:block;font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--marissa);margin:9px 0 4px}
+  .ta-req b{color:var(--ink)}
   [hidden]{display:none!important}
   .hint{font-size:11.5px;color:var(--faint);margin:16px 2px 8px;display:flex;align-items:center;gap:6px}
   .jump{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin:12px 2px 6px;padding-bottom:3px}
@@ -532,104 +544,124 @@
         <span class="ep-badge">Living snapshot &mdash; updated as requirements change</span>
       </div>
 
-      <p class="scope-note">The Epic above, the Stories that slice it, and the most-likely first task for each &mdash; based on where requirements stand today.</p>
+      <p class="scope-note">The Epic above, the Stories that slice it, and the likely tasks under each &mdash; based on where requirements stand today. Click any task to expand the expected requirements for devs.</p>
 
       <div class="story">
         <div class="story-h">Story 1 &mdash; DBR Trigger &amp; Eligibility Detection</div>
         <p class="story-sub">ILIA scans daily for policies approaching their DBR window and starts the process automatically &mdash; no manual kickoff.</p>
-        <div class="story-tasklab">Most-likely first task</div>
-        <div class="ptask">
-          <div class="pn">T</div>
-          <div class="pbody">
-            <div class="pt">Build daily eligibility scan for DBR-eligible policies</div>
-            <div class="pd"><b>Description:</b> Scheduled job flags Kai-Zen IUL policies entering the Year 10/11 &rarr; Year 15 DBR window.</div>
-            <div class="pd"><b>Requirements:</b> cohort / year logic &middot; skip already-processed policies &middot; write eligible list &middot; configurable window &amp; schedule.</div>
-          </div>
-        </div>
+        <div class="story-tasklab">Tasks</div>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Build daily eligibility scan for DBR-eligible policies</span><span class="ta-d">Scheduled job flags Kai-Zen IUL policies entering the DBR window.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Cohort / year logic (Year 10/11 &rarr; Year 15) &middot; skip already-processed policies &middot; write the eligible list to a queue &middot; configurable window &amp; run schedule &middot; idempotent, safe to re-run.</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Define &amp; store the DBR schedule per cohort</span><span class="ta-d">Codify when each cohort's notice and reminders fire.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Schedule config per cohort &middot; notice + 90/60-day reminder offsets &middot; admin-editable &middot; drives the Story 3 send timings &middot; Year 15 hard stop.</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Guardrails &amp; logging for the automated trigger</span><span class="ta-d">Make the scan auditable and safe to run unattended.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Run log + audit trail &middot; alert on zero / over-count &middot; dry-run mode &middot; no duplicate sends &middot; monitoring hook.</div>
+        </details>
       </div>
 
       <div class="story">
         <div class="story-h">Story 2 &mdash; Carrier Illustration Request &amp; Scraper Intake</div>
         <p class="story-sub">Before client notices go out, request the 3-way in-force illustrations from the carrier; Ben's scraper reads them from Mohit's AWS landing spot and derives the revised DBR.</p>
-        <div class="story-tasklab">Most-likely first task</div>
-        <div class="ptask">
-          <div class="pn">T</div>
-          <div class="pbody">
-            <div class="pt">Scraper reads carrier illustrations from AWS and derives the revised DBR</div>
-            <div class="pd"><b>Description:</b> Parse the Full / Half / No illustrations, pull the low points, compute the allowable DBR, and write the values to Case Details and the election form.</div>
-            <div class="pd"><b>Requirements:</b> read from the AWS landing spot &middot; 50% max rule &middot; term-rider-first &middot; populate the 3 options &middot; owner: Ben (follow-on after the Friday Judy session).</div>
-          </div>
-        </div>
+        <div class="story-tasklab">Tasks</div>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Carrier illustration request email (3-way)</span><span class="ta-d">Auto-request Full / Half / No in-force illustrations before notices.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Templated carrier email &middot; state the 50% rule + which amount comes off the term rider vs the base &middot; include low points &middot; destination: Mohit's AWS landing spot.</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Scraper reads illustrations from AWS &amp; derives the revised DBR</span><span class="ta-d">Parse the files, pull low points, compute the allowable DBR.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Read from the AWS landing spot &middot; parse illustration data &middot; 50% max rule &middot; term-rider-first &middot; compute allowable DBR &middot; owner: Ben (follow-on after the Friday Judy session).</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Write derived values to Case Details + election form</span><span class="ta-d">Populate the 3 options and the DBR fields from the scraper output.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Map parsed fields &rarr; Case Details per policy year &middot; populate the election form's 3 options &middot; validation + error handling on missing / malformed files.</div>
+        </details>
       </div>
 
       <div class="story">
         <div class="story-h">Story 3 &mdash; Client DBR Notice &amp; Election (DocuSign)</div>
         <p class="story-sub">Notify the client on schedule and collect their signed election &mdash; one of 3 ready illustrations.</p>
-        <div class="story-tasklab">Most-likely first task</div>
-        <div class="ptask">
-          <div class="pn">T</div>
-          <div class="pbody">
-            <div class="pt">Send DBR notice + DocuSign election packet</div>
-            <div class="pd"><b>Description:</b> Scheduled client emails with the DocuSign envelope offering Full / Half / No reduction.</div>
-            <div class="pd"><b>Requirements:</b> 90 / 60-day reminders &middot; dynamic policy year &middot; in-force explanation + Hold Harmless &middot; non-standard amounts route to &ldquo;call a specialist&rdquo;.</div>
-          </div>
-        </div>
+        <div class="story-tasklab">Tasks</div>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Send DBR notice + DocuSign election packet</span><span class="ta-d">Scheduled client email with the 3-option envelope.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>DocuSign envelope with Full / Half / No reduction &middot; dynamic policy year &middot; in-force explanation + Hold Harmless &middot; one envelope / one signature.</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Reminder cadence (90 / 60-day)</span><span class="ta-d">Chase unsigned clients on schedule, then stop.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>90 &amp; 60-day reminders &middot; stop on signature &middot; stop at the Year 15 deadline &middot; no-response path &rarr; re-offer next year.</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Non-standard amount handling</span><span class="ta-d">Route custom amounts to a specialist, not a free-text field.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Detect non-standard / custom requests &middot; &ldquo;call a specialist&rdquo; path &middot; no free-text amount on the form &middot; log the routing.</div>
+        </details>
       </div>
 
       <div class="story">
         <div class="story-h">Story 4 &mdash; Election Outcomes &amp; Processing</div>
         <p class="story-sub">When the client signs, ILIA reads the choice and routes it automatically.</p>
-        <div class="story-tasklab">Most-likely first task</div>
-        <div class="ptask">
-          <div class="pn">T</div>
-          <div class="pbody">
-            <div class="pt">Read election + apply the DBR outcome</div>
-            <div class="pd"><b>Description:</b> On DocuSign completion, read the election (full / half / none), apply the reduction, write the Low Point, store the signed PDF, and hand off to fulfillment.</div>
-            <div class="pd"><b>Requirements:</b> DocuSign webhook &middot; apply reduction to the policy &middot; write to Case Details &middot; store PDF on the case record &middot; handoff to trustee / carrier.</div>
-          </div>
-        </div>
+        <div class="story-tasklab">Tasks</div>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Read election + route by choice</span><span class="ta-d">On completion, read full / half / none and branch.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>DocuSign completion webhook &middot; read the election value &middot; route per outcome &middot; no-response &rarr; re-offer next year.</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Apply the reduction &amp; write results</span><span class="ta-d">Apply the DBR, write the Low Point, store the signed PDF.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Apply the reduction to the policy for the elected year &middot; write the Low Point to Case Details &middot; store the signed election + PDF on the case record.</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Handoff to fulfillment</span><span class="ta-d">Trustee &rarr; carrier handoff once applied.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Set TM status Accepted &rarr; fulfillment &middot; package for trustee / carrier &middot; confirmation back to ILIA.</div>
+        </details>
       </div>
 
       <div class="story">
         <div class="story-h">Story 5 &mdash; DBR in Case Details</div>
         <p class="story-sub">Give processing a DBR section in Case Details &mdash; per policy year, with pre-election (illustrated) and post-election (record + carry-forward) data.</p>
-        <div class="story-tasklab">Most-likely first task</div>
-        <div class="ptask">
-          <div class="pn">T</div>
-          <div class="pbody">
-            <div class="pt">Add DBR fields to Case Details per policy year</div>
-            <div class="pd"><b>Description:</b> DBR fields co-located inside each policy-year breakdown.</div>
-            <div class="pd"><b>Requirements:</b> status &middot; illustrated vs elected values &middot; carry-forward &middot; unblock the location decision.</div>
-          </div>
-        </div>
+        <div class="story-tasklab">Tasks</div>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Add DBR fields to Case Details per policy year</span><span class="ta-d">Fields co-located inside each policy-year breakdown.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Per-year DBR fields &middot; status &middot; illustrated vs elected values &middot; carry-forward &middot; unblock the location decision (currently on hold).</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Pre-election (illustrated) section</span><span class="ta-d">Show the Original Illustrated DBR before any election is made.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Illustrated DBR field + reference values &middot; read-only pre-election &middot; sourced from the scraper (Story 2).</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Post-election (record + carry-forward) section</span><span class="ta-d">The more robust record after an election is made.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Elected values &middot; history &middot; carry-forward &middot; health / term flags &middot; &ldquo;to define&rdquo; items still open with Judy.</div>
+        </details>
       </div>
 
       <div class="story">
         <div class="story-h">Story 6 &mdash; DBR in Tranche Management</div>
         <p class="story-sub">One place for Marissa to see and manage every DBR case.</p>
-        <div class="story-tasklab">Most-likely first task</div>
-        <div class="ptask">
-          <div class="pn">T</div>
-          <div class="pbody">
-            <div class="pt">DBR status column + case view in Tranche Management</div>
-            <div class="pd"><b>Description:</b> Surface each policy's DBR status and the actions Marissa takes.</div>
-            <div class="pd"><b>Requirements:</b> one record / one status model &middot; status lifecycle &middot; filter &amp; sort by DBR status.</div>
-          </div>
-        </div>
+        <div class="story-tasklab">Tasks</div>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">DBR status column in Tranche Management</span><span class="ta-d">Surface each policy's DBR status at a glance.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Status column &middot; lifecycle (Not due &rarr; Illustrated &rarr; Awaiting &rarr; Accepted / Declined &rarr; Applied &rarr; Fulfillment) &middot; filter &amp; sort by DBR status.</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Case actions from Tranche Management</span><span class="ta-d">The actions Marissa takes on a case.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>View case &middot; resend / re-offer &middot; open election &middot; link through to Case Details &middot; one record / one status.</div>
+        </details>
       </div>
 
       <div class="story">
         <div class="story-h">Story 7 &mdash; DBR Admin Management &amp; Re-election</div>
         <p class="story-sub">How Tranche Management + Case Details work together, plus the governed &ldquo;I changed my mind&rdquo; flow.</p>
-        <div class="story-tasklab">Most-likely first task</div>
-        <div class="ptask">
-          <div class="pn">T</div>
-          <div class="pbody">
-            <div class="pt">Governed re-election (edit election) flow</div>
-            <div class="pd"><b>Description:</b> Admin edits an election &mdash; new signed form + illustration upload, resend notice, full audit trail.</div>
-            <div class="pd"><b>Requirements:</b> edit election &middot; upload new illustration / form &middot; resend DBR notice &middot; history / audit &middot; one source of truth.</div>
-          </div>
-        </div>
+        <div class="story-tasklab">Tasks</div>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Define the TM + Case Details relationship</span><span class="ta-d">One record, one status, a clear data flow.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Single source of truth &middot; data flow source &rarr; surface &middot; rules + open decisions documented.</div>
+        </details>
+        <details class="task-acc">
+          <summary><span class="ta-main"><span class="ta-t">Governed re-election (edit election) flow</span><span class="ta-d">Handle &ldquo;I changed my mind&rdquo; safely.</span></span></summary>
+          <div class="ta-req"><span class="rqlab">Expected requirements</span>Edit election &middot; new signed form &middot; upload new illustration / form &middot; resend DBR notice &middot; full history / audit trail.</div>
+        </details>
       </div>
 
       <button id="jiraScopeBack2" class="scope-back">&larr; Back to requirements</button>
