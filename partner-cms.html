@@ -52,22 +52,26 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 #stage.mobile{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,var(--surface-2),var(--bg))}
 .phone{width:100%;height:100%}
 #stage.mobile .phone{width:390px;height:min(820px,calc(100% - 28px));border-radius:36px;border:11px solid #1b2130;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25);position:relative}
-#portal{height:100%;display:grid;grid-template-columns:236px 1fr;background:var(--bg);position:relative}
+#portal{height:100%;display:grid;grid-template-columns:244px 1fr;background:var(--bg);position:relative}
 #stage.mobile #portal{grid-template-columns:1fr;grid-template-rows:auto 1fr auto}
 
 /* Sidebar */
-.side{background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;padding:16px 12px;overflow-y:auto}
-.brand{display:flex;align-items:center;gap:10px;padding:2px 6px 16px}
-.brand .mk{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#3b82f6,#7b5cd6);display:grid;place-items:center;color:#fff;font-weight:800}
+.side{background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;padding:14px 12px;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 6px 12px}
+.brand .mk{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#3b82f6,#7b5cd6);display:grid;place-items:center;color:#fff;font-weight:800;flex:none}
 .brand b{display:block;color:#fff;font-size:14.5px;line-height:1.2}
 .brand small{font-size:11.5px;opacity:.7}
-.rolechip{margin:0 6px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 8px;border-radius:6px;background:#24304a;color:#cfe0ff;align-self:flex-start}
-.nav button{width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;color:var(--side-ink);padding:9px 10px;border-radius:9px;cursor:pointer;font-weight:600;font-size:14px;text-align:left}
+.bell{margin-left:auto;position:relative;border:0;background:#1b2436;color:#fff;width:32px;height:32px;border-radius:9px;cursor:pointer;flex:none}
+.bell .cnt{position:absolute;top:-4px;right:-4px;background:var(--bad);color:#fff;font-size:10px;font-weight:800;border-radius:999px;padding:0 5px;line-height:16px}
+.rolechip{margin:0 6px 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 8px;border-radius:6px;background:#24304a;color:#cfe0ff;align-self:flex-start}
+.nsec{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#7c88a6;padding:12px 10px 4px}
+.nav button{width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;color:var(--side-ink);padding:8px 10px;border-radius:9px;cursor:pointer;font-weight:600;font-size:13.5px;text-align:left}
 .nav button:hover{background:#1a2338}
 .nav button[aria-current=page]{background:var(--side-act);color:#fff}
+.nav button[disabled]{opacity:.4;cursor:not-allowed}
 .nav .ic{width:20px;text-align:center}
 .nav .cnt{margin-left:auto;background:var(--bad);color:#fff;font-size:11px;font-weight:800;border-radius:999px;padding:1px 7px}
-.me{margin-top:auto;display:flex;gap:10px;align-items:center;padding:10px 6px 0;border-top:1px solid #222c42}
+.me{margin-top:auto;display:flex;gap:10px;align-items:center;padding:12px 6px 0;border-top:1px solid #222c42}
 .av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12.5px;color:#fff;flex:none;background:#5b6b8c}
 .me b{display:block;color:#fff;font-size:13px}
 .me small{font-size:11.5px;opacity:.7}
@@ -78,12 +82,14 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 #stage.mobile .side{display:none}
 #stage.mobile .mtop{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--side);color:#fff}
 #stage.mobile .mtop .brand{padding:0}
-#stage.mobile .mtop .av{margin-left:auto;width:30px;height:30px;font-size:11px}
+#stage.mobile .mtop .av{width:30px;height:30px;font-size:11px}
 #stage.mobile .mtabs{display:flex;background:var(--surface);border-top:1px solid var(--line)}
 .mtabs button{flex:1;border:0;background:transparent;padding:8px 2px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;font-weight:600;color:var(--ink-3);cursor:pointer;position:relative}
 .mtabs button .ic{font-size:18px}
 .mtabs button[aria-current=page]{color:var(--brand)}
 .mtabs .cnt{position:absolute;top:4px;right:calc(50% - 20px);background:var(--bad);color:#fff;font-size:10px;font-weight:800;border-radius:999px;padding:0 5px}
+.morelist button{width:100%;display:flex;align-items:center;gap:12px;border:0;border-bottom:1px solid var(--line);background:transparent;padding:13px 4px;font-weight:600;cursor:pointer;text-align:left}
+.morelist .sec{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;padding:12px 4px 2px}
 
 /* Main */
 .main{overflow-y:auto;min-width:0}
@@ -98,14 +104,13 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 .crumbs{font-size:12.5px;color:var(--ink-3);margin-bottom:4px}
 .crumbs button{border:0;background:none;color:var(--brand);font-weight:600;padding:0;cursor:pointer}
 
-.btn{border:0;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn{border:0;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none}
 .btn.pri{background:var(--brand);color:var(--brand-ink)}
 .btn.sec{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
 .btn.ok{background:var(--good);color:#fff}
 .btn.no{background:var(--surface);color:var(--bad);border:1px solid var(--line)}
-.btn.boost{background:var(--boost);color:#fff}
 .btn.sm{padding:6px 10px;font-size:12.5px;border-radius:8px}
-.btn.block{width:100%;justify-content:center}
+.btn.xs{padding:4px 8px;font-size:12px;border-radius:7px}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .link{border:0;background:none;color:var(--brand);font-weight:600;padding:0;cursor:pointer}
 
@@ -115,12 +120,13 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 @media (max-width:900px){ .g4{grid-template-columns:1fr 1fr} .g3,.g2,.g21{grid-template-columns:1fr} }
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);min-width:0}
 .card h3{margin:0 0 2px;font-size:15px}
-.card .sub{color:var(--ink-3);font-size:12.5px;margin:0 0 12px}
+.card .sub,.sub{color:var(--ink-3);font-size:12.5px;margin:0 0 12px}
 .stat{padding:14px 16px}
 .stat span{display:block;font-size:12px;color:var(--ink-3);font-weight:600}
 .stat b{display:block;font-size:26px;letter-spacing:-.02em;line-height:1.2}
 .stat small{font-size:12px;color:var(--good);font-weight:600}
 .stat.kz b{color:var(--boost)}
+.stack > * + *{margin-top:14px}
 
 /* Funnel bars */
 .fun{display:grid;gap:8px}
@@ -138,6 +144,7 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 .rows .rw{border-bottom:1px solid var(--line);font-size:13.5px}
 .rows .rw:last-child{border-bottom:0}
 .rows .rw.click{cursor:pointer} .rows .rw.click:hover{background:var(--surface-2)}
+.rows .cell{min-width:0}
 .rows .cell small{display:block;color:var(--ink-3);font-size:12px}
 .rows .cl{display:none}
 #stage.mobile .rows .hd{display:none}
@@ -145,6 +152,12 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 #stage.mobile .rows .rw .cell:first-child{grid-column:1 / -1;font-weight:700}
 #stage.mobile .rows .cl{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);font-weight:700}
 .tablecard{padding:6px 6px}
+.tbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:8px 10px 10px;border-bottom:1px solid var(--line)}
+.tbar input,.tbar select{padding:8px 10px;border-radius:9px;border:1.5px solid var(--line);background:var(--surface);font-size:13px}
+.tbar input{flex:1;min-width:150px}
+.tbar .sp{margin-left:auto}
+#stage.mobile .tbar .sp{margin-left:0}
+.acts-cell{display:flex;gap:6px;flex-wrap:wrap}
 
 .pill{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
 .p-ok{background:var(--good-soft);color:var(--good)} .p-warn{background:var(--warn-soft);color:var(--warn)} .p-bad{background:var(--bad-soft);color:var(--bad)}
@@ -156,6 +169,8 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 .f input,.f select,.f textarea{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface)}
 .f textarea{min-height:84px;resize:vertical}
 .f .hint{font-size:12px;color:var(--ink-3);margin-top:4px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+#stage.mobile .f2{grid-template-columns:1fr}
 .demo-tip{font-size:12px;color:var(--brand);margin:0 0 12px}
 .choices{display:grid;gap:8px}
 .chc{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;cursor:pointer}
@@ -167,18 +182,30 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 .typegrid button{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 8px;cursor:pointer;font-weight:600;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:4px}
 .typegrid button span{font-size:22px}
 .typegrid button[aria-pressed=true]{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.tog:last-child{border-bottom:0}
+.tog b{display:block;font-size:14px}
+.tog small{color:var(--ink-3);font-size:12.5px}
+.sw{width:42px;height:24px;border-radius:999px;background:var(--line);border:0;position:relative;cursor:pointer;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s}
+.sw[aria-checked=true]{background:var(--good)} .sw[aria-checked=true]::after{left:21px}
+.numin{display:flex;align-items:center;gap:6px}
+.numin button{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer}
+.numin output{min-width:76px;text-align:center;font-weight:800}
 
-/* Modal / sheet */
+/* Modal / drawer */
 .mback{position:absolute;inset:0;background:rgba(8,12,20,.55);z-index:40;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal{background:var(--surface);border-radius:16px;width:min(560px,100%);max-height:calc(100% - 20px);overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .modal.wide{width:min(760px,100%)}
+.mback.drawer{justify-content:flex-end;padding:0}
+.mback.drawer .modal{height:100%;max-height:100%;border-radius:0;width:min(480px,100%)}
 #stage.mobile .mback{align-items:flex-end;padding:0}
-#stage.mobile .modal{border-radius:20px 20px 0 0;max-height:92%}
+#stage.mobile .modal,#stage.mobile .mback.drawer .modal{border-radius:20px 20px 0 0;max-height:92%;height:auto;width:100%}
 .mh{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:1}
 .mh h3{margin:0;font-size:16px}
-.mh .x{margin-left:auto;border:1px solid var(--line);background:var(--surface);width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:17px}
+.mh .x{margin-left:auto;border:1px solid var(--line);background:var(--surface);width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:17px;flex:none}
 .mb{padding:16px 18px}
-.mf{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--surface)}
+.mf{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--surface);flex-wrap:wrap}
 #stage.mobile .mf .btn{flex:1;justify-content:center}
 
 /* Toast */
@@ -190,6 +217,7 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 #stage.mobile .linkcard{grid-template-columns:1fr;justify-items:center;text-align:center}
 .qr{background:#fff;padding:8px;border-radius:10px;border:1px solid var(--line);display:inline-block;line-height:0}
 .qr canvas,.qr img{display:block}
+.qr.off{opacity:.35;filter:grayscale(1)}
 .qrfail{width:120px;height:120px;display:grid;place-items:center;font-size:11px;color:#666;text-align:center}
 .url{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:var(--surface-2);border-radius:8px;padding:8px 10px;word-break:break-all;color:var(--ink-2)}
 .idchip{font-family:ui-monospace,Consolas,monospace;font-size:12px;font-weight:700;background:var(--surface-2);border-radius:6px;padding:2px 7px}
@@ -232,6 +260,63 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 .preview-ad{border:1px solid var(--line);border-radius:12px;padding:14px;background:linear-gradient(135deg,var(--brand-soft),var(--surface))}
 .preview-ad h4{margin:0 0 4px;font-size:17px}
 .preview-ad p{margin:0 0 10px;color:var(--ink-2);font-size:13px}
+.assetfoot{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.timeline{list-style:none;margin:0;padding:0}
+.timeline li{display:flex;gap:10px;padding:0 0 12px;position:relative}
+.timeline li::before{content:"";position:absolute;left:8px;top:20px;bottom:0;width:2px;background:var(--line)}
+.timeline li:last-child::before{display:none}
+.timeline .dot{width:18px;height:18px;border-radius:50%;background:var(--good);color:#fff;font-size:10px;display:grid;place-items:center;flex:none;position:relative;z-index:1}
+.timeline .dot.off{background:var(--line)}
+.timeline small{display:block;color:var(--ink-3)}
+.locked{background:var(--surface-2);border-radius:10px;padding:12px;font-size:13px;color:var(--ink-3)}
+.notif{display:flex;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.notif:last-child{border:0}
+.notif .ni{width:34px;height:34px;border-radius:10px;background:var(--surface-2);display:grid;place-items:center;flex:none}
+.notif.unread b::after{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--brand);margin-left:6px;vertical-align:middle}
+.notif small{display:block;color:var(--ink-3)}
+.faq{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--surface)}
+.faq button{width:100%;text-align:left;border:0;background:none;padding:13px 14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between}
+.faq div{display:none;padding:0 14px 14px;color:var(--ink-2);font-size:13.5px}
+.faq.open div{display:block}
+.brandprev{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.brandprev .bh{display:flex;align-items:center;gap:10px;padding:10px 12px;color:#fff}
+.brandprev .bb{padding:14px;font-size:13px;color:var(--ink-2);background:var(--surface)}
+.swatches{display:flex;gap:8px}
+.swatches button{width:30px;height:30px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1.5px var(--line);cursor:pointer}
+.swatches button[aria-pressed=true]{box-shadow:0 0 0 2.5px var(--ink)}
+.logo-drop{border:2px dashed var(--line);border-radius:12px;padding:16px;text-align:center;color:var(--ink-3);cursor:pointer;font-size:13px}
+.minibar{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:6px}
+.minibar div{flex:1;background:var(--brand);border-radius:5px 5px 0 0;position:relative;min-height:2px}
+.minibar div span{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--ink-3);white-space:nowrap}
+.minibar div.kz{background:var(--boost)}
+/* Team member cards (leader) */
+.mcards{display:grid;gap:10px}
+.mcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.mcard.open{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.mrow{display:grid;grid-template-columns:minmax(220px,1.3fr) 2.6fr auto;gap:16px;align-items:center;padding:14px 16px;cursor:pointer;width:100%;border:0;background:transparent;text-align:left}
+.mrow:hover{background:var(--surface-2)}
+.mwho{display:flex;gap:12px;align-items:center;min-width:0}
+.mwho .av{width:42px;height:42px;font-size:14px}
+.mwho b{display:block;font-size:15px}
+.mwho small{display:block;color:var(--ink-3);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.kpi{background:var(--surface-2);border-radius:10px;padding:7px 9px;min-width:0}
+.kpi span{display:block;font-size:10.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.kpi b{font-size:17px;letter-spacing:-.01em}
+.kpi.kz b{color:var(--boost)}
+.mright{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.chev{font-size:13px;color:var(--ink-3);font-weight:700}
+.mexp{border-top:1px solid var(--line);padding:6px 6px 10px;background:var(--bg)}
+.mexp .mxh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 10px 6px}
+.mexp .mxh h4{margin:0;font-size:14px}
+.pendrow{display:flex;gap:12px;align-items:center;padding:12px 16px;flex-wrap:wrap}
+.pendrow .note{color:var(--ink-3);font-size:12.5px}
+.summ{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+#stage.mobile .summ{grid-template-columns:1fr 1fr}
+#stage.mobile .mrow{grid-template-columns:1fr;gap:10px}
+#stage.mobile .kpis{grid-template-columns:repeat(3,1fr)}
+#stage.mobile .mright{flex-direction:row;align-items:center;justify-content:space-between}
+@media (max-width:1100px){ .mrow{grid-template-columns:1fr} .mright{flex-direction:row;justify-content:space-between;align-items:center} }
 @media (max-width:480px){ #stage.mobile .phone{width:100%;height:100%;border:0;border-radius:0;box-shadow:none} }
 </style>
 </head>
@@ -261,60 +346,95 @@ const initials=n=>n.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
 const COLORS=['#5b6bd6','#0e9f8a','#d9622b','#7b5cd6','#2b8ac2','#c2364a','#3c8a3f','#a8641f'];
 const colorFor=s=>COLORS[[...s].reduce((a,c)=>a+c.charCodeAt(0),0)%COLORS.length];
 const av=(n,cls='')=>`<div class="av ${cls}" style="background:${colorFor(n)}">${initials(n)}</div>`;
+const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
 const funnelBase=()=>{ try{ return new URL('partner-iul-funnel.html',location.href).href; }catch(e){ return 'partner-iul-funnel.html'; } };
 
 // ---------------- Seed data (all fictional) ----------------
 function seed(){
   const agents=[
-    {id:'A1',iliaId:'ILIA-AG-1042',name:'Dana Whitfield',email:'dana.whitfield@example.com',phone:'(555) 010-1042',state:'TX',groups:['G1','G2'],bio:'IUL + Kai-Zen specialist, 12 yrs'},
-    {id:'A2',iliaId:'ILIA-AG-2087',name:'Marcus Lee',email:'marcus.lee@example.com',phone:'(555) 010-2087',state:'FL',groups:['G1'],bio:'Retirement income planning, 8 yrs'},
-    {id:'A3',iliaId:'ILIA-AG-3311',name:'Priya Shah',email:'priya.shah@example.com',phone:'(555) 010-3311',state:'CA',groups:['G2'],bio:'Business owners + executives, 10 yrs'}];
+    {id:'A1',iliaId:'ILIA-AG-1042',name:'Dana Whitfield',email:'dana.whitfield@example.com',phone:'(555) 010-1042',state:'TX',groups:['G1','G2'],bio:'IUL + Kai-Zen specialist, 12 yrs',status:'active'},
+    {id:'A2',iliaId:'ILIA-AG-2087',name:'Marcus Lee',email:'marcus.lee@example.com',phone:'(555) 010-2087',state:'FL',groups:['G1'],bio:'Retirement income planning, 8 yrs',status:'active'},
+    {id:'A3',iliaId:'ILIA-AG-3311',name:'Priya Shah',email:'priya.shah@example.com',phone:'(555) 010-3311',state:'CA',groups:['G2'],bio:'Business owners + executives, 10 yrs',status:'active'}];
   const groups=[
-    {id:'G1',name:'Summit Ridge Partners',type:'Financial advisory firm',status:'active',contact:'Lena Ortiz',since:'Aug 2026'},
-    {id:'G2',name:'Harborview Collective',type:'Benefits association',status:'active',contact:'Victor Hale',since:'Sep 2026'},
-    {id:'G3',name:'Northline Advisors Group',type:'Independent advisors',status:'requested',contact:'Grace Kim',since:'—'}];
+    {id:'G1',name:'Summit Ridge Partners',type:'Financial advisory firm',status:'active',contact:'Lena Ortiz',since:'Aug 2026',color:'#1f5fd1',cobrand:true,web:'summitridge.example.com'},
+    {id:'G2',name:'Harborview Collective',type:'Benefits association',status:'active',contact:'Victor Hale',since:'Sep 2026',color:'#0e9f8a',cobrand:false,web:'harborview.example.com'},
+    {id:'G3',name:'Northline Advisors Group',type:'Independent advisors',status:'requested',contact:'Grace Kim',since:'—',color:'#7b5cd6',cobrand:false,web:''}];
   const users=[
-    {id:'L1',name:'Lena Ortiz',email:'lena.ortiz@example.com',group:'G1',role:'leader',status:'active',agent:'A1'},
-    {id:'M1',name:'Chris Patel',email:'chris.patel@example.com',group:'G1',role:'member',status:'active',agent:'A1'},
-    {id:'M2',name:'Tasha Green',email:'tasha.green@example.com',group:'G1',role:'member',status:'active',agent:'A2'},
-    {id:'M3',name:'Owen Brooks',email:'owen.brooks@example.com',group:'G1',role:'member',status:'active',agent:'A1'},
-    {id:'M4',name:'Sam Rivera',email:'sam.rivera@example.com',group:'G1',role:'member',status:'invited',agent:null},
-    {id:'M7',name:'Maya Collins',email:'maya.collins@example.com',group:'G1',role:'member',status:'pending',agent:null,invitedBy:'L1'},
-    {id:'L2',name:'Victor Hale',email:'victor.hale@example.com',group:'G2',role:'leader',status:'active',agent:'A3'},
-    {id:'M5',name:'Nina Ford',email:'nina.ford@example.com',group:'G2',role:'member',status:'active',agent:'A3'},
-    {id:'M6',name:'Ray Simmons',email:'ray.simmons@example.com',group:'G2',role:'member',status:'active',agent:'A1'}];
+    {id:'L1',name:'Lena Ortiz',email:'lena.ortiz@example.com',phone:'(555) 014-1001',group:'G1',role:'leader',status:'active',agent:'A1',last:'Today'},
+    {id:'M1',name:'Chris Patel',email:'chris.patel@example.com',phone:'(555) 014-1002',group:'G1',role:'member',status:'active',agent:'A1',last:'Today'},
+    {id:'M2',name:'Tasha Green',email:'tasha.green@example.com',phone:'(555) 014-1003',group:'G1',role:'member',status:'active',agent:'A2',last:'Yesterday'},
+    {id:'M3',name:'Owen Brooks',email:'owen.brooks@example.com',phone:'(555) 014-1004',group:'G1',role:'member',status:'active',agent:'A1',last:'5 days ago'},
+    {id:'M4',name:'Sam Rivera',email:'sam.rivera@example.com',phone:'',group:'G1',role:'member',status:'invited',agent:null,last:'—'},
+    {id:'M7',name:'Maya Collins',email:'maya.collins@example.com',phone:'',group:'G1',role:'member',status:'pending',agent:null,invitedBy:'L1',last:'—'},
+    {id:'L2',name:'Victor Hale',email:'victor.hale@example.com',phone:'(555) 014-2001',group:'G2',role:'leader',status:'active',agent:'A3',last:'Today'},
+    {id:'M5',name:'Nina Ford',email:'nina.ford@example.com',phone:'(555) 014-2002',group:'G2',role:'member',status:'active',agent:'A3',last:'2 days ago'},
+    {id:'M6',name:'Ray Simmons',email:'ray.simmons@example.com',phone:'(555) 014-2003',group:'G2',role:'member',status:'active',agent:'A1',last:'Today'}];
   const assets=[
-    {id:'AS-0047',group:'G1',owner:'L1',type:'qr',name:'Retirement check QR flyer',headline:'Tax-free retirement in 60 seconds',msg:'Scan to see how much tax-free income you could build.',shared:true,created:'Sep 12'},
-    {id:'AS-0052',group:'G1',owner:'L1',type:'social',name:'"See your numbers" social post',headline:'What would your retirement look like without market losses?',msg:'Answer 5 quick questions and see your own numbers.',shared:true,created:'Sep 18'},
-    {id:'AS-0061',group:'G1',owner:'M1',type:'text',name:'Quick text to clients',headline:'Quick question about retirement',msg:'Hi! Have 60 seconds? This shows what tax-free retirement income could look like for you:',shared:false,created:'Sep 22'},
-    {id:'AS-0063',group:'G1',owner:'M2',type:'email',name:'Tax-free income email',headline:'Your tax-free income estimate',msg:'I thought you might like to see this quick estimate tool.',shared:false,created:'Sep 25'},
-    {id:'AS-0070',group:'G2',owner:'L2',type:'event',name:'Benefits fair table card',headline:'Protect your family. Grow without losses.',msg:'Scan at our table to see your plan.',shared:true,created:'Sep 30'}];
+    {id:'AS-0047',group:'G1',owner:'L1',type:'qr',name:'Retirement check QR flyer',headline:'Tax-free retirement in 60 seconds',msg:'Scan to see how much tax-free income you could build.',shared:true,status:'active',created:'Sep 12'},
+    {id:'AS-0052',group:'G1',owner:'L1',type:'social',name:'"See your numbers" social post',headline:'What would your retirement look like without market losses?',msg:'Answer 5 quick questions and see your own numbers.',shared:true,status:'active',created:'Sep 18'},
+    {id:'AS-0061',group:'G1',owner:'M1',type:'text',name:'Quick text to clients',headline:'Quick question about retirement',msg:'Hi! Have 60 seconds? This shows what tax-free retirement income could look like for you:',shared:false,status:'active',created:'Sep 22'},
+    {id:'AS-0063',group:'G1',owner:'M2',type:'email',name:'Tax-free income email',headline:'Your tax-free income estimate',msg:'I thought you might like to see this quick estimate tool.',shared:false,status:'active',created:'Sep 25'},
+    {id:'AS-0070',group:'G2',owner:'L2',type:'event',name:'Benefits fair table card',headline:'Protect your family. Grow without losses.',msg:'Scan at our table to see your plan.',shared:true,status:'active',created:'Sep 30'}];
   const links=[
-    {id:'LK-101',user:'L1',asset:'AS-0047',clicks:64},{id:'LK-102',user:'M1',asset:'AS-0047',clicks:41},{id:'LK-103',user:'M1',asset:'AS-0061',clicks:38},
-    {id:'LK-104',user:'M2',asset:'AS-0052',clicks:52},{id:'LK-105',user:'M2',asset:'AS-0063',clicks:27},{id:'LK-106',user:'M3',asset:'AS-0047',clicks:19},
-    {id:'LK-107',user:'L2',asset:'AS-0070',clicks:44},{id:'LK-108',user:'M5',asset:'AS-0070',clicks:31},{id:'LK-109',user:'M6',asset:'AS-0070',clicks:22}];
+    {id:'LK-101',user:'L1',asset:'AS-0047',clicks:64,status:'active'},{id:'LK-102',user:'M1',asset:'AS-0047',clicks:41,status:'active'},{id:'LK-103',user:'M1',asset:'AS-0061',clicks:38,status:'active'},
+    {id:'LK-104',user:'M2',asset:'AS-0052',clicks:52,status:'active'},{id:'LK-105',user:'M2',asset:'AS-0063',clicks:27,status:'active'},{id:'LK-106',user:'M3',asset:'AS-0047',clicks:19,status:'active'},
+    {id:'LK-107',user:'L2',asset:'AS-0070',clicks:44,status:'active'},{id:'LK-108',user:'M5',asset:'AS-0070',clicks:31,status:'active'},{id:'LK-109',user:'M6',asset:'AS-0070',clicks:22,status:'active'}];
   const FN=['Alex','Brooke','Carlos','Denise','Evan','Faith','Gabe','Hana','Isaac','Jade','Kyle','Lara','Miles','Nora','Omar','Paige','Quinn','Rosa','Seth','Tia','Uma','Vince','Wes','Yara'];
   const LN=['Adams','Bell','Cruz','Diaz','Evans','Flynn','Grant','Hughes','Ito','James','Kerr','Lopez','Moss','Nash','Olsen','Pope','Ruiz','Stone','Tran','Vega','Wade','Young','Zane','Hart'];
   const STG=['results','results','learn','chose','ilia','ilia','chose','learn'];
+  const GOALS=['Tax-free retirement income','Protect my family','Grow without market losses','Access cash when needed'];
+  const AMT=[10000,25000,50000,25000,100000,50000], HH=['$100–250k','$250–500k','$100–250k','$500k+','Under $100k','$250–500k'];
   const leads=[]; let i=0;
-  const plan={LK101:7,LK102:5,LK103:4,LK104:6,LK105:3,LK106:2,LK107:5,LK108:3,LK109:2};
-  Object.entries(plan).forEach(([lk,n])=>{ const L=links.find(x=>x.id===lk.replace('LK','LK-')); const u=users.find(x=>x.id===L.user);
-    for(let k=0;k<n;k++,i++){ const st=STG[(i*3+k)%STG.length]; const kz=(i%3)!==0; leads.push({id:'P-'+(5000+i),name:FN[i%FN.length]+' '+LN[(i*7)%LN.length],link:L.id,user:u.id,asset:L.asset,agent:u.agent,group:u.group,
-      stage:st,product:(st==='chose'||st==='ilia')?(kz?'kz':'iul'):null,qual:kz,flag:(i%9===4)?'over':(i%7===3)?'stretch':null,contacted:i%5===1,when:(1+(i%12))+'d ago'}); } });
+  const plan={'LK-101':7,'LK-102':5,'LK-103':4,'LK-104':6,'LK-105':3,'LK-106':2,'LK-107':5,'LK-108':3,'LK-109':2};
+  Object.entries(plan).forEach(([lk,n])=>{ const L=links.find(x=>x.id===lk); const u=users.find(x=>x.id===L.user);
+    for(let k=0;k<n;k++,i++){ const st=STG[(i*3+k)%STG.length]; const hh=HH[i%HH.length]; const kz=hh!=='Under $100k'&&(i%3)!==0;
+      leads.push({id:'P-'+(5000+i),name:FN[i%FN.length]+' '+LN[(i*7)%LN.length],link:L.id,user:u.id,asset:L.asset,agent:u.agent,group:u.group,
+      stage:st,product:(st==='chose'||st==='ilia')?(kz?'kz':'iul'):null,qual:kz,flag:hh==='Under $100k'&&AMT[i%AMT.length]>20000?'over':(i%7===3)?'stretch':null,contacted:i%5===1,when:(1+(i%12))+'d ago',days:1+(i%12),
+      ans:{age:32+(i*5)%30,goal:GOALS[i%4],amount:AMT[i%AMT.length],hh,health:['Excellent','Good','Good','Average'][i%4]},learned:st==='learn'||i%2?['Safety','Kai-Zen boost']:[]}); } });
   const approvals=[
     {id:'AP-1',kind:'member',user:'M7',group:'G1',by:'L1',when:'2h ago'},
     {id:'AP-2',kind:'group',group:'G3',by:'Grace Kim',email:'grace.kim@example.com',note:'12 advisors, mostly pre-retiree clients. Would like Dana Whitfield as our agent.',when:'1d ago'}];
   const ilia=[{iliaId:'ILIA-AG-4120',name:'Jordan Hale',email:'jordan.hale@example.com',state:'AZ'},{iliaId:'ILIA-AG-5203',name:'Erin Walsh',email:'erin.walsh@example.com',state:'GA'}];
-  return {agents,groups,users,assets,links,leads,approvals,ilia,seq:200};
+  const notifs=[
+    {to:'L1',ic:'📥',t:'New lead from Chris Patel',d:'Brooke Bell chose 🚀 Kai-Zen from the QR flyer.',when:'1h ago',read:false},
+    {to:'L1',ic:'✅',t:'Maya Collins is awaiting NIW approval',d:'You invited Maya. NIW usually approves within a day.',when:'2h ago',read:false},
+    {to:'L1',ic:'📊',t:'Weekly team summary',d:'241 visits, 27 leads, 13 plans chosen this month.',when:'Mon',read:true},
+    {to:'M4',ic:'👋',t:'Welcome to Partner Hub',d:'Your invite from Lena Ortiz was approved by NIW.',when:'Today',read:false},
+    {to:'M4',ic:'🎨',t:'New team asset',d:'Lena shared "See your numbers" social post with the team.',when:'Yesterday',read:false}];
+  const activity=[
+    {who:'Avery Morgan',what:'Approved group Harborview Collective',when:'Sep 30'},
+    {who:'Avery Morgan',what:'Linked Priya Shah to Harborview Collective',when:'Sep 30'},
+    {who:'Lena Ortiz',what:'Invited Maya Collins to Summit Ridge Partners',when:'Today'},
+    {who:'System',what:'Funnel settings published (v3)',when:'Sep 28'}];
+  const settings={kzMinIncome:100000,kzMinAge:18,kzMaxAge:65,affMax:20,affStretch:15,defYears:5,leadRequired:true,showLearnMore:true,showBoost:true,qGoal:true,qHealth:true,postWall:'none',notifyLeader:true,notifyAgent:true,digest:'weekly'};
+  return {agents,groups,users,assets,links,leads,approvals,ilia,notifs,activity,settings,seq:200};
 }
 let DB=seed();
-const UI={role:'admin',dev:'web',screen:null,param:null,modal:null,toast:null,form:{},memberStep:0};
-const ME={admin:{name:'Avery Morgan',title:'NIW Partner Admin'},leader:'L1',member:'M4'};
+const UI={role:'admin',dev:'web',screen:null,param:null,modal:null,toast:null,form:{},memberStep:0,filter:{},range:30};
+const ME={admin:{name:'Avery Morgan',title:'NIW Partner Admin',email:'avery.morgan@example.com'},leader:'L1',member:'M4'};
 const ROLE_LABEL={admin:'NIW Admin',leader:'Group Leader',member:'Group Member'};
-const NAV={
-  admin:[['dash','📊','Dashboard'],['approvals','✅','Approvals'],['groups','🏢','Groups'],['agents','🧑‍💼','Agents'],['leads','📥','All leads']],
-  leader:[['dash','📊','Dashboard'],['team','👥','Team'],['marketing','🎨','Marketing'],['leads','📥','Leads'],['group','🏢','Group']],
-  member:[['home','🏠','Home'],['links','🔗','My links'],['leads','📥','My leads'],['agent','🧑‍💼','My agent'],['profile','👤','Profile']]};
+// Menus: sections of [key, icon, label]. 'primary' = mobile bottom tabs.
+const MENU={
+ admin:{sections:[
+   ['Overview',[['dash','📊','Dashboard'],['approvals','✅','Approvals']]],
+   ['Partners',[['groups','🏢','Groups'],['users','👥','Users'],['agents','🧑‍💼','Agents']]],
+   ['Performance',[['leads','📥','Leads'],['marketing','🎨','Marketing'],['reports','📈','Reports']]],
+   ['Configuration',[['funnel','🧭','Funnel settings'],['settings','⚙️','Settings'],['activity','🕘','Activity log']]]],
+   primary:['dash','approvals','groups','leads']},
+ leader:{sections:[
+   ['Overview',[['dash','📊','Dashboard'],['notifications','🔔','Notifications']]],
+   ['My team',[['team','👥','Team'],['leads','📥','Leads'],['reports','📈','Reports']]],
+   ['Marketing',[['marketing','🎨','Marketing library'],['links','🔗','My links']]],
+   ['Group',[['gagents','🧑‍💼','Group agents'],['gsettings','🏢','Group settings']]],
+   ['Account',[['profile','👤','Profile'],['help','❓','Help']]]],
+   primary:['dash','team','leads','marketing']},
+ member:{sections:[
+   ['Overview',[['home','🏠','Home'],['notifications','🔔','Notifications']]],
+   ['Share',[['links','🔗','My links'],['library','🎨','Marketing library']]],
+   ['Results',[['leads','📥','My leads']]],
+   ['Account',[['agent','🧑‍💼','My agent'],['profile','👤','Profile'],['help','❓','Help']]]],
+   primary:['home','links','leads','agent']}};
+const allNav=r=>MENU[r].sections.flatMap(s=>s[1]);
 
 // ---------------- Helpers ----------------
 const U=id=>DB.users.find(u=>u.id===id);
@@ -322,7 +442,10 @@ const G=id=>DB.groups.find(g=>g.id===id);
 const A=id=>DB.agents.find(a=>a.id===id);
 const AS=id=>DB.assets.find(a=>a.id===id);
 const me=()=>UI.role==='admin'?null:U(ME[UI.role]);
+const myName=()=>UI.role==='admin'?ME.admin.name:me().name;
 const nid=p=>p+'-'+(++DB.seq);
+const log=what=>DB.activity.unshift({who:myName(),what,when:'just now'});
+const notify=(to,ic,t,d)=>DB.notifs.unshift({to,ic,t,d,when:'just now',read:false});
 const TYPES={qr:['🔳','QR flyer'],social:['📱','Social post'],text:['💬','Text message'],email:['✉️','Email'],event:['🎪','Event card'],link:['🔗','Plain link']};
 const STAGE={results:['Saw results','p-info'],learn:['Learning more','p-info'],chose:['Chose plan','p-ok'],ilia:['Sent to ILIA','p-ok']};
 function linkUrl(L){ const u=U(L.user), ag=A(u.agent);
@@ -334,7 +457,7 @@ function stats(filter){
   const results=leads.length, boost=leads.filter(l=>l.qual).length;
   const chose=leads.filter(l=>l.stage==='chose'||l.stage==='ilia'), kz=chose.filter(l=>l.product==='kz').length, iul=chose.length-kz;
   const ilia=leads.filter(l=>l.stage==='ilia').length;
-  return {visits,started,results,boost,chose:chose.length,kz,iul,ilia,contacted:leads.filter(l=>l.contacted).length,leads:leads.length};
+  return {visits,started,results,boost,chose:chose.length,kz,iul,ilia,contacted:leads.filter(l=>l.contacted).length,leads:leads.length,flags:leads.filter(l=>l.flag==='over').length};
 }
 function funnel(s){
   const mx=Math.max(s.visits,1), w=v=>Math.max(v/mx*100,v?2:0);
@@ -343,7 +466,7 @@ function funnel(s){
     ${r('Link visits',s.visits)}${r('Started questions',s.started)}${r('Leads (saw results)',s.results)}${r('Saw Kai-Zen boost',s.boost)}
     ${r('Chose a plan',s.chose,`<div style="width:${w(s.iul)}%"></div><div class="kz" style="width:${w(s.kz)}%"></div>`)}
     ${r('Sent to ILIA',s.ilia)}</div>
-    <p class="sub" style="margin:10px 0 0"><span class="pill p-info">IUL ${s.iul}</span> <span class="pill p-kz">Kai-Zen ${s.kz}</span> · ${s.contacted} asked to talk to their agent · After-ILIA status: <span class="pill p-mute">open decision</span></p>`;
+    <p class="sub" style="margin:10px 0 0"><span class="pill p-info">IUL ${s.iul}</span> <span class="pill p-kz">Kai-Zen ${s.kz}</span> · ${s.contacted} asked to talk to their agent · After-ILIA status: <span class="pill p-mute">${DB.settings.postWall==='none'?'not shared (open decision)':DB.settings.postWall==='stage'?'stage only':'full'}</span></p>`;
 }
 function statCards(s){
   return `<div class="grid g4" style="margin-bottom:14px">
@@ -356,79 +479,130 @@ function rows(cols,data,opts){
   opts=opts||{}; const tpl=cols.map(c=>c.w||'1fr').join(' ');
   if(!data.length) return `<div class="empty">${opts.empty||'Nothing here yet.'}</div>`;
   return `<div class="rows"><div class="hd" style="grid-template-columns:${tpl}">${cols.map(c=>`<div>${c.h}</div>`).join('')}</div>
-    ${data.map(d=>`<div class="rw ${opts.click?'click':''}" style="grid-template-columns:${tpl}" ${opts.click?`data-nav="${opts.click(d)}"`:''}>${cols.map(c=>`<div class="cell"><span class="cl">${c.h}</span>${c.v(d)}</div>`).join('')}</div>`).join('')}</div>`;
+    ${data.map(d=>`<div class="rw ${opts.click?'click':''}" style="grid-template-columns:${tpl}" ${opts.click?opts.click(d):''}>${cols.map(c=>`<div class="cell"><span class="cl">${c.h}</span>${c.v(d)}</div>`).join('')}</div>`).join('')}</div>`;
 }
-function leadRows(leads,showGroup){
+const choicePill=l=>l.product?`<span class="pill ${l.product==='kz'?'p-kz':'p-info'}">${l.product==='kz'?'🚀 Kai-Zen':'IUL'}</span>`:'<span class="pill p-mute">—</span>';
+const flagPills=l=>[l.flag==='over'?'<span class="pill p-bad">⚠ Affordability</span>':l.flag==='stretch'?'<span class="pill p-warn">Stretch</span>':'',l.contacted?'<span class="pill p-info">📞 Wants call</span>':''].join(' ')||'<span class="pill p-mute">—</span>';
+function leadRows(leads,o){
+  o=o||{};
   return rows([
     {h:'Prospect',w:'1.4fr',v:l=>`${esc(l.name)}<small>${l.id} · ${l.when}</small>`},
-    ...(showGroup?[{h:'Group',v:l=>`<span class="pill p-grp">${esc(G(l.group).name.split(' ')[0])}</span>`}]:[]),
-    {h:'Source',w:'1.3fr',v:l=>`${esc(U(l.user).name)}<small><span class="idchip">${l.asset}</span> ${TYPES[AS(l.asset).type][1]}</small>`},
+    ...(o.group?[{h:'Group',v:l=>`<span class="pill p-grp">${esc(G(l.group).name.split(' ')[0])}</span>`}]:[]),
+    ...(o.source===false?[{h:'Asset',v:l=>`<span class="idchip">${l.asset}</span><small>${TYPES[AS(l.asset).type][1]}</small>`}]:[{h:'Source',w:'1.3fr',v:l=>`${esc(U(l.user).name)}<small><span class="idchip">${l.asset}</span> ${TYPES[AS(l.asset).type][1]}</small>`}]),
     {h:'Agent',v:l=>esc(A(l.agent)?A(l.agent).name:'—')},
     {h:'Stage',v:l=>`<span class="pill ${STAGE[l.stage][1]}">${STAGE[l.stage][0]}</span>`},
-    {h:'Choice',v:l=>l.product?`<span class="pill ${l.product==='kz'?'p-kz':'p-info'}">${l.product==='kz'?'🚀 Kai-Zen':'IUL'}</span>`:'<span class="pill p-mute">—</span>'},
-    {h:'Flags',v:l=>[l.flag==='over'?'<span class="pill p-bad">⚠ Affordability</span>':l.flag==='stretch'?'<span class="pill p-warn">Stretch</span>':'',l.contacted?'<span class="pill p-info">📞 Wants call</span>':''].join(' ')||'<span class="pill p-mute">—</span>'}],
-    leads,{empty:'No leads yet. Share a link to get started.'});
+    {h:'Choice',v:choicePill},
+    {h:'Flags',v:flagPills}],
+    leads,{empty:o.empty||'No leads match.',click:l=>`data-open="lead:${l.id}"`});
 }
-function qrBox(url,size){ return `<div class="qr" data-qr="${esc(url)}" data-size="${size||120}"></div>`; }
+function leadFilters(list,o){
+  const F=UI.filter; o=o||{};
+  let out=list.filter(l=>(!F.q||l.name.toLowerCase().includes(F.q.toLowerCase())||l.id.toLowerCase().includes(F.q.toLowerCase()))
+    &&(!F.stage||l.stage===F.stage)&&(!F.choice||(F.choice==='none'?!l.product:l.product===F.choice))&&(!F.member||l.user===F.member)&&(!F.group||l.group===F.group)&&(!F.flag||l.flag==='over'||(F.flag==='call'&&l.contacted)));
+  if(F.flag==='call') out=out.filter(l=>l.contacted); else if(F.flag==='over') out=out.filter(l=>l.flag==='over');
+  const bar=`<div class="tbar"><input type="search" placeholder="Search name or ID…" data-filt="q" value="${esc(F.q||'')}" aria-label="Search leads">
+    <select data-filt="stage" aria-label="Stage"><option value="">All stages</option>${Object.entries(STAGE).map(([k,v])=>`<option value="${k}" ${F.stage===k?'selected':''}>${v[0]}</option>`).join('')}</select>
+    <select data-filt="choice" aria-label="Choice"><option value="">Any choice</option><option value="iul" ${F.choice==='iul'?'selected':''}>IUL</option><option value="kz" ${F.choice==='kz'?'selected':''}>Kai-Zen</option><option value="none" ${F.choice==='none'?'selected':''}>Not chosen yet</option></select>
+    ${o.members?`<select data-filt="member" aria-label="Member"><option value="">All members</option>${o.members.map(u=>`<option value="${u.id}" ${F.member===u.id?'selected':''}>${esc(u.name)}</option>`).join('')}</select>`:''}
+    ${o.groups?`<select data-filt="group" aria-label="Group"><option value="">All groups</option>${DB.groups.filter(g=>g.status==='active').map(g=>`<option value="${g.id}" ${F.group===g.id?'selected':''}>${esc(g.name)}</option>`).join('')}</select>`:''}
+    <select data-filt="flag" aria-label="Flags"><option value="">Any flags</option><option value="over" ${F.flag==='over'?'selected':''}>⚠ Affordability</option><option value="call" ${F.flag==='call'?'selected':''}>📞 Wants call</option></select>
+    <span class="sp"></span><span class="sub" style="margin:0">${out.length} of ${list.length}</span>
+    ${o.export?`<button class="btn sec sm" data-export="leads">⬇ Export CSV</button>`:''}</div>`;
+  UI._exportLeads=out;
+  return {bar,out};
+}
+function qrBox(url,size,off){ return `<div class="qr ${off?'off':''}" data-qr="${esc(url)}" data-size="${size||120}"></div>`; }
 function paintQR(){
   document.querySelectorAll('[data-qr]').forEach(el=>{ if(el.dataset.done) return; el.dataset.done=1; const sz=+el.dataset.size;
     if(window.QRCode){ try{ new QRCode(el,{text:el.dataset.qr,width:sz,height:sz,correctLevel:QRCode.CorrectLevel.L}); return; }catch(e){} }
     el.innerHTML=`<div class="qrfail" style="width:${sz}px;height:${sz}px">QR code<br>(offline)</div>`; });
 }
 function field(id,label,demo,opts){
-  opts=opts||{}; const v=UI.form[id]||'';
-  if(opts.type==='select') return `<div class="f"><label for="f_${id}">${label}</label><select id="f_${id}" data-f="${id}" data-demo="${esc(demo)}"><option value="">Select…</option>${opts.options.map(o=>`<option ${v===o?'selected':''}>${esc(o)}</option>`).join('')}</select>${opts.hint?`<div class="hint">${opts.hint}</div>`:''}</div>`;
-  if(opts.type==='textarea') return `<div class="f"><label for="f_${id}">${label}</label><textarea id="f_${id}" data-f="${id}" data-demo="${esc(demo)}">${esc(v)}</textarea>${opts.hint?`<div class="hint">${opts.hint}</div>`:''}</div>`;
-  return `<div class="f"><label for="f_${id}">${label}</label><input id="f_${id}" type="${opts.type||'text'}" data-f="${id}" data-demo="${esc(demo)}" value="${esc(v)}">${opts.hint?`<div class="hint">${opts.hint}</div>`:''}</div>`;
+  opts=opts||{}; const v=UI.form[id]!==undefined?UI.form[id]:(opts.value||'');
+  if(opts.value!==undefined&&UI.form[id]===undefined) UI.form[id]=opts.value;
+  const h=opts.hint?`<div class="hint">${opts.hint}</div>`:'';
+  if(opts.type==='select') return `<div class="f"><label for="f_${id}">${label}</label><select id="f_${id}" data-f="${id}" data-demo="${esc(demo)}"><option value="">Select…</option>${opts.options.map(o=>`<option ${v===o?'selected':''}>${esc(o)}</option>`).join('')}</select>${h}</div>`;
+  if(opts.type==='textarea') return `<div class="f"><label for="f_${id}">${label}</label><textarea id="f_${id}" data-f="${id}" data-demo="${esc(demo)}">${esc(v)}</textarea>${h}</div>`;
+  return `<div class="f"><label for="f_${id}">${label}</label><input id="f_${id}" type="${opts.type||'text'}" data-f="${id}" data-demo="${esc(demo)}" value="${esc(v)}">${h}</div>`;
 }
+const sw=(key,on,label,sub)=>`<div class="tog"><div><b>${label}</b>${sub?`<small>${sub}</small>`:''}</div><button class="sw" role="switch" aria-checked="${!!on}" data-sw="${key}" aria-label="${esc(label)}"></button></div>`;
 const tip='<p class="demo-tip">Demo tip: click any empty field to fill in sample data.</p>';
-function toast(msg){ UI.toast=msg; render(); clearTimeout(toast.t); toast.t=setTimeout(()=>{UI.toast=null; render();},2600); }
-function go(screen,param){ UI.screen=screen; UI.param=param||null; UI.modal=null; UI.form={}; render(); const m=$('.main'); if(m) m.scrollTop=0; }
-function openModal(name,param){ UI.modal={name,param}; UI.form={}; render(); }
+function toast(msg){ UI.toast=msg; keep(); clearTimeout(toast.t); toast.t=setTimeout(()=>{UI.toast=null; keep();},2800); }
+function go(screen,param){ UI.screen=screen; UI.param=param||null; UI.modal=null; UI.form={}; UI.filter={}; render(); const m=$('.main'); if(m) m.scrollTop=0; }
+function openModal(name){ UI.modal={name}; UI.form={}; keep(); }
+function head(t,s,acts){ return `<div class="phead"><div><h1>${esc(t)}</h1>${s?`<p>${s}</p>`:''}</div>${acts?`<div class="acts">${acts}</div>`:''}</div>`; }
+function statusPill(u){ return {active:'<span class="pill p-ok">Active</span>',invited:'<span class="pill p-info">Invited</span>',pending:'<span class="pill p-warn">Awaiting NIW approval</span>',deactivated:'<span class="pill p-mute">Deactivated</span>'}[u.status]; }
+function downloadCSV(name,rowsArr){
+  const csv=rowsArr.map(r=>r.map(c=>`"${String(c==null?'':c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
+  toast('Exported '+(rowsArr.length-1)+' rows to '+name+'.');
+}
+const RANGE={7:.28,30:1,90:2.7};
+function rangeChips(){ return `<div class="chipsel">${[7,30,90].map(d=>`<button aria-pressed="${UI.range===d}" data-range="${d}">Last ${d} days</button>`).join('')}</div>`; }
+const sc=v=>Math.round(v*RANGE[UI.range]);
 
 // ---------------- Screens: ADMIN ----------------
 const ADMIN={
  dash(){ const s=stats({});
   const byGroup=DB.groups.filter(g=>g.status==='active').map(g=>({g,s:stats({link:l=>U(l.user).group===g.id,lead:l=>l.group===g.id}),m:DB.users.filter(u=>u.group===g.id&&u.status==='active').length}));
   const pend=DB.approvals.length;
-  return `${head('Dashboard','All partner groups · last 30 days')}
-   ${pend?`<div class="banner warn">⏳ <div><b>${pend} approval${pend>1?'s':''} waiting</b><br><span style="color:var(--ink-2)">Group access and member invitations need your OK.</span></div><button class="btn pri sm" data-nav="approvals">Review</button></div>`:''}
+  return `${head('Dashboard','All partner groups · last 30 days',`<button class="btn sec" data-nav="reports">📈 Reports</button><button class="btn pri" data-open="addGroup">＋ Add group</button>`)}
+   ${pend?`<div class="banner warn">⏳ <div><b>${pend} approval${pend>1?'s':''} waiting</b><br><span style="color:var(--ink-2)">Group access, member invitations and agent requests need your OK.</span></div><button class="btn pri sm" data-nav="approvals">Review</button></div>`:''}
+   ${s.flags?`<div class="banner info">⚠ <div><b>${s.flags} leads flagged for affordability</b><br><span style="color:var(--ink-2)">Yearly amount above the guideline for their income. Agents review these first.</span></div><button class="btn sec sm" data-nav="leads" data-preset="flag:over">View</button></div>`:''}
    ${statCards(s)}
    <div class="grid g21"><div class="card"><h3>Funnel across all groups</h3><p class="sub">From a member's link to ILIA account creation</p>${funnel(s)}</div>
    <div class="card"><h3>Partner network</h3><p class="sub">Who's live</p><div class="kv">
      <span>Active groups</span><b>${DB.groups.filter(g=>g.status==='active').length}</b>
-     <span>Group users</span><b>${DB.users.filter(u=>u.status==='active').length} active · ${DB.users.filter(u=>u.status!=='active').length} pending</b>
-     <span>Group-related agents</span><b>${DB.agents.length}</b>
-     <span>Marketing assets</span><b>${DB.assets.length}</b>
-     <span>Tracked links</span><b>${DB.links.length}</b></div></div></div>
+     <span>Group users</span><b>${DB.users.filter(u=>u.status==='active').length} active · ${DB.users.filter(u=>['invited','pending'].includes(u.status)).length} pending</b>
+     <span>Group-related agents</span><b>${DB.agents.filter(a=>a.status==='active').length}</b>
+     <span>Marketing assets</span><b>${DB.assets.filter(a=>a.status==='active').length}</b>
+     <span>Tracked links</span><b>${DB.links.length}</b></div>
+     <div class="btnrow"><button class="btn sec sm" data-nav="funnel">🧭 Funnel settings</button><button class="btn sec sm" data-nav="activity">🕘 Activity</button></div></div></div>
    <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0"><h3>Groups</h3></div>
-    ${rows([{h:'Group',w:'1.6fr',v:x=>`${esc(x.g.name)}<small>${esc(x.g.type)}</small>`},{h:'Users',v:x=>x.m},{h:'Visits',v:x=>x.s.visits},{h:'Leads',v:x=>x.s.leads},{h:'IUL / Kai-Zen',v:x=>`<span class="pill p-info">${x.s.iul}</span> <span class="pill p-kz">${x.s.kz}</span>`},{h:'Sent to ILIA',v:x=>x.s.ilia}],byGroup,{click:x=>'groups:'+x.g.id})}</div>`;},
+    ${rows([{h:'Group',w:'1.6fr',v:x=>`${esc(x.g.name)}<small>${esc(x.g.type)}</small>`},{h:'Users',v:x=>x.m},{h:'Visits',v:x=>x.s.visits},{h:'Leads',v:x=>x.s.leads},{h:'IUL / Kai-Zen',v:x=>`<span class="pill p-info">${x.s.iul}</span> <span class="pill p-kz">${x.s.kz}</span>`},{h:'Sent to ILIA',v:x=>x.s.ilia}],byGroup,{click:x=>`data-nav="groups:${x.g.id}"`})}</div>`;},
  approvals(){
-  return `${head('Approvals','Invitations and group access need an NIW admin OK before anyone can share links')}
+  const label=a=>a.kind==='group'?`🏢 <b>New group access</b><small>${esc(G(a.group).name)}</small>`:a.kind==='agentreq'?`🧑‍💼 <b>Agent request</b><small>${esc(a.agentName)} for ${esc(G(a.group).name)}</small>`:`👤 <b>Member invitation</b><small>${esc(U(a.user).name)} · ${esc(U(a.user).email)}</small>`;
+  return `${head('Approvals','Invitations, group access and agent requests need an NIW admin OK')}
    <div class="card tablecard">${rows([
-     {h:'Request',w:'1.6fr',v:a=>a.kind==='group'?`🏢 <b>New group access</b><small>${esc(G(a.group).name)}</small>`:`👤 <b>Member invitation</b><small>${esc(U(a.user).name)} · ${esc(U(a.user).email)}</small>`},
+     {h:'Request',w:'1.6fr',v:label},
      {h:'Group',v:a=>`<span class="pill p-grp">${esc(G(a.group).name)}</span>`},
      {h:'Requested by',v:a=>a.kind==='group'?esc(a.by):esc(U(a.by).name)+'<small>Group leader</small>'},
      {h:'When',w:'.7fr',v:a=>a.when},
-     {h:'',w:'1.3fr',v:a=>`<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sec sm" data-open="approval:${a.id}">Review</button><button class="btn ok sm" data-approve="${a.id}">Approve</button><button class="btn no sm" data-decline="${a.id}">Decline</button></div>`}],
+     {h:'',w:'1.3fr',v:a=>`<div class="acts-cell"><button class="btn sec sm" data-open="approval:${a.id}">Review</button>${a.kind==='group'?'':`<button class="btn ok sm" data-approve="${a.id}">Approve</button>`}<button class="btn no sm" data-decline="${a.id}">Decline</button></div>`}],
      DB.approvals,{empty:'✓ All caught up. No approvals waiting.'})}</div>`;},
  groups(){
   if(UI.param) return ADMIN.groupDetail(UI.param);
   return `${head('Groups','Outside groups offering IUL / Kai-Zen',`<button class="btn pri" data-open="addGroup">＋ Add group</button>`)}
    <div class="card tablecard">${rows([
      {h:'Group',w:'1.6fr',v:g=>`${esc(g.name)}<small>${esc(g.type)}</small>`},
-     {h:'Status',v:g=>g.status==='active'?'<span class="pill p-ok">Active</span>':g.status==='requested'?'<span class="pill p-warn">Requested access</span>':'<span class="pill p-info">Leader invited</span>'},
+     {h:'Status',v:g=>({active:'<span class="pill p-ok">Active</span>',requested:'<span class="pill p-warn">Requested access</span>',invited:'<span class="pill p-info">Leader invited</span>',paused:'<span class="pill p-mute">Paused</span>',declined:'<span class="pill p-bad">Declined</span>'})[g.status]},
      {h:'Leader',v:g=>{const l=DB.users.find(u=>u.group===g.id&&u.role==='leader'); return l?esc(l.name):'<span class="pill p-mute">none yet</span>';}},
      {h:'Linked agents',w:'1.4fr',v:g=>DB.agents.filter(a=>a.groups.includes(g.id)).map(a=>esc(a.name)).join(', ')||'<span class="pill p-mute">none</span>'},
-     {h:'Users',w:'.6fr',v:g=>DB.users.filter(u=>u.group===g.id).length}],DB.groups,{click:g=>'groups:'+g.id})}</div>`;},
+     {h:'Users',w:'.6fr',v:g=>DB.users.filter(u=>u.group===g.id).length}],DB.groups,{click:g=>`data-nav="groups:${g.id}"`})}</div>`;},
  groupDetail(id){ const g=G(id), s=stats({link:l=>U(l.user).group===id,lead:l=>l.group===id}), us=DB.users.filter(u=>u.group===id), ags=DB.agents.filter(a=>a.groups.includes(id));
   return `<div class="crumbs"><button data-nav="groups">Groups</button> / ${esc(g.name)}</div>
-   ${head(g.name,esc(g.type)+' · '+(g.status==='active'?'Active since '+g.since:'Status: '+g.status),`<button class="btn sec" data-open="linkAgent:${id}">🔗 Link an agent</button>`)}
+   ${head(g.name,esc(g.type)+' · '+(g.status==='active'?'Active since '+g.since:'Status: '+g.status),`<button class="btn sec" data-open="linkAgent:${id}">🔗 Link an agent</button><button class="btn sec" data-open="inviteLeader:${id}">✉️ Invite user</button>${g.status==='active'?`<button class="btn no" data-gstatus="${id}:paused">⏸ Pause group</button>`:g.status==='paused'?`<button class="btn ok" data-gstatus="${id}:active">▶ Resume group</button>`:''}`)}
+   ${g.status==='paused'?'<div class="banner warn">⏸ This group is paused. Its links show a "temporarily unavailable" page and members can\'t create new links.</div>':''}
    ${statCards(s)}
    <div class="grid g2"><div class="card"><h3>Group-related agents</h3><p class="sub">Members of this group choose from these existing ILIA agents</p>
      ${ags.map(a=>`<div class="agcard" style="padding:8px 0;border-bottom:1px solid var(--line)">${av(a.name)}<div style="flex:1"><b>${esc(a.name)}</b><small>${a.iliaId} · ${esc(a.email)}</small><div class="agmeta"><span class="pill p-info">${us.filter(u=>u.agent===a.id).length} members chose</span></div></div><button class="btn no sm" data-unlink="${a.id}:${id}">Unlink</button></div>`).join('')||'<div class="empty">No agents linked yet.</div>'}</div>
    <div class="card"><h3>Users</h3><p class="sub">Leaders and members</p>
-     ${us.map(u=>`<div class="agcard" style="padding:8px 0;border-bottom:1px solid var(--line)">${av(u.name)}<div style="flex:1"><b>${esc(u.name)}</b><small>${u.role==='leader'?'Group leader':'Group member'} · ${esc(u.email)}</small></div>${statusPill(u)}</div>`).join('')||'<div class="empty">No users yet.</div>'}</div></div>`;},
+     ${us.map(u=>`<div class="agcard" style="padding:8px 0;border-bottom:1px solid var(--line)">${av(u.name)}<div style="flex:1"><b>${esc(u.name)}</b><small>${u.role==='leader'?'Group leader':'Group member'} · ${esc(u.email)}</small></div>${statusPill(u)}</div>`).join('')||'<div class="empty">No users yet.</div>'}</div></div>
+   <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0"><h3>Group leads</h3></div>${leadRows(DB.leads.filter(l=>l.group===id))}</div>`;},
+ users(){ const F=UI.filter; const list=DB.users.filter(u=>(!F.q||u.name.toLowerCase().includes(F.q.toLowerCase())||u.email.includes(F.q.toLowerCase()))&&(!F.group||u.group===F.group)&&(!F.ustatus||u.status===F.ustatus)&&(!F.urole||u.role===F.urole));
+  return `${head('Users','Every group leader and member in Partner Hub')}
+   <div class="card tablecard"><div class="tbar"><input type="search" placeholder="Search name or email…" data-filt="q" value="${esc(F.q||'')}">
+     <select data-filt="group"><option value="">All groups</option>${DB.groups.map(g=>`<option value="${g.id}" ${F.group===g.id?'selected':''}>${esc(g.name)}</option>`).join('')}</select>
+     <select data-filt="urole"><option value="">Any role</option><option value="leader" ${F.urole==='leader'?'selected':''}>Leaders</option><option value="member" ${F.urole==='member'?'selected':''}>Members</option></select>
+     <select data-filt="ustatus"><option value="">Any status</option>${['active','invited','pending','deactivated'].map(s=>`<option value="${s}" ${F.ustatus===s?'selected':''}>${s[0].toUpperCase()+s.slice(1)}</option>`).join('')}</select>
+     <span class="sp"></span><span class="sub" style="margin:0">${list.length} users</span></div>
+   ${rows([
+     {h:'User',w:'1.6fr',v:u=>`<div style="display:flex;gap:10px;align-items:center">${av(u.name)}<div>${esc(u.name)}<small>${esc(u.email)}</small></div></div>`},
+     {h:'Group',v:u=>`<span class="pill p-grp">${esc(G(u.group).name.split(' ')[0])}</span><small>${u.role==='leader'?'Leader':'Member'}</small>`},
+     {h:'Status',v:statusPill},
+     {h:'Agent',v:u=>u.agent?esc(A(u.agent).name):'<span class="pill p-mute">—</span>'},
+     {h:'Last active',w:'.8fr',v:u=>u.last},
+     {h:'',w:'1.4fr',v:u=>`<div class="acts-cell">${u.status==='invited'?`<button class="btn sec xs" data-resend="${u.id}">Resend invite</button>`:''}${u.status==='active'?`<button class="btn no xs" data-ustatus="${u.id}:deactivated">Deactivate</button>`:''}${u.status==='deactivated'?`<button class="btn ok xs" data-ustatus="${u.id}:active">Reactivate</button>`:''}${u.role==='member'&&u.status==='active'?`<button class="btn sec xs" data-promote="${u.id}">Make leader</button>`:''}</div>`}],list)}</div>`;},
  agents(){
   return `${head('Group-related agents','Existing ILIA agents who hold relationships with outside groups. The CMS only references them; no new ILIA agent type.',`<button class="btn pri" data-open="addAgent">＋ Add agent</button>`)}
    <div class="card tablecard">${rows([
@@ -436,48 +610,153 @@ const ADMIN={
      {h:'ILIA agent ID',v:a=>`<span class="idchip">${a.iliaId}</span>`},
      {h:'Groups',w:'1.4fr',v:a=>a.groups.map(g=>`<span class="pill p-grp">${esc(G(g).name.split(' ')[0])}</span>`).join(' ')||'<span class="pill p-mute">none</span>'},
      {h:'Members chose',w:'.8fr',v:a=>DB.users.filter(u=>u.agent===a.id).length},
-     {h:'Leads',w:'.6fr',v:a=>DB.leads.filter(l=>l.agent===a.id).length}],DB.agents)}</div>`;},
- leads(){ return `${head('All leads','Every prospect that reached results, across all groups')}<div class="card tablecard">${leadRows(DB.leads,true)}</div>`;}
+     {h:'Leads',w:'.6fr',v:a=>DB.leads.filter(l=>l.agent===a.id).length},
+     {h:'',w:'.9fr',v:a=>`<button class="btn sec xs" data-open="agentDetail:${a.id}">Manage</button>`}],DB.agents)}</div>`;},
+ leads(){ const {bar,out}=leadFilters(DB.leads,{groups:true,export:true});
+  return `${head('All leads','Every prospect that reached results, across all groups. Admins see full prospect answers.')}<div class="card tablecard">${bar}${leadRows(out,{group:true})}</div>`;},
+ marketing(){ const F=UI.filter; const list=DB.assets.filter(a=>(!F.group||a.group===F.group)&&(!F.atype||a.type===F.atype));
+  return `${head('Marketing','All assets groups have created. No compliance review is required for outside groups; admins can pause anything that shouldn\'t be live.')}
+   <div class="card" style="margin-bottom:14px;padding:10px 12px"><div class="tbar" style="border:0;padding:0"><select data-filt="group"><option value="">All groups</option>${DB.groups.filter(g=>g.status!=='requested').map(g=>`<option value="${g.id}" ${F.group===g.id?'selected':''}>${esc(g.name)}</option>`).join('')}</select>
+   <select data-filt="atype"><option value="">All types</option>${Object.entries(TYPES).map(([k,v])=>`<option value="${k}" ${F.atype===k?'selected':''}>${v[1]}</option>`).join('')}</select><span class="sp"></span><span class="sub" style="margin:0">${list.length} assets</span></div></div>
+   <div class="grid g3">${list.map(a=>assetCard(a,'admin')).join('')||'<div class="card empty">No assets.</div>'}</div>`;},
+ reports(){ const by=(arr,key,label)=>arr.map(x=>({x,s:stats(key(x))}));
+  const gs=by(DB.groups.filter(g=>g.status==='active'),g=>({link:l=>U(l.user).group===g.id,lead:l=>l.group===g.id}));
+  const ags=by(DB.agents,a=>({link:l=>U(l.user).agent===a.id,lead:l=>l.agent===a.id}));
+  const ass=by(DB.assets,a=>({link:l=>l.asset===a.id,lead:l=>l.asset===a.id}));
+  const tot=stats({});
+  const tbl=(title,data,name,first)=>`<div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0;display:flex;align-items:center"><h3>${title}</h3><button class="btn sec sm" style="margin-left:auto" data-export="${name}">⬇ CSV</button></div>
+    ${rows([{h:first,w:'1.6fr',v:d=>d.x.name?esc(d.x.name)+(d.x.id&&d.x.id.startsWith('AS')?`<small>${d.x.id} · ${TYPES[d.x.type][1]}</small>`:''):esc(d.x.id)},{h:'Visits',v:d=>sc(d.s.visits)},{h:'Leads',v:d=>sc(d.s.leads)},{h:'Conv.',v:d=>d.s.visits?Math.round(d.s.leads/d.s.visits*100)+'%':'—'},{h:'IUL',v:d=>sc(d.s.iul)},{h:'Kai-Zen',v:d=>sc(d.s.kz)},{h:'To ILIA',v:d=>sc(d.s.ilia)}],data.sort((a,b)=>b.s.leads-a.s.leads))}</div>`;
+  UI._reports={groups:gs,agents:ags,assets:ass};
+  const weeks=[.6,.75,.7,.9,1,1.15].map((m,i)=>({w:'W'+(i+1),v:Math.round(tot.leads/4*m*RANGE[UI.range]),k:Math.round(tot.kz/4*m*RANGE[UI.range])}));const mx=Math.max(...weeks.map(w=>w.v),1);
+  return `${head('Reports','Performance across groups, agents and assets',rangeChips())}
+   <div class="grid g4" style="margin-bottom:14px"><div class="card stat"><span>Visits</span><b>${sc(tot.visits)}</b></div><div class="card stat"><span>Leads</span><b>${sc(tot.leads)}</b></div><div class="card stat"><span>Plans chosen</span><b>${sc(tot.chose)}</b></div><div class="card stat kz"><span>Kai-Zen share</span><b>${tot.chose?Math.round(tot.kz/tot.chose*100):0}%</b></div></div>
+   <div class="card"><h3>Leads by week</h3><p class="sub">Orange = chose Kai-Zen</p><div class="minibar" style="margin-bottom:22px">${weeks.map(w=>`<div style="height:${w.v/mx*100}%"><span>${w.w}</span><div class="kz" style="position:absolute;bottom:0;left:0;right:0;height:${w.v?w.k/w.v*100:0}%;border-radius:0"></div></div>`).join('')}</div></div>
+   ${tbl('By group',gs,'groups','Group')}${tbl('By agent',ags,'agents','Agent')}${tbl('By asset',ass,'assets','Asset')}`;},
+ funnel(){ const S=DB.settings, f=UI.form;
+  const num=(k,label,sub,step,unit)=>`<div class="tog"><div><b>${label}</b><small>${sub}</small></div><div class="numin"><button data-num="${k}:-${step}" aria-label="Less">−</button><output>${unit==='$'?fmt(cur(k)):cur(k)+(unit||'')}</output><button data-num="${k}:${step}" aria-label="More">+</button></div></div>`;
+  return `${head('Funnel settings','Rules for the selling funnel every group\'s links point to. Changes apply to all groups.',`<a class="btn sec" href="partner-iul-funnel.html?prospect=1&agent=Dana+Whitfield" target="_blank" rel="noopener">▶ Preview funnel</a><button class="btn pri" data-savesettings="1" ${dirty()?'':'disabled'}>Publish changes</button>`)}
+   ${dirty()?'<div class="banner warn">You have unpublished changes.</div>':''}
+   <div class="grid g2"><div class="card"><h3>🚀 Kai-Zen boost eligibility</h3><p class="sub">Who sees the boost on their results</p>
+     ${num('kzMinIncome','Minimum household income','Prospects below this see IUL only',10000,'$')}
+     ${num('kzMinAge','Minimum age','',1)}${num('kzMaxAge','Maximum age','',1)}
+     ${sw('showBoost',cur('showBoost'),'Show the boost on results','Turn off to show IUL only everywhere')}</div>
+   <div class="card"><h3>⚠ Affordability flag</h3><p class="sub">Based on the ~20%-of-income financial underwriting guideline</p>
+     ${num('affMax','"Not the best fit" above','% of income (top of band)',1,'%')}
+     ${num('affStretch','"Stretch" above','% of typical income in band',1,'%')}
+     ${num('defYears','Default years paying','Prospect can change on results',1,' yrs')}
+     <p class="sub" style="margin:8px 0 0">To confirm with Allianz / compliance.</p></div>
+   <div class="card"><h3>Questions & steps</h3><p class="sub">Keep it short</p>
+     ${sw('qGoal',cur('qGoal'),'Ask "What matters most?"','Sets what results lead with')}
+     ${sw('qHealth',cur('qHealth'),'Ask health + nicotine','Improves estimate accuracy')}
+     ${sw('leadRequired',cur('leadRequired'),'Require contact details before results','Off = more finishes, fewer leads')}
+     ${sw('showLearnMore',cur('showLearnMore'),'Show "Learn more" content','Deep IUL / Kai-Zen education')}</div>
+   <div class="card"><h3>Version history</h3><p class="sub">Every publish is logged</p><div class="kv"><span>v3 (live)</span><b>Sep 28 · System</b><span>v2</span><b>Sep 15 · Avery Morgan</b><span>v1</span><b>Aug 30 · Avery Morgan</b></div></div></div>`;},
+ settings(){ return `${head('Settings','Partner Hub configuration',`<button class="btn pri" data-savesettings="1" ${dirty()?'':'disabled'}>Save</button>`)}
+   <div class="grid g2"><div class="card"><h3>ILIA handoff</h3><p class="sub">What happens after a prospect crosses the wall</p>
+     <div class="choices">${[['none','Nothing comes back (v1)','Tracking stops at account creation. No ILIA change needed.'],['stage','Stage only','ILIA sends back: account created → enrolling → issued. No personal or policy data.'],['full','Full detail','Enrollment and policy detail visible to groups. Needs privacy review.']].map(([k,t,d])=>`<button class="chc" aria-pressed="${cur('postWall')===k}" data-pw="${k}"><div><b>${t}</b><small>${d}</small></div></button>`).join('')}</div>
+     <p class="sub" style="margin:10px 0 0"><span class="pill p-warn">Open decision</span> in requirements.</p></div>
+   <div class="card"><h3>Notifications</h3><p class="sub">Who hears about new leads</p>
+     ${sw('notifyLeader',cur('notifyLeader'),'Notify group leaders','New leads from their team')}
+     ${sw('notifyAgent',cur('notifyAgent'),'Notify the agent of record','When a prospect chooses a plan or asks for a call')}
+     <div class="f" style="margin-top:12px"><label>Summary email</label><div class="chipsel">${['daily','weekly','off'].map(d=>`<button aria-pressed="${cur('digest')===d}" data-digest="${d}">${d[0].toUpperCase()+d.slice(1)}</button>`).join('')}</div></div></div>
+   <div class="card"><h3>Admin team</h3><p class="sub">People with NIW Admin access</p><div class="agcard" style="padding:6px 0">${av('Avery Morgan')}<div><b>Avery Morgan</b><small>Owner · avery.morgan@example.com</small></div></div><div class="agcard" style="padding:6px 0">${av('Riley Chen')}<div><b>Riley Chen</b><small>Admin · riley.chen@example.com</small></div></div><div class="btnrow"><button class="btn sec sm" data-open="inviteAdmin">＋ Invite admin</button></div></div>
+   <div class="card"><h3>Data & privacy</h3><p class="sub">What group users can see</p><div class="kv"><span>Prospect answers</span><b>NIW admins + agent of record only</b><span>Group leaders</span><b>Name, stage, plan choice, flags</b><span>Group members</span><b>Their own leads only</b><span>Lead retention</span><b>24 months</b></div></div></div>`;},
+ activity(){ return `${head('Activity log','Every change made in Partner Hub')}<div class="card tablecard">${rows([{h:'When',w:'.7fr',v:a=>a.when},{h:'Who',v:a=>esc(a.who)},{h:'What',w:'2.4fr',v:a=>esc(a.what)}],DB.activity)}</div>`;}
 };
-function statusPill(u){ return u.status==='active'?'<span class="pill p-ok">Active</span>':u.status==='invited'?'<span class="pill p-info">Invited</span>':'<span class="pill p-warn">Awaiting NIW approval</span>'; }
+const SETKEYS=['kzMinIncome','kzMinAge','kzMaxAge','affMax','affStretch','defYears','showBoost','qGoal','qHealth','leadRequired','showLearnMore','postWall','notifyLeader','notifyAgent','digest'];
+const cur=k=>UI.form['s_'+k]!==undefined?UI.form['s_'+k]:DB.settings[k];
+const dirty=()=>SETKEYS.some(k=>UI.form['s_'+k]!==undefined&&UI.form['s_'+k]!==DB.settings[k]);
+
+// ---------------- Shared screens (leader + member) ----------------
+const SHARED={
+ notifications(){ const list=DB.notifs.filter(n=>n.to===me().id);
+  return `${head('Notifications','',list.some(n=>!n.read)?`<button class="btn sec" data-readall="1">Mark all read</button>`:'')}<div class="card">${list.map(n=>`<div class="notif ${n.read?'':'unread'}"><div class="ni">${n.ic}</div><div><b>${esc(n.t)}</b><small>${esc(n.d)}</small><small>${n.when}</small></div></div>`).join('')||'<div class="empty">You\'re all caught up.</div>'}</div>`;},
+ links(){ const u=me(), L=DB.links.filter(l=>l.user===u.id);
+  return `${head('My links','Every link carries your ID and the asset ID, so each visit and lead is tracked to you',`<button class="btn pri" data-open="newLink">＋ New link</button>`)}
+   ${G(u.group).status==='paused'?'<div class="banner warn">⏸ Your group is paused by NIW. Links are temporarily unavailable.</div>':''}
+   <div class="grid g2">${L.map(l=>`<div class="card">${linkBlock(l,true)}</div>`).join('')||'<div class="card empty">No links yet.</div>'}</div>`;},
+ profile(){ const u=me();
+  return `${head('Profile','Your Partner Hub account',`<button class="btn pri" data-saveprofile="1">Save</button>`)}${tip}
+   <div class="grid g2"><div class="card">${field('pname','Full name','',{value:u.name})}${field('pemail','Email','',{value:u.email,type:'email'})}${field('pphone','Mobile','(555) 014-2290',{value:u.phone||'',type:'tel'})}</div>
+   <div class="card"><h3>Notifications</h3><p class="sub">How we reach you</p>${sw('n_lead',UI.form.n_lead!==false,'New lead from my links','Email + in-app')}${sw('n_choice',UI.form.n_choice!==false,'Prospect chose a plan','')}${sw('n_digest',UI.form.n_digest!==false,'Weekly summary','Every Monday')}
+     <div class="btnrow"><button class="btn sec sm" data-signout="1">Sign out</button></div></div></div>`;},
+ help(){ const qa=[['How do I share?','Open My links, then copy your link, share the text or email wording, or let people scan your QR code. Every visit is tracked to you.'],['Who handles my prospects?','The licensed ILIA agent you chose. They\'re shown on your funnel and enroll every prospect from your links.'],['What do prospects see?','A short set of questions, their own IUL numbers, the Kai-Zen boost if they qualify, and a way to choose a plan or learn more.'],['Can I see my prospects\' financial answers?','No. For privacy, only NIW and the agent see answers like income and health. You see name, stage and plan choice.'],['What happens after they choose a plan?','They create an ILIA account for enrollment with your agent. Status after that is still being decided.'],['Do I need compliance approval for my marketing?','Not for outside groups. All marketing points to the same NIW selling funnel.']];
+  return `${head('Help','Answers to common questions',`<a class="btn sec" href="partner-iul-funnel.html?prospect=1&agent=${encodeURIComponent(UI.role==='admin'?'Dana Whitfield':A(me().agent||'A1').name)}" target="_blank" rel="noopener">▶ See the prospect funnel</a>`)}
+   ${qa.map(([q,a],i)=>`<div class="faq ${UI.form['faq'+i]?'open':''}"><button data-faq="${i}">${q}<span>${UI.form['faq'+i]?'−':'+'}</span></button><div>${a}</div></div>`).join('')}
+   <div class="card" style="margin-top:14px"><h3>Still need help?</h3><p class="sub">The NIW partner team is here Mon–Fri</p><button class="btn sec sm">✉️ partners@example.com</button></div>`;}
+};
 
 // ---------------- Screens: LEADER ----------------
 const LEADER={
  dash(){ const u=me(), g=G(u.group), s=stats({link:l=>U(l.user).group===g.id,lead:l=>l.group===g.id});
   const team=DB.users.filter(x=>x.group===g.id&&x.status==='active').map(x=>({u:x,s:stats({link:l=>l.user===x.id,lead:l=>l.user===x.id})})).sort((a,b)=>b.s.leads-a.s.leads);
-  const mx=Math.max(...team.map(t=>t.s.leads),1);
+  const mx=Math.max(...team.map(t=>t.s.leads),1), pend=DB.users.filter(x=>x.group===g.id&&['pending','invited'].includes(x.status));
   return `${head('Welcome back, '+u.name.split(' ')[0],esc(g.name)+' · team results, last 30 days',`<button class="btn sec" data-open="invite">＋ Invite member</button><button class="btn pri" data-open="createAsset">＋ Create marketing</button>`)}
+   ${pend.length?`<div class="banner info">👥 <div><b>${pend.length} pending team member${pend.length>1?'s':''}</b><br><span style="color:var(--ink-2)">${pend.map(p=>esc(p.name)+' ('+(p.status==='pending'?'awaiting NIW':'invite sent')+')').join(' · ')}</span></div><button class="btn sec sm" data-nav="team">View team</button></div>`:''}
    ${statCards(s)}
    <div class="grid g21"><div class="card"><h3>Team funnel</h3><p class="sub">From your team's links to ILIA</p>${funnel(s)}</div>
-   <div class="card"><h3>Team leaderboard</h3><p class="sub">Leads by member</p>${team.map(t=>`<div class="leader">${av(t.u.name)}<div style="width:110px;font-size:13px"><b>${esc(t.u.name.split(' ')[0])}</b></div><div class="bar"><div style="width:${t.s.leads/mx*100}%"></div></div><b style="width:28px;text-align:right">${t.s.leads}</b></div>`).join('')}</div></div>
-   <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0"><h3>Recent team leads</h3></div>${leadRows(DB.leads.filter(l=>l.group===g.id).slice(0,6))}</div>`;},
+   <div class="card"><h3>Team leaderboard</h3><p class="sub">Leads by member</p>${team.map(t=>`<div class="leader" style="cursor:pointer" data-nav="team" data-preset="open:${t.u.id}">${av(t.u.name)}<div style="width:110px;font-size:13px"><b>${esc(t.u.name.split(' ')[0])}</b></div><div class="bar"><div style="width:${t.s.leads/mx*100}%"></div></div><b style="width:28px;text-align:right">${t.s.leads}</b></div>`).join('')}</div></div>
+   <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0;display:flex"><h3>Recent team leads</h3><button class="btn sec sm" style="margin-left:auto" data-nav="leads">All leads →</button></div>${leadRows(DB.leads.filter(l=>l.group===g.id).slice(0,6))}</div>`;},
  team(){ const u=me(), us=DB.users.filter(x=>x.group===u.group);
   if(UI.param) return LEADER.memberDetail(UI.param);
-  return `${head('Team',esc(G(u.group).name)+' · invitations go to NIW for approval',`<button class="btn pri" data-open="invite">＋ Invite member</button>`)}
-   <div class="card tablecard">${rows([
-     {h:'Member',w:'1.6fr',v:x=>`<div style="display:flex;gap:10px;align-items:center">${av(x.name)}<div>${esc(x.name)}<small>${esc(x.email)}</small></div></div>`},
-     {h:'Role',v:x=>x.role==='leader'?'Leader':'Member'},
-     {h:'Status',v:x=>statusPill(x)},
-     {h:'Chosen agent',v:x=>x.agent?esc(A(x.agent).name):'<span class="pill p-mute">not yet</span>'},
-     {h:'Links',w:'.6fr',v:x=>DB.links.filter(l=>l.user===x.id).length},
-     {h:'Leads',w:'.6fr',v:x=>DB.leads.filter(l=>l.user===x.id).length}],us,{click:x=>'team:'+x.id})}</div>`;},
+  const active=us.filter(x=>x.status==='active'), invited=us.filter(x=>x.status==='invited'), pending=us.filter(x=>x.status==='pending'), off=us.filter(x=>x.status==='deactivated');
+  const open=UI.filter.open;
+  const card=x=>{ const s=stats({link:l=>l.user===x.id,lead:l=>l.user===x.id}), nl=DB.links.filter(l=>l.user===x.id).length, isOpen=open===x.id, leads=DB.leads.filter(l=>l.user===x.id);
+    return `<div class="mcard ${isOpen?'open':''}"><button class="mrow" data-expand="${x.id}" aria-expanded="${isOpen}">
+      <div class="mwho">${av(x.name)}<div style="min-width:0"><b>${esc(x.name)}${x.id===u.id?' <span class="pill p-mute">You</span>':''}</b><small>${x.role==='leader'?'Group leader':'Member'} · agent: ${x.agent?esc(A(x.agent).name):'—'}</small><small>Last active ${x.last}</small></div></div>
+      <div class="kpis"><div class="kpi"><span>Links</span><b>${nl}</b></div><div class="kpi"><span>Visits</span><b>${s.visits}</b></div><div class="kpi"><span>Leads</span><b>${s.leads}</b></div><div class="kpi"><span>IUL</span><b>${s.iul}</b></div><div class="kpi kz"><span>Kai-Zen</span><b>${s.kz}</b></div><div class="kpi"><span>To ILIA</span><b>${s.ilia}</b></div></div>
+      <div class="mright">${statusPill(x)}<span class="chev">${isOpen?'▲ Hide leads':'▼ View leads'}</span></div></button>
+      ${isOpen?`<div class="mexp"><div class="mxh"><h4>${esc(x.name.split(' ')[0])}'s leads & prospects</h4><span class="sub" style="margin:0">${leads.length} total · ${s.contacted} want a call</span><span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"><button class="btn sec sm" data-nav="team:${x.id}">Full profile →</button>${x.id!==u.id&&x.status==='active'?`<button class="btn no sm" data-ustatus="${x.id}:deactivated">Remove</button>`:''}</span></div>
+        <div class="card tablecard" style="box-shadow:none">${leadRows(leads,{source:false,empty:esc(x.name.split(' ')[0])+' has no leads yet.'})}</div></div>`:''}</div>`; };
+  const pend=x=>`<div class="mcard"><div class="pendrow">${av(x.name)}<div style="flex:1;min-width:160px"><b>${esc(x.name)}</b><div class="note">${esc(x.email)}</div></div>${statusPill(x)}<span class="note">${x.status==='pending'?'NIW reviews new invites, usually within a day':'Invite email sent. Waiting for them to sign up'}</span>
+     <div class="acts-cell">${x.status==='invited'?`<button class="btn sec xs" data-resend="${x.id}">Resend invite</button>`:''}<button class="btn no xs" data-cancelinv="${x.id}">Cancel invite</button></div></div></div>`;
+  return `${head('Team',esc(G(u.group).name)+' · click a member to see their leads',`<button class="btn pri" data-open="invite">＋ Invite member</button>`)}
+   <div class="summ"><div class="card stat"><span>Active members</span><b>${active.length}</b></div><div class="card stat"><span>Invites sent</span><b>${invited.length}</b><small style="color:var(--ink-3)">waiting for sign-up</small></div><div class="card stat"><span>Awaiting NIW</span><b>${pending.length}</b><small style="color:var(--ink-3)">approval</small></div><div class="card stat"><span>Team leads</span><b>${DB.leads.filter(l=>l.group===u.group).length}</b></div></div>
+   <div class="mcards">${active.sort((a,b)=>DB.leads.filter(l=>l.user===b.id).length-DB.leads.filter(l=>l.user===a.id).length).map(card).join('')}</div>
+   ${invited.length+pending.length?`<h3 style="font-size:15px;margin:22px 0 10px">Pending invitations</h3><div class="mcards">${pending.concat(invited).map(pend).join('')}</div>`:''}
+   ${off.length?`<h3 style="font-size:15px;margin:22px 0 10px">Removed</h3><div class="mcards">${off.map(x=>`<div class="mcard"><div class="pendrow">${av(x.name)}<div style="flex:1"><b>${esc(x.name)}</b><div class="note">Links stopped · leads stay with their agent</div></div><button class="btn ok xs" data-ustatus="${x.id}:active">Restore</button></div></div>`).join('')}</div>`:''}`;},
  memberDetail(id){ const x=U(id), s=stats({link:l=>l.user===id,lead:l=>l.user===id});
-  return `<div class="crumbs"><button data-nav="team">Team</button> / ${esc(x.name)}</div>${head(x.name,(x.role==='leader'?'Group leader':'Group member')+' · '+esc(x.email))}
+  return `<div class="crumbs"><button data-nav="team">Team</button> / ${esc(x.name)}</div>${head(x.name,(x.role==='leader'?'Group leader':'Group member')+' · '+esc(x.email)+' · last active '+x.last)}
    ${statCards(s)}<div class="grid g2"><div class="card"><h3>Chosen agent</h3>${x.agent?agentCard(A(x.agent)):'<div class="empty">Hasn\'t chosen an agent yet.</div>'}</div>
    <div class="card"><h3>Links</h3>${DB.links.filter(l=>l.user===id).map(l=>`<div class="leader"><span class="idchip">${l.asset}</span><div style="flex:1;font-size:13px">${esc(AS(l.asset).name)}</div><b>${l.clicks} visits</b></div>`).join('')||'<div class="empty">No links yet.</div>'}</div></div>
-   <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0"><h3>Leads</h3></div>${leadRows(DB.leads.filter(l=>l.user===id))}</div>`;},
- marketing(){ const u=me(), list=DB.assets.filter(a=>a.group===u.group);
-  return `${head('Marketing','Your group creates and runs its own marketing. Shared assets are available to every member.',`<button class="btn pri" data-open="createAsset">＋ Create marketing</button>`)}
-   <div class="grid g3">${list.map(assetCard).join('')}</div>`;},
- leads(){ const u=me(); return `${head('Team leads',esc(G(u.group).name))}<div class="card tablecard">${leadRows(DB.leads.filter(l=>l.group===u.group))}</div>`;},
- group(){ const u=me(), g=G(u.group), ags=DB.agents.filter(a=>a.groups.includes(g.id));
-  return `${head('Group profile',esc(g.name))}<div class="grid g2"><div class="card"><h3>Details</h3><div class="kv" style="margin-top:8px"><span>Name</span><b>${esc(g.name)}</b><span>Type</span><b>${esc(g.type)}</b><span>Primary contact</span><b>${esc(g.contact)}</b><span>Active since</span><b>${g.since}</b></div></div>
-   <div class="card"><h3>Your group's agents</h3><p class="sub">Set by NIW. Members choose one of these as their agent.</p>${ags.map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)">${agentCard(a)}</div>`).join('')}</div></div>`;}
+   <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0"><h3>Leads</h3></div>${leadRows(DB.leads.filter(l=>l.user===id),{source:false})}</div>`;},
+ leads(){ const u=me(), list=DB.leads.filter(l=>l.group===u.group); const {bar,out}=leadFilters(list,{members:DB.users.filter(x=>x.group===u.group&&x.status==='active'),export:true});
+  return `${head('Team leads',esc(G(u.group).name)+' · prospect financial answers stay private to NIW and the agent')}<div class="card tablecard">${bar}${leadRows(out)}</div>`;},
+ reports(){ const u=me(), mem=DB.users.filter(x=>x.group===u.group&&x.status==='active').map(x=>({x,s:stats({link:l=>l.user===x.id,lead:l=>l.user===x.id})}));
+  const ass=DB.assets.filter(a=>a.group===u.group).map(x=>({x,s:stats({link:l=>l.asset===x.id,lead:l=>l.asset===x.id})}));
+  UI._reports={members:mem,assets:ass};
+  const tbl=(t,d,n,f)=>`<div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0;display:flex;align-items:center"><h3>${t}</h3><button class="btn sec sm" style="margin-left:auto" data-export="${n}">⬇ CSV</button></div>${rows([{h:f,w:'1.6fr',v:d=>esc(d.x.name)+(d.x.type?`<small>${d.x.id} · ${TYPES[d.x.type][1]}</small>`:'')},{h:'Visits',v:d=>sc(d.s.visits)},{h:'Leads',v:d=>sc(d.s.leads)},{h:'Conv.',v:d=>d.s.visits?Math.round(d.s.leads/d.s.visits*100)+'%':'—'},{h:'IUL',v:d=>sc(d.s.iul)},{h:'Kai-Zen',v:d=>sc(d.s.kz)}],d.sort((a,b)=>b.s.leads-a.s.leads))}</div>`;
+  const s=stats({link:l=>U(l.user).group===u.group,lead:l=>l.group===u.group});
+  return `${head('Team reports',esc(G(u.group).name),rangeChips())}<div class="grid g4"><div class="card stat"><span>Visits</span><b>${sc(s.visits)}</b></div><div class="card stat"><span>Leads</span><b>${sc(s.leads)}</b></div><div class="card stat"><span>Plans chosen</span><b>${sc(s.chose)}</b></div><div class="card stat kz"><span>Kai-Zen share</span><b>${s.chose?Math.round(s.kz/s.chose*100):0}%</b></div></div>
+   ${tbl('By member',mem,'members','Member')}${tbl('Which marketing works',ass,'assets','Asset')}`;},
+ marketing(){ const u=me(), F=UI.filter, list=DB.assets.filter(a=>a.group===u.group&&(F.ashow==='archived'?a.status==='archived':a.status==='active')&&(!F.atype||a.type===F.atype));
+  return `${head('Marketing library','Your group creates and runs its own marketing. Shared assets are available to every member.',`<button class="btn pri" data-open="createAsset">＋ Create marketing</button>`)}
+   <div class="card" style="margin-bottom:14px;padding:10px 12px"><div class="tbar" style="border:0;padding:0"><div class="chipsel"><button aria-pressed="${F.ashow!=='archived'}" data-fset="ashow:">Active</button><button aria-pressed="${F.ashow==='archived'}" data-fset="ashow:archived">Archived</button></div>
+    <select data-filt="atype"><option value="">All types</option>${Object.entries(TYPES).map(([k,v])=>`<option value="${k}" ${F.atype===k?'selected':''}>${v[1]}</option>`).join('')}</select><span class="sp"></span><span class="sub" style="margin:0">${list.length} assets</span></div></div>
+   <div class="grid g3">${list.map(a=>assetCard(a,'leader')).join('')||'<div class="card empty">No assets here.</div>'}</div>`;},
+ links:SHARED.links,
+ gagents(){ const u=me(), ags=DB.agents.filter(a=>a.groups.includes(u.group));
+  return `${head('Group agents','Licensed ILIA agents NIW has set up for your group. Members choose one.',`<button class="btn sec" data-open="requestAgent">＋ Request another agent</button>`)}
+   <div class="grid g2">${ags.map(a=>{const n=DB.users.filter(x=>x.agent===a.id&&x.group===u.group); return `<div class="card">${agentCard(a)}<p class="sub" style="margin:10px 0 0">Chosen by: ${n.map(x=>esc(x.name)).join(', ')||'nobody yet'}</p><div class="agmeta"><span class="pill p-info">${DB.leads.filter(l=>l.agent===a.id&&l.group===u.group).length} team leads</span></div></div>`;}).join('')}</div>`;},
+ gsettings(){ const g=G(me().group), col=UI.form.gcol||g.color, cob=UI.form.gcob!==undefined?UI.form.gcob:g.cobrand;
+  return `${head('Group settings',esc(g.name),`<button class="btn pri" data-savegroup="1">Save</button>`)}${tip}
+   <div class="grid g2"><div class="card"><h3>Group profile</h3>${field('gn','Group name','',{value:g.name})}${field('gw','Website','summitridge.example.com',{value:g.web})}${field('gc','Primary contact','',{value:g.contact})}</div>
+   <div class="card"><h3>Branding on the funnel</h3><p class="sub">Co-brand the prospect funnel with your logo</p>
+     ${sw('gcob',cob,'Show our logo on the funnel','Next to the agent\'s name')}
+     <div class="f" style="margin-top:10px"><label>Logo</label><div class="logo-drop" data-logo="1">${UI.form.glogo?'✓ summit-logo.png uploaded':'⬆ Click to upload a logo (demo)'}</div></div>
+     <div class="f"><label>Accent color</label><div class="swatches">${['#1f5fd1','#0e9f8a','#7b5cd6','#d9622b','#121a2c'].map(c=>`<button style="background:${c}" aria-pressed="${col===c}" data-gcol="${c}" aria-label="Color ${c}"></button>`).join('')}</div></div>
+     <div class="brandprev"><div class="bh" style="background:${col}">${cob?`<div class="av" style="background:#fff;color:${col};border-radius:8px;width:30px;height:30px;font-size:10px">${initials(g.name)}</div>`:''}<div><b style="font-size:13px">Dana Whitfield</b><br><small style="opacity:.85">Your licensed agent</small></div></div><div class="bb"><b style="color:var(--ink)">See how much tax-free retirement income you could build</b><br>Preview of the prospect funnel header</div></div>
+     <p class="sub" style="margin:8px 0 0"><span class="pill p-warn">Open</span> whether co-branding ships in v1.</p></div></div>`;},
+ profile:SHARED.profile, help:SHARED.help, notifications:SHARED.notifications
 };
-function assetCard(a){ const t=TYPES[a.type], o=U(a.owner), n=DB.links.filter(l=>l.asset===a.id), v=n.reduce((s,l)=>s+l.clicks,0), ld=DB.leads.filter(l=>l.asset===a.id).length;
-  return `<div class="card"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span style="font-size:24px">${t[0]}</span><div style="flex:1;min-width:0"><b style="display:block">${esc(a.name)}</b><small style="color:var(--ink-3)">${t[1]} · <span class="idchip">${a.id}</span></small></div></div>
+function assetCard(a,view){ const t=TYPES[a.type], o=U(a.owner), n=DB.links.filter(l=>l.asset===a.id), v=n.reduce((s,l)=>s+l.clicks,0), ld=DB.leads.filter(l=>l.asset===a.id).length, mine=me()&&a.owner===me().id;
+  const acts=view==='admin'?`<button class="btn ${a.status==='paused'?'ok':'no'} xs" data-astatus="${a.id}:${a.status==='paused'?'active':'paused'}">${a.status==='paused'?'▶ Resume':'⏸ Pause'}</button>`
+    :view==='leader'?(a.status==='archived'?`<button class="btn sec xs" data-astatus="${a.id}:active">Restore</button>`:`<button class="btn sec xs" data-open="editAsset:${a.id}">Edit</button><button class="btn sec xs" data-dup="${a.id}">Duplicate</button><button class="btn sec xs" data-ashare="${a.id}">${a.shared?'Unshare':'Share with team'}</button><button class="btn no xs" data-astatus="${a.id}:archived">Archive</button>`)
+    :(DB.links.some(l=>l.asset===a.id&&l.user===me().id)?'<span class="pill p-ok">✓ You have a link</span>':`<button class="btn pri xs" data-mklink="${a.id}">＋ Get my link</button>`)+(mine?`<button class="btn sec xs" data-open="editAsset:${a.id}">Edit</button>`:'');
+  return `<div class="card"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><span style="font-size:24px">${t[0]}</span><div style="flex:1;min-width:0"><b style="display:block">${esc(a.name)}</b><small style="color:var(--ink-3)">${t[1]} · <span class="idchip">${a.id}</span>${view==='admin'?' · '+esc(G(a.group).name):''}</small></div></div>
    <div class="preview-ad"><h4>${esc(a.headline)}</h4><p>${esc(a.msg)}</p><span class="pill p-info">→ Selling funnel</span></div>
-   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${a.shared?'<span class="pill p-grp">Shared with team</span>':'<span class="pill p-mute">Personal</span>'}<span class="pill p-mute">by ${esc(o.name.split(' ')[0])}</span><span class="pill p-info">${v} visits</span><span class="pill p-ok">${ld} leads</span></div></div>`; }
+   <div class="assetfoot">${a.status==='paused'?'<span class="pill p-bad">Paused by NIW</span>':''}${a.shared?'<span class="pill p-grp">Shared with team</span>':'<span class="pill p-mute">Personal</span>'}<span class="pill p-mute">by ${esc(o.name.split(' ')[0])}</span><span class="pill p-info">${v} visits</span><span class="pill p-ok">${ld} leads</span></div>
+   <div class="assetfoot">${acts}</div></div>`; }
 function agentCard(a){ return `<div class="agcard">${av(a.name)}<div><b>${esc(a.name)}</b><small>${esc(a.bio||'')}</small><small>${esc(a.email)} · ${a.phone}</small><div class="agmeta"><span class="pill p-mute">${a.iliaId}</span><span class="pill p-mute">Licensed: ${a.state}+</span></div></div></div>`; }
 
 // ---------------- Screens: MEMBER ----------------
@@ -500,62 +779,83 @@ const MEMBER={
   return `<div class="wiz">${bar}<h2>🎉 You're ready to share</h2><p class="lead">We made your first personal link from the team's QR flyer. Anyone who scans it sees the selling funnel with <b>${esc(A(u.agent).name)}</b> as their agent.</p>
      <div class="card">${linkBlock(L)}</div>
      <div style="margin-top:16px"><button class="btn pri" data-mdone="1">Go to my dashboard →</button></div></div>`;},
- home(){ const u=me(), s=stats({link:l=>l.user===u.id,lead:l=>l.user===u.id}), L=DB.links.filter(l=>l.user===u.id);
+ home(){ const u=me(), s=stats({link:l=>l.user===u.id,lead:l=>l.user===u.id}), L=DB.links.filter(l=>l.user===u.id&&l.status==='active'), unread=DB.notifs.filter(n=>n.to===u.id&&!n.read).length;
+  const newAssets=DB.assets.filter(a=>a.group===u.group&&a.shared&&a.status==='active'&&!DB.links.some(l=>l.asset===a.id&&l.user===u.id));
   return `${head('Hi, '+u.name.split(' ')[0],esc(G(u.group).name)+' · your agent: '+esc(A(u.agent).name),`<button class="btn pri" data-open="newLink">＋ New link</button>`)}
+   ${newAssets.length?`<div class="banner info">🎨 <div><b>${newAssets.length} team asset${newAssets.length>1?'s':''} you haven't shared yet</b><br><span style="color:var(--ink-2)">${newAssets.map(a=>esc(a.name)).join(' · ')}</span></div><button class="btn sec sm" data-nav="library">Browse</button></div>`:''}
    ${statCards(s)}
    <div class="grid g21"><div class="card"><h3>Your top link</h3><p class="sub">Share it, or let people scan the QR</p>${L[0]?linkBlock(L[0]):'<div class="empty">No links yet.</div>'}</div>
    <div class="card"><h3>Your funnel</h3><p class="sub">What happens after people click</p>${funnel(s)}</div></div>
-   <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0;display:flex;align-items:center"><h3>Recent leads</h3><button class="btn sec sm" style="margin-left:auto" data-sim="1">＋ Simulate a scan</button></div>${leadRows(DB.leads.filter(l=>l.user===u.id).slice(0,5))}</div>`;},
- links(){ const u=me(), L=DB.links.filter(l=>l.user===u.id);
-  return `${head('My links','Every link carries your ID and the asset ID, so each visit and lead is tracked to you',`<button class="btn pri" data-open="newLink">＋ New link</button>`)}
-   <div class="grid g2">${L.map(l=>`<div class="card">${linkBlock(l)}</div>`).join('')||'<div class="card empty">No links yet.</div>'}</div>`;},
- leads(){ const u=me(); return `${head('My leads','Prospects who reached their results from your links',`<button class="btn sec" data-sim="1">＋ Simulate a scan</button>`)}<div class="card tablecard">${leadRows(DB.leads.filter(l=>l.user===u.id))}</div>`;},
+   <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h3>Recent leads</h3><button class="btn sec sm" style="margin-left:auto" data-sim="1">＋ Simulate a scan</button><button class="btn sec sm" data-nav="leads">All →</button></div>${leadRows(DB.leads.filter(l=>l.user===u.id).slice(0,5),{source:false})}</div>`;},
+ links:SHARED.links,
+ library(){ const u=me(), list=DB.assets.filter(a=>a.group===u.group&&a.status==='active'&&(a.shared||a.owner===u.id));
+  return `${head('Marketing library','Your team\'s shared assets plus your own. Get a personal tracked link for any of them.',`<button class="btn pri" data-open="newLink" data-mode="own">＋ Create my own</button>`)}
+   <div class="grid g3">${list.map(a=>assetCard(a,'member')).join('')}</div>`;},
+ leads(){ const u=me(), list=DB.leads.filter(l=>l.user===u.id); const {bar,out}=leadFilters(list,{});
+  return `${head('My leads','Prospects who reached their results from your links',`<button class="btn sec" data-sim="1">＋ Simulate a scan</button>`)}<div class="card tablecard">${bar}${leadRows(out,{source:false,empty:'No leads yet. Share a link, or simulate a scan.'})}</div>`;},
  agent(){ const u=me(), a=A(u.agent);
   return `${head('My agent','The licensed ILIA agent who enrolls every prospect from your links',`<button class="btn sec" data-open="changeAgent">Change agent</button>`)}
-   <div class="grid g2"><div class="card">${agentCard(a)}<div class="btnrow"><button class="btn sec sm">✉️ Email ${esc(a.name.split(' ')[0])}</button><button class="btn sec sm">📞 Call</button></div></div>
-   <div class="card"><h3>How this works</h3><ul style="margin:6px 0 0;padding-left:18px;color:var(--ink-2)"><li>Your links show ${esc(a.name.split(' ')[0])}'s name and contact details to prospects.</li><li>When a prospect chooses a plan, their ILIA account is created under ${esc(a.name.split(' ')[0])}.</li><li>If you change agents, only new prospects go to the new agent.</li></ul></div></div>`;},
- profile(){ const u=me(); return `${head('Profile','Your Partner Hub account')}<div class="card" style="max-width:560px"><div class="agcard">${av(u.name)}<div><b>${esc(u.name)}</b><small>${esc(u.email)}</small><small>${esc(G(u.group).name)} · Group member</small></div></div></div>`;}
+   <div class="grid g2"><div class="card">${agentCard(a)}<div class="btnrow"><button class="btn sec sm" data-open="msgAgent">✉️ Message ${esc(a.name.split(' ')[0])}</button><button class="btn sec sm">📞 ${a.phone}</button></div></div>
+   <div class="card"><h3>How this works</h3><ul style="margin:6px 0 0;padding-left:18px;color:var(--ink-2)"><li>Your links show ${esc(a.name.split(' ')[0])}'s name and contact details to prospects.</li><li>When a prospect chooses a plan, their ILIA account is created under ${esc(a.name.split(' ')[0])}.</li><li>If you change agents, only new prospects go to the new agent.</li></ul>
+   <div class="kv" style="margin-top:12px"><span>Your prospects with ${esc(a.name.split(' ')[0])}</span><b>${DB.leads.filter(l=>l.user===u.id&&l.agent===a.id).length}</b><span>Asked for a call</span><b>${DB.leads.filter(l=>l.user===u.id&&l.contacted).length}</b></div></div></div>`;},
+ profile:SHARED.profile, help:SHARED.help, notifications:SHARED.notifications
 };
-function linkBlock(L){ const a=AS(L.asset), url=linkUrl(L), ld=DB.leads.filter(l=>l.link===L.id).length;
-  return `<div class="linkcard">${qrBox(url,128)}<div style="min-width:0"><b style="display:block">${TYPES[a.type][0]} ${esc(a.name)}</b>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px"><span class="idchip">${a.id}</span><span class="pill p-info">${L.clicks} visits</span><span class="pill p-ok">${ld} leads</span></div>
+function linkBlock(L,full){ const a=AS(L.asset), url=linkUrl(L), ld=DB.leads.filter(l=>l.link===L.id).length, off=L.status==='paused'||a.status==='paused';
+  return `<div class="linkcard">${qrBox(url,128,off)}<div style="min-width:0"><b style="display:block">${TYPES[a.type][0]} ${esc(a.name)}</b>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px"><span class="idchip">${a.id}</span><span class="pill p-info">${L.clicks} visits</span><span class="pill p-ok">${ld} leads</span>${L.status==='paused'?'<span class="pill p-warn">Paused</span>':''}${a.status==='paused'?'<span class="pill p-bad">Paused by NIW</span>':''}</div>
     <div class="url">${esc(url.replace(/^https?:\/\//,'').slice(0,90))}…</div>
-    <div class="btnrow"><button class="btn sec sm" data-copy="${esc(url)}">📋 Copy link</button><button class="btn sec sm" data-open="share:${L.id}">📤 Share</button><a class="btn pri sm" href="${esc(url)}" target="_blank" rel="noopener">▶ Open as prospect</a></div></div></div>`; }
+    <div class="btnrow"><button class="btn sec sm" data-copy="${esc(url)}">📋 Copy</button><button class="btn sec sm" data-open="share:${L.id}">📤 Share</button><a class="btn pri sm" href="${esc(url)}" target="_blank" rel="noopener">▶ Open as prospect</a>
+    ${full?`<button class="btn sec sm" data-lstatus="${L.id}:${L.status==='paused'?'active':'paused'}">${L.status==='paused'?'▶ Resume':'⏸ Pause'}</button><button class="btn no sm" data-dellink="${L.id}">Delete</button>`:''}</div></div></div>`; }
 
 // ---------------- Modals ----------------
 const MODALS={
+ lead(id){ const l=DB.leads.find(x=>x.id===id); if(!l) return ''; const full=UI.role==='admin';
+  const steps=[['Visited from link',true,l.asset+' · '+TYPES[AS(l.asset).type][1]],['Answered questions',true,'About 60 seconds'],['Saw results'+(l.qual?' + Kai-Zen boost':''),true,l.qual?'Qualified for the boost':'IUL only'],['Learned more',l.learned.length>0||l.stage==='learn',l.learned.join(', ')||''],['Chose a plan',!!l.product,l.product?(l.product==='kz'?'🚀 IUL + Kai-Zen':'IUL'):''],['Created ILIA account',l.stage==='ilia','Agent of record: '+(A(l.agent)?A(l.agent).name:'—')]];
+  return modal(l.name,`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"><span class="pill ${STAGE[l.stage][1]}">${STAGE[l.stage][0]}</span>${choicePill(l)} ${flagPills(l)}</div>
+   <div class="kv" style="margin-bottom:14px"><span>Lead ID</span><b>${l.id}</b><span>Source</span><b>${esc(U(l.user).name)} · ${esc(G(l.group).name)}</b><span>Agent</span><b>${esc(A(l.agent)?A(l.agent).name:'—')}</b><span>When</span><b>${l.when}</b></div>
+   <h3 style="font-size:14px;margin:0 0 8px">Journey</h3><ul class="timeline">${steps.map(([t,on,d])=>`<li><span class="dot ${on?'':'off'}">${on?'✓':''}</span><div><b style="font-size:13.5px;${on?'':'color:var(--ink-3)'}">${t}</b>${d&&on?`<small>${esc(d)}</small>`:''}</div></li>`).join('')}</ul>
+   <h3 style="font-size:14px;margin:6px 0 8px">Prospect answers</h3>
+   ${full?`<div class="kv"><span>Goal</span><b>${l.ans.goal}</b><span>Age</span><b>${l.ans.age}</b><span>Yearly amount</span><b>${fmt(l.ans.amount)}</b><span>Household income</span><b>${l.ans.hh}</b><span>Health</span><b>${l.ans.health}</b></div>`
+   :'<div class="locked">🔒 Financial and health answers are only visible to NIW and the agent of record.</div>'}
+   ${l.stage==='ilia'?`<p class="sub" style="margin:12px 0 0">Status after ILIA account creation: <span class="pill p-mute">${DB.settings.postWall==='none'?'not shared (open decision)':'Enrolling'}</span></p>`:''}`,
+   `${UI.role!=='member'?`<button class="btn sec" data-nudge="${l.id}">🔔 Nudge agent</button>`:''}<button class="btn pri" data-close="1">Done</button>`,false,true);},
  approval(id){ const a=DB.approvals.find(x=>x.id===id); if(!a) return '';
-  const body=a.kind==='group'?`<div class="kv"><span>Group</span><b>${esc(G(a.group).name)}</b><span>Type</span><b>${esc(G(a.group).type)}</b><span>Requested by</span><b>${esc(a.by)} · ${esc(a.email)}</b><span>Note</span><b style="font-weight:500">${esc(a.note)}</b></div>
-     <div class="f" style="margin-top:14px"><label>Link group-related agents</label><div class="chipsel">${DB.agents.map(ag=>`<button aria-pressed="${!!(UI.form.agents||{})[ag.id]}" data-togag="${ag.id}">${esc(ag.name)}</button>`).join('')}</div><div class="hint">Members of this group will choose from these agents.</div></div>`
-   :`<div class="kv"><span>Invitee</span><b>${esc(U(a.user).name)} · ${esc(U(a.user).email)}</b><span>Group</span><b>${esc(G(a.group).name)}</b><span>Invited by</span><b>${esc(U(a.by).name)} (group leader)</b></div><p class="sub" style="margin-top:12px">Once approved, they get an email invite to set up their account and choose their agent.</p>`;
-  return modal(a.kind==='group'?'Review group access request':'Review member invitation',body,`<button class="btn no" data-decline="${a.id}">Decline</button><button class="btn ok" data-approve="${a.id}" ${a.kind==='group'&&!Object.values(UI.form.agents||{}).some(Boolean)?'disabled':''}>Approve</button>`);},
+  let body;
+  if(a.kind==='group') body=`<div class="kv"><span>Group</span><b>${esc(G(a.group).name)}</b><span>Type</span><b>${esc(G(a.group).type)}</b><span>Requested by</span><b>${esc(a.by)} · ${esc(a.email)}</b><span>Note</span><b style="font-weight:500">${esc(a.note)}</b></div>
+     <div class="f" style="margin-top:14px"><label>Link group-related agents</label><div class="chipsel">${DB.agents.map(ag=>`<button aria-pressed="${!!(UI.form.agents||{})[ag.id]}" data-togag="${ag.id}">${esc(ag.name)}</button>`).join('')}</div><div class="hint">Required. Members of this group will choose from these agents.</div></div>`;
+  else if(a.kind==='agentreq') body=`<div class="kv"><span>Group</span><b>${esc(G(a.group).name)}</b><span>Requested agent</span><b>${esc(a.agentName)}</b><span>Reason</span><b style="font-weight:500">${esc(a.note)}</b><span>Requested by</span><b>${esc(U(a.by).name)}</b></div><p class="sub" style="margin-top:12px">Approving links this agent (if they're in ILIA) to the group. Otherwise, contact the group.</p>`;
+  else body=`<div class="kv"><span>Invitee</span><b>${esc(U(a.user).name)} · ${esc(U(a.user).email)}</b><span>Group</span><b>${esc(G(a.group).name)}</b><span>Invited by</span><b>${esc(U(a.by).name)} (group leader)</b></div><p class="sub" style="margin-top:12px">Once approved, they get an email invite to set up their account and choose their agent.</p>`;
+  const t={group:'Review group access request',agentreq:'Review agent request',member:'Review member invitation'}[a.kind];
+  return modal(t,body,`<button class="btn no" data-decline="${a.id}">Decline</button><button class="btn ok" data-approve="${a.id}" ${a.kind==='group'&&!Object.values(UI.form.agents||{}).some(Boolean)?'disabled':''}>Approve</button>`);},
  addGroup(){ return modal('Add a group',tip+field('gname','Group name','Lakeshore Financial Partners')+field('gtype','Type of group','Financial advisory firm',{type:'select',options:['Financial advisory firm','Benefits association','Independent advisors','Employer group','Other']})+
    field('gleader','Group leader name','Morgan Reyes')+field('gemail','Group leader email','morgan.reyes@example.com',{type:'email',hint:'They get an invite to set up the group in Partner Hub.'})+
    `<div class="f"><label>Link group-related agents</label><div class="chipsel">${DB.agents.map(ag=>`<button aria-pressed="${!!(UI.form.agents||{})[ag.id]}" data-togag="${ag.id}">${esc(ag.name)}</button>`).join('')}</div></div>`,
    `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="addGroup" data-need="gname,gtype,gleader,gemail">Create group & invite leader</button>`);},
+ inviteLeader(gid){ return modal('Invite a user to '+G(gid).name,tip+field('iname','Full name','Jordan Avery')+field('iemail','Email','jordan.avery@example.com',{type:'email'})+field('irole','Role','Group member',{type:'select',options:['Group leader','Group member']})+'<p class="sub">Admin invites skip the approval step.</p>',
+   `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="adminInvite:${gid}" data-need="iname,iemail,irole">Send invite</button>`);},
+ inviteAdmin(){ return modal('Invite an NIW admin',tip+field('iname','Full name','Riley Chen')+field('iemail','Work email','riley.chen@example.com',{type:'email'}),`<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="inviteAdmin" data-need="iname,iemail">Send invite</button>`);},
  addAgent(){ const found=UI.form._found;
   return modal('Add a group-related agent',`<p class="sub">Look up an existing ILIA agent. The CMS stores a reference only; nothing changes in ILIA.</p>${tip}
    <div style="display:flex;gap:8px;align-items:flex-end"><div style="flex:1">${field('aq','ILIA agent email or ID','jordan.hale@example.com')}</div><button class="btn sec" style="margin-bottom:14px" data-lookup="1">🔎 Look up</button></div>
    ${found===false?'<div class="banner warn">No ILIA agent found. Try jordan.hale@example.com or ILIA-AG-5203.</div>':''}
    ${found?`<div class="card" style="margin-bottom:14px"><div class="agcard">${av(found.name)}<div><b>${esc(found.name)}</b><small>${found.iliaId} · ${esc(found.email)} · ${found.state}</small><div class="agmeta"><span class="pill p-ok">✓ Found in ILIA</span></div></div></div></div>
-   <div class="f"><label>Link to groups</label><div class="chipsel">${DB.groups.map(g=>`<button aria-pressed="${!!(UI.form.grps||{})[g.id]}" data-toggrp="${g.id}">${esc(g.name)}</button>`).join('')}</div></div>`:''}`,
+   <div class="f"><label>Link to groups</label><div class="chipsel">${DB.groups.filter(g=>g.status!=='declined').map(g=>`<button aria-pressed="${!!(UI.form.grps||{})[g.id]}" data-toggrp="${g.id}">${esc(g.name)}</button>`).join('')}</div></div>`:''}`,
    `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="addAgent" ${found&&Object.values(UI.form.grps||{}).some(Boolean)?'':'disabled'}>Add agent</button>`);},
+ agentDetail(id){ const a=A(id); if(UI.form.grps===undefined){ UI.form.grps={}; a.groups.forEach(g=>UI.form.grps[g]=true); }
+  return modal('Manage '+a.name,`${agentCard(a)}<div class="f" style="margin-top:14px"><label>Linked groups</label><div class="chipsel">${DB.groups.filter(g=>g.status==='active'||g.status==='invited').map(g=>`<button aria-pressed="${!!UI.form.grps[g.id]}" data-toggrp="${g.id}">${esc(g.name)}</button>`).join('')}</div><div class="hint">Unlinking keeps existing prospects with this agent. Members who chose them will be asked to pick again.</div></div>
+   <div class="kv"><span>Members who chose</span><b>${DB.users.filter(u=>u.agent===id).map(u=>esc(u.name)).join(', ')||'—'}</b><span>Leads</span><b>${DB.leads.filter(l=>l.agent===id).length}</b></div>`,
+   `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="agentGroups:${id}">Save</button>`);},
  linkAgent(gid){ const avail=DB.agents.filter(a=>!a.groups.includes(gid));
   return modal('Link an agent to '+G(gid).name,avail.length?`<div class="choices">${avail.map(a=>`<button class="chc" aria-pressed="${UI.form.agent===a.id}" data-pick="${a.id}">${av(a.name)}<div><b>${esc(a.name)}</b><small>${a.iliaId}</small></div></button>`).join('')}</div>`:'<div class="empty">All agents are already linked. Add a new one from Agents.</div>',
    `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="linkAgent:${gid}" ${UI.form.agent?'':'disabled'}>Link agent</button>`);},
  invite(){ return modal('Invite a team member',tip+field('iname','Full name','Jordan Avery')+field('iemail','Email','jordan.avery@example.com',{type:'email'})+
    `<div class="banner info" style="margin:0">ℹ️ NIW approves every invitation before the person can log in and share links.</div>`,
    `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="invite" data-need="iname,iemail">Send for approval</button>`);},
- createAsset(){ const t=UI.form.type||'qr', isLeader=UI.role==='leader';
-  return modal('Create marketing',`${tip}<div class="f"><label>Type</label><div class="typegrid">${Object.entries(TYPES).map(([k,v])=>`<button aria-pressed="${t===k}" data-type="${k}"><span>${v[0]}</span>${v[1]}</button>`).join('')}</div></div>
-   ${field('aname','Asset name','Spring retirement webinar '+TYPES[t][1].toLowerCase())}
-   ${field('ahead','Headline','See your tax-free retirement number')}
-   ${field('amsg','Message','Answer 5 quick questions and see what an IUL could do for you, plus a boost option.',{type:'textarea'})}
-   ${isLeader?`<label class="chc" style="cursor:pointer;margin-bottom:12px"><input type="checkbox" data-shared="1" ${UI.form.shared!==false?'checked':''} style="margin-top:3px"><div><b>Share with my team</b><small>Every member gets their own tracked link for this asset</small></div></label>`:''}
-   <div class="preview-ad"><h4>${esc(UI.form.ahead||'Your headline')}</h4><p>${esc(UI.form.amsg||'Your message')}</p><span class="pill p-info">→ Selling funnel (tracked to each sender)</span></div>
-   <p class="sub" style="margin-top:10px">No compliance review is required for outside groups. Every asset points to the same NIW selling funnel.</p>`,
-   `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="createAsset" data-need="aname,ahead,amsg">Create asset</button>`,true);},
- newLink(){ const u=me(), mine=DB.links.filter(l=>l.user===u.id).map(l=>l.asset), lib=DB.assets.filter(a=>a.group===u.group&&(a.shared||a.owner===u.id)&&!mine.includes(a.id));
+ requestAgent(){ return modal('Request another agent',tip+field('raname','Agent name','Jordan Hale')+field('raemail','Agent email (if known)','jordan.hale@example.com',{type:'email'})+field('ranote','Why this agent?','Several of our advisors already work with Jordan in Arizona.',{type:'textarea'})+'<p class="sub">NIW reviews requests. Agents must already be appointed in ILIA.</p>',
+   `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="requestAgent" data-need="raname,ranote">Send request</button>`);},
+ createAsset(){ return assetForm(null); },
+ editAsset(id){ return assetForm(AS(id)); },
+ newLink(){ const u=me(), mine=DB.links.filter(l=>l.user===u.id).map(l=>l.asset), lib=DB.assets.filter(a=>a.group===u.group&&a.status==='active'&&(a.shared||a.owner===u.id)&&!mine.includes(a.id));
   const mode=UI.form.mode||'lib';
   return modal('New link',`<div class="chipsel" style="margin-bottom:14px"><button aria-pressed="${mode==='lib'}" data-mode="lib">From team library</button><button aria-pressed="${mode==='own'}" data-mode="own">Create my own</button></div>
    ${mode==='lib'?(lib.length?`<div class="choices">${lib.map(a=>`<button class="chc" aria-pressed="${UI.form.asset===a.id}" data-pickasset="${a.id}"><span style="font-size:22px">${TYPES[a.type][0]}</span><div><b>${esc(a.name)}</b><small>${TYPES[a.type][1]} · ${a.id} · by ${esc(U(a.owner).name)}</small></div></button>`).join('')}</div>`:'<div class="empty">You already have links for every team asset. Create your own instead.</div>')
@@ -567,95 +867,124 @@ const MODALS={
    <div class="tpl"><b>💬 Text message</b>${esc(a.type==='text'?a.msg:'Hi! Have 60 seconds? See what tax-free retirement income could look like for you:')} [link]</div>
    <div class="tpl"><b>✉️ Email</b>${esc(a.headline)}. ${esc(a.msg)} My colleague ${esc(ag.name)} can walk you through it. [link]</div>
    <div class="tpl"><b>📱 Social caption</b>${esc(a.headline)} 👉 [link]</div>`,
-   `<button class="btn sec" data-copy="${esc(url)}">📋 Copy link</button><a class="btn pri" href="${esc(url)}" target="_blank" rel="noopener">▶ Open as prospect</a>`);},
+   `<button class="btn sec" data-copy="${esc(url)}">📋 Copy link</button><button class="btn sec" data-dlqr="1">⬇ Download QR</button><a class="btn pri" href="${esc(url)}" target="_blank" rel="noopener">▶ Open as prospect</a>`);},
  changeAgent(){ const u=me(), ags=DB.agents.filter(a=>a.groups.includes(u.group));
   return modal('Change your agent',`<div class="banner warn" style="margin-top:0">Prospects you've already sent stay with ${esc(A(u.agent).name)}. Only new prospects go to your new agent.</div>
    <div class="choices">${ags.map(a=>`<button class="chc" aria-pressed="${(UI.form.agent||u.agent)===a.id}" data-pick="${a.id}">${av(a.name)}<div><b>${esc(a.name)} ${a.id===u.agent?'<span class="pill p-mute">current</span>':''}</b><small>${esc(a.bio)}</small></div></button>`).join('')}</div>`,
-   `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="changeAgent" ${UI.form.agent&&UI.form.agent!==u.agent?'':'disabled'}>Switch agent</button>`);}
+   `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="changeAgent" ${UI.form.agent&&UI.form.agent!==u.agent?'':'disabled'}>Switch agent</button>`);},
+ msgAgent(){ const a=A(me().agent); return modal('Message '+a.name,tip+field('msg','Message','Hi Dana, I shared the QR flyer at our client event today. Expect a few new prospects this week!',{type:'textarea'}),`<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="msgAgent" data-need="msg">Send</button>`);},
+ more(){ const r=UI.role; return modal('Menu',`<div class="morelist">${MENU[r].sections.map(([s,items])=>`<div class="sec">${s}</div>${items.map(([k,ic,l])=>`<button data-nav="${k}"><span>${ic}</span>${l}</button>`).join('')}`).join('')}</div>`,'');}
 };
-function modal(title,body,foot,wide){ return `<div class="mback" data-backdrop="1"><div class="modal ${wide?'wide':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="mh"><h3>${esc(title)}</h3><button class="x" data-close="1" aria-label="Close">×</button></div><div class="mb">${body}</div><div class="mf">${foot}</div></div></div>`; }
-function head(t,s,acts){ return `<div class="phead"><div><h1>${esc(t)}</h1>${s?`<p>${s}</p>`:''}</div>${acts?`<div class="acts">${acts}</div>`:''}</div>`; }
+function assetForm(a){ const t=UI.form.type||(a?a.type:'qr'), isLeader=UI.role==='leader';
+  if(a&&UI.form.aname===undefined){ UI.form.aname=a.name; UI.form.ahead=a.headline; UI.form.amsg=a.msg; UI.form.shared=a.shared; }
+  return modal(a?'Edit '+a.id:'Create marketing',`${tip}<div class="f"><label>Type</label><div class="typegrid">${Object.entries(TYPES).map(([k,v])=>`<button aria-pressed="${t===k}" data-type="${k}"><span>${v[0]}</span>${v[1]}</button>`).join('')}</div></div>
+   ${field('aname','Asset name','Spring retirement webinar '+TYPES[t][1].toLowerCase())}
+   ${field('ahead','Headline','See your tax-free retirement number')}
+   ${field('amsg','Message','Answer 5 quick questions and see what an IUL could do for you, plus a boost option.',{type:'textarea'})}
+   ${isLeader?`<label class="chc" style="cursor:pointer;margin-bottom:12px"><input type="checkbox" data-shared="1" ${UI.form.shared!==false?'checked':''} style="margin-top:3px"><div><b>Share with my team</b><small>Every member can get their own tracked link for this asset</small></div></label>`:''}
+   <div class="preview-ad"><h4>${esc(UI.form.ahead||'Your headline')}</h4><p>${esc(UI.form.amsg||'Your message')}</p><span class="pill p-info">→ Selling funnel (tracked to each sender)</span></div>
+   <p class="sub" style="margin-top:10px">No compliance review is required for outside groups. Every asset points to the same NIW selling funnel.</p>`,
+   `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="${a?'editAsset:'+a.id:'createAsset'}" data-need="aname,ahead,amsg">${a?'Save changes':'Create asset'}</button>`,true);}
+function modal(title,body,foot,wide,drawer){ return `<div class="mback ${drawer?'drawer':''}" data-backdrop="1"><div class="modal ${wide?'wide':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="mh"><h3>${esc(title)}</h3><button class="x" data-close="1" aria-label="Close">×</button></div><div class="mb">${body}</div>${foot?`<div class="mf">${foot}</div>`:''}</div></div>`; }
 
 // ---------------- Render ----------------
 function render(){
-  const role=UI.role, nav=NAV[role];
-  if(!UI.screen) UI.screen=nav[0][0];
+  const role=UI.role, nav=allNav(role);
+  if(!UI.screen||!nav.some(n=>n[0]===UI.screen)) UI.screen=nav[0][0];
   const u=me(), onboarding=role==='member'&&u.status!=='active';
-  const pend=DB.approvals.length;
+  const pend=DB.approvals.length, unread=u?DB.notifs.filter(n=>n.to===u.id&&!n.read).length:0;
   const who=role==='admin'?ME.admin:{name:u.name,title:(role==='leader'?'Group leader · ':'Group member · ')+G(u.group).name.split(' ')[0]};
-  const navBtns=nav.map(([k,ic,l])=>`<button data-nav="${k}" ${UI.screen===k?'aria-current="page"':''} ${onboarding?'disabled':''}><span class="ic">${ic}</span>${l}${k==='approvals'&&pend?`<span class="cnt">${pend}</span>`:''}</button>`).join('');
+  const cnt=k=>k==='approvals'&&pend?`<span class="cnt">${pend}</span>`:k==='notifications'&&unread?`<span class="cnt">${unread}</span>`:'';
+  const side=MENU[role].sections.map(([s,items])=>`<div class="nsec">${s}</div>${items.map(([k,ic,l])=>`<button data-nav="${k}" ${UI.screen===k?'aria-current="page"':''} ${onboarding?'disabled':''}><span class="ic">${ic}</span>${l}${cnt(k)}</button>`).join('')}`).join('');
   const screens=role==='admin'?ADMIN:role==='leader'?LEADER:MEMBER;
   let content;
-  if(onboarding){
-    content=u.status==='pending'?`<div class="wiz"><h2>Waiting for approval</h2><p class="lead">Your invitation is waiting for NIW approval.</p></div>`:MEMBER.onboard();
-  } else content=(screens[UI.screen]||screens[nav[0][0]])();
+  if(onboarding) content=MEMBER.onboard();
+  else content=(screens[UI.screen]||screens[nav[0][0]])();
   let mod='';
-  if(UI.modal){ const [n,p]=[UI.modal.name.split(':')[0],UI.modal.name.split(':').slice(1).join(':')||UI.modal.param]; mod=MODALS[n]?MODALS[n](p):''; }
+  if(UI.modal){ const parts=UI.modal.name.split(':'); const n=parts[0], p=parts.slice(1).join(':'); mod=MODALS[n]?MODALS[n](p):''; }
+  const prim=MENU[role].primary.map(k=>nav.find(n=>n[0]===k));
+  const bellBtn=role==='admin'?`<button class="bell" data-nav="approvals" aria-label="Approvals">✅${pend?`<span class="cnt">${pend}</span>`:''}</button>`:`<button class="bell" data-nav="notifications" aria-label="Notifications" ${onboarding?'disabled':''}>🔔${unread?`<span class="cnt">${unread}</span>`:''}</button>`;
   $('#portal').innerHTML=`
-   <aside class="side"><div class="brand"><div class="mk">P</div><div><b>Partner Hub</b><small>IUL + Kai-Zen · by NIW</small></div></div>
-     <span class="rolechip">${ROLE_LABEL[role]}</span><nav class="nav" aria-label="Main">${navBtns}</nav>
+   <aside class="side"><div class="brand"><div class="mk">P</div><div><b>Partner Hub</b><small>IUL + Kai-Zen · by NIW</small></div>${bellBtn}</div>
+     <span class="rolechip">${ROLE_LABEL[role]}</span><nav class="nav" aria-label="Main">${side}</nav>
      <div class="me">${av(who.name)}<div><b>${esc(who.name)}</b><small>${esc(who.title)}</small></div></div></aside>
-   <header class="mtop"><div class="brand"><div class="mk">P</div><div><b>Partner Hub</b><small>${ROLE_LABEL[role]}</small></div></div>${av(who.name)}</header>
+   <header class="mtop"><div class="brand"><div class="mk">P</div><div><b>Partner Hub</b><small>${ROLE_LABEL[role]}</small></div></div>${bellBtn}${av(who.name)}</header>
    <main class="main"><div class="mainin">${content}</div></main>
-   <nav class="mtabs" aria-label="Main">${onboarding?'':nav.map(([k,ic,l])=>`<button data-nav="${k}" ${UI.screen===k?'aria-current="page"':''}><span class="ic">${ic}</span>${l}${k==='approvals'&&pend?`<span class="cnt">${pend}</span>`:''}</button>`).join('')}</nav>
+   <nav class="mtabs" aria-label="Main">${onboarding?'':prim.map(([k,ic,l])=>`<button data-nav="${k}" ${UI.screen===k?'aria-current="page"':''}><span class="ic">${ic}</span>${l.replace('Marketing library','Marketing')}${cnt(k)}</button>`).join('')+`<button data-open="more" ${!MENU[role].primary.includes(UI.screen)?'aria-current="page"':''}><span class="ic">☰</span>More</button>`}</nav>
    ${mod}${UI.toast?`<div class="toast" role="status">${esc(UI.toast)}</div>`:''}`;
   document.querySelectorAll('#roleSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.role===role));
   document.querySelectorAll('#devSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dev===UI.dev));
   $('#stage').classList.toggle('mobile',UI.dev==='mobile');
   paintQR();
 }
-function keep(fn){ const m=$('.modal'), st=m?m.scrollTop:0, mm=$('.main'), ms=mm?mm.scrollTop:0; fn&&fn(); render(); const m2=$('.modal'); if(m2) m2.scrollTop=st; const mm2=$('.main'); if(mm2) mm2.scrollTop=ms; }
+function keep(fn){ const m=$('.modal'), st=m?m.scrollTop:0, mm=$('.main'), ms=mm?mm.scrollTop:0; const ae=document.activeElement, aeKey=ae&&ae.dataset&&ae.dataset.filt; fn&&fn(); render(); const m2=$('.modal'); if(m2) m2.scrollTop=st; const mm2=$('.main'); if(mm2) mm2.scrollTop=ms; if(aeKey){ const el=document.querySelector(`[data-filt="${aeKey}"]`); if(el){ el.focus(); if(el.setSelectionRange&&el.type==='search'){ const n=el.value.length; el.setSelectionRange(n,n);} } } }
 function need(list){ return list.split(',').every(k=>(UI.form[k]||'').trim()); }
 
 // ---------------- Actions ----------------
 function save(kind){
-  const F=UI.form;
-  if(kind==='addGroup'){ const id=nid('G'); DB.groups.push({id,name:F.gname,type:F.gtype,status:'invited',contact:F.gleader,since:'—'});
-    DB.users.push({id:nid('L'),name:F.gleader,email:F.gemail,group:id,role:'leader',status:'invited',agent:null});
-    Object.entries(F.agents||{}).forEach(([a,on])=>{ if(on) A(a).groups.push(id); }); go('groups',id); toast('Group created. Invite sent to '+F.gleader+'.'); return; }
-  if(kind==='addAgent'){ const f=F._found, id=nid('A'); DB.agents.push({id,iliaId:f.iliaId,name:f.name,email:f.email,phone:'(555) 010-'+f.iliaId.slice(-4),state:f.state,groups:Object.keys(F.grps).filter(k=>F.grps[k]),bio:'Newly added'}); DB.ilia=DB.ilia.filter(x=>x.iliaId!==f.iliaId); UI.modal=null; render(); toast(f.name+' added as a group-related agent.'); return; }
-  if(kind.startsWith('linkAgent')){ const gid=kind.split(':')[1]; A(F.agent).groups.push(gid); UI.modal=null; render(); toast(A(F.agent).name+' linked to '+G(gid).name+'.'); return; }
-  if(kind==='invite'){ const u=me(), id=nid('M'); DB.users.push({id,name:F.iname,email:F.iemail,group:u.group,role:'member',status:'pending',agent:null,invitedBy:u.id});
-    DB.approvals.unshift({id:nid('AP'),kind:'member',user:id,group:u.group,by:u.id,when:'just now'}); UI.modal=null; render(); toast('Sent to NIW for approval. Switch to NIW Admin to approve it.'); return; }
-  if(kind==='createAsset'){ const u=me(), id='AS-0'+(DB.seq+=3); DB.assets.unshift({id,group:u.group,owner:u.id,type:F.type||'qr',name:F.aname,headline:F.ahead,msg:F.amsg,shared:UI.role==='leader'?F.shared!==false:false,created:'Today'});
-    DB.links.push({id:nid('LK'),user:u.id,asset:id,clicks:0}); UI.modal=null; render(); toast('Asset '+id+' created'+(UI.role==='leader'&&F.shared!==false?' and shared with your team.':'.')); return; }
-  if(kind==='newLink'){ const u=me(); let aid=F.asset;
-    if((F.mode||'lib')==='own'){ aid='AS-0'+(DB.seq+=3); DB.assets.unshift({id:aid,group:u.group,owner:u.id,type:F.type||'text',name:F.aname,headline:F.ahead,msg:F.amsg,shared:false,created:'Today'}); }
-    const L={id:nid('LK'),user:u.id,asset:aid,clicks:0}; DB.links.unshift(L); UI.modal={name:'share:'+L.id}; UI.form={}; render(); toast('Your link is ready.'); return; }
-  if(kind==='changeAgent'){ const u=me(); u.agent=F.agent; UI.modal=null; render(); toast('New prospects will now go to '+A(F.agent).name+'.'); return; }
+  const F=UI.form, [k1,k2]=kind.split(':');
+  if(k1==='addGroup'){ const id=nid('G'); DB.groups.push({id,name:F.gname,type:F.gtype,status:'invited',contact:F.gleader,since:'—',color:'#1f5fd1',cobrand:false,web:''});
+    DB.users.push({id:nid('L'),name:F.gleader,email:F.gemail,phone:'',group:id,role:'leader',status:'invited',agent:null,last:'—'});
+    Object.entries(F.agents||{}).forEach(([a,on])=>{ if(on) A(a).groups.push(id); }); log('Created group '+F.gname+' and invited '+F.gleader); go('groups',id); toast('Group created. Invite sent to '+F.gleader+'.'); return; }
+  if(k1==='adminInvite'){ DB.users.push({id:nid('M'),name:F.iname,email:F.iemail,phone:'',group:k2,role:F.irole==='Group leader'?'leader':'member',status:'invited',agent:null,last:'—'}); log('Invited '+F.iname+' to '+G(k2).name); UI.modal=null; toast('Invite sent to '+F.iname+'.'); return; }
+  if(k1==='inviteAdmin'){ log('Invited admin '+F.iname); UI.modal=null; toast('Admin invite sent to '+F.iname+'.'); return; }
+  if(k1==='addAgent'){ const f=F._found, id=nid('A'); DB.agents.push({id,iliaId:f.iliaId,name:f.name,email:f.email,phone:'(555) 010-'+f.iliaId.slice(-4),state:f.state,groups:Object.keys(F.grps).filter(k=>F.grps[k]),bio:'Newly added',status:'active'}); DB.ilia=DB.ilia.filter(x=>x.iliaId!==f.iliaId); log('Added agent '+f.name+' ('+f.iliaId+')'); UI.modal=null; toast(f.name+' added as a group-related agent.'); return; }
+  if(k1==='agentGroups'){ const a=A(k2); a.groups=Object.keys(F.grps).filter(g=>F.grps[g]); log('Updated groups for '+a.name); UI.modal=null; toast('Saved. '+a.name+' is linked to '+a.groups.length+' group(s).'); return; }
+  if(k1==='linkAgent'){ A(F.agent).groups.push(k2); log('Linked '+A(F.agent).name+' to '+G(k2).name); UI.modal=null; toast(A(F.agent).name+' linked to '+G(k2).name+'.'); return; }
+  if(k1==='invite'){ const u=me(), id=nid('M'); DB.users.push({id,name:F.iname,email:F.iemail,phone:'',group:u.group,role:'member',status:'pending',agent:null,invitedBy:u.id,last:'—'});
+    DB.approvals.unshift({id:nid('AP'),kind:'member',user:id,group:u.group,by:u.id,when:'just now'}); log('Invited '+F.iname+' (awaiting NIW approval)'); UI.modal=null; toast('Sent to NIW for approval. Switch to NIW Admin to approve it.'); return; }
+  if(k1==='requestAgent'){ const u=me(); DB.approvals.unshift({id:nid('AP'),kind:'agentreq',group:u.group,by:u.id,agentName:F.raname,email:F.raemail||'',note:F.ranote,when:'just now'}); log('Requested agent '+F.raname); UI.modal=null; toast('Request sent to NIW. Switch to NIW Admin to review it.'); return; }
+  if(k1==='createAsset'){ const u=me(), id='AS-0'+(DB.seq+=3); const shared=UI.role==='leader'?F.shared!==false:false; DB.assets.unshift({id,group:u.group,owner:u.id,type:F.type||'qr',name:F.aname,headline:F.ahead,msg:F.amsg,shared,status:'active',created:'Today'});
+    DB.links.push({id:nid('LK'),user:u.id,asset:id,clicks:0,status:'active'}); log('Created asset '+id+' "'+F.aname+'"');
+    if(shared) DB.users.filter(x=>x.group===u.group&&x.id!==u.id).forEach(x=>notify(x.id,'🎨','New team asset',u.name.split(' ')[0]+' shared "'+F.aname+'" with the team.'));
+    UI.modal=null; toast('Asset '+id+' created'+(shared?' and shared with your team.':'.')); return; }
+  if(k1==='editAsset'){ const a=AS(k2); Object.assign(a,{type:F.type||a.type,name:F.aname,headline:F.ahead,msg:F.amsg}); if(UI.role==='leader') a.shared=F.shared!==false; log('Edited asset '+a.id); UI.modal=null; toast('Saved '+a.id+'. Links keep working.'); return; }
+  if(k1==='newLink'){ const u=me(); let aid=F.asset;
+    if((F.mode||'lib')==='own'){ aid='AS-0'+(DB.seq+=3); DB.assets.unshift({id:aid,group:u.group,owner:u.id,type:F.type||'text',name:F.aname,headline:F.ahead,msg:F.amsg,shared:false,status:'active',created:'Today'}); }
+    const L={id:nid('LK'),user:u.id,asset:aid,clicks:0,status:'active'}; DB.links.unshift(L); log('Created link for '+aid); UI.modal={name:'share:'+L.id}; UI.form={}; toast('Your link is ready.'); return; }
+  if(k1==='changeAgent'){ const u=me(); u.agent=F.agent; log('Changed agent to '+A(F.agent).name); UI.modal=null; toast('New prospects will now go to '+A(F.agent).name+'.'); return; }
+  if(k1==='msgAgent'){ UI.modal=null; toast('Message sent to '+A(me().agent).name+'.'); return; }
 }
 function approve(id){ const a=DB.approvals.find(x=>x.id===id);
-  if(a.kind==='member'){ U(a.user).status='invited'; toast(U(a.user).name+' approved. Invite email sent.'); }
+  if(a.kind==='member'){ U(a.user).status='invited'; notify(a.by,'✅',U(a.user).name+' was approved','Their invite email has been sent.'); toast(U(a.user).name+' approved. Invite email sent.'); log('Approved invite for '+U(a.user).name); }
+  else if(a.kind==='agentreq'){ const f=DB.ilia.find(x=>x.name===a.agentName)||DB.agents.find(x=>x.name===a.agentName);
+    if(f&&!f.groups){ DB.agents.push({id:nid('A'),iliaId:f.iliaId,name:f.name,email:f.email,phone:'(555) 010-'+f.iliaId.slice(-4),state:f.state,groups:[a.group],bio:'Requested by group',status:'active'}); DB.ilia=DB.ilia.filter(x=>x!==f); }
+    else if(f&&f.groups&&!f.groups.includes(a.group)) f.groups.push(a.group);
+    notify(a.by,'🧑‍💼','Agent request approved',a.agentName+' is now available to your team.'); toast(a.agentName+' linked to '+G(a.group).name+'.'); log('Approved agent request: '+a.agentName); }
   else { const g=G(a.group); g.status='active'; g.since='Oct 2026'; Object.entries(UI.form.agents||{}).forEach(([k,on])=>{ if(on&&!A(k).groups.includes(g.id)) A(k).groups.push(g.id); });
-    DB.users.push({id:nid('L'),name:a.by,email:a.email,group:g.id,role:'leader',status:'invited',agent:null}); toast(g.name+' approved. '+a.by+' invited as group leader.'); }
-  DB.approvals=DB.approvals.filter(x=>x.id!==id); UI.modal=null; render(); }
-function decline(id){ const a=DB.approvals.find(x=>x.id===id); if(a.kind==='member') DB.users=DB.users.filter(u=>u.id!==a.user); else G(a.group).status='declined';
-  DB.approvals=DB.approvals.filter(x=>x.id!==id); UI.modal=null; render(); toast('Request declined.'); }
-function simulate(){ const u=me(), L=DB.links.filter(l=>l.user===u.id); if(!L.length) return; const l=L[Math.floor(Math.random()*L.length)];
+    DB.users.push({id:nid('L'),name:a.by,email:a.email,phone:'',group:g.id,role:'leader',status:'invited',agent:null,last:'—'}); toast(g.name+' approved. '+a.by+' invited as group leader.'); log('Approved group '+g.name); }
+  DB.approvals=DB.approvals.filter(x=>x.id!==id); UI.modal=null; keep(); }
+function decline(id){ const a=DB.approvals.find(x=>x.id===id); if(a.kind==='member') DB.users=DB.users.filter(u=>u.id!==a.user); else if(a.kind==='group') G(a.group).status='declined';
+  if(a.by&&U(a.by)) notify(a.by,'✖','Request declined','NIW declined a request. Contact the partner team for details.');
+  log('Declined '+a.kind+' request'); DB.approvals=DB.approvals.filter(x=>x.id!==id); UI.modal=null; toast('Request declined.'); }
+function simulate(){ const u=me(), L=DB.links.filter(l=>l.user===u.id&&l.status==='active'); if(!L.length){ toast('No active links to scan.'); return; } const l=L[Math.floor(Math.random()*L.length)];
   const FN=['Hope','Ian','June','Kai','Leo','Mia','Noah','Ola'], LN=['Fox','Gray','Holt','Ives','Kane','Lowe'];
-  const st=['results','learn','chose','ilia'][Math.floor(Math.random()*4)], kz=Math.random()>.35;
-  l.clicks+=3; DB.leads.unshift({id:'P-'+(++DB.seq+6000),name:FN[Math.floor(Math.random()*8)]+' '+LN[Math.floor(Math.random()*6)],link:l.id,user:u.id,asset:l.asset,agent:u.agent,group:u.group,stage:st,product:(st==='chose'||st==='ilia')?(kz?'kz':'iul'):null,qual:kz,flag:null,contacted:Math.random()>.7,when:'just now'});
-  keep(); toast('New prospect from '+l.asset+' → '+STAGE[st][0]+'.'); }
+  const st=['results','learn','chose','ilia'][Math.floor(Math.random()*4)], kz=Math.random()>.35, name=FN[Math.floor(Math.random()*8)]+' '+LN[Math.floor(Math.random()*6)];
+  l.clicks+=3; DB.leads.unshift({id:'P-'+(++DB.seq+6000),name,link:l.id,user:u.id,asset:l.asset,agent:u.agent,group:u.group,stage:st,product:(st==='chose'||st==='ilia')?(kz?'kz':'iul'):null,qual:kz,flag:null,contacted:Math.random()>.7,when:'just now',days:0,ans:{age:44,goal:'Tax-free retirement income',amount:25000,hh:'$100–250k',health:'Good'},learned:[]});
+  const leader=DB.users.find(x=>x.group===u.group&&x.role==='leader'&&x.id!==u.id); if(leader) notify(leader.id,'📥','New lead from '+u.name,name+' → '+STAGE[st][0]+'.');
+  notify(u.id,'📥','New lead: '+name,'From '+l.asset+' → '+STAGE[st][0]+'.');
+  toast('New prospect from '+l.asset+' → '+STAGE[st][0]+'.'); }
 
 // ---------------- Events ----------------
 document.addEventListener('click',e=>{
   const t=e.target;
-  const rb=t.closest('[data-role]'); if(rb){ UI.role=rb.dataset.role; UI.screen=null; UI.param=null; UI.modal=null; UI.form={}; render(); return; }
+  const rb=t.closest('[data-role]'); if(rb){ UI.role=rb.dataset.role; UI.screen=null; UI.param=null; UI.modal=null; UI.form={}; UI.filter={}; render(); return; }
   const db=t.closest('[data-dev]'); if(db){ UI.dev=db.dataset.dev; render(); return; }
-  if(t.closest('#reset')){ DB=seed(); UI.screen=null; UI.param=null; UI.modal=null; UI.form={}; UI.memberStep=0; render(); toast('Demo data reset.'); return; }
+  if(t.closest('#reset')){ DB=seed(); UI.screen=null; UI.param=null; UI.modal=null; UI.form={}; UI.filter={}; UI.memberStep=0; render(); toast('Demo data reset.'); return; }
   const inp=t.closest('#portal [data-f]');
-  if(inp){ if(!inp.value&&inp.dataset.demo){ inp.value=inp.dataset.demo; UI.form[inp.dataset.f]=inp.value; if(inp.dataset.f==='ahead'||inp.dataset.f==='amsg') keep(); else refreshNeeds(); } return; }
+  if(inp){ if(!inp.value&&inp.dataset.demo){ inp.value=inp.dataset.demo; UI.form[inp.dataset.f]=inp.value; if(inp.dataset.f==='ahead'||inp.dataset.f==='amsg') keep(); } return; }
   if(!t.closest('#portal')) return;
-  const b=t.closest('button, a.btn, [data-nav]'); if(!b) return;
+  const b=t.closest('button, a.btn, [data-nav], [data-open], [data-logo]'); if(!b) return;
   const d=b.dataset;
-  if(d.backdrop!==undefined&&t===b){ UI.modal=null; render(); return; }
-  if(d.close){ UI.modal=null; render(); return; }
-  if(d.nav){ const [s,p]=d.nav.split(':'); go(s,p); return; }
-  if(d.open){ openModal(d.open); return; }
-  if(d.approve){ if(b.disabled) return; approve(d.approve); return; }
+  if(d.backdrop!==undefined){ if(t===b){ UI.modal=null; keep(); } return; }
+  if(b.disabled) return;
+  if(d.close){ UI.modal=null; keep(); return; }
+  if(d.nav){ const [s,p]=d.nav.split(':'); go(s,p); if(d.preset){ const [fk,fv]=d.preset.split(':'); UI.filter[fk]=fv; render(); } return; }
+  if(d.open){ openModal(d.open); if(d.mode){ UI.form.mode=d.mode; keep(); } return; }
+  if(d.approve){ approve(d.approve); return; }
   if(d.decline){ decline(d.decline); return; }
-  if(d.unlink){ const [a,g]=d.unlink.split(':'); A(a).groups=A(a).groups.filter(x=>x!==g); keep(); toast('Agent unlinked. Members who chose them keep existing prospects.'); return; }
-  if(d.save){ if(b.disabled) return; if(d.need&&!need(d.need)){ toast('Fill in the highlighted fields (tip: click a field for sample data).'); return; } save(d.save); return; }
+  if(d.unlink){ const [a,g]=d.unlink.split(':'); A(a).groups=A(a).groups.filter(x=>x!==g); log('Unlinked '+A(a).name+' from '+G(g).name); toast('Agent unlinked. Existing prospects stay with them.'); return; }
+  if(d.save){ if(d.need&&!need(d.need)){ toast('Fill in the required fields (tip: click a field for sample data).'); return; } save(d.save); keep(); return; }
   if(d.togag){ UI.form.agents=UI.form.agents||{}; UI.form.agents[d.togag]=!UI.form.agents[d.togag]; keep(); return; }
   if(d.toggrp){ UI.form.grps=UI.form.grps||{}; UI.form.grps[d.toggrp]=!UI.form.grps[d.toggrp]; keep(); return; }
   if(d.lookup){ const q=(UI.form.aq||'').trim().toLowerCase(); UI.form._found=DB.ilia.find(x=>x.email===q||x.iliaId.toLowerCase()===q)||false; keep(); return; }
@@ -664,19 +993,57 @@ document.addEventListener('click',e=>{
   if(d.type){ UI.form.type=d.type; keep(); return; }
   if(d.mode){ UI.form.mode=d.mode; keep(); return; }
   if(d.copy){ try{ navigator.clipboard.writeText(d.copy); }catch(err){} toast('Link copied.'); return; }
+  if(d.dlqr){ const c=document.querySelector('.modal .qr canvas'); try{ const a=document.createElement('a'); a.href=c.toDataURL('image/png'); a.download='partner-hub-qr.png'; document.body.appendChild(a); a.click(); a.remove(); toast('QR code downloaded.'); }catch(err){ toast('QR download not available offline.'); } return; }
   if(d.sim){ simulate(); return; }
+  if(d.range){ UI.range=+d.range; keep(); return; }
+  if(d.export){ exportCSV(d.export); return; }
+  if(d.expand){ UI.filter.open=UI.filter.open===d.expand?undefined:d.expand; keep(); return; }
+  if(d.fset){ const [k,v]=d.fset.split(':'); UI.filter[k]=v||undefined; keep(); return; }
+  if(d.resend){ toast('Invite re-sent to '+U(d.resend).name+'.'); log('Re-sent invite to '+U(d.resend).name); return; }
+  if(d.cancelinv){ const n=U(d.cancelinv).name; DB.users=DB.users.filter(u=>u.id!==d.cancelinv); DB.approvals=DB.approvals.filter(a=>a.user!==d.cancelinv); log('Cancelled invite for '+n); toast('Invite for '+n+' cancelled.'); return; }
+  if(d.ustatus){ const [id,st]=d.ustatus.split(':'); U(id).status=st; log((st==='active'?'Reactivated ':'Deactivated ')+U(id).name); toast(U(id).name+(st==='active'?' reactivated.':' deactivated. Their links stop working; leads stay with the agent.')); return; }
+  if(d.promote){ U(d.promote).role='leader'; log('Made '+U(d.promote).name+' a group leader'); toast(U(d.promote).name+' is now a group leader.'); return; }
+  if(d.gstatus){ const [id,st]=d.gstatus.split(':'); G(id).status=st; log((st==='paused'?'Paused ':'Resumed ')+G(id).name); toast(G(id).name+(st==='paused'?' paused.':' resumed.')); return; }
+  if(d.astatus){ const [id,st]=d.astatus.split(':'); AS(id).status=st; log({paused:'Paused',active:'Restored',archived:'Archived'}[st]+' asset '+id); toast(id+' '+({paused:'paused. Its links show "temporarily unavailable".',active:'is active again.',archived:'archived. Existing links keep working.'}[st])); return; }
+  if(d.ashare){ const a=AS(d.ashare); a.shared=!a.shared; log((a.shared?'Shared ':'Unshared ')+a.id); toast(a.shared?a.id+' shared with your team.':a.id+' is now personal.'); return; }
+  if(d.dup){ const a=AS(d.dup), id='AS-0'+(DB.seq+=3); DB.assets.unshift(Object.assign({},a,{id,name:a.name+' (copy)',created:'Today',owner:me().id})); log('Duplicated '+a.id+' → '+id); toast('Duplicated as '+id+'.'); return; }
+  if(d.mklink){ const L={id:nid('LK'),user:me().id,asset:d.mklink,clicks:0,status:'active'}; DB.links.unshift(L); log('Created link for '+d.mklink); UI.modal={name:'share:'+L.id}; UI.form={}; keep(); toast('Your link is ready.'); return; }
+  if(d.lstatus){ const [id,st]=d.lstatus.split(':'); DB.links.find(l=>l.id===id).status=st; toast(st==='paused'?'Link paused. Visitors see "temporarily unavailable".':'Link resumed.'); return; }
+  if(d.dellink){ DB.links=DB.links.filter(l=>l.id!==d.dellink); toast('Link deleted. Its past leads stay in your list.'); return; }
+  if(d.nudge){ const l=DB.leads.find(x=>x.id===d.nudge); UI.modal=null; toast(A(l.agent).name+' was nudged about '+l.name+'.'); return; }
+  if(d.readall){ DB.notifs.forEach(n=>{ if(n.to===me().id) n.read=true; }); keep(); return; }
+  if(d.faq!==undefined){ UI.form['faq'+d.faq]=!UI.form['faq'+d.faq]; keep(); return; }
+  if(d.sw){ const k=d.sw; if(SETKEYS.includes(k)) UI.form['s_'+k]=!cur(k); else if(k==='gcob') UI.form.gcob=!(UI.form.gcob!==undefined?UI.form.gcob:G(me().group).cobrand); else UI.form[k]=UI.form[k]===false; keep(); return; }
+  if(d.num){ const [k,by]=d.num.split(':'); UI.form['s_'+k]=Math.max(0,cur(k)+ +by); keep(); return; }
+  if(d.pw){ UI.form.s_postWall=d.pw; keep(); return; }
+  if(d.digest){ UI.form.s_digest=d.digest; keep(); return; }
+  if(d.savesettings){ SETKEYS.forEach(k=>{ if(UI.form['s_'+k]!==undefined){ DB.settings[k]=UI.form['s_'+k]; delete UI.form['s_'+k]; } }); log('Published settings changes'); toast('Changes published. They apply to every group\'s funnel.'); return; }
+  if(d.gcol){ UI.form.gcol=d.gcol; keep(); return; }
+  if(d.logo){ UI.form.glogo=true; keep(); return; }
+  if(d.savegroup){ const g=G(me().group); g.name=UI.form.gn||g.name; g.web=UI.form.gw||g.web; g.contact=UI.form.gc||g.contact; if(UI.form.gcol) g.color=UI.form.gcol; if(UI.form.gcob!==undefined) g.cobrand=UI.form.gcob; log('Updated group settings'); toast('Group settings saved.'); return; }
+  if(d.saveprofile){ const u=me(); u.name=UI.form.pname||u.name; u.email=UI.form.pemail||u.email; u.phone=UI.form.pphone||u.phone; toast('Profile saved.'); return; }
+  if(d.signout){ toast('This is a demo. Use the bar at the top to switch users.'); return; }
   if(d.mstep!==undefined){ if(d.need&&!need(d.need)){ toast('Fill in your details first (tip: click a field for sample data).'); return; }
-    const n=+d.mstep; if(n===3){ const u=me(); u.agent=UI.form.agent; if(!DB.links.some(l=>l.user===u.id)) DB.links.unshift({id:nid('LK'),user:u.id,asset:'AS-0047',clicks:0}); }
-    if(n===2&&UI.form.mname) me().name=UI.form.mname;
-    UI.memberStep=n; const keepAgent=UI.form.agent; const f=UI.form; render(); return; }
-  if(d.mdone){ me().status='active'; UI.screen='home'; UI.form={}; render(); toast('Welcome aboard! Share your link to get your first lead.'); return; }
-});
-document.addEventListener('input',e=>{ const t=e.target; if(t.dataset&&t.dataset.f){ UI.form[t.dataset.f]=t.value; if(t.dataset.f==='ahead'||t.dataset.f==='amsg'){ const pv=$('.modal .preview-ad'); if(pv){ pv.querySelector('h4').textContent=UI.form.ahead||'Your headline'; pv.querySelector('p').textContent=UI.form.amsg||'Your message'; } } } });
-document.addEventListener('change',e=>{ const t=e.target; if(t.dataset&&t.dataset.f){ UI.form[t.dataset.f]=t.value; } if(t.dataset&&t.dataset.shared){ UI.form.shared=t.checked; } });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&UI.modal){ UI.modal=null; render(); } });
-function refreshNeeds(){ /* fields keep values in UI.form; buttons validate on click */ }
+    const n=+d.mstep; if(n===3){ const u=me(); u.agent=UI.form.agent; if(!DB.links.some(l=>l.user===u.id)) DB.links.unshift({id:nid('LK'),user:u.id,asset:'AS-0047',clicks:0,status:'active'}); }
+    if(n===2&&UI.form.mname){ me().name=UI.form.mname; me().phone=UI.form.mphone; }
+    UI.memberStep=n; render(); return; }
+  if(d.mdone){ me().status='active'; me().last='Today'; notify('L1','👋',me().name+' joined the team','They chose '+A(me().agent).name+' as their agent.'); log(me().name+' completed onboarding'); UI.screen='home'; UI.form={}; render(); toast('Welcome aboard! Share your link to get your first lead.'); return; }
+},true);
+// keep after actions that mutate
+document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('#portal [data-unlink],[data-resend],[data-cancelinv],[data-ustatus],[data-promote],[data-gstatus],[data-astatus],[data-ashare],[data-dup],[data-lstatus],[data-dellink],[data-nudge],[data-sim],[data-savesettings],[data-savegroup],[data-saveprofile],[data-decline]'); if(b) keep(); });
+document.addEventListener('input',e=>{ const t=e.target; if(!t.dataset) return;
+  if(t.dataset.f){ UI.form[t.dataset.f]=t.value; if(t.dataset.f==='ahead'||t.dataset.f==='amsg'){ const pv=$('.modal .preview-ad'); if(pv){ pv.querySelector('h4').textContent=UI.form.ahead||'Your headline'; pv.querySelector('p').textContent=UI.form.amsg||'Your message'; } } }
+  if(t.dataset.filt&&t.type==='search'){ UI.filter[t.dataset.filt]=t.value; keep(); } });
+document.addEventListener('change',e=>{ const t=e.target; if(!t.dataset) return; if(t.dataset.f){ UI.form[t.dataset.f]=t.value; } if(t.dataset.shared){ UI.form.shared=t.checked; }
+  if(t.dataset.filt&&t.tagName==='SELECT'){ UI.filter[t.dataset.filt]=t.value||undefined; keep(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&UI.modal){ UI.modal=null; keep(); } });
+function exportCSV(kind){
+  if(kind==='leads'){ const L=UI._exportLeads||[]; const full=UI.role==='admin';
+    downloadCSV('partner-hub-leads.csv',[['Lead ID','Prospect','Group','Member','Asset','Agent','Stage','Choice','Flag','When'].concat(full?['Goal','Age','Yearly amount','Household income']:[]),...L.map(l=>[l.id,l.name,G(l.group).name,U(l.user).name,l.asset,A(l.agent)?A(l.agent).name:'',STAGE[l.stage][0],l.product||'',l.flag||'',l.when].concat(full?[l.ans.goal,l.ans.age,l.ans.amount,l.ans.hh]:[]))]); return; }
+  const data=(UI._reports||{})[kind]||[];
+  downloadCSV('partner-hub-'+kind+'-'+UI.range+'d.csv',[['Name','Visits','Leads','IUL','Kai-Zen','Sent to ILIA'],...data.map(d=>[d.x.name||d.x.id,sc(d.s.visits),sc(d.s.leads),sc(d.s.iul),sc(d.s.kz),sc(d.s.ilia)])]);
+}
 
-// initial: honor ?role= & ?dev=
 const P=new URLSearchParams(location.search);
 if(['admin','leader','member'].includes(P.get('role'))) UI.role=P.get('role');
 UI.dev=P.get('dev')==='mobile'||(!P.get('dev')&&window.innerWidth<700)?'mobile':'web';
