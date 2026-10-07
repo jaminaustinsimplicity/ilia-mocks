@@ -847,7 +847,7 @@ const SCREENS={
      <div><span>Calculator answers</span><b>age ${S.age} · ${S.sex||'—'} · ${S.health||'—'} · nicotine ${S.nic||'—'}</b></div>
      <div><span>Agent of record</span><b>Agent Name · via their ${S.product==='kz'?'Kai-Zen':'IUL'} Agent Link code</b></div>
      ${(()=>{const a=afford(S.amount,S.hh); return a&&a.level!=='ok'?`<div><span>Affordability flag</span><b>${a.level==='over'?'Over guideline'+(S.affKeep?' · paying from savings':''):'Stretch'} (~${a.pct}% of income)</b></div>`:'';})()}
-     <div><span>Source</span><b>CMS link ${QP.get('l')||'LK-101'} · asset ${QP.get('a')||'AS-0047'}</b></div>
+     <div><span>Source</span><b>${CMP?'Paid campaign '+CMP+' · '+IMONAME+' · routed by state ('+(S.state||'—')+')':'CMS link '+(QP.get('l')||'LK-101')+' · asset '+(QP.get('a')||'AS-0047')}</b></div>
      <div><span>Prospect details</span><b>${H==='v2'?'Entered on ILIA\'s page. Partner Hub never sees them':'Collected on the next screen'}</b></div>
    </div></div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="ilia">${H==='v1'?'Start my account →':'Go to ILIA →'}</button>`)}`},
  ilia(){const kzSel=S.product==='kz', v=calc(S,kzSel), A=S.acct, v1=H==='v1';
