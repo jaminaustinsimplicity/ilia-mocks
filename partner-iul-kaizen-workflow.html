@@ -111,6 +111,7 @@ td:first-child{white-space:nowrap;font-weight:600;color:var(--ink-2)}
 .proto-badge:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(14,159,138,.3)}
 .proto-badge:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .proto-badge .pb-ic{width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:11px;flex:none}
+.proto-badge.cms-badge{background:var(--cms);border-color:var(--cms);text-decoration:none;box-shadow:0 2px 10px rgba(31,122,224,.25)}
 .proto-badge .pb-sub{margin-left:auto;font-weight:500;font-size:12px;opacity:.9}
 .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(10,14,22,.62);padding:24px}
 .modal.open{display:flex}
@@ -174,6 +175,7 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
   <!-- 2 CMS -->
   <section class="zone z-cms">
     <div class="zhead"><div class="num">2</div><h3>CMS (custom build)<small>Marketing + tracking, outside ILIA</small></h3></div>
+    <a class="proto-badge cms-badge" href="partner-cms.html"><span class="pb-ic">▶</span> CMS prototype <span class="pb-sub">Admin · Leader · Member</span></a>
     <div class="card"><b>Admin layer <span class="tag t-draft">Define later</span></b><p>Approves invitations and group access.</p></div>
     <div class="card"><b>Group-related agent list <span class="tag t-dec">Decided</span></b><p>A short list of existing ILIA agents with group relationships. The CMS just references them. <b>No new ILIA agent type.</b></p></div>
     <div class="card"><b>Member portal <span class="tag t-dec">Decided</span></b><p>The member <b>picks their ILIA agent</b> from the list, gets their own tracked <b>links + asset IDs</b>, and creates and shares their own marketing.</p></div>

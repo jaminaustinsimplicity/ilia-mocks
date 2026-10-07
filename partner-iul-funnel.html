@@ -352,6 +352,13 @@ input[type=range]{width:100%;accent-color:var(--brand)}
 .aff .kzn{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--ink-2)}
 .affbanner{display:flex;gap:10px;align-items:flex-start;background:var(--warn-soft);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--ink-2);margin:0 0 12px}
 .affbanner b{color:var(--ink)}
+/* Prospect mode (opened from a member's link / QR) */
+body.prospect .pagenav, body.prospect .wrap > *:not(#proto), body.prospect #proto > h2, body.prospect #proto > .sub, body.prospect .toolbar, body.prospect #proto > .disc, body.prospect .notes, body.prospect .browserbar{display:none !important}
+body.prospect .wrap{max-width:none;padding:0}
+body.prospect .stage{display:block}
+body.prospect .device{width:100%;max-width:none;padding:0;border:0;border-radius:0;background:var(--bg);box-shadow:none}
+body.prospect .device .screen{height:100vh;height:100dvh;border-radius:0;border:0}
+body.prospect .stage.web .device .screen{height:100vh;height:100dvh}
 footer{margin-top:40px;font-size:12px;color:var(--ink-3)}
 body.embed .pagenav{display:none}
 body.embed .wrap{padding:16px 16px 24px}
@@ -459,6 +466,10 @@ body.embed .notes{top:16px}
 <script>
 (function(){
 if(/[?&]embed=1/.test(location.search)) document.body.classList.add('embed');
+const QP=new URLSearchParams(location.search);
+const PROSPECT=QP.get('prospect')==='1';
+const AGENT=(QP.get('agent')||'').replace(/[<>&"]/g,'');
+if(PROSPECT) document.body.classList.add('prospect');
 const $=s=>document.querySelector(s);
 const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
 const fmtK=n=>n>=1e6?('$'+(n/1e6).toFixed(n>=1e7?1:2).replace(/\.?0+$/,'')+'M'):('$'+Math.round(n/1000).toLocaleString('en-US')+'k');
@@ -808,7 +819,7 @@ const SCREENS={
      <div><span>Calculator answers</span><b>age ${S.age} · ${S.sex||'—'} · ${S.health||'—'} · nicotine ${S.nic||'—'}</b></div>
      <div><span>Agent of record</span><b>Member's selected ILIA agent</b></div>
      ${(()=>{const a=afford(S.amount,S.hh); return a&&a.level!=='ok'?`<div><span>Affordability flag</span><b>${a.level==='over'?'Over guideline'+(S.affKeep?' · paying from savings':''):'Stretch'} (~${a.pct}% of income)</b></div>`:'';})()}
-     <div><span>Source</span><b>member-ab12 · asset QR-0047</b></div>
+     <div><span>Source</span><b>${QP.get('m')||'member-ab12'} · asset ${QP.get('a')||'QR-0047'}</b></div>
    </div></div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="ilia">Go to ILIA →</button>`)}`},
  ilia(){const kzSel=S.product==='kz', v=calc(S,kzSel), A=S.acct;
    const ok=A.last&&A.dob&&A.state&&A.pw&&A.terms;
@@ -890,7 +901,8 @@ function sheet(){
 }
 function render(){
   const app=$('#app');
-  app.innerHTML=header()+SCREENS[S.screen]()+(S.edit&&S.screen==='results'?sheet():'');
+  const html=header()+SCREENS[S.screen]()+(S.edit&&S.screen==='results'?sheet():'');
+  app.innerHTML=AGENT?html.split('Agent Name').join(AGENT):html;
   if(S.flash) S.flash.fresh=false;
   const n=NOTES[S.screen];
   $('#notes').innerHTML=`<div class="scr">${device==='web'?'Web':'Mobile'} · ${S.screen==='ilia'||S.screen==='done'?'inside ILIA':'funnel (outside ILIA)'}</div><h3>${n.t}</h3><ul>${n.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="track">📊 Tracked: <code>${n.k}</code></div>`;
@@ -992,7 +1004,7 @@ function setDevice(d){
 $('#bMobile').onclick=()=>setDevice('mobile');
 $('#bWeb').onclick=()=>setDevice('web');
 $('#bReset').onclick=()=>jump('land');
-setDevice('mobile');
+setDevice(PROSPECT&&window.innerWidth>=760?'web':'mobile');
 })();
 </script>
 </body>
