@@ -211,6 +211,9 @@ input[type=range]{width:100%;accent-color:var(--brand)}
 .payload div:last-child{border:0}
 .payload span{color:var(--ink-3)}
 
+body.embed .wrap{padding:16px 16px 24px}
+body.embed .wrap > *:not(#proto){display:none}
+body.embed #proto > h2{margin-top:0}
 footer{margin-top:40px;font-size:12px;color:var(--ink-3)}
 @media (max-width:900px){
   .stage{grid-template-columns:1fr}
@@ -265,6 +268,7 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-3)}
 </table>
 </div>
 
+<div id="proto">
 <h2>Clickable prototype</h2>
 <p class="sub">Click through it like a prospect would. Switch between phone and web. The notes on the right explain each screen and what gets tracked.</p>
 <div class="toolbar">
@@ -284,12 +288,14 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-3)}
 </div>
 
 <p class="disc" style="max-width:900px">All numbers in this prototype are <b>illustrative placeholders</b> from a simple growth formula, so the screens can be clicked through. They are not Allianz or Kai-Zen illustrations. Where the real numbers come from (ILIA's estimator, an Allianz illustration service, or something else) is an open requirement.</p>
+</div>
 
 <footer>W-PARTNER working draft for requirements discussion. No client data. Agent, group and links are placeholders.</footer>
 </div>
 
 <script>
 (function(){
+if(/[?&]embed=1/.test(location.search)) document.body.classList.add('embed');
 const $=s=>document.querySelector(s);
 const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
 const fmtK=n=>n>=1e6?('$'+(n/1e6).toFixed(n>=1e7?1:2).replace(/\.?0+$/,'')+'M'):('$'+Math.round(n/1000).toLocaleString('en-US')+'k');
