@@ -557,15 +557,15 @@ function agentCards(list){ const open=UI.filter.open;
 // ---------------- ADMIN (J) ----------------
 const ADMIN={
  dash(){ const s=stats({}), con=DB.agents.filter(a=>a.conn==='connected').length, pen=DB.agents.filter(a=>a.conn==='pending').length, nii=DB.agents.filter(a=>a.conn==='notInIlia').length;
-  return `${head('Dashboard','All agents and IMOs · last 30 days',`<button class="btn sec" data-nav="ilia">🔗 ILIA connection</button><button class="btn pri" data-open="addAsset">＋ Library asset</button>`)}
+  return `${head('Dashboard','All agents and IMOs · last 30 days',`<button class="btn sec" data-nav="ilia">🔗 ILIA connection</button><button class="btn sec" data-open="addAsset">＋ Library asset</button><button class="btn pri" data-open="addImo">＋ Add IMO</button>`)}
    ${statCards(s)}
    <div class="grid g21"><div class="card"><h3>Funnel across all agents</h3><p class="sub">From an agent's link to ILIA</p>${funnel(s)}</div>
    <div class="card"><h3>Agent connections</h3><p class="sub">Links only go live once an agent's IMO confirms their ILIA account</p>
      <div class="kv"><span>✓ Connected to ILIA</span><b>${con}</b><span>Awaiting IMO confirmation</span><b>${pen}</b><span>Not in ILIA yet</span><b>${nii}</b><span>Handoff mode</span><b>${UI.ho==='v1'?'v1 · agent invites in ILIA':'v2 · auto-send'}</b></div>
      <div class="btnrow"><button class="btn sec sm" data-nav="agents">View agents</button></div></div></div>
-   <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0"><h3>IMOs</h3></div>${imoTable()}</div>`;},
+   <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0;display:flex;align-items:center;gap:8px"><h3>IMOs</h3><button class="btn sec sm" style="margin-left:auto" data-nav="imos">Manage IMOs</button><button class="btn pri sm" data-open="addImo">＋ Add IMO</button></div>${imoTable()}</div>`;},
  agents(){ const F=UI.filter; const list=DB.agents.filter(a=>a.conn!=='new'&&(!F.imo||a.imo===F.imo)&&(!F.conn||a.conn===F.conn));
-  return `${head('Agents','Agents who use the CMS. Each one is tied to their ILIA agent ID.')}
+  return `${head('Agents','Agents who use the CMS. Each one is tied to their ILIA account (login email, confirmed by their IMO).')}
    <div class="card tablecard"><div class="tbar"><select data-filt="imo"><option value="">All IMOs</option>${DB.imos.map(i=>`<option value="${i.id}" ${F.imo===i.id?'selected':''}>${esc(i.name)}</option>`).join('')}</select>
     <select data-filt="conn"><option value="">Any connection</option><option value="connected" ${F.conn==='connected'?'selected':''}>Connected</option><option value="pending" ${F.conn==='pending'?'selected':''}>Awaiting IMO</option><option value="notInIlia" ${F.conn==='notInIlia'?'selected':''}>Not in ILIA yet</option></select><span class="sp"></span><span class="sub" style="margin:0">${list.length} agents</span></div>
    ${rows([{h:'Agent',w:'1.5fr',v:a=>`<div style="display:flex;gap:10px;align-items:center">${av(a.name)}<div>${esc(a.name)}<small>${esc(a.email)}</small></div></div>`},
@@ -694,7 +694,7 @@ function connectBlock(compact){ const a=me(), F=UI.form, mode=F.cmode||'have';
 }
 const AGENT={
  onboard(){ const a=me(), st=UI.step, bar=`<div class="steps">${[0,1,2,3].map(i=>`<div class="${i<=st?'on':''}"></div>`).join('')}</div>`;
-  if(st===0) return `<div class="wiz">${bar}<h2>Welcome to Partner Hub</h2><p class="lead">IUL → Kai-Zen boost marketing for ILIA agents, run by J <b>outside ILIA</b>. Create your account, connect your ILIA agent ID, and every prospect from your links goes into ILIA under you.</p>${tip}
+  if(st===0) return `<div class="wiz">${bar}<h2>Welcome to Partner Hub</h2><p class="lead">IUL → Kai-Zen boost marketing for ILIA agents, run by J <b>outside ILIA</b>. Create your account and connect your ILIA account (the email you log in to ILIA with, confirmed by your IMO). Every prospect from your links becomes your client in ILIA.</p>${tip}
      ${field('oname','Full name','Sam Rivera')}${field('oemail','Email','sam.rivera@example.com',{type:'email'})}${field('ophone','Mobile','(555) 014-2290',{type:'tel'})}
      <button class="btn pri" data-ostep="1" data-need="oname,oemail,ophone">Create my account →</button></div>`;
   if(st===1) return `<div class="wiz">${bar}<h2>Connect your ILIA account</h2><p class="lead">This is how ILIA knows your prospects are yours. Your links only go live once you're connected.</p>${connectBlock()}
@@ -713,7 +713,7 @@ const AGENT={
    <div class="grid g21"><div class="card"><h3>Your top link</h3><p class="sub">Share it, or let people scan the QR</p>${L[0]?linkBlock(L[0]):'<div class="empty">No links yet.</div>'}</div><div class="card"><h3>Your funnel</h3><p class="sub">What happens after people click</p>${funnel(s)}</div></div>
    <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>Recent prospects</h3><button class="btn sec sm" style="margin-left:auto" data-sim="1" ${live(a)?'':'disabled'}>＋ Simulate a scan</button><button class="btn sec sm" data-nav="prospects">All →</button></div>${proRows(DB.pros.filter(p=>p.agent===a.id).slice(0,5),{empty:live(a)?'No prospects yet. Share a link or simulate a scan.':'Prospects appear once your links are live.'})}</div>`;},
  links(){ const a=me(), L=DB.links.filter(l=>l.agent===a.id);
-  return `${head('My links','Each link belongs to you and carries an asset ID. When a prospect chooses a plan, they go into ILIA under your ILIA agent ID.',`<button class="btn pri" data-open="newLink">＋ New link</button>`)}${connBanner()}
+  return `${head('My links','Each link belongs to you and carries an asset ID. When a prospect chooses a plan, you add them in ILIA, so they're your client.',`<button class="btn pri" data-open="newLink">＋ New link</button>`)}${connBanner()}
    <div class="grid g2">${L.map(l=>`<div class="card">${linkBlock(l,true)}</div>`).join('')||'<div class="card empty">No links yet.</div>'}</div>`;},
  library(){ const a=me(), list=DB.assets.filter(x=>x.status==='active'&&(x.owner==='CMS'||x.owner===a.id));
   return `${head('Marketing library','J\'s CMS library plus anything you create. Get a personal tracked link for any of them.',`<button class="btn pri" data-open="newLink" data-mode="own">＋ Create my own</button>`)}<div class="grid g3">${list.map(x=>assetCard(x,'agent')).join('')}</div>`;},
@@ -723,15 +723,15 @@ const AGENT={
    ${UI.ho==='v2'&&todo.length?`<div class="banner ok">✓ <div><b>${todo.length} prospect${todo.length>1?'s were':' was'} sent to ILIA automatically</b><br><span style="color:var(--ink-2)">They're in your ILIA leads and their invite was emailed.</span></div></div>`:''}
    <div class="card tablecard">${bar}${proRows(out,{empty:'No prospects yet.'})}</div>`;},
  ilia(){ const a=me();
-  return `${head('ILIA connection','Ties your CMS links to your ILIA agent ID')}
+  return `${head('ILIA connection','Ties your CMS links to your ILIA account')}
    <div class="grid g2"><div class="card"><h3>Your connection</h3><p class="sub">${a.conn==='connected'?'All set':'Needed before your links go live'}</p>${connectBlock(true)}
      ${a.conn==='connected'?`<div class="btnrow"><button class="btn sec sm" data-reverify="1">Re-check with ILIA</button><button class="btn no sm" data-disconnect="1">Disconnect</button></div>`:''}</div>
    <div class="card"><h3>How your prospects reach ILIA</h3><p class="sub">Set by J (CMS Admin)</p>${modeExplain()}
-     <div class="flowsteps"><div><span class="n">1</span><div><b>Prospect uses your link</b>Your link ID → you → your ILIA agent ID</div></div><div><span class="n">2</span><div><b>Sees numbers anonymously, chooses IUL or Kai-Zen</b>No contact form before results</div></div><div><span class="n">3</span><div><b>Starts their ILIA account</b>${UI.ho==='v1'?'Gives name + email → you get a to-do → you invite them from ILIA':'Gives name + email → CMS sends lead to ILIA with your ID → ILIA emails their invite'}</div></div><div><span class="n">4</span><div><b>Client is yours in ILIA</b>Enrollment happens in ILIA as normal</div></div></div></div></div>`;},
+     <div class="flowsteps"><div><span class="n">1</span><div><b>Prospect uses your link</b>Your link ID → you → your ILIA account</div></div><div><span class="n">2</span><div><b>Sees numbers anonymously, chooses IUL or Kai-Zen</b>No contact form before results</div></div><div><span class="n">3</span><div><b>Starts their ILIA account</b>${UI.ho==='v1'?'Gives name + email → you get a to-do → you add them in ILIA with Add Client':'Gives name + email → CMS sends lead to ILIA with your ID → ILIA emails their invite'}</div></div><div><span class="n">4</span><div><b>Client is yours in ILIA</b>Enrollment happens in ILIA as normal</div></div></div></div></div>`;},
  notifications(){ return SHARED.notifications(); }, profile(){ return SHARED.profile(); }, help(){ return SHARED.help(); }
 };
 function connBanner(){ const a=me(); if(a.conn==='connected') return '';
-  if(a.conn==='pending') return `<div class="banner warn">⏳ <div><b>Your links aren't live yet</b><br><span style="color:var(--ink-2)">Waiting for ${esc(IM(a.imo).name)} to confirm your ILIA agent ID.</span></div><button class="btn sec sm" data-nav="ilia">Details</button></div>`;
+  if(a.conn==='pending') return `<div class="banner warn">⏳ <div><b>Your links aren't live yet</b><br><span style="color:var(--ink-2)">Waiting for ${esc(IM(a.imo).name)} to confirm your ILIA account.</span></div><button class="btn sec sm" data-nav="ilia">Details</button></div>`;
   return `<div class="banner warn">🔐 <div><b>Your links aren't live yet</b><br><span style="color:var(--ink-2)">${a.conn==='notInIlia'?'Register as an ILIA agent under '+(a.imo?esc(IM(a.imo).name):'Judy\'s or Josh\'s IMO')+', then connect.':'Connect your ILIA account.'}</span></div><button class="btn pri sm" data-nav="ilia">Connect</button></div>`; }
 function linkBlock(L,full){ const a=AS(L.asset), ag=AG(L.agent), url=linkUrl(L), n=DB.pros.filter(p=>p.link===L.id).length, off=!live(ag)||L.status==='paused'||a.status==='paused';
   return `<div class="linkcard">${qrBox(url,128,off)}<div style="min-width:0"><b style="display:block">${TYPES[a.type][0]} ${esc(a.name)}</b>
