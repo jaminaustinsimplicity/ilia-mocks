@@ -334,6 +334,24 @@ input[type=range]{width:100%;accent-color:var(--brand)}
 .prow .dl{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:6px;white-space:nowrap}
 .dl.up{color:var(--good);background:var(--good-soft)} .dl.down{color:var(--bad);background:var(--surface)} .dl.same{color:var(--ink-3)}
 .sheet .acts{display:flex;gap:10px;margin-top:14px}
+/* Affordability flag */
+.aff{border-radius:12px;padding:12px 14px;margin:4px 0 0;font-size:13.5px;border:1px solid var(--line)}
+.aff > b{display:block;font-size:14px;margin-bottom:2px}
+.aff p b{color:var(--ink)}
+.aff p{margin:0 0 8px;color:var(--ink-2)}
+.aff.ok{background:var(--good-soft);border-color:transparent} .aff.ok b{color:var(--good)}
+.aff.stretch{background:var(--warn-soft);border-color:transparent} .aff.stretch b{color:var(--warn)}
+.aff.over{background:var(--surface);border:1.5px solid var(--bad)} .aff.over > b{color:var(--bad)}
+.aff .gauge{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--good) 0 50%,var(--warn) 50% 66%,var(--bad) 66% 100%);position:relative;margin:8px 0 4px;opacity:.85}
+.aff .gauge i{position:absolute;top:-4px;width:4px;height:16px;border-radius:2px;background:var(--ink);transform:translateX(-50%)}
+.aff .gl{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-bottom:8px}
+.aff .acts{display:flex;gap:8px;flex-wrap:wrap}
+.aff .acts button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:700 13px Inter,sans-serif;padding:8px 11px;border-radius:9px;cursor:pointer}
+.aff .acts button.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.aff .acts button[aria-pressed=true]{border-color:var(--ink);background:var(--surface-2)}
+.aff .kzn{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--ink-2)}
+.affbanner{display:flex;gap:10px;align-items:flex-start;background:var(--warn-soft);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--ink-2);margin:0 0 12px}
+.affbanner b{color:var(--ink)}
 footer{margin-top:40px;font-size:12px;color:var(--ink-3)}
 body.embed .pagenav{display:none}
 body.embed .wrap{padding:16px 16px 24px}
@@ -401,7 +419,7 @@ body.embed .notes{top:16px}
   <tr><td>1</td><td><b>What matters most to you?</b></td><td>Tax-free retirement income · Protect my family · Grow without market losses · Access cash when I need it (pick any)</td><td><span class="pill p-desire">Desire</span> sets what the results lead with</td></tr>
   <tr><td>2</td><td><b>About you:</b> age + sex</td><td>Age stepper · Male / Female</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: age 18–65</span></td></tr>
   <tr><td>3</td><td><b>Your health:</b> overall health + nicotine/tobacco/marijuana</td><td>Excellent · Good · Average · Below average · No / Yes</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: average or better</span></td></tr>
-  <tr><td>4</td><td><b>Your numbers:</b> yearly amount + household income</td><td>$10k · $25k · $50k · $100k+ · Under $100k / $100–250k / $250–500k / $500k+</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: household income $100k+</span></td></tr>
+  <tr><td>4</td><td><b>Your numbers:</b> yearly amount + household income</td><td>$10k · $25k · $50k · $100k+ · Under $100k / $100–250k / $250–500k / $500k+</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: household income $100k+</span><span class="pill p-lead">Affordability flag</span> yearly amount vs ~20%-of-income guideline</td></tr>
   <tr><td>5</td><td><b>When do you want income to start?</b></td><td>60 · 65 · 70</td><td><span class="pill p-calc">Calculator</span></td></tr>
   <tr><td>6</td><td><b>Where should we send your results?</b></td><td>First name · email · mobile</td><td><span class="pill p-lead">Lead</span> captured <i>before</i> results so drop-offs can be followed up. Open question: required or optional?</td></tr>
   <tr><td>·</td><td><i>Defaults (adjustable on results)</i></td><td>Years paying = 5 · Income until age 90 · Death benefit sized from the contribution</td><td><span class="pill p-calc">Calculator</span></td></tr>
@@ -464,6 +482,34 @@ function calc(st,lev){
   const db=P*N*3.6*(lev?1.45:1)*healthAdj;
   return {cv,income:ann,db,paid:P*N,start:Sa,lenderPct:lev?Math.round((mult-1)/mult*100):0,series,total:ann*n};
 }
+// Affordability check (premium paid from earnings).
+// Industry guideline: yearly premium generally no more than ~20% of annual income; above that needs
+// assets/savings review by underwriting. Bands -> [low, typical, high] household income.
+const BANDS={u100:[0,75000,100000],'100':[100000,150000,250000],'250':[250000,350000,500000],'500':[500000,650000,Infinity]};
+function afford(amount,hh){
+  if(!amount||!hh) return null;
+  const [lo,typ,hi]=BANDS[hh], pctTyp=amount/typ;
+  const round5=v=>Math.max(5000,Math.round(v/5000)*5000);
+  const suggest=round5(typ*0.12);
+  let level='ok';
+  if(hi!==Infinity && amount>hi*0.20) level='over';
+  else if(amount>typ*0.15) level='stretch';
+  return {level,pct:Math.round(pctTyp*100),suggest:Math.min(suggest,amount),marker:Math.min(pctTyp/0.30,1)*100};
+}
+function affBlock(where){
+  const a=afford(S.amount,S.hh); if(!a) return '';
+  const amt=S.amount>=100000?fmt(S.amount)+'+':fmt(S.amount);
+  const band={u100:'under $100k','100':'$100–250k','250':'$250–500k','500':'$500k+'}[S.hh];
+  const kz=S.hh==='u100'?'<div class="kzn">🚀 The Kai-Zen boost needs a household income of $100k+, so you\'ll see IUL numbers only.</div>':'';
+  const gauge=`<div class="gauge"><i style="left:${a.marker}%"></i></div><div class="gl"><span>Comfortable</span><span>Stretch</span><span>Over guideline</span></div>`;
+  if(a.level==='ok') return `<div class="aff ok"><b>✓ Looks comfortable</b><p>About ${a.pct}% of a typical household income in your range.</p>${kz}</div>`;
+  if(a.level==='stretch') return `<div class="aff stretch"><b>Heads up: this is a stretch</b><p>${amt}/yr is about ${a.pct}% of a typical income in your range. Make sure it's comfortable for at least 5 years. You can lower it on the next screen.</p>${gauge}
+    <div class="acts"><button data-affuse="${a.suggest}">Try ${fmt(a.suggest)}/yr</button></div>${kz}</div>`;
+  return `<div class="aff over" role="alert"><b>⚠ This might not be the best fit for you</b>
+    <p>Putting in ${amt}/yr on a household income ${band} is more than most people can keep up. Carriers usually look for yearly premiums under about <b>20% of income</b>, and you'd need to keep paying for at least 5 years.</p>${gauge}
+    <div class="acts"><button class="pri" data-affuse="${a.suggest}">Use ${fmt(a.suggest)}/yr instead</button><button aria-pressed="${!!S.affKeep}" data-affkeep="1">I'd pay from savings: keep it</button></div>
+    ${S.affKeep?'<p style="margin:8px 0 0;font-size:12.5px">Got it. Your agent will review whether this works with your savings before anything is final.</p>':''}${kz}</div>`;
+}
 function qualifies(st){
   const chk=[
     {k:'Household income of $100k+',ok:st.hh&&st.hh!=='u100'},
@@ -504,7 +550,7 @@ const NOTES={
  goals:{t:'Q1 · Desire',b:['Multi-select.','The answer decides what the results lead with (income first, death benefit first, or cash value first).'],k:'goal(s) selected'},
  about:{t:'Q2 · About you',b:['Age drives the calculator and is part of the Kai-Zen check (18–65).','Sex is needed for pricing.'],k:'step reached'},
  health:{t:'Q3 · Health',b:['Self-rated health class, no medical details yet.','Below average is not eligible for the boost (they still get IUL numbers).'],k:'step reached'},
- money:{t:'Q4 · Your numbers',b:['Yearly amount is the main calculator input.','Household income is asked as a band. It\'s the Kai-Zen check ($100k+).'],k:'step reached'},
+ money:{t:'Q4 · Your numbers + affordability',b:['Yearly amount is the main calculator input. Household income is a band (also the Kai-Zen $100k+ check).','<b>Live affordability flag</b> based on the industry guideline that yearly premium paid from earnings should be no more than ~20% of income:','✓ <b>Comfortable</b> ≤15% of a typical income in the band · <b>Stretch</b> above that · <b>⚠ Not the best fit</b> above 20% of the top of the band.','For ⚠, the prospect must either take the suggested amount (~12% of income) or say they\'d pay from savings. Savings cases are flagged for the agent; carriers allow premiums from assets but review them.','The same check runs when they edit numbers on results, and the flag travels to ILIA with the handoff.','Thresholds are a starting point to confirm with the carrier/compliance.'],k:'affordability level · suggestion used / kept'},
  start:{t:'Q5 · Income start',b:['Three taps, adjustable on results.','Years paying defaults to 5; income runs to age 90.'],k:'step reached'},
  contact:{t:'Q6 · Send my results',b:['Captures the lead <b>before</b> results, so members can see drop-offs and the agent can follow up.','<b>Open:</b> required vs optional.','Demo: click any field to fill sample details.'],k:'lead created (tied to member + agent)'},
  results:{t:'Your numbers + boost',b:['Leads with their own numbers and the goal they picked.','<b>Adjust</b> yearly amount, years paying, income start and age. Results and chart update live.','<b>Web:</b> IUL and Kai-Zen side by side. <b>Mobile:</b> tabs, with the boost amount on the tab.','<b>✎ Edit my numbers</b> on each plan: change amount, years, start age or age, see <b>before → after</b>, then <b>Save & update</b>. The card highlights what changed.','Each plan card has its own <b>Choose</b> button, so picking a plan is one tap.','"Why?" chips jump to the matching Learn more section.','Stepper at the top: jump back to answers at any time.'],k:'results viewed · adjustments · boost viewed · plan chosen'},
@@ -574,7 +620,8 @@ const SCREENS={
    <p class="kicker">Question 4 of 6</p><h2 class="q">Your numbers</h2><p class="help">You can change these on the next screen.</p>
    <div class="field"><label>How much could you put in each year?</label><div class="row">${optBtn('amount',10000,'$10k')}${optBtn('amount',25000,'$25k')}${optBtn('amount',50000,'$50k')}${optBtn('amount',100000,'$100k+')}</div></div>
    <div class="field"><label>Household income</label><div class="row">${optBtn('hh','u100','Under $100k')}${optBtn('hh','100','$100–250k')}${optBtn('hh','250','$250–500k')}${optBtn('hh','500','$500k+')}</div></div>
-   </div></div>${foot(`<button class="btn primary" data-go="start" ${S.amount&&S.hh?'':'disabled'}>Next</button>`)}`},
+   ${affBlock('q4')}
+   </div></div>${foot(`<button class="btn primary" data-go="start" ${S.amount&&S.hh&&!(afford(S.amount,S.hh).level==='over'&&!S.affKeep)?'':'disabled'}>Next</button>`)}`},
  start(){return `<div class="body"><div class="inner">${back('money')}
    <p class="kicker">Question 5 of 6</p><h2 class="q">When would you like income to start?</h2><p class="help">The age you'd start drawing tax-free income.</p>
    <div class="row">${optBtn('start',60,'Age 60')}${optBtn('start',65,'Age 65')}${optBtn('start',70,'Age 70')}</div>
@@ -622,6 +669,7 @@ const SCREENS={
    const showKz=q.ok&&(device==='web'||S.tab==='kz');
    return `<div class="body"><div class="inner wide">
      <p class="kicker">Your estimate${S.name?', '+S.name:''}</p><h2 class="q" style="margin-bottom:4px">Here's what your plan could look like</h2>
+     ${(()=>{const a=afford(S.amount,S.hh); return a&&a.level==='over'?`<div class="affbanner">⚠<div><b>${fmt(S.amount)}/yr is over the usual guideline for your income.</b> ${S.affKeep?'You said you\'d pay from savings, so your agent will review it.':''} <button class="linkbtn" data-affuse="${a.suggest}">See ${fmt(a.suggest)}/yr instead</button></div></div>`:'';})()}
      <p class="help">Based on ${fmt(S.amount)}/yr for ${S.years} years, starting at age ${S.age}. <button class="linkbtn" data-edit="${S.tab}">✎ Change numbers</button></p>
      <div class="res-grid">${adj}<div>
        <div class="ptabs"><button aria-pressed="${S.tab==='iul'}" data-tab="iul">IUL</button><button class="kzt" aria-pressed="${S.tab==='kz'}" data-tab="kz">With boost ${q.ok?'🚀 +'+fmtK(diff*(90-kz.start)):''}</button></div>
@@ -759,6 +807,7 @@ const SCREENS={
      <div><span>Prospect</span><b>${S.name||'—'} · ${S.email||'—'}</b></div>
      <div><span>Calculator answers</span><b>age ${S.age} · ${S.sex||'—'} · ${S.health||'—'} · nicotine ${S.nic||'—'}</b></div>
      <div><span>Agent of record</span><b>Member's selected ILIA agent</b></div>
+     ${(()=>{const a=afford(S.amount,S.hh); return a&&a.level!=='ok'?`<div><span>Affordability flag</span><b>${a.level==='over'?'Over guideline'+(S.affKeep?' · paying from savings':''):'Stretch'} (~${a.pct}% of income)</b></div>`:'';})()}
      <div><span>Source</span><b>member-ab12 · asset QR-0047</b></div>
    </div></div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="ilia">Go to ILIA →</button>`)}`},
  ilia(){const kzSel=S.product==='kz', v=calc(S,kzSel), A=S.acct;
@@ -828,6 +877,7 @@ function sheet(){
     <div class="erow"><span>Years paying<small>${lev?'Kai-Zen leverage options':'How long you contribute'}</small></span><div class="echips" style="margin:0">${[5,7,10].map(v=>`<button aria-pressed="${E.years===v}" data-edset="years" data-val="${v}">${v} yrs</button>`).join('')}</div></div>
     <div class="erow"><span>Income starts at<small>Age you start drawing income</small></span><div class="estep"><button data-ed="start" data-by="-1" aria-label="Earlier">−</button><output>Age ${E.start}</output><button data-ed="start" data-by="1" aria-label="Later">+</button></div></div>
     <div class="erow" style="border-bottom:0"><span>Your age</span><div class="estep"><button data-ed="age" data-by="-1" aria-label="Younger">−</button><output>${E.age}</output><button data-ed="age" data-by="1" aria-label="Older">+</button></div></div>
+    ${(()=>{const a=afford(E.amount,S.hh); return a&&a.level!=='ok'?`<div class="aff ${a.level}" style="margin-top:10px"><b>${a.level==='over'?'⚠ Over the usual guideline for your income':'Heads up: this is a stretch'}</b><p style="margin:0">${fmt(E.amount)}/yr is about ${a.pct}% of a typical income in your range. Carriers usually look for under about 20%.</p></div>`:'';})()}
     <div class="preview"><h5>Before → after</h5>
       ${row('Yearly income',before.income,after.income,fmt)}
       ${row('Cash value',before.cv,after.cv,fmtK)}
@@ -899,11 +949,13 @@ document.addEventListener('click',e=>{
   if(d.edset){ S.edit[d.edset]=+d.val; keepScroll(true); return; }
   if(d.edsave){ const E=S.edit, lev=E.plan==='kz', b=calc(S,lev); Object.assign(S,{amount:E.amount,years:E.years,start:E.start,age:E.age}); const a=calc(S,lev), di=a.income-b.income;
     S.flash={plan:E.plan,fresh:true,text:Math.abs(di)<1?'numbers saved':(di>0?'+':'−')+fmt(Math.abs(di))+'/yr income'}; S.tab=E.plan; S.edit=null; keepScroll(); return; }
+  if(d.affuse){ S.amount=+d.affuse; S.affKeep=false; S.flash=null; keepScroll(); return; }
+  if(d.affkeep){ S.affKeep=!S.affKeep; keepScroll(); return; }
   if(d.choose){ S.product=d.choose; go('confirm'); return; }
   if(d.learn){ go('learn',{section:d.learn}); return; }
   if(d.scroll){ toSection(d.scroll,false); return; }
   if(d.go){ if(t.disabled) return; if(d.tabto) S.tab=d.tabto; go(d.go); return; }
-  if(d.set){ let v=d.val; if(['amount','start'].includes(d.set)) v=+v; S[d.set]=v; render(); return; }
+  if(d.set){ let v=d.val; if(['amount','start'].includes(d.set)) v=+v; S[d.set]=v; if(d.set==='amount'||d.set==='hh') S.affKeep=false; render(); return; }
   if(d.toggle){ const a=S[d.toggle], i=a.indexOf(d.val); i<0?a.push(d.val):a.splice(i,1); render(); return; }
   if(d.age){ S.age=Math.min(80,Math.max(18,S.age+ +d.age)); render(); return; }
   if(d.tab){ S.tab=d.tab; render(); return; }
