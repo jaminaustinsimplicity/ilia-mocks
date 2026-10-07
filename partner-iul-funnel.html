@@ -404,6 +404,7 @@ const SCREENS={
    <div class="field"><label for="fEmail">Email</label><input id="fEmail" type="email" data-input="email" value="${S.email}" autocomplete="email"></div>
    <div class="field"><label for="fPhone">Mobile <span style="color:var(--ink-3);font-weight:500">(optional)</span></label><input id="fPhone" type="tel" data-input="phone" value="${S.phone}" autocomplete="tel"></div>
    <p class="disc">Consent wording for email and text goes here (to be defined).</p>
+   <p class="disc" style="color:var(--brand)">Demo tip: click any field to fill in sample details.</p>
    </div></div>${foot(`<button class="btn primary" id="toResults" data-go="results" ${ok?'':'disabled'}>Show my results</button>`)}`},
  results(){
    const iul=calc(S,false), kz=calc(S,true), q=qualifies(S);
@@ -517,6 +518,17 @@ document.addEventListener('input',e=>{
   if(t.dataset.range){ S[t.dataset.range]=+t.value; const pos=t.dataset.range; render(); const el=document.querySelector(`[data-range="${pos}"]`); if(el) el.focus(); }
 });
 document.addEventListener('change',e=>{ const t=e.target; if(t.dataset&&t.dataset.ack){ S.ack=t.checked; const b=$('#goWall'); if(b) b.disabled=!S.ack; } });
+
+// Demo helper: clicking an empty contact field fills it with sample data (no typing needed to demo)
+const DEMO_FIRST=['Jordan','Taylor','Morgan','Casey','Riley','Avery','Jamie','Drew','Quinn','Reese'];
+const DEMO_LAST=['Parker','Hayes','Brooks','Reed','Morgan','Ellis','Carter','Lane','Price','Shaw'];
+function demoFill(t){
+  if(!t.dataset.input||t.value) return;
+  if(!S._demo){ const fi=DEMO_FIRST[Math.floor(Math.random()*DEMO_FIRST.length)], la=DEMO_LAST[Math.floor(Math.random()*DEMO_LAST.length)]; S._demo={name:fi,email:(fi+'.'+la).toLowerCase()+'@example.com',phone:'(555) 01'+Math.floor(Math.random()*10)+'-'+String(Math.floor(1000+Math.random()*9000))}; }
+  t.value=S._demo[t.dataset.input]; S[t.dataset.input]=t.value;
+  const b=document.getElementById('toResults'); if(b) b.disabled=!(S.name.trim()&&/.+@.+..+/.test(S.email));
+}
+document.addEventListener('click',e=>{ const t=e.target; if(t.matches&&t.matches('#app input[data-input]')) demoFill(t); });
 
 function setDevice(d){
   device=d; $('#stage').classList.toggle('web',d==='web');
