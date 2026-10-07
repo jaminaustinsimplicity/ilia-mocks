@@ -404,14 +404,14 @@ body.embed .notes{top:16px}
 <h2>The flow</h2>
 <p class="sub">The main path is 7 steps. "Learn more" and "Talk to my agent" are side paths that always return to the prospect's numbers. A stepper at the top of the funnel lets the prospect jump back to their answers, numbers or plan at any time before the account is created.</p>
 <div class="flow">
-  <div class="step main"><div class="n">Entry</div><b>Link or QR</b><p>From an ILIA agent, via J's CMS. It carries the CMS link + asset ID, which the CMS maps to the agent's ILIA ID.</p></div>
+  <div class="step main"><div class="n">Entry</div><b>Link or QR</b><p>From an ILIA agent, via J's CMS. It carries the CMS link + asset ID; the CMS knows which agent owns it.</p></div>
   <div class="step main"><div class="n">Step 1</div><b>Short questions</b><p>5 quick screens of taps. <b>No name or email asked.</b> About 60 seconds.</p></div>
   <div class="step main"><div class="n">Step 2</div><b>Your numbers</b><p>Calculator results and a growth chart. Adjust the yearly amount, years and start age, and results update live.</p></div>
   <div class="step boost"><div class="n">Step 3</div><b>Kai-Zen boost</b><p>The same numbers with leverage, side by side, for prospects who qualify.</p></div>
   <div class="step main"><div class="n">Step 4</div><b>Choose plan</b><p>Pick IUL or Kai-Zen straight from the results, then review and confirm.</p></div>
-  <div class="step wall"><div class="n">Step 5 · The wall</div><b>Start ILIA account</b><p>First time they give name + email. Tied to the agent's ILIA ID from the link.</p></div>
-  <div class="step iliaS"><div class="n">Step 6 · v1</div><b>Agent invites in ILIA</b><p>Details go to the agent, who sends the ILIA invite. No ILIA integration.</p></div>
-  <div class="step iliaS"><div class="n">Step 6 · v2</div><b>Auto-sent to ILIA</b><p>CMS sends the lead to ILIA with the agent's ID; prospect creates their account. Needs approval.</p></div>
+  <div class="step wall"><div class="n">Step 5 · The wall</div><b>Start ILIA account</b><p>First time they give name + email. Tied to the agent who owns the link.</p></div>
+  <div class="step iliaS"><div class="n">Step 6 · v1</div><b>Agent invites in ILIA</b><p>Details go to the agent, who adds them with ILIA's Add Client. No new ILIA code.</p></div>
+  <div class="step iliaS"><div class="n">Step 6 · v2</div><b>Auto-sent to ILIA</b><p>CMS sends the lead to ILIA automatically. Needs new ILIA code + approval (parked).</p></div>
 </div>
 <div class="branch">
   <div><b>Learn more</b> opens the deep content from the current IUL marketing: how an IUL works, taxes, safety, borrowing, the Kai-Zen boost (with their own eligibility) and FAQs. Every section links back to "see it in my numbers", and "Back to my numbers" / "Choose my plan" stay pinned at the bottom.</div>
@@ -820,7 +820,7 @@ const SCREENS={
      <div><span>Product</span><b>${S.product==='kz'?'Kai-Zen (IUL + leverage)':'IUL'} · Allianz</b></div>
      <div><span>Confirmed numbers</span><b>${fmt(S.amount)}/yr · ${S.years} yrs · income at ${v.start}</b></div>
      <div><span>Calculator answers</span><b>age ${S.age} · ${S.sex||'—'} · ${S.health||'—'} · nicotine ${S.nic||'—'}</b></div>
-     <div><span>Agent of record</span><b>Agent Name · ${ILIAID||'ILIA agent ID'}</b></div>
+     <div><span>Agent of record</span><b>Agent Name · ${ILIAID||'their ILIA account (IMO-confirmed)'}</b></div>
      ${(()=>{const a=afford(S.amount,S.hh); return a&&a.level!=='ok'?`<div><span>Affordability flag</span><b>${a.level==='over'?'Over guideline'+(S.affKeep?' · paying from savings':''):'Stretch'} (~${a.pct}% of income)</b></div>`:'';})()}
      <div><span>Source</span><b>CMS link ${QP.get('l')||'LK-101'} · asset ${QP.get('a')||'AS-0047'}</b></div>
      <div><span>Prospect details</span><b>Collected on the next screen</b></div>

@@ -144,11 +144,11 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
 
 <header>
   <h1>Partner IUL + Kai-Zen Boost: Workflow</h1>
-  <p>ILIA agents in <b>Judy's</b> and <b>Josh's IMOs</b> want to sell IUL with a Kai-Zen boost. Simplicity provides no IUL-upsell marketing in ILIA, so agents do their own marketing in <b>J's Partner Hub CMS, outside ILIA</b>. Every CMS link belongs to an agent whose CMS account is tied to their <b>ILIA agent ID</b>, so every client lands in ILIA under the agent who brought them. <b>ILIA is only the enrollment engine.</b></p>
+  <p>ILIA agents in <b>Judy's</b> and <b>Josh's IMOs</b> want to sell IUL with a Kai-Zen boost. Simplicity provides no IUL-upsell marketing in ILIA, so agents do their own marketing in <b>J's Partner Hub CMS, outside ILIA</b>. Every CMS link belongs to an agent whose CMS account is tied to their <b>ILIA account</b> (their ILIA login email, confirmed by their IMO). Each client is added in ILIA by the agent who brought them. <b>ILIA is only the enrollment engine, and v1 needs no new ILIA code.</b></p>
   <div class="meta">
     <span class="chip">Lane: W-PARTNER</span>
     <span class="chip">Carrier: Allianz</span>
-    <span class="chip">IMOs: Judy · Josh</span>
+    <span class="chip">IMOs: Judy · Josh</span><span class="chip">v1: zero new ILIA code</span>
     <span class="chip">Working draft · Oct 7, 2026</span>
   </div>
   <div class="legend">
@@ -167,7 +167,7 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
   <section class="zone z-groups">
     <div class="zhead"><div class="num">1</div><h3>Agents in ILIA<small>Registered under Judy's or Josh's IMO</small></h3></div>
     <div class="card"><b>IMOs in ILIA <span class="tag t-dec">Decided</span></b><p>NIW sets up an IMO for Judy (IMO admin) and one for Josh's group.</p></div>
-    <div class="card indent"><b>Agents register in ILIA</b><p>They choose Judy's or Josh's IMO at onboarding. Each has an <b>ILIA agent ID</b>.</p></div>
+    <div class="card indent"><b>Agents register in ILIA</b><p>On the existing NIW agent registration page, they search for and pick Judy's or Josh's IMO. NIW approves them.</p></div>
     <div class="card indent" style="margin-left:32px"><b>No ILIA marketing <span class="tag t-dec">Decided</span></b><p>Simplicity hasn't approved IUL marketing in ILIA. There are no ILIA Agent Links for this.</p></div>
     <div class="note"><b>Agents may do their own marketing.</b> The CMS gives them the tools to do it outside ILIA.</div>
   </section>
@@ -176,8 +176,8 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
   <section class="zone z-cms">
     <div class="zhead"><div class="num">2</div><h3>J's Partner Hub CMS<small>Outside ILIA · built by agent J</small></h3></div>
     <a class="proto-badge cms-badge" href="partner-cms.html"><span class="pb-ic">▶</span> CMS prototype <span class="pb-sub">Admin · IMO · Agent</span></a>
-    <div class="card"><b>Agent signs up + connects ILIA <span class="tag t-dec">Decided</span></b><p>Their CMS account is tied to their <b>ILIA agent ID</b>. <b>v1:</b> their IMO admin confirms it. <b>v2:</b> a one-time code from ILIA.</p></div>
-    <div class="card"><b>Not in ILIA yet? <span class="tag t-dec">Decided</span></b><p>"Register with ILIA" link with Judy's or Josh's IMO pre-selected. Links stay <b>inactive</b> until connected.</p></div>
+    <div class="card"><b>Agent signs up + connects ILIA <span class="tag t-dec">Decided</span></b><p>Agent gives their <b>ILIA login email</b> + IMO. <b>v1:</b> the IMO admin finds them in ILIA's Agents list and confirms (no ILIA code). <b>v2:</b> a one-time code from ILIA (new code).</p></div>
+    <div class="card"><b>Not in ILIA yet? <span class="tag t-dec">Decided</span></b><p>Link to the existing NIW agent registration page, plus "pick Judy's or Josh's IMO". Links stay <b>inactive</b> until connected.</p></div>
     <div class="card"><b>Links + assets</b><p>J's library plus their own marketing. Every link and QR code carries a <b>CMS link ID + asset ID</b>, which the CMS maps to the agent.</p></div>
     <div class="card"><b>Tracking</b><p>Visits, funnel steps and IUL vs Kai-Zen choices, by agent, IMO and asset. Prospects stay anonymous until the account step.</p></div>
     <div class="note">Agents are responsible for their own marketing (carrier and state rules).</div>
@@ -212,8 +212,8 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
     <div class="zhead"><div class="num">4</div><h3>Inside ILIA<small>Enrollment engine only, no marketing</small></h3></div>
     <div class="card"><b>Prospect gives details <span class="tag t-dec">Decided</span></b><p>Their first time sharing name + email. Plan and numbers already chosen.</p></div>
     <div class="down">↓</div>
-    <div class="card"><b>v1 · Agent invites in ILIA <span class="tag t-dec">Works today</span></b><p>The CMS gives the agent a to-do. The agent invites the client from <b>their own</b> ILIA account, so the client is tied to them automatically.</p></div>
-    <div class="card"><b>v2 · Auto-send <span class="tag t-open">Needs approval</span></b><p>The CMS sends the lead to ILIA with the <b>agent's ILIA ID</b>. ILIA's lead intake already accepts an agent ID, but it needs a secure, approved connection.</p></div>
+    <div class="card"><b>v1 · Agent invites in ILIA <span class="tag t-dec">Works today</span></b><p>The CMS gives the agent a to-do. The agent uses ILIA's existing <b>Add Client</b>, so the client is tied to them automatically. <b>No new ILIA code.</b></p></div>
+    <div class="card"><b>v2 · Auto-send <span class="tag t-open">Needs approval</span></b><p>The CMS sends the lead to ILIA by agent. <b>Needs new ILIA code</b> (agents can't see their ILIA ID, and the intake must be secured) plus approval. Parked.</p></div>
     <div class="down">↓</div>
     <div class="card"><b>Enrollment → policy issued</b><p>Kai-Zen or IUL with Allianz in ILIA's existing flows. Normal servicing.</p></div>
   </section>
@@ -227,17 +227,17 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
       <li>Product choice (IUL or Kai-Zen) + <b>confirmed numbers</b></li>
       <li>Prospect details: name, email, phone, date of birth, state (asked only now)</li>
       <li>Calculator answers + affordability flag</li>
-      <li><b>Agent of record = the agent's ILIA agent ID</b> (from their CMS connection)</li>
+      <li><b>Agent of record = the agent who owns the link</b> (CMS account ↔ ILIA login email, confirmed by their IMO)</li>
       <li>CMS link + asset ID (stays in the CMS; ILIA has no field for it today)</li>
     </ul>
   </div>
   <div class="panel ret">
     <h3>Still open <span class="tag t-open">Open</span></h3>
     <ul>
-      <li><b>v2 approval:</b> Simplicity / ILIA to approve a secure partner intake for leads assigned by agent ID (security review + data sharing)</li>
+      <li><b>v2 (parked):</b> would need new ILIA code (secure partner intake + agent ID lookup) and Simplicity / ILIA approval</li>
       <li><b>Status back to the CMS</b> after the ILIA account (none / stage only / full)</li>
       <li>Can the agents in these IMOs see the leads assigned to them in ILIA? (Some agent types can't see the lead screen.)</li>
-      <li>ILIA registration link that pre-selects the IMO</li>
+      <li>Confirm NIW approves agents who register under Judy's / Josh's IMO promptly (normal admin approval)</li>
       <li>Where real calculator numbers come from</li>
     </ul>
   </div>
@@ -247,13 +247,13 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
 <p class="sub">How every client is traced from outside marketing to the agent in ILIA.</p>
 <div class="chain">
   <span class="link l-g">Agent in ILIA (Judy's / Josh's IMO)</span><span class="arrow">→</span>
-  <span class="link l-c">CMS account ↔ ILIA agent ID</span><span class="arrow">→</span>
+  <span class="link l-c">CMS account ↔ ILIA login email (IMO-confirmed)</span><span class="arrow">→</span>
   <span class="link l-c">CMS link / asset ID</span><span class="arrow">→</span>
   <span class="link l-p">Anonymous funnel</span><span class="arrow">→</span>
   <span class="link l-p">IUL or Kai-Zen</span><span class="arrow">→</span>
   <span class="link l-i">Details at account step</span><span class="arrow">→</span>
-  <span class="link l-i">Client under that agent in ILIA</span>
-  <div class="chain-note">The link itself needs nothing from ILIA. The CMS knows which agent owns each link, and that agent's ILIA ID decides who the client belongs to.</div>
+  <span class="link l-i">Agent adds client in ILIA → tied to them</span>
+  <div class="chain-note">The link needs nothing from ILIA. The CMS knows which agent owns each link; that agent adds the client from their own ILIA account, so ILIA ties the client to them with no new code.</div>
 </div>
 
 <h2>Where requirements stand</h2>
@@ -265,9 +265,9 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
       <tr><td>Scope</td><td>Allianz only. ILIA does enrollment only, with no marketing in ILIA. Simplicity provides no IUL-upsell marketing.</td></tr>
       <tr><td>Structure</td><td>IMOs in ILIA for Judy and Josh. Agents register in ILIA under one of them.</td></tr>
       <tr><td>CMS</td><td>J builds a custom CMS outside ILIA. Agents do their own marketing there and are responsible for it.</td></tr>
-      <tr><td>Tie</td><td>Each CMS account is connected to the agent's ILIA ID. Links are inactive until it is connected.</td></tr>
-      <tr><td>Not in ILIA</td><td>A "Register with ILIA" path with the IMO pre-selected, then connect.</td></tr>
-      <tr><td>Handoff</td><td>v1: the agent invites the client in ILIA (works today). v2: auto-send (needs approval).</td></tr>
+      <tr><td>Tie</td><td>Each CMS account is connected to the agent's ILIA login email, confirmed by their IMO admin (J verifies IMO admins once with NIW). Links are inactive until confirmed.</td></tr>
+      <tr><td>Not in ILIA</td><td>Link to the existing NIW agent registration page; agent picks Judy's or Josh's IMO; then connect.</td></tr>
+      <tr><td>Handoff</td><td><b>v1 only for now:</b> the agent adds the client in ILIA (zero new ILIA code). v2 auto-send is parked (needs new code).</td></tr>
       <tr><td>Funnel</td><td>Josh's flow. No contact form before results (Judy). Details are asked only at the ILIA account step.</td></tr>
       <tr><td>Tracking</td><td>Pre-wall tracking in the CMS by agent, IMO and asset.</td></tr>
     </table>
@@ -276,7 +276,7 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
     <h3>Still to work out</h3>
     <table>
       <tr><th>Area</th><th>Question</th></tr>
-      <tr><td>ILIA</td><td>v2 partner intake approval. Can these agents see assigned leads? IMO pre-select on registration.</td></tr>
+      <tr><td>ILIA</td><td>None needed for v1. Confirm new agents register as the default (Preferred) type, which can use Add Client.</td></tr>
       <tr><td>Tracking</td><td>Status back from ILIA after the account step.</td></tr>
       <tr><td>Funnel</td><td>Real calculator numbers. Co-branding. Affordability thresholds (to confirm with Allianz).</td></tr>
       <tr><td>CMS</td><td>Who J's team is and who hosts the CMS. Data retention + privacy.</td></tr>
