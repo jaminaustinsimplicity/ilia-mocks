@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partner IUL Workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --surface-2:#f0f2f8; --ink:#141a2a; --ink-2:#4a5368; --line:#dde1ec;
+  --groups:#7b5cd6; --groups-bg:#f1edfc;
+  --cms:#1f7ae0; --cms-bg:#e8f1fd;
+  --client:#0e9f8a; --client-bg:#e4f6f3;
+  --ilia:#d9622b; --ilia-bg:#fcefe8;
+  --wall:#141a2a;
+  --decided:#1c8a4a; --decided-bg:#e3f4ea;
+  --draft:#b7791f; --draft-bg:#fbf1dc;
+  --open:#c2364a; --open-bg:#fbe6e9;
+  --shadow:0 1px 2px rgba(20,26,42,.06),0 4px 14px rgba(20,26,42,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f131c; --surface:#171c28; --surface-2:#1e2433; --ink:#e9ecf4; --ink-2:#a3abc0; --line:#2b3245;
+    --groups:#a68cf0; --groups-bg:#241e3a; --cms:#5ea4f2; --cms-bg:#162538; --client:#3cc7b1; --client-bg:#13302c; --ilia:#f08a57; --ilia-bg:#33221a;
+    --wall:#e9ecf4; --decided:#4fc27e; --decided-bg:#15301f; --draft:#e2a94a; --draft-bg:#33281a; --open:#f06b7d; --open-bg:#361a20;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f131c; --surface:#171c28; --surface-2:#1e2433; --ink:#e9ecf4; --ink-2:#a3abc0; --line:#2b3245;
+  --groups:#a68cf0; --groups-bg:#241e3a; --cms:#5ea4f2; --cms-bg:#162538; --client:#3cc7b1; --client-bg:#13302c; --ilia:#f08a57; --ilia-bg:#33221a;
+  --wall:#e9ecf4; --decided:#4fc27e; --decided-bg:#15301f; --draft:#e2a94a; --draft-bg:#33281a; --open:#f06b7d; --open-bg:#361a20;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 16px 64px}
+header h1{font-size:28px;line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
+header p{margin:0;color:var(--ink-2);max-width:820px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2)}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:2px 7px;border-radius:5px;vertical-align:middle}
+.t-dec{background:var(--decided-bg);color:var(--decided)}
+.t-draft{background:var(--draft-bg);color:var(--draft)}
+.t-open{background:var(--open-bg);color:var(--open)}
+h2{font-size:19px;margin:40px 0 6px}
+.sub{color:var(--ink-2);margin:0 0 16px}
+
+/* Flow */
+.flow{display:grid;grid-template-columns:1fr 1.15fr 1.25fr 64px 1.15fr;gap:0;align-items:stretch;margin-top:22px}
+.zone{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 16px;box-shadow:var(--shadow);margin-right:26px}
+.zone:last-child{margin-right:0}
+.zone::after{content:"";position:absolute;right:-22px;top:50%;width:18px;height:18px;transform:translateY(-50%);
+  background:no-repeat center/18px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a93a8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E")}
+.zone.z-client::after,.zone:last-child::after{display:none}
+.zhead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.num{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-size:13px;color:#fff}
+.zhead h3{margin:0;font-size:15px;line-height:1.25}
+.zhead small{display:block;font-weight:500;color:var(--ink-2);font-size:12px}
+.z-groups{border-top:4px solid var(--groups)} .z-groups .num{background:var(--groups)}
+.z-cms{border-top:4px solid var(--cms)} .z-cms .num{background:var(--cms)}
+.z-client{border-top:4px solid var(--client)} .z-client .num{background:var(--client)}
+.z-ilia{border-top:4px solid var(--ilia)} .z-ilia .num{background:var(--ilia)}
+.card{border-radius:10px;padding:9px 11px;margin-top:8px;font-size:13.5px;line-height:1.4;border:1px solid transparent}
+.card > b{display:block;font-size:13.5px;margin-bottom:2px}
+.card p b{color:var(--ink)}
+.card p{margin:0;color:var(--ink-2)}
+.z-groups .card{background:var(--groups-bg)} .z-cms .card{background:var(--cms-bg)} .z-client .card{background:var(--client-bg)} .z-ilia .card{background:var(--ilia-bg)}
+.card.indent{margin-left:16px;position:relative}
+.card.indent::before{content:"";position:absolute;left:-11px;top:-8px;bottom:50%;width:9px;border-left:2px solid var(--line);border-bottom:2px solid var(--line);border-bottom-left-radius:6px}
+.down{text-align:center;color:var(--ink-2);font-size:13px;line-height:1;margin:4px 0 -2px}
+.exits{display:grid;gap:6px;margin-top:8px}
+.exit{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:7px 10px;border-radius:8px;background:var(--surface);border:1.5px solid var(--client)}
+.exit span{font-weight:500;color:var(--ink-2);margin-left:auto;font-size:12px}
+.note{font-size:12px;color:var(--ink-2);margin-top:10px;padding-top:8px;border-top:1px dashed var(--line)}
+
+/* Wall */
+.wall{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-right:26px}
+.wall .bar{position:absolute;top:0;bottom:0;left:50%;width:12px;transform:translateX(-50%);border-radius:4px;
+  background:repeating-linear-gradient(180deg,var(--wall) 0 14px,transparent 14px 20px);opacity:.9}
+.wall .label{position:relative;writing-mode:vertical-rl;transform:rotate(180deg);background:var(--bg);padding:10px 4px;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.wall::after{content:"";position:absolute;right:-22px;top:50%;width:18px;height:18px;transform:translateY(-50%);
+  background:no-repeat center/18px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a93a8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E")}
+
+/* Handoff + return */
+.band{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.panel h3{margin:0 0 4px;font-size:15px}
+.panel ul{margin:8px 0 0;padding-left:18px} .panel li{margin:3px 0;font-size:13.5px}
+.panel.ret{border:1.5px dashed var(--open)}
+
+/* Attribution chain */
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.link{padding:7px 12px;border-radius:9px;font-weight:600;font-size:13.5px}
+.arrow{color:var(--ink-2);font-weight:700}
+.l-g{background:var(--groups-bg);color:var(--groups)} .l-c{background:var(--cms-bg);color:var(--cms)} .l-p{background:var(--client-bg);color:var(--client)} .l-i{background:var(--ilia-bg);color:var(--ilia)}
+.chain-note{width:100%;font-size:13px;color:var(--ink-2);margin-top:8px}
+
+/* Tables */
+.tables{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);font-weight:600}
+tr:last-child td{border-bottom:0}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:13px;color:var(--ink-2)}
+footer{margin-top:40px;font-size:12px;color:var(--ink-2)}
+
+@media (max-width:1100px){
+  .flow{grid-template-columns:1fr}
+  .zone{margin:0 0 30px}
+  .zone::after,.wall::after{right:auto;left:50%;top:auto;bottom:-25px;transform:translateX(-50%) rotate(90deg)}
+  .zone.z-client::after{display:none}
+  .wall{margin:0 0 30px;height:56px}
+  .wall .bar{top:50%;bottom:auto;left:0;right:0;width:auto;height:12px;transform:translateY(-50%);
+    background:repeating-linear-gradient(90deg,var(--wall) 0 14px,transparent 14px 20px)}
+  .wall .label{writing-mode:horizontal-tb;transform:none;padding:4px 12px}
+  .band,.tables{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Partner IUL + Kai-Zen Boost: Workflow</h1>
+  <p>Outside groups (not part of Simplicity) market IULs to their prospects. Kai-Zen is shown as the "boost" for anyone who qualifies. All marketing and tracking happens outside ILIA. <b>ILIA is only the enrollment engine</b>, and every client lands on an existing ILIA agent.</p>
+  <div class="meta">
+    <span class="chip">Lane: W-PARTNER</span>
+    <span class="chip">Carrier: Allianz</span>
+    <span class="chip">Working draft · Oct 7, 2026</span>
+    <span class="chip">Requirements in progress</span>
+  </div>
+  <div class="legend">
+    <span><span class="tag t-dec">Decided</span> agreed in requirements</span>
+    <span><span class="tag t-draft">Draft</span> proposal, still being worked</span>
+    <span><span class="tag t-open">Open</span> to figure out</span>
+  </div>
+</header>
+
+<h2>End-to-end flow</h2>
+<p class="sub">Left to right: who markets, where the marketing lives, what the prospect sees, the handoff, and enrollment.</p>
+
+<div class="flow">
+
+  <!-- 1 Groups -->
+  <section class="zone z-groups">
+    <div class="zhead"><div class="num">1</div><h3>Outside groups<small>Groups that want to offer IUL / Kai-Zen</small></h3></div>
+    <div class="card"><b>Group <span class="tag t-dec">Decided</span></b><p>Approved into the CMS through an admin invite.</p></div>
+    <div class="card indent"><b>Group leaders</b><p>See their whole team's activity.</p></div>
+    <div class="card indent" style="margin-left:32px"><b>Group members</b><p>Distribute the marketing. Each has their own links and assets.</p></div>
+    <div class="note"><b>No group members get ILIA logins.</b> They only exist in the CMS.</div>
+  </section>
+
+  <!-- 2 CMS -->
+  <section class="zone z-cms">
+    <div class="zhead"><div class="num">2</div><h3>CMS (custom build)<small>Marketing + tracking, outside ILIA</small></h3></div>
+    <div class="card"><b>Admin layer <span class="tag t-draft">Define later</span></b><p>Approves invitations and group access.</p></div>
+    <div class="card"><b>Group-related agent list <span class="tag t-dec">Decided</span></b><p>A short list of existing ILIA agents with group relationships. The CMS just references them. <b>No new ILIA agent type.</b></p></div>
+    <div class="card"><b>Member portal <span class="tag t-dec">Decided</span></b><p>The member <b>picks their ILIA agent</b> from the list, gets their own tracked <b>links + asset IDs</b>, and creates and shares their own marketing.</p></div>
+    <div class="card"><b>Tracking dashboard <span class="tag t-dec">Decided</span></b><p>Clicks and visits per link or asset, how far prospects got in the funnel, IUL vs Kai-Zen picks, agent contacts.</p></div>
+    <div class="note">No compliance review for outside groups' own marketing.</div>
+  </section>
+
+  <!-- 3 Client view -->
+  <section class="zone z-client">
+    <div class="zhead"><div class="num">3</div><h3>Client view: selling funnel <span class="tag t-draft">Draft</span><small>What the prospect sees from a member's link</small></h3></div>
+    <div class="card"><b>1 · Hook</b><p>One clear problem: taxes and market swings. Agent details shown.</p></div>
+    <div class="down">↓</div>
+    <div class="card"><b>2 · Quick IUL story</b><p>Safety (0% floor), tax advantages, access to cash. Details behind "learn more".</p></div>
+    <div class="down">↓</div>
+    <div class="card"><b>3 · Your numbers</b><p>A short calculator with the prospect's own IUL estimate. Contact details captured here.</p></div>
+    <div class="down">↓</div>
+    <div class="card"><b>4 · The boost (Kai-Zen)</b><p>Quick pre-qual (income, age, health), then IUL vs IUL + leverage side by side.</p></div>
+    <div class="down">↓</div>
+    <div class="card"><b>5 · Decision</b></div>
+    <div class="exits">
+      <div class="exit">Enroll Kai-Zen <span>→ ILIA</span></div>
+      <div class="exit">Enroll IUL <span>→ ILIA</span></div>
+      <div class="exit">Talk to my agent <span>→ agent</span></div>
+    </div>
+    <div class="note">Every step is tracked back to the member's link / asset ID. Funnel details still being worked out (Q5).</div>
+  </section>
+
+  <!-- Wall -->
+  <div class="wall" aria-label="The wall into ILIA"><div class="bar"></div><div class="label">The wall</div></div>
+
+  <!-- 4 ILIA -->
+  <section class="zone z-ilia">
+    <div class="zhead"><div class="num">4</div><h3>Inside ILIA<small>Enrollment engine only, no marketing</small></h3></div>
+    <div class="card"><b>Prospect arrives already decided <span class="tag t-dec">Decided</span></b><p>The IUL or Kai-Zen choice was made before the wall.</p></div>
+    <div class="down">↓</div>
+    <div class="card"><b>ILIA client account created</b><p>The client is tied to the <b>agent of record = the member's selected agent</b>.</p></div>
+    <div class="down">↓</div>
+    <div class="card"><b>Enrollment</b><p>Kai-Zen or IUL with Allianz, using ILIA's existing enrollment flows. Plain IUL to be confirmed in code.</p></div>
+    <div class="down">↓</div>
+    <div class="card"><b>Policy issued</b><p>Normal ILIA servicing from here.</p></div>
+  </section>
+</div>
+
+<div class="band">
+  <div class="panel">
+    <h3>What crosses the wall <span class="tag t-open">Open</span></h3>
+    <p class="sub" style="margin:0">Likely contents of the handoff into ILIA, to confirm:</p>
+    <ul>
+      <li>Product choice: IUL or Kai-Zen</li>
+      <li>Prospect basics: name, email, phone, state</li>
+      <li>Calculator answers, so the prospect doesn't re-enter them</li>
+      <li>Agent of record (from the member's selection)</li>
+      <li>Group / member / link reference, if ILIA needs to keep it</li>
+    </ul>
+  </div>
+  <div class="panel ret">
+    <h3>Status back to the CMS? <span class="tag t-open">Open</span></h3>
+    <p class="sub" style="margin:0">Does ILIA report progress after the wall?</p>
+    <ul>
+      <li><b>A.</b> Nothing comes back. Tracking stops at the decision / account creation</li>
+      <li><b>B.</b> Stage only: account created → enrolling → issued (no personal or policy data)</li>
+      <li><b>C.</b> Full enrollment and policy detail</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Attribution chain</h2>
+<p class="sub">How every client is traced from the marketing to the agent of record.</p>
+<div class="chain">
+  <span class="link l-g">Group</span><span class="arrow">→</span>
+  <span class="link l-g">Leader</span><span class="arrow">→</span>
+  <span class="link l-g">Member</span><span class="arrow">→</span>
+  <span class="link l-c">Link / asset ID</span><span class="arrow">→</span>
+  <span class="link l-p">Prospect funnel</span><span class="arrow">→</span>
+  <span class="link l-p">IUL or Kai-Zen</span><span class="arrow">→</span>
+  <span class="link l-i">ILIA account</span><span class="arrow">→</span>
+  <span class="link l-i">Member's selected agent</span>
+  <div class="chain-note">The member picks their agent in the CMS, so the agent of record is decided per member, not per group.</div>
+</div>
+
+<h2>Where requirements stand</h2>
+<div class="tables">
+  <div class="panel">
+    <h3>Decided so far</h3>
+    <table>
+      <tr><th>#</th><th>Decision</th></tr>
+      <tr><td>Scope</td><td>Allianz is the only carrier. ILIA does enrollment only, with no marketing inside ILIA.</td></tr>
+      <tr><td>Scope</td><td>No outside-group members onboarded to ILIA. The product choice is made before the wall.</td></tr>
+      <tr><td>Q1</td><td>Build a custom CMS.</td></tr>
+      <tr><td>Q2</td><td>The CMS admin layer approves invites and group access. No compliance review for outside groups; they create their own marketing.</td></tr>
+      <tr><td>Q3</td><td>Two levels: group leaders and members. Each member has their own links and asset IDs and picks their ILIA agent.</td></tr>
+      <tr><td>Q3</td><td>The agent list is configured in the CMS, referencing existing ILIA agents. No new ILIA agent type.</td></tr>
+      <tr><td>Q4</td><td>All pre-wall tracking: clicks, funnel progress, IUL vs Kai-Zen picks, agent contacts.</td></tr>
+    </table>
+  </div>
+  <div class="panel">
+    <h3>Still to work out</h3>
+    <table>
+      <tr><th>Area</th><th>Question</th></tr>
+      <tr><td>Client view</td><td>The selling funnel in detail (Q5, in progress), what prospects enter, branding.</td></tr>
+      <tr><td>Wall</td><td>What data crosses. Does crossing start enrollment right away or create a lead?</td></tr>
+      <tr><td>Tracking</td><td>Status back from ILIA (A / B / C).</td></tr>
+      <tr><td>ILIA</td><td>Confirm the plain-IUL path for Allianz in code. Does the agent see the source group or member?</td></tr>
+      <tr><td>CMS</td><td>Admin layer details. Agent change rules (assumed: new leads only).</td></tr>
+      <tr><td>Business</td><td>Pilot size, first group, timeline, people involved.</td></tr>
+    </table>
+  </div>
+</div>
+
+<footer>Working draft for requirements discussion. Not a final design, and no client data.</footer>
+</div>
+</body>
+</html>
