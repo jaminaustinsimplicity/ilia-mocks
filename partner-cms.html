@@ -340,6 +340,19 @@ input:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-vis
 .copyblk{background:var(--surface-2);border-radius:10px;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;white-space:pre-wrap;line-height:1.5}
 .modeexp{border-radius:12px;padding:12px 14px;font-size:13.5px;background:var(--surface-2)}
 .modeexp b{display:block;margin-bottom:2px}
+.ib{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--brand);background:var(--surface);color:var(--brand);font:800 11.5px/1 Georgia,serif;font-style:italic;cursor:pointer;vertical-align:middle;margin-left:6px;padding:0;flex:none}
+.ib:hover{background:var(--brand);color:var(--brand-ink)}
+.infolayer{position:absolute;inset:0;z-index:70;background:rgba(8,12,20,.45);display:flex;align-items:center;justify-content:center;padding:20px}
+.infobox{background:var(--surface);border-radius:16px;width:min(520px,100%);max-height:calc(100% - 20px);overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+#stage.mobile .infolayer{align-items:flex-end;padding:0} #stage.mobile .infobox{border-radius:20px 20px 0 0;max-height:90%}
+.infobox .ih{display:flex;gap:10px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.infobox .ih .badge{width:30px;height:30px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font:800 15px Georgia,serif;font-style:italic;flex:none}
+.infobox .ih h3{margin:0;font-size:15.5px}
+.infobox .ib2{padding:14px 16px}
+.infobox .ib2 p{margin:0 0 10px;color:var(--ink-2);font-size:13.5px}
+.infobox .who{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0}
+.infobox .flowsteps b{display:inline}
+.infobox .ifoot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end}
 .chk{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
 .chk li{display:flex;gap:8px;font-size:13.5px}
 .chk .y{color:var(--good);font-weight:800} .chk .p{color:var(--warn);font-weight:800}
@@ -491,7 +504,7 @@ function rows(cols,data,opts){
   opts=opts||{}; const tpl=cols.map(c=>c.w||'1fr').join(' ');
   if(!data.length) return `<div class="empty">${opts.empty||'Nothing here yet.'}</div>`;
   return `<div class="rows"><div class="hd" style="grid-template-columns:${tpl}">${cols.map(c=>`<div>${c.h}</div>`).join('')}</div>
-    ${data.map(d=>`<div class="rw ${opts.click?'click':''}" style="grid-template-columns:${tpl}" ${opts.click?opts.click(d):''}>${cols.map(c=>`<div class="cell"><span class="cl">${c.h}</span>${c.v(d)}</div>`).join('')}</div>`).join('')}</div>`;
+    ${data.map(d=>`<div class="rw ${opts.click?'click':''}" style="grid-template-columns:${tpl}" ${opts.click?opts.click(d):''}>${cols.map(c=>`<div class="cell"><span class="cl">${c.h.split('<button')[0]}</span>${c.v(d)}</div>`).join('')}</div>`).join('')}</div>`;
 }
 const choicePill=p=>p.product?`<span class="pill ${p.product==='kz'?'p-kz':'p-info'}">${p.product==='kz'?'🚀 Kai-Zen':'IUL'}</span>`:'<span class="pill p-mute">—</span>';
 const flagPills=p=>[p.flag==='over'?'<span class="pill p-bad">⚠ Affordability</span>':p.flag==='stretch'?'<span class="pill p-warn">Stretch</span>':'',p.call?'<span class="pill p-info">📞 Wants call</span>':''].join(' ')||'<span class="pill p-mute">—</span>';
@@ -539,6 +552,22 @@ function downloadCSV(name,arr){ const csv=arr.map(r=>r.map(c=>`"${String(c==null
   try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); }catch(e){} toast('Exported '+(arr.length-1)+' rows to '+name+'.'); }
 const RANGE={7:.28,30:1,90:2.7}; const sc=v=>Math.round(v*RANGE[UI.range]);
 const rangeChips=()=>`<div class="chipsel">${[7,30,90].map(d=>`<button aria-pressed="${UI.range===d}" data-range="${d}">Last ${d} days</button>`).join('')}</div>`;
+// (i) explanations: where Partner Hub checks a user against ILIA, and how
+const info=(k,label)=>`<button class="ib" data-info="${k}" aria-label="${label||'How this is validated against ILIA'}" title="${label||'How this is validated against ILIA'}">i</button>`;
+const steps=arr=>`<div class="flowsteps">${arr.map((s,i)=>`<div><span class="n">${i+1}</span><div>${s}</div></div>`).join('')}</div>`;
+const INFO={
+ agent:()=>({t:'How Partner Hub confirms you\'re an ILIA agent',b:UI.ho==='v1'
+   ?`<p>Partner Hub can't see inside ILIA, and ILIA has no connection to outside systems. So we ask the one person who can see you in ILIA: <b>your IMO admin</b>.</p>${steps(['<b>You enter</b> the email you log in to ILIA with, and your IMO.','<b>Partner Hub sends a request</b> to your IMO admin, inside Partner Hub. <b>Nothing is sent to ILIA.</b>','<b>Your IMO admin checks ILIA:</b> they open their IMO\'s Agents list and search your email.','<b>If you\'re listed under their IMO</b>, they click Confirm. Your links go live.'])}<div class="who"><span class="pill p-ok">No new ILIA code</span><span class="pill p-info">Uses ILIA\'s IMO Agents list</span></div>`
+   :`<p><b>v2 (parked):</b> ILIA would email you a one-time code, and entering it proves you own that ILIA account.</p>${steps(['You enter your ILIA login email.','ILIA sends a 6-digit code to that email.','You enter the code and are connected instantly.'])}<div class="who"><span class="pill p-bad">Needs new ILIA code</span></div>`}),
+ imo:()=>({t:'How to confirm an agent in ILIA',b:`<p>You're confirming that this person really is an ILIA agent in <b>your IMO</b>. You do it with ILIA as it is today.</p>${steps(['Log in to <b>ILIA</b> with your IMO account.','Open <b>Agents</b>, your IMO\'s agent list.','<b>Search the email</b> shown here (the search matches name or email).','Check the name matches and their status is active (not just invited).','Back in Partner Hub, click <b>✓ Confirm</b>. If they aren\'t in your list, click <b>Not ours</b>.'])}<p><b>Confirming:</b> turns on their CMS links and ties their prospects to them. <b>It changes nothing in ILIA.</b></p>`}),
+ imoAdmin:()=>({t:'How J verifies an IMO admin',b:`<p>This is the top of the chain of trust. J can't see inside ILIA, so <b>NIW is the source of truth</b> for who owns an IMO.</p>${steps(['<b>NIW creates the IMO in ILIA</b> (normal ILIA admin step).','<b>J asks the NIW partner team</b> to confirm this email is the IMO\'s admin user in ILIA. NIW admins can see IMOs and their users.','<b>J ticks the box.</b> Partner Hub records who confirmed it and when (Activity log).','<b>The IMO admin accepts their invite</b> and can then confirm their own agents.'])}<div class="who"><span class="pill p-ok">One-time per IMO</span><span class="pill p-ok">No new ILIA code</span></div>`}),
+ chain:()=>({t:'Who validates whom',b:`<p>Every link to ILIA is checked by someone who can actually see that part of ILIA. Partner Hub never logs in to ILIA or sends data to it (v1).</p>${steps(['<b>NIW → IMO admin.</b> J confirms with the NIW partner team that the email owns the IMO in ILIA.','<b>IMO admin → agent.</b> The IMO admin finds the agent\'s ILIA login email in ILIA\'s IMO Agents list.','<b>Agent → client.</b> The agent adds the client with ILIA\'s <b>Add Client</b>, which records them as the agent of record.'])}<p>Until step 2 is done, an agent's links are <b>inactive</b>.</p>`}),
+ client:()=>({t:'How the client is tied to you in ILIA',b:UI.ho==='v1'
+   ?`<p>In v1, Partner Hub doesn't send anything to ILIA. <b>You</b> create the client, so ILIA ties them to you.</p>${steps(['In ILIA, use <b>Agent Dashboard → Add Client</b>.','ILIA saves <b>you</b> as the agent on the client\'s policy, automatically.','ILIA emails the client their invite to set up their account.','Mark them as invited here. Partner Hub keeps which link and asset they came from.'])}<div class="who"><span class="pill p-ok">No new ILIA code</span></div>`
+   :`<p><b>v2 (parked):</b> Partner Hub would send the lead to a secure ILIA intake with your ILIA agent ID, and ILIA would assign it to you.</p><div class="who"><span class="pill p-bad">Needs new ILIA code</span></div>`}),
+ recheck:()=>({t:'How your connection stays valid',b:`<p>Agents change IMOs or leave, so the connection is re-checked.</p>${steps(['<b>Every 90 days</b>, your IMO admin re-confirms you the same way (ILIA → Agents → search email).','<b>If you change IMO</b> in ILIA, reconnect here with the new IMO.','<b>If you\'re no longer in their IMO</b>, they mark you "Not ours" and your links go inactive. Past prospects stay in your history.'])}`}),
+ notIn:()=>({t:'Why your links are inactive',b:`<p>Partner Hub only turns links on for people their IMO has confirmed in ILIA. That's what makes sure every client goes to the right agent.</p>${steps(['Register on the existing NIW agent registration page and select your IMO.','NIW approves you and you get your ILIA invite.','Connect here with your ILIA login email. Your IMO admin confirms you.'])}`})
+};
 const modeExplain=()=>UI.ho==='v1'
   ?`<div class="modeexp"><b>v1 · You finish in ILIA</b>When a prospect chooses a plan and gives their details, you get a to-do. You invite them from your ILIA account, so they're automatically your client. No ILIA integration needed.</div>`
   :`<div class="modeexp"><b>v2 · Sent to ILIA automatically</b>When a prospect chooses a plan and gives their details, the CMS sends the lead to ILIA with your ILIA agent ID. ILIA assigns it to you and emails their invite. Needs new ILIA code and Simplicity / ILIA approval.</div>`;
@@ -560,7 +589,7 @@ const ADMIN={
   return `${head('Dashboard','All agents and IMOs · last 30 days',`<button class="btn sec" data-nav="ilia">🔗 ILIA connection</button><button class="btn sec" data-open="addAsset">＋ Library asset</button><button class="btn pri" data-open="addImo">＋ Add IMO</button>`)}
    ${statCards(s)}
    <div class="grid g21"><div class="card"><h3>Funnel across all agents</h3><p class="sub">From an agent's link to ILIA</p>${funnel(s)}</div>
-   <div class="card"><h3>Agent connections</h3><p class="sub">Links only go live once an agent's IMO confirms their ILIA account</p>
+   <div class="card"><h3>Agent connections ${info('chain','Who validates whom')}</h3><p class="sub">Links only go live once an agent's IMO confirms their ILIA account</p>
      <div class="kv"><span>✓ Connected to ILIA</span><b>${con}</b><span>Awaiting IMO confirmation</span><b>${pen}</b><span>Not in ILIA yet</span><b>${nii}</b><span>Handoff mode</span><b>${UI.ho==='v1'?'v1 · agent invites in ILIA':'v2 · auto-send'}</b></div>
      <div class="btnrow"><button class="btn sec sm" data-nav="agents">View agents</button></div></div></div>
    <div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0;display:flex;align-items:center;gap:8px"><h3>IMOs</h3><button class="btn sec sm" style="margin-left:auto" data-nav="imos">Manage IMOs</button><button class="btn pri sm" data-open="addImo">＋ Add IMO</button></div>${imoTable()}</div>`;},
@@ -570,11 +599,11 @@ const ADMIN={
     <select data-filt="conn"><option value="">Any connection</option><option value="connected" ${F.conn==='connected'?'selected':''}>Connected</option><option value="pending" ${F.conn==='pending'?'selected':''}>Awaiting IMO</option><option value="notInIlia" ${F.conn==='notInIlia'?'selected':''}>Not in ILIA yet</option></select><span class="sp"></span><span class="sub" style="margin:0">${list.length} agents</span></div>
    ${rows([{h:'Agent',w:'1.5fr',v:a=>`<div style="display:flex;gap:10px;align-items:center">${av(a.name)}<div>${esc(a.name)}<small>${esc(a.email)}</small></div></div>`},
      {h:idLbl(),v:a=>idOf(a)?`<span class="idchip">${esc(idOf(a))}</span>`:'<span class="pill p-mute">—</span>'},
-     {h:'IMO',v:a=>a.imo?esc(IM(a.imo).name):'—'},{h:'Connection',w:'1.2fr',v:connPill},
+     {h:'IMO',v:a=>a.imo?esc(IM(a.imo).name):'—'},{h:'Connection '+info('chain','Who validates whom'),w:'1.2fr',v:connPill},
      {h:'Prospects',w:'.7fr',v:a=>DB.pros.filter(p=>p.agent===a.id).length},
      {h:'',w:'1.2fr',v:a=>a.conn==='notInIlia'?`<button class="btn sec xs" data-remind="${a.id}">Re-send registration link</button>`:a.conn==='pending'?`<button class="btn sec xs" data-remindimo="${a.imo}">Nudge IMO</button>`:''}],list)}</div>`;},
  imos(){ return `${head('IMOs','IMOs that exist in ILIA. Agents register in ILIA under one of these, then connect here.',`<button class="btn pri" data-open="addImo">＋ Add IMO</button>`)}
-   <div class="card" style="margin-bottom:14px"><h3>How an IMO gets set up (no new ILIA code)</h3><p class="sub">There are only a few IMOs, so this is a one-time manual check per IMO</p>
+   <div class="card" style="margin-bottom:14px"><h3>How an IMO gets set up (no new ILIA code) ${info('imoAdmin','How J verifies an IMO admin')}</h3><p class="sub">There are only a few IMOs, so this is a one-time manual check per IMO</p>
    <div class="flowsteps" style="margin:0"><div><span class="n">1</span><div><b>NIW creates the IMO in ILIA</b>The normal ILIA admin step (e.g. Judy's IMO, Josh's IMO). Agents can then pick it when they register.</div></div>
    <div><span class="n">2</span><div><b>J adds the IMO here</b>Same name as in ILIA, plus the IMO admin's ILIA login email.</div></div>
    <div><span class="n">3</span><div><b>J verifies the IMO admin once</b>Confirms with the NIW partner team that this email owns the IMO in ILIA. J can't see inside ILIA, so NIW is the source of truth.</div></div>
@@ -600,7 +629,7 @@ const ADMIN={
    <div class="card"><h3>Status</h3><p class="sub">${v1?'v1 works today, with no new ILIA code':'v2 needs new ILIA code + Simplicity / ILIA sign-off'}</p>
      ${v1?`<ul class="chk"><li><span class="y">✓</span><b>Zero new ILIA code.</b> Everything uses ILIA as it is today</li><li><span class="y">✓</span>Agents register on the existing NIW registration page and pick the IMO</li><li><span class="y">✓</span>IMO admin confirms the agent by email using ILIA's IMO Agents list</li><li><span class="y">✓</span>Agent adds the client with ILIA's <b>Add Client</b>, so the client is tied to them</li><li><span class="p">•</span>Manual step for the agent; prospect gets their invite a little later</li></ul>`
      :`<ul class="chk"><li><span class="p">⚠</span><b>Needs new ILIA code</b> (we're avoiding this for now)</li><li><span class="p">◐</span>Secure partner intake in ILIA (lead assigned by ILIA agent ID). ILIA's lead intake already supports an agent ID, but it needs authentication</li><li><span class="p">◐</span>Agent identity check: one-time code sent to the agent's ILIA email</li><li><span class="p">◐</span>Data-sharing approval (prospect details leave the CMS for ILIA)</li><li><span class="p">◐</span>Security review</li></ul>`}</div>
-   <div class="card"><h3>Agent identity check</h3><p class="sub">How we know a CMS user is really that ILIA agent</p>
+   <div class="card"><h3>Agent identity check ${info('chain','Who validates whom')}</h3><p class="sub">How we know a CMS user is really that ILIA agent</p>
      <div class="kv"><span>Method</span><b>${v1?'Agent gives their ILIA login email + IMO; IMO admin finds them in ILIA → Agents and confirms':'One-time code sent to their ILIA email (new ILIA code)'}</b><span>Until connected</span><b>Links are created but stay inactive</b><span>Re-check</span><b>Every 90 days, or when the agent changes IMO</b></div></div>
    <div class="card"><h3>Agents not in ILIA yet</h3><p class="sub">Agents who join the CMS before registering in ILIA</p>
      ${field('regurl','Agent registration link (existing NIW page)','',{value:ILIA_REG,hint:'Agents search for and pick Judy\'s or Josh\'s IMO on the form. Pre-selecting the IMO by link would need new code, so we don\'t.'})}
@@ -618,7 +647,7 @@ const SETKEYS=['kzMinIncome','kzMinAge','kzMaxAge','affMax','affStretch','defYea
 const cur=k=>UI.form['s_'+k]!==undefined?UI.form['s_'+k]:DB.settings[k];
 const dirty=()=>SETKEYS.some(k=>UI.form['s_'+k]!==undefined&&UI.form['s_'+k]!==DB.settings[k]);
 function imoTable(){ return rows([{h:'IMO',w:'1.3fr',v:i=>`${esc(i.name)}<small>since ${i.since}</small>`},{h:'IMO admin',w:'1.3fr',v:i=>`${esc(i.admin)}<small>${esc(i.adminEmail||'')}</small>`},
-  {h:'Status',w:'1.2fr',v:i=>i.status==='active'?`<span class="pill p-ok">✓ Verified · active</span><small>${esc(i.verified)}</small>`:`<span class="pill p-info">Invite sent</span><small>${esc(i.verified)}</small>`},
+  {h:'Status '+info('imoAdmin','How J verifies an IMO admin'),w:'1.2fr',v:i=>i.status==='active'?`<span class="pill p-ok">✓ Verified · active</span><small>${esc(i.verified)}</small>`:`<span class="pill p-info">Invite sent</span><small>${esc(i.verified)}</small>`},
   {h:'Agents connected',v:i=>DB.agents.filter(a=>a.imo===i.id&&a.conn==='connected').length},{h:'Pending / not in ILIA',v:i=>DB.agents.filter(a=>a.imo===i.id&&a.conn==='pending').length+' / '+DB.agents.filter(a=>a.imo===i.id&&a.conn==='notInIlia').length},
   {h:'Prospects',w:'.7fr',v:i=>DB.pros.filter(p=>AG(p.agent).imo===i.id).length}],DB.imos,{click:i=>UI.role==='admin'?`data-open="imoDetail:${i.id}"`:''}); }
 function repTable(t,d,n,f){ return `<div class="card tablecard" style="margin-top:14px"><div style="padding:10px 10px 0;display:flex;align-items:center"><h3>${t}</h3><button class="btn sec sm" style="margin-left:auto" data-export="${n}">⬇ CSV</button></div>
@@ -644,7 +673,7 @@ const IMO={
  agents(){ const id=myImo(), ags=DB.agents.filter(a=>a.imo===id), con=ags.filter(a=>a.conn==='connected'), pend=ags.filter(a=>a.conn==='pending'), nii=ags.filter(a=>a.conn==='notInIlia');
   return `${head('Agents',esc(IM(id).name)+' · agents using the CMS · click an agent to see their prospects',`<button class="btn pri" data-open="inviteCms">✉️ Invite an agent to the CMS</button>`)}
    <div class="summ"><div class="card stat"><span>Connected to ILIA</span><b>${con.length}</b></div><div class="card stat"><span>Need your confirmation</span><b>${pend.length}</b></div><div class="card stat"><span>Not in ILIA yet</span><b>${nii.length}</b></div><div class="card stat"><span>Prospects</span><b>${DB.pros.filter(p=>AG(p.agent).imo===id).length}</b></div></div>
-   ${pend.length?`<div class="todo"><h3>🔗 Confirm these agents are yours in ILIA</h3><p class="sub" style="margin:0">In ILIA, open <b>Agents</b> and search each email. If they're listed under your IMO, confirm. Their CMS links then go live. (Uses ILIA as it is today. No new ILIA code.)</p>
+   ${pend.length?`<div class="todo"><h3>🔗 Confirm these agents are yours in ILIA ${info('imo','How to confirm an agent in ILIA')}</h3><p class="sub" style="margin:0">In ILIA, open <b>Agents</b> and search each email. If they're listed under your IMO, confirm. Their CMS links then go live. (Uses ILIA as it is today. No new ILIA code.)</p>
      ${pend.map(a=>`<div class="ti">${av(a.name)}<div style="flex:1;min-width:160px"><b>${esc(a.name)}</b><small style="display:block;color:var(--ink-3)">${esc(a.email)} · ILIA login email <span class="idchip">${esc(a.iliaEmail||'')}</span></small></div><button class="btn ok sm" data-confirm="${a.id}">✓ Confirm</button><button class="btn no sm" data-reject="${a.id}">Not ours</button></div>`).join('')}</div>`:''}
    ${agentCards(con)}
    ${nii.length?`<h3 style="font-size:15px;margin:22px 0 10px">Joined the CMS, not in ILIA yet</h3><div class="mcards">${nii.map(a=>`<div class="mcard"><div class="pendrow">${av(a.name)}<div style="flex:1;min-width:160px"><b>${esc(a.name)}</b><div class="note">${esc(a.email)} · links inactive until they register in ILIA under your IMO</div></div>${connPill(a)}<button class="btn sec xs" data-remind="${a.id}">Send registration link</button></div></div>`).join('')}</div>`:''}`;},
@@ -675,8 +704,8 @@ const SHARED={
 
 // ---------------- AGENT (Sam) ----------------
 function connectBlock(compact){ const a=me(), F=UI.form, mode=F.cmode||'have';
-  if(a.conn==='connected') return `<div class="conncard ok"><div class="agcard"><div class="bigic">✅</div><div><b>Connected to ILIA</b><small>${idLbl()} <span class="idchip">${esc(idOf(a))}</span> · ${esc(IM(a.imo).name)}</small><small>Verified by ${a.via}</small></div></div></div>`;
-  if(a.conn==='pending') return `<div class="conncard pend"><div class="agcard"><div class="bigic">⏳</div><div><b>Waiting for ${esc(IM(a.imo).name)} to confirm</b><small>You log in to ILIA as <span class="idchip">${esc(a.iliaEmail||'')}</span>. ${esc(IM(a.imo).admin)} will find you in ILIA's Agents list and confirm.</small><small class="demo-tip" style="margin:6px 0 0">Demo: switch to "IMO admin (Judy)" → Agents → Confirm.</small></div></div></div>`;
+  if(a.conn==='connected') return `<div class="conncard ok"><div class="agcard"><div class="bigic">✅</div><div><b>Connected to ILIA ${info('recheck','How your connection stays valid')}</b><small>${idLbl()} <span class="idchip">${esc(idOf(a))}</span> · ${esc(IM(a.imo).name)}</small><small>Verified by ${a.via}</small></div></div></div>`;
+  if(a.conn==='pending') return `<div class="conncard pend"><div class="agcard"><div class="bigic">⏳</div><div><b>Waiting for ${esc(IM(a.imo).name)} to confirm ${info('agent')}</b><small>You log in to ILIA as <span class="idchip">${esc(a.iliaEmail||'')}</span>. ${esc(IM(a.imo).admin)} will find you in ILIA's Agents list and confirm.</small><small class="demo-tip" style="margin:6px 0 0">Demo: switch to "IMO admin (Judy)" → Agents → Confirm.</small></div></div></div>`;
   const tabs=`<div class="chipsel" style="margin-bottom:12px"><button aria-pressed="${mode==='have'}" data-cmode="have">I'm already an ILIA agent</button><button aria-pressed="${mode==='not'}" data-cmode="not">I'm not in ILIA yet</button></div>`;
   if(mode==='not') return `${tabs}<div class="conncard no"><b style="display:block;margin-bottom:6px">Register as an ILIA agent first. Use ILIA's existing agent registration.</b>
     <div class="flowsteps"><div><span class="n">1</span><div><b>Pick your IMO</b><div class="chipsel" style="margin-top:6px">${DB.imos.map(i=>`<button aria-pressed="${F.regimo===i.id}" data-regimo="${i.id}">${esc(i.name)}</button>`).join('')}</div></div></div>
@@ -689,7 +718,7 @@ function connectBlock(compact){ const a=me(), F=UI.form, mode=F.cmode||'have';
   }
   return `${tabs}${tip}${field('cemail','The email you log in to ILIA with','sam.rivera@example.com',{type:'email',hint:'This is what ties your CMS links to you. It\'s on your ILIA profile under Email Address.'})}
     <div class="f"><label>Your IMO in ILIA</label><div class="chipsel">${DB.imos.filter(i=>i.status==='active').map(i=>`<button aria-pressed="${F.cimo===i.id}" data-cimo="${i.id}">${esc(i.name)}</button>`).join('')}</div><div class="hint">Shown on your ILIA profile under "IMO's, Carriers, and Agent Numbers".</div></div>
-    <div class="modeexp" style="margin-bottom:12px"><b>What happens next</b>Your IMO admin gets a request in Partner Hub. They look you up in ILIA's Agents list by this email and confirm. Nothing is sent to ILIA.</div>
+    <div class="modeexp" style="margin-bottom:12px"><b>What happens next ${info('agent')}</b>Your IMO admin gets a request in Partner Hub. They look you up in ILIA's Agents list by this email and confirm. Nothing is sent to ILIA.</div>
     <button class="btn pri" data-submitconn="1">Send to my IMO for confirmation</button>`;
 }
 const AGENT={
@@ -697,7 +726,7 @@ const AGENT={
   if(st===0) return `<div class="wiz">${bar}<h2>Welcome to Partner Hub</h2><p class="lead">IUL → Kai-Zen boost marketing for ILIA agents, run by J <b>outside ILIA</b>. Create your account and connect your ILIA account (the email you log in to ILIA with, confirmed by your IMO). Every prospect from your links becomes your client in ILIA.</p>${tip}
      ${field('oname','Full name','Sam Rivera')}${field('oemail','Email','sam.rivera@example.com',{type:'email'})}${field('ophone','Mobile','(555) 014-2290',{type:'tel'})}
      <button class="btn pri" data-ostep="1" data-need="oname,oemail,ophone">Create my account →</button></div>`;
-  if(st===1) return `<div class="wiz">${bar}<h2>Connect your ILIA account</h2><p class="lead">This is how ILIA knows your prospects are yours. Your links only go live once you're connected.</p>${connectBlock()}
+  if(st===1) return `<div class="wiz">${bar}<h2>Connect your ILIA account ${info('agent')}</h2><p class="lead">This is how ILIA knows your prospects are yours. Your links only go live once you're connected.</p>${connectBlock()}
      ${a.conn==='pending'?`<div class="btnrow"><button class="btn pri" data-ostep="2">Continue setup while I wait →</button></div>`:''}${a.conn==='connected'?`<div class="btnrow"><button class="btn pri" data-ostep="2">Continue →</button></div>`:''}</div>`;
   if(st===2) return `<div class="wiz">${bar}<h2>How your prospects reach ILIA</h2><p class="lead">Prospects see their numbers without giving any details. They only share name and email when they start their ILIA account.</p>${modeExplain()}
      <label class="chc" style="cursor:pointer;margin-top:14px"><input type="checkbox" data-attest="1" ${UI.form.attest?'checked':''} style="margin-top:3px"><div><b>I'm responsible for my own marketing</b><small>Partner Hub is outside ILIA and Simplicity. I'll follow carrier (Allianz) and state advertising rules for anything I share.</small></div></label>
@@ -719,7 +748,7 @@ const AGENT={
   return `${head('Marketing library','J\'s CMS library plus anything you create. Get a personal tracked link for any of them.',`<button class="btn pri" data-open="newLink" data-mode="own">＋ Create my own</button>`)}<div class="grid g3">${list.map(x=>assetCard(x,'agent')).join('')}</div>`;},
  prospects(){ const a=me(), list=DB.pros.filter(p=>p.agent===a.id), todo=list.filter(p=>p.stage==='account'); const {bar,out}=filters(list,{});
   return `${head('My prospects','People who reached their numbers from your links. Anonymous until they start their ILIA account.',`<button class="btn sec" data-sim="1" ${live(a)?'':'disabled'}>＋ Simulate a scan</button>`)}
-   ${UI.ho==='v1'&&todo.length?`<div class="todo"><h3>⚠ To do in ILIA (${todo.length})</h3><p class="sub" style="margin:0">They chose a plan and gave their details. Invite each one from your ILIA account so they're your client.</p>${todo.map(p=>`<div class="ti"><div style="flex:1;min-width:160px"><b>${esc(p.name)}</b><small style="display:block;color:var(--ink-3)">${choicePill(p)} ${fmt(p.ans.amount)}/yr · ${p.ans.years} yrs · ${p.when}</small></div><button class="btn pri sm" data-open="invite:${p.id}">Invite in ILIA →</button></div>`).join('')}</div>`:''}
+   ${UI.ho==='v1'&&todo.length?`<div class="todo"><h3>⚠ To do in ILIA (${todo.length}) ${info('client','How the client is tied to you in ILIA')}</h3><p class="sub" style="margin:0">They chose a plan and gave their details. Invite each one from your ILIA account so they're your client.</p>${todo.map(p=>`<div class="ti"><div style="flex:1;min-width:160px"><b>${esc(p.name)}</b><small style="display:block;color:var(--ink-3)">${choicePill(p)} ${fmt(p.ans.amount)}/yr · ${p.ans.years} yrs · ${p.when}</small></div><button class="btn pri sm" data-open="invite:${p.id}">Invite in ILIA →</button></div>`).join('')}</div>`:''}
    ${UI.ho==='v2'&&todo.length?`<div class="banner ok">✓ <div><b>${todo.length} prospect${todo.length>1?'s were':' was'} sent to ILIA automatically</b><br><span style="color:var(--ink-2)">They're in your ILIA leads and their invite was emailed.</span></div></div>`:''}
    <div class="card tablecard">${bar}${proRows(out,{empty:'No prospects yet.'})}</div>`;},
  ilia(){ const a=me();
@@ -731,8 +760,8 @@ const AGENT={
  notifications(){ return SHARED.notifications(); }, profile(){ return SHARED.profile(); }, help(){ return SHARED.help(); }
 };
 function connBanner(){ const a=me(); if(a.conn==='connected') return '';
-  if(a.conn==='pending') return `<div class="banner warn">⏳ <div><b>Your links aren't live yet</b><br><span style="color:var(--ink-2)">Waiting for ${esc(IM(a.imo).name)} to confirm your ILIA account.</span></div><button class="btn sec sm" data-nav="ilia">Details</button></div>`;
-  return `<div class="banner warn">🔐 <div><b>Your links aren't live yet</b><br><span style="color:var(--ink-2)">${a.conn==='notInIlia'?'Register as an ILIA agent under '+(a.imo?esc(IM(a.imo).name):'Judy\'s or Josh\'s IMO')+', then connect.':'Connect your ILIA account.'}</span></div><button class="btn pri sm" data-nav="ilia">Connect</button></div>`; }
+  if(a.conn==='pending') return `<div class="banner warn">⏳ <div><b>Your links aren't live yet ${info('agent')}</b><br><span style="color:var(--ink-2)">Waiting for ${esc(IM(a.imo).name)} to confirm your ILIA account.</span></div><button class="btn sec sm" data-nav="ilia">Details</button></div>`;
+  return `<div class="banner warn">🔐 <div><b>Your links aren't live yet ${info('notIn','Why your links are inactive')}</b><br><span style="color:var(--ink-2)">${a.conn==='notInIlia'?'Register as an ILIA agent under '+(a.imo?esc(IM(a.imo).name):'Judy\'s or Josh\'s IMO')+', then connect.':'Connect your ILIA account.'}</span></div><button class="btn pri sm" data-nav="ilia">Connect</button></div>`; }
 function linkBlock(L,full){ const a=AS(L.asset), ag=AG(L.agent), url=linkUrl(L), n=DB.pros.filter(p=>p.link===L.id).length, off=!live(ag)||L.status==='paused'||a.status==='paused';
   return `<div class="linkcard">${qrBox(url,128,off)}<div style="min-width:0"><b style="display:block">${TYPES[a.type][0]} ${esc(a.name)}</b>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px"><span class="idchip">${L.id}</span><span class="idchip">${a.id}</span><span class="pill p-info">${L.clicks} visits</span><span class="pill p-ok">${n} prospects</span>${!live(ag)?'<span class="pill p-warn">Inactive until ILIA connected</span>':''}${L.status==='paused'?'<span class="pill p-warn">Paused</span>':''}</div>
@@ -756,7 +785,7 @@ const MODALS={
    isAgent&&v1&&p.stage==='account'?`<button class="btn sec" data-close="1">Close</button><button class="btn pri" data-open="invite:${p.id}">Invite in ILIA →</button>`:`<button class="btn pri" data-close="1">Done</button>`,false,true);},
  invite(id){ const p=DB.pros.find(x=>x.id===id), a=AG(p.agent);
   const txt=`Prospect: ${p.name}\nEmail: ${p.email}\nMobile: ${p.phone}\nPlan: ${p.product==='kz'?'IUL + Kai-Zen boost':'IUL'} (Allianz)\nYearly amount: ${fmt(p.ans.amount)} for ${p.ans.years} years\nAge: ${p.ans.age} · Health: ${p.ans.health}\nSource: Partner Hub ${p.link} / ${p.asset}`;
-  return modal('Invite '+p.name+' in ILIA',`<p class="sub">Invite them from <b>your</b> ILIA account (${esc(a.iliaEmail||a.email)}). ILIA ties every client you add to you, so nothing else is needed.</p>
+  return modal('Invite '+p.name+' in ILIA',`<p class="sub">${info('client','How the client is tied to you in ILIA')} Invite them from <b>your</b> ILIA account (${esc(a.iliaEmail||a.email)}). ILIA ties every client you add to you, so nothing else is needed.</p>
    <div class="flowsteps"><div><span class="n">1</span><div><b>Log in to ILIA</b>Agent Dashboard → <b>Add Client</b></div></div><div><span class="n">2</span><div><b>Paste their details</b>Choose Allianz and ${p.product==='kz'?'Kai-Zen':'IUL'}</div></div><div><span class="n">3</span><div><b>Send the ILIA invite</b>They get an email to create their account</div></div></div>
    <div class="copyblk">${esc(txt)}</div>`,
    `<button class="btn sec" data-copy="${esc(txt)}">📋 Copy details</button><a class="btn sec" href="https://ilia.example/agent/clients/new" target="_blank" rel="noopener">Open ILIA ↗</a><button class="btn ok" data-markinv="${p.id}">✓ I've invited them</button>`);},
@@ -778,12 +807,12 @@ const MODALS={
   return modal('Add an IMO',`${tip}<div class="banner info" style="margin-top:0">The IMO must already exist in ILIA (NIW creates it). This just adds it to Partner Hub.</div>
    ${field('iname','IMO name (exactly as in ILIA)',"Lakeshore IMO",{hint:'Agents see this name when they pick their IMO, in ILIA and here.'})}
    ${field('iadmin','IMO admin name','Morgan Reyes')}${field('iemail','IMO admin\'s ILIA login email','morgan.reyes@example.com',{type:'email'})}
-   <label class="chc" style="cursor:pointer;margin-bottom:6px"><input type="checkbox" data-ivchk="1" ${ok?'checked':''} style="margin-top:3px"><div><b>NIW partner team confirmed this email owns this IMO in ILIA</b><small>One-time check. J can't see inside ILIA, so NIW confirms.</small></div></label>`,
+   <label class="chc" style="cursor:pointer;margin-bottom:6px"><input type="checkbox" data-ivchk="1" ${ok?'checked':''} style="margin-top:3px"><div><b>NIW partner team confirmed this email owns this IMO in ILIA ${info('imoAdmin','How J verifies an IMO admin')}</b><small>One-time check. J can't see inside ILIA, so NIW confirms.</small></div></label>`,
    `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="addImo" data-need="iname,iadmin,iemail" ${ok?'':'disabled'}>Add IMO & invite admin</button>`);},
  imoDetail(id){ const i=IM(id), ags=DB.agents.filter(a=>a.imo===id);
   return modal(i.name,`<div class="kv" style="margin-bottom:14px"><span>IMO admin</span><b>${esc(i.admin)} · ${esc(i.adminEmail)}</b><span>Status</span><b>${i.status==='active'?'✓ Verified · active':'Invite sent'}</b><span>Verified by</span><b>${esc(i.verified)}</b>
    <span>Agents</span><b>${ags.filter(a=>a.conn==='connected').length} connected · ${ags.filter(a=>a.conn==='pending').length} awaiting IMO · ${ags.filter(a=>a.conn==='notInIlia').length} not in ILIA</b></div>
-   <h3 style="font-size:14px;margin:0 0 8px">Who validates what</h3><div class="flowsteps" style="margin:0"><div><span class="n">1</span><div><b>J → the IMO admin</b>Once, with the NIW partner team</div></div><div><span class="n">2</span><div><b>IMO admin → each agent</b>By finding the agent's ILIA login email in ILIA → Agents</div></div><div><span class="n">3</span><div><b>Agent → each client</b>By adding them in ILIA with Add Client</div></div></div>`,
+   <h3 style="font-size:14px;margin:0 0 8px">Who validates what ${info('chain','Who validates whom')}</h3><div class="flowsteps" style="margin:0"><div><span class="n">1</span><div><b>J → the IMO admin</b>Once, with the NIW partner team</div></div><div><span class="n">2</span><div><b>IMO admin → each agent</b>By finding the agent's ILIA login email in ILIA → Agents</div></div><div><span class="n">3</span><div><b>Agent → each client</b>By adding them in ILIA with Add Client</div></div></div>`,
    `${i.status!=='active'?`<button class="btn sec" data-imoaccept="${id}">Demo: admin accepts invite</button><button class="btn sec" data-imoresend="${id}">Resend invite</button>`:''}<button class="btn pri" data-close="1">Done</button>`);},
  inviteCms(){ const id=myImo(); return modal('Invite an agent to the CMS',`${tip}${field('cname','Agent name','Jordan Hale')}${field('cemail2','Agent email','jordan.hale@example.com',{type:'email'})}<p class="sub">They get a Partner Hub sign-up link tagged to ${esc(IM(id).name)}. If they're not in ILIA yet, they'll be guided to register under your IMO first.</p>`,`<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="inviteCms" data-need="cname,cemail2">Send invite</button>`);},
  more(){ return modal('Menu',`<div class="morelist">${MENU[UI.role].sections.map(([s,items])=>`<div class="sec">${s}</div>${items.map(([k,ic,l])=>`<button data-nav="${k}"><span>${ic}</span>${l}</button>`).join('')}`).join('')}</div>`,'');}
@@ -813,7 +842,7 @@ function render(){
    <header class="mtop"><div class="brand"><div class="mk">P</div><div><b>Partner Hub</b><small>${ROLE_LABEL[role]}</small></div></div>${bell}${av(who.name)}</header>
    <main class="main"><div class="mainin">${content}</div></main>
    <nav class="mtabs" aria-label="Main">${onboarding?'':prim.map(([k,ic,l])=>`<button data-nav="${k}" ${UI.screen===k?'aria-current="page"':''}><span class="ic">${ic}</span>${l.replace('My prospects','Prospects').replace('ILIA connection','ILIA')}${cnt(k)}</button>`).join('')+`<button data-open="more" ${!MENU[role].primary.includes(UI.screen)?'aria-current="page"':''}><span class="ic">☰</span>More</button>`}</nav>
-   ${mod}${UI.toast?`<div class="toast" role="status">${esc(UI.toast)}</div>`:''}`;
+   ${mod}${UI.info&&INFO[UI.info]?(()=>{const x=INFO[UI.info](); return `<div class="infolayer" data-infoback="1"><div class="infobox" role="dialog" aria-modal="true" aria-label="${esc(x.t)}"><div class="ih"><span class="badge">i</span><h3>${esc(x.t)}</h3><button class="x" data-infoclose="1" aria-label="Close" style="margin-left:auto;border:1px solid var(--line);background:var(--surface);width:30px;height:30px;border-radius:8px;cursor:pointer">×</button></div><div class="ib2">${x.b}</div><div class="ifoot"><button class="btn pri sm" data-infoclose="1">Got it</button></div></div></div>`;})():''}${UI.toast?`<div class="toast" role="status">${esc(UI.toast)}</div>`:''}`;
   document.querySelectorAll('#roleSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.role===role));
   document.querySelectorAll('#hoSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ho===UI.ho));
   document.querySelectorAll('#devSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dev===UI.dev));
@@ -849,6 +878,9 @@ document.addEventListener('click',e=>{
   if(t.closest('#reset')){ DB=seed(); Object.assign(UI,{screen:null,param:null,modal:null,form:{},filter:{},step:0}); render(); toast('Demo data reset.'); return; }
   const inp=t.closest('#portal [data-f]'); if(inp){ if(!inp.value&&inp.dataset.demo){ inp.value=inp.dataset.demo; UI.form[inp.dataset.f]=inp.value; } return; }
   if(!t.closest('#portal')) return;
+  const ibt=t.closest('[data-info]'); if(ibt){ e.preventDefault(); e.stopPropagation(); UI.info=ibt.dataset.info; keep(); return; }
+  if(t.closest('[data-infoclose]')||(t.dataset&&t.dataset.infoback)){ UI.info=null; keep(); return; }
+  if(t.closest('.infolayer')) return;
   const b=t.closest('button, a.btn, [data-nav], [data-open]'); if(!b) return; const d=b.dataset;
   if(d.backdrop!==undefined){ if(t===b){ UI.modal=null; keep(); } return; }
   if(b.disabled||b.getAttribute('aria-disabled')==='true'){ if(d.regopen){ e.preventDefault(); toast('Pick your IMO first.'); } return; }
@@ -909,7 +941,7 @@ document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closes
 document.addEventListener('change',e=>{ const t=e.target; if(!t.dataset) return; if(t.dataset.f) UI.form[t.dataset.f]=t.value; if(t.dataset.ivchk){ UI.form.ivchk=t.checked; keep(); } if(t.dataset.attest){ UI.form.attest=t.checked; keep(); }
   if(t.dataset.filt&&t.tagName==='SELECT'){ UI.filter[t.dataset.filt]=t.value||undefined; keep(); } });
 document.addEventListener('input',e=>{ const t=e.target; if(!t.dataset) return; if(t.dataset.f) UI.form[t.dataset.f]=t.value; if(t.dataset.filt&&t.type==='search'){ UI.filter[t.dataset.filt]=t.value; keep(); } });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&UI.modal){ UI.modal=null; keep(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(UI.info){ UI.info=null; keep(); } else if(UI.modal){ UI.modal=null; keep(); } } });
 function exportCSV(kind){
   if(kind==='pros'){ const L=UI._export||[]; const full=UI.role==='agent';
     downloadCSV('partner-hub-prospects.csv',[['Prospect ID','Name','Agent',idLbl(),'IMO','Link','Asset','Status','Choice'].concat(full?['Email','Yearly amount','Years','Household income']:[]),...L.map(p=>{const a=AG(p.agent); return [p.id,p.name||'Anonymous',a.name,idOf(a),IM(a.imo).name,p.link,p.asset,stageInfo(p)[0],p.product||''].concat(full?[p.email,p.ans.amount,p.ans.years,p.ans.hh]:[]);})]); return; }
