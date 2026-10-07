@@ -932,6 +932,7 @@ function sheet(){
 }
 function render(){
   const app=$('#app');
+  if(CMP&&ROUTE==='auto'&&!AGENT_LIVE&&['wall','ilia','done'].includes(S.screen)) AGENT_LIVE=matchAgent();
   const html=header()+SCREENS[S.screen]()+(S.edit&&S.screen==='results'?sheet():'');
   const nm=AGENT_LIVE?AGENT_LIVE.name:AGENT; app.innerHTML=nm?html.split('Agent Name').join(nm):html;
   if(S.flash) S.flash.fresh=false;
@@ -999,7 +1000,7 @@ document.addEventListener('click',e=>{
   if(d.learn){ go('learn',{section:d.learn}); return; }
   if(d.scroll){ toSection(d.scroll,false); return; }
   if(d.go){ if(t.disabled) return; if(d.tabto) S.tab=d.tabto; go(d.go); return; }
-  if(d.set){ let v=d.val; if(['amount','start'].includes(d.set)) v=+v; S[d.set]=v; if(d.set==='amount'||d.set==='hh') S.affKeep=false; render(); return; }
+  if(d.set){ if(d.set==='state') AGENT_LIVE=null; let v=d.val; if(['amount','start'].includes(d.set)) v=+v; S[d.set]=v; if(d.set==='amount'||d.set==='hh') S.affKeep=false; render(); return; }
   if(d.toggle){ const a=S[d.toggle], i=a.indexOf(d.val); i<0?a.push(d.val):a.splice(i,1); render(); return; }
   if(d.age){ S.age=Math.min(80,Math.max(18,S.age+ +d.age)); render(); return; }
   if(d.tab){ S.tab=d.tab; render(); return; }
