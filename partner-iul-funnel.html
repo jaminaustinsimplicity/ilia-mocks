@@ -424,7 +424,7 @@ body.embed .notes{top:16px}
 <table>
   <tr><th>#</th><th>Screen / question</th><th>Answers</th><th>Used for</th></tr>
   <tr><td>1</td><td><b>What matters most to you?</b></td><td>Tax-free retirement income · Protect my family · Grow without market losses · Access cash when I need it (pick any)</td><td><span class="pill p-desire">Desire</span> sets what the results lead with</td></tr>
-  <tr><td>2</td><td><b>About you:</b> age + sex</td><td>Age stepper · Male / Female</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: age 18–65</span></td></tr>
+  <tr><td>2</td><td><b>About you:</b> age + sex + state</td><td>Age stepper · Male / Female · State (for licensed-agent routing)</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: age 18–65</span></td></tr>
   <tr><td>3</td><td><b>Your health:</b> overall health + nicotine/tobacco/marijuana</td><td>Excellent · Good · Average · Below average · No / Yes</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: average or better</span></td></tr>
   <tr><td>4</td><td><b>Your numbers:</b> yearly amount + household income</td><td>$20–25k · $26–50k · $51–99k · $100k+ (ranges) · Under $100k / $100–250k / $250–500k / $500k+</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: household income $100k+</span><span class="pill p-lead">Affordability flag</span> yearly amount vs ~20%-of-income guideline</td></tr>
   <tr><td>5</td><td><b>When do you want income to start?</b></td><td>60 · 65 · 70</td><td><span class="pill p-calc">Calculator</span></td></tr>
@@ -471,7 +471,14 @@ const QP=new URLSearchParams(location.search);
 const PROSPECT=QP.get('prospect')==='1';
 let H=QP.get('h')==='v1'?'v1':'v2';
 const KZC=(QP.get('kz')||'5c1e9a40-2b7d-4e61-9f3a-0d8e7b21c4aa').replace(/[^0-9a-f-]/gi,''), IULC=(QP.get('iul')||'9b0f3d12-7e44-4c2a-8a6b-51f0c2e9d7b3').replace(/[^0-9a-f-]/gi,'');
-const regUrl=()=>'myilia.com/register?agentLink='+(S.product==='kz'?KZC:IULC);
+// Paid-campaign mode (link from a CMS campaign, not an agent): route by licensed state
+const CMP=(QP.get('cmp')||'').replace(/[^A-Za-z0-9-]/g,''), ROUTE=QP.get('route')==='pool'?'pool':'auto', IMONAME=(QP.get('imo')||'Partner Hub').replace(/[<>&"]/g,'');
+const ROSTER=(QP.get('roster')||'Dana Whitfield:TX.OK.AZ:3f9c2a71-0b4e-4c8d-9a61-7e2d5b1c0a11:b84e1d02-6c3a-4f7e-8d19-2a5c7e0f9b12|Marcus Lee:FL.GA:6a2d0e93-1f5b-4b7c-a8e4-9c3d1f6a2e21:c1f7b3a4-8e2d-4a6c-9b05-3e7d2a1c6f22').split('|').map(r=>{ const [n,st,kz,iul]=r.split(':'); return {name:(n||'').replace(/[<>&"]/g,''),states:(st||'').split('.'),kz:(kz||'').replace(/[^0-9a-f-]/gi,''),iul:(iul||'').replace(/[^0-9a-f-]/gi,'')}; }).filter(r=>r.name);
+let AGENT_LIVE=null;
+const curKZ=()=>AGENT_LIVE?AGENT_LIVE.kz:KZC, curIUL=()=>AGENT_LIVE?AGENT_LIVE.iul:IULC;
+const regUrl=()=>'myilia.com/register?agentLink='+(S.product==='kz'?curKZ():curIUL());
+function matchAgent(){ if(!CMP||ROUTE!=='auto') return null; const st=S.state||'TX'; const hit=ROSTER.filter(r=>r.states.includes(st)); return hit.length?hit[Math.floor((S.age||0)%hit.length)]:null; }
+const US_STATES=['AZ','CA','FL','GA','IL','NV','NY','NC','OH','OK','PA','TX','Other'];
 const ILIAID=(QP.get('ilia')||'').replace(/[<>&"]/g,'');
 const AGENT=(QP.get('agent')||'').replace(/[<>&"]/g,'');
 if(PROSPECT) document.body.classList.add('prospect');
@@ -541,7 +548,7 @@ function qualifies(st){
 function demoAnswers(){
   if(!S.goals.length) S.goals=['income','safe'];
   S.sex=S.sex||'female'; S.health=S.health||'good'; S.nic=S.nic||'no';
-  S.amount=S.amount||38000; S.hh=S.hh||'250'; S.start=S.start||65;
+  S.amount=S.amount||38000; S.state=S.state||'TX'; S.hh=S.hh||'250'; S.start=S.start||65;
 
 }
 
@@ -567,9 +574,11 @@ function chart(iul,kz,showKz){
 
 // ---------- Notes per screen ----------
 const NOTES={
+ match:{t:'Get matched (lead-pool campaigns)',b:['Only for <b>paid campaigns set to "lead pool"</b>, or when no agent is licensed in their state.','Asked <b>after</b> results, never before (Judy\'s rule holds).','Consent wording for calls/texts.','The lead lands in the IMO/admin <b>Leads</b> tab to assign to a licensed agent.'],k:'pool lead created'},
+ matched:{t:'Matched: waiting for agent',b:['The agent follows up and sends their personal link (their Agent Link). ILIA sign-up through it makes the lead their client. No ILIA code.'],k:'lead in pool'},
  land:{t:'Landing',b:['Arrives from an <b>ILIA agent\'s CMS link or QR</b>. The URL carries the CMS link ID + asset ID, and the CMS knows which ILIA agent owns it.','The agent who shared the link is shown at the top. Logo slot optional (branding TBD).','One promise, one button. Education sits behind "Learn more" later.'],k:'visit · CMS link · asset'},
  goals:{t:'Q1 · Desire',b:['Multi-select.','The answer decides what the results lead with (income first, death benefit first, or cash value first).'],k:'goal(s) selected'},
- about:{t:'Q2 · About you',b:['Age drives the calculator and is part of the Kai-Zen check (18–65).','Sex is needed for pricing.'],k:'step reached'},
+ about:{t:'Q2 · About you',b:['<b>State</b> is asked here (not contact info). It routes campaign prospects to an agent licensed there.','Age drives the calculator and is part of the Kai-Zen check (18–65).','Sex is needed for pricing.'],k:'step reached'},
  health:{t:'Q3 · Health',b:['Self-rated health class, no medical details yet.','Below average is not eligible for the boost (they still get IUL numbers).'],k:'step reached'},
  money:{t:'Q4 · Your numbers + affordability',b:['Yearly amount is a <b>range</b>: $20–25k · $26–50k · $51–99k · $100k+. The calculator starts at a typical value ($22.5k / $38k / $75k / $100k); the exact amount can be edited on results.','Household income is a band (also the Kai-Zen $100k+ check).','<b>Range logic:</b> "Not the best fit" only if even the <b>bottom</b> of the range is over 20% of the top of their income band (benefit of the doubt). "Stretch" if the typical value is over 15% of a typical income. The suggestion is the highest comfortable range. If none is lower, it points them to their agent.','<b>Live affordability flag</b> based on the industry guideline that yearly premium paid from earnings should be no more than ~20% of income:','For ⚠, the prospect must either take the suggested range or say they would pay from savings (flagged for the agent; carriers allow premiums from assets but review them).','The same check runs when they edit numbers on results, and the flag travels to ILIA with the handoff.','Thresholds are a starting point to confirm with the carrier/compliance.'],k:'affordability level · suggestion used / kept'},
  start:{t:'Q5 · Income start',b:['Three taps, adjustable on results.','Next goes <b>straight to their numbers</b>. There\'s no contact form (Judy).'],k:'step reached'},
@@ -584,13 +593,14 @@ const NOTES={
 };
 const QORDER=['land','goals','about','health','money','start'];
 const JOURNEY=[['goals','Answers'],['results','Numbers'],['confirm','Plan'],['ilia','Account']];
-const stageOf=s=>({goals:0,about:0,health:0,money:0,start:0,contact:0,results:1,learn:1,agent:1,confirm:2,wall:3,ilia:3,done:4}[s]);
+const stageOf=s=>({goals:0,about:0,health:0,money:0,start:0,contact:0,results:1,learn:1,agent:1,confirm:2,wall:3,ilia:3,done:4,match:3,matched:4}[s]);
 
 // ---------- Rendering ----------
 function header(){
   if(H==='v2'&&(S.screen==='ilia'||S.screen==='done')) return `<div class="iliabar"><span class="mark">ILIA</span><span class="sec">🔒 Secure enrollment</span><span class="ag">Your agent<br><b>Agent Name</b></span></div>`;
+  const camp=CMP&&!AGENT_LIVE;
   const top=`<div class="topbar"><div class="logo">GROUP<br>LOGO</div>
-    <div class="agent"><b>Agent Name</b><small>Your licensed agent · (555) 000-0000</small></div>
+    <div class="agent"><b>${camp?'Licensed agents':'Agent Name'}</b><small>${camp?IMONAME+' · matched to your state':'Your licensed agent · (555) 000-0000'}</small></div>
     <button class="talk" data-go="agent">Talk to my agent</button></div>`;
   const qi=QORDER.indexOf(S.screen);
   if(qi>=0) return top+`<div class="progress"><div style="width:${Math.round(qi/QORDER.length*100)}%"></div></div>`;
@@ -631,7 +641,8 @@ const SCREENS={
    <p class="kicker">Question 2 of 5</p><h2 class="q">A little about you</h2><p class="help">Used to estimate your policy costs.</p>
    <div class="field"><label>Your age</label><div class="stepper"><button data-age="-1" aria-label="Younger">−</button><output>${S.age}</output><button data-age="1" aria-label="Older">+</button></div></div>
    <div class="field"><label>Sex</label><div class="row">${optBtn('sex','male','Male')}${optBtn('sex','female','Female')}</div></div>
-   </div></div>${foot(`<button class="btn primary" data-go="health" ${S.sex?'':'disabled'}>Next</button>`)}`},
+   <div class="field"><label>Your state</label><div class="row" style="gap:6px">${US_STATES.map(s=>`<button class="opt" style="flex:1 1 calc(25% - 6px);padding:10px 4px;justify-content:center" aria-pressed="${S.state===s}" data-set="state" data-val="${s}">${s}</button>`).join('')}</div><div class="hint" style="font-size:12px;color:var(--ink-3);margin-top:6px">Agents can only help in states they're licensed in.</div></div>
+   </div></div>${foot(`<button class="btn primary" data-go="health" ${S.sex&&S.state?'':'disabled'}>Next</button>`)}`},
  health(){return `<div class="body"><div class="inner">${back('about')}
    <p class="kicker">Question 3 of 5</p><h2 class="q">How's your health?</h2><p class="help">Your best guess is fine. Nothing medical is needed yet.</p>
    <div class="field"><label>Overall health</label><div class="row">${optBtn('health','excellent','Excellent')}${optBtn('health','good','Good')}${optBtn('health','average','Average')}${optBtn('health','below','Below average')}</div></div>
@@ -819,8 +830,14 @@ const SCREENS={
      <button class="opt"><span class="ic">📅</span><span>Book a time<small>Pick a slot on the agent's calendar</small></span></button>
    </div></div></div>${foot(`<button class="btn secondary" data-go="${S.prev||'land'}">← Back</button>`)}`},
  wall(){const v=calc(S,S.product==='kz');
+   if(CMP&&ROUTE==='pool') return `<div class="body"><div class="inner wallscr"><div class="wallicon">🤝</div><h2 class="q">Let's match you with a licensed agent</h2>
+     <p class="help">A licensed agent in <b>${S.state||'your state'}</b> will review your <b>${S.product==='kz'?'IUL + Kai-Zen boost':'IUL'}</b> numbers with you and send you a personal link to set up your secure ILIA account.</p>
+     <div class="payload"><h5>Prototype note: lead-pool campaign ${CMP}</h5><div><span>Goes to</span><b>${IMONAME} → Leads tab (assigned to a licensed agent)</b></div><div><span>State</span><b>${S.state||'—'}</b></div><div><span>Plan</span><b>${S.product==='kz'?'Kai-Zen':'IUL'} · ${amtLabel(S.amount)}/yr</b></div></div>
+     </div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn primary" data-go="match">Get matched →</button>`)}`;
+   if(CMP&&ROUTE==='auto'&&!AGENT_LIVE){ AGENT_LIVE=matchAgent(); }
+   if(CMP&&ROUTE==='auto'&&!AGENT_LIVE) return `<div class="body"><div class="inner wallscr"><div class="wallicon">🧭</div><h2 class="q">We'll find you an agent</h2><p class="help">No agent in this campaign is licensed in <b>${S.state}</b> yet. Leave your details and a licensed agent will reach out.</p></div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn primary" data-go="match">Get matched →</button>`)}`;
    return `<div class="body"><div class="inner wallscr">
-   <div class="wallicon">🔒</div><h2 class="q">Great choice!</h2>
+   <div class="wallicon">🔒</div><h2 class="q">Great choice!</h2>${CMP&&AGENT_LIVE?`<div class="banner" style="background:var(--good-soft);border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:13.5px;text-align:left">⚡ You're matched with <b>${AGENT_LIVE.name}</b>, licensed in ${S.state}.</div>`:''}
    <p class="help">${H==='v1'?'Last step: start your secure <b>ILIA</b> account. ILIA is the enrollment platform your agent, <b>Agent Name</b>, uses. Tell us where to send your invite.':'Next, create your secure <b>ILIA</b> account. We\'re taking you to ILIA\'s sign-up page, already linked to your agent, <b>Agent Name</b>, and your '+(S.product==='kz'?'Kai-Zen':'IUL')+' plan.'}</p>
    <p class="help" style="font-size:13px">This is the first time we ask for your name and email.</p>
    <div class="payload"><h5>Prototype note: ${H==='v1'?'what the CMS hands to the agent (fallback · agent adds client)':'the CMS sends the prospect to ILIA\'s existing sign-up (no ILIA code)'}</h5>
@@ -867,6 +884,15 @@ const SCREENS={
        </div>
      </div>
    </div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="done" id="goDone" ${ok?'':'disabled'}>${v1?'Send my details to Agent Name':'Create my ILIA account'}</button>`)}`},
+ match(){ const A=S.acct, ok=S.name&&A.last&&/.+@.+\..+/.test(S.email)&&S.phone&&A.terms;
+   return `<div class="body"><div class="inner"><button class="back" data-go="wall">← Back</button><p class="kicker">Get matched</p><h2 class="q">Where can your agent reach you?</h2><p class="help">You've seen your numbers. A licensed agent in ${S.state||'your state'} will follow up and send your personal link.</p>
+     <div class="two"><div class="field"><label for="mF">First name</label><input id="mF" type="text" value="${S.name}" data-input="name"></div><div class="field"><label for="mL">Last name</label><input id="mL" type="text" value="${A.last}" data-acct="last"></div></div>
+     <div class="field"><label for="mE">Email</label><input id="mE" type="email" value="${S.email}" data-input="email"></div><div class="field"><label for="mP">Mobile</label><input id="mP" type="tel" value="${S.phone}" data-input="phone"></div>
+     <label class="check"><input type="checkbox" data-terms="1" ${A.terms?'checked':''}> I agree that a licensed agent may contact me by email, phone or text about my plan. Consent isn't a condition of purchase.</label>
+     <p class="disc" style="color:var(--brand)">Demo tip: click any empty field to fill in sample details.</p></div></div>${foot(`<button class="btn primary" data-go="matched" id="goMatched" ${ok?'':'disabled'}>Match me with an agent</button>`)}`;},
+ matched(){ return `<div class="body"><div class="inner wallscr"><div class="wallicon" style="background:var(--good-soft);color:var(--good)">✓</div><h2 class="q">You're on the list, ${S.name||'there'}</h2>
+     <p class="help">A licensed agent in <b>${S.state}</b> will reach out, usually within one business day. They'll send you a <b>personal link</b> to create your secure ILIA account. That link makes you their client.</p>
+     <div class="payload"><h5>Prototype note</h5><div><span>Lead</span><b>${IMONAME} · Leads tab · campaign ${CMP||'—'}</b></div><div><span>Next</span><b>IMO/admin assigns → agent sends personal link → ILIA sign-up via that agent's Agent Link</b></div></div></div></div>${foot(`<button class="btn secondary" data-learn="basics">Learn more while you wait</button>`)}`;},
  done(){const kzSel=S.product==='kz', v1=H==='v1';
    const app=kzSel?[['Complete your application','Personal, beneficiary and financial details.'],['Review your Allianz illustration','Your official numbers, with your agent.'],['Kai-Zen leverage and trust documents','Set up the premium financing and trust.','kz'],['Health and underwriting','Health questions, and an exam if needed.'],['Sign and submit','e-Sign everything in one place.']]
      :[['Complete your application','Personal, beneficiary and financial details.'],['Review your Allianz illustration','Your official numbers, with your agent.'],['Health and underwriting','Health questions, and an exam if needed.'],['Sign and submit','e-Sign everything in one place.']];
@@ -907,7 +933,7 @@ function sheet(){
 function render(){
   const app=$('#app');
   const html=header()+SCREENS[S.screen]()+(S.edit&&S.screen==='results'?sheet():'');
-  app.innerHTML=AGENT?html.split('Agent Name').join(AGENT):html;
+  const nm=AGENT_LIVE?AGENT_LIVE.name:AGENT; app.innerHTML=nm?html.split('Agent Name').join(nm):html;
   if(S.flash) S.flash.fresh=false;
   const n=NOTES[S.screen];
   $('#notes').innerHTML=`<div class="scr">${device==='web'?'Web':'Mobile'} · ${H==='v2'&&(S.screen==='ilia'||S.screen==='done')?'inside ILIA':'funnel (outside ILIA)'} · handoff ${H}</div><h3>${n.t}</h3><ul>${n.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="track">📊 Tracked: <code>${n.k}</code></div>`;
@@ -943,6 +969,7 @@ function demoPerson(){
 }
 function refreshButtons(){
   const b=$('#toResults'); if(b) b.disabled=!(S.name.trim()&&/.+@.+\..+/.test(S.email));
+  { const m=$('#goMatched'), A2=S.acct; if(m) m.disabled=!(S.name&&A2.last&&/.+@.+\..+/.test(S.email)&&S.phone&&A2.terms); }
   const A=S.acct, d=$('#goDone'); if(d) d.disabled=!(H==='v1'?(S.name&&A.last&&/.+@.+\..+/.test(S.email)&&A.dob&&A.state&&A.terms):(S.name&&A.last&&/.+@.+\..+/.test(S.email)&&S.phone&&A.pw&&A.pw2&&A.pw===A.pw2&&A.terms));
 }
 function demoFill(t){

@@ -439,6 +439,26 @@ function seed(){
         link:L.id,agent:L.agent,asset:L.asset,stage:st,product:['chose','account','invited'].includes(st)?(kz?'kz':'iul'):null,qual:kz,
         flag:hh==='Under $100k'&&AMT[i%AMT.length]>20000?'over':(i%7===3)?'stretch':null,call,when:(1+(i%12))+'d ago',
         ans:{age:32+(i*5)%30,goal:GOALS[i%4],amount:AMT[i%AMT.length],years:[5,7,10][i%3],hh,health:['Excellent','Good','Good','Average'][i%4]},iliaLead:named?'IL-'+(88200+i):null}); } });
+  const lic={A1:['TX','OK','AZ'],A2:['FL','GA'],A3:['CA','AZ','NV'],A4:['CA','NV','TX'],A5:['TX','FL']};
+  agents.forEach(a=>{ a.states=lic[a.id]||[]; });
+  const campaigns=[
+    {id:'CP-01',name:'TikTok · Retire without market losses',owner:'I1',channel:'tiktok',routing:'auto',spend:1200,clicks:410,status:'active',created:'Oct 1'},
+    {id:'CP-02',name:'Meta · Kai-Zen boost lead campaign',owner:'I1',channel:'meta',routing:'pool',spend:800,clicks:260,status:'active',created:'Oct 2'},
+    {id:'CP-03',name:'YouTube · Tax-free retirement pre-roll',owner:'ADMIN',channel:'youtube',routing:'pool',spend:1500,clicks:520,status:'active',created:'Sep 28'},
+    {id:'CP-04',name:'Instagram · See your numbers',owner:'I2',channel:'instagram',routing:'auto',spend:600,clicks:190,status:'active',created:'Oct 3'}];
+  campaigns.forEach(c=>assets.push({id:c.id,owner:'CMS',type:'ad',name:c.name,headline:c.name,msg:'',status:'active',created:c.created,hidden:true}));
+  const CFN=['Ava','Ben','Cora','Dev','Eli','Fay','Gus','Ivy','Joel','Kira','Luis','Mae','Ned','Opal'], CLN=['Reyes','Shah','Ortiz','Kim','Bauer','Nolan','Price','Quist','Ross','Tate'];
+  const leads=[]; const LST=['new','new','new','assigned','contacted','linksent','new','assigned','signedup','new','linksent','assigned'];
+  const SST=['TX','CA','FL','AZ','GA','TX','NV','OK','CA','TX','FL','AZ'];
+  LST.forEach((st,i)=>{ const cmp=i%3===2?'CP-03':'CP-02', state=SST[i], owner=cmp==='CP-03'?null:'I1';
+    const elig=agents.filter(a=>a.conn==='connected'&&a.states.includes(state)&&(!owner||a.imo===owner));
+    const ag=st==='new'?null:(elig[i%Math.max(elig.length,1)]||agents[0]).id;
+    leads.push({id:'L-'+(701+i),name:CFN[i%CFN.length]+' '+CLN[(i*3)%CLN.length],email:(CFN[i%CFN.length]+'.'+CLN[(i*3)%CLN.length]).toLowerCase()+'@example.com',phone:'(555) 04'+(i%10)+'-'+(2200+i),state,product:[null,'kz','iul','kz'][i%4],cmp,status:st,agent:ag,ageH:[2,30,5,26,50,72,1,8,96,40,20,3][i],consent:true}); });
+  // auto-routed campaign prospects (assigned by rotation, licensed in state)
+  ['CP-01','CP-01','CP-01','CP-04','CP-04','CP-01'].forEach((cmp,i)=>{ const owner=campaigns.find(c=>c.id===cmp).owner, state=['TX','AZ','OK','CA','NV','TX'][i];
+    const elig=agents.filter(a=>a.conn==='connected'&&a.imo===owner&&a.states.includes(state)); const ag=elig[i%elig.length]||agents.find(a=>a.imo===owner);
+    const st=['account','results','invited','account','learn','chose'][i];
+    pros.push({id:'P-'+(5800+i),name:null,email:'',phone:'',link:cmp,agent:ag.id,asset:cmp,stage:st,product:['account','invited','chose'].includes(st)?(i%2?'iul':'kz'):null,qual:true,flag:null,call:false,when:(i+1)+'d ago',state,ans:{age:40+i,goal:'Tax-free retirement income',amount:38000,years:5,hh:'$100–250k',health:'Good'},iliaLead:null}); });
   const notifs=[
     {to:'IMO:I1',ic:'✅',t:'Tasha Green joined Partner Hub',d:'Her Allianz Kai-Zen and IUL Agent Links were verified with ILIA. Her links are live.',when:'1h ago',read:false},
     {to:'ADMIN',ic:'🧭',t:'Owen Brooks has no ILIA account yet',d:'He signed up to the CMS first. Access stays locked until he registers in ILIA and adds his Agent Links.',when:'2d ago',read:true},
@@ -448,16 +468,16 @@ function seed(){
     {who:'Judy',what:'Confirmed Dana Whitfield as ILIA-AG-1042',when:'Sep 20'},
     {who:'System',what:'Funnel settings published (v3)',when:'Sep 28'}];
   const settings={kzMinIncome:100000,kzMinAge:18,kzMaxAge:65,affMax:20,affStretch:15,defYears:5,showBoost:true,qGoal:true,qHealth:true,showLearnMore:true};
-  return {imos,agents,ilia,links2,assets,links,pros,notifs,activity,settings,seq:300};
+  return {imos,agents,ilia,links2,assets,links,pros,notifs,activity,settings,campaigns,leads,seq:300};
 }
 let DB=seed();
 const UI={role:'agent',dev:'web',ho:'v2',screen:null,param:null,modal:null,toast:null,form:{},step:0,filter:{},range:30};
 const ME={admin:{name:'J (CMS Admin)',title:'Partner Hub owner'},imo:{name:'Judy',title:"IMO admin · Judy's IMO",imo:'I1'},agent:'A7'};
 const ROLE_LABEL={admin:'CMS Admin',imo:'IMO admin',agent:'Agent'};
 const MENU={
- admin:{sections:[['Overview',[['dash','📊','Dashboard']]],['Network',[['agents','🧑‍💼','Agents'],['imos','🏢','IMOs']]],['Performance',[['prospects','📥','Prospects'],['marketing','🎨','Marketing'],['reports','📈','Reports']]],['Configuration',[['ilia','🔗','ILIA connection'],['funnel','🧭','Funnel settings'],['activity','🕘','Activity log']]]],primary:['dash','agents','prospects','ilia']},
- imo:{sections:[['Overview',[['dash','📊','Dashboard'],['notifications','🔔','Notifications']]],['My agents',[['agents','🧑‍💼','Agents'],['prospects','📥','Prospects'],['reports','📈','Reports']]],['Account',[['profile','👤','Profile'],['help','❓','Help']]]],primary:['dash','agents','prospects','reports']},
- agent:{sections:[['Overview',[['home','🏠','Home'],['notifications','🔔','Notifications']]],['Share',[['links','🔗','My links'],['library','🎨','Marketing library']]],['Results',[['prospects','📥','My prospects']]],['Account',[['ilia','🔐','ILIA connection'],['profile','👤','Profile'],['help','❓','Help']]]],primary:['home','links','prospects','ilia']}};
+ admin:{sections:[['Overview',[['dash','📊','Dashboard']]],['Network',[['agents','🧑‍💼','Agents'],['imos','🏢','IMOs']]],['Paid campaigns',[['campaigns','📣','Campaigns'],['leadpool','📬','Leads']]],['Performance',[['prospects','📥','Prospects'],['marketing','🎨','Marketing'],['reports','📈','Reports']]],['Configuration',[['ilia','🔗','ILIA connection'],['funnel','🧭','Funnel settings'],['activity','🕘','Activity log']]]],primary:['dash','agents','leadpool','prospects']},
+ imo:{sections:[['Overview',[['dash','📊','Dashboard'],['notifications','🔔','Notifications']]],['My agents',[['agents','🧑‍💼','Agents'],['prospects','📥','Prospects'],['reports','📈','Reports']]],['Paid campaigns',[['campaigns','📣','Campaigns'],['leadpool','📬','Leads']]],['Account',[['profile','👤','Profile'],['help','❓','Help']]]],primary:['dash','agents','leadpool','campaigns']},
+ agent:{sections:[['Overview',[['home','🏠','Home'],['notifications','🔔','Notifications']]],['Share',[['links','🔗','My links'],['library','🎨','Marketing library']]],['Results',[['prospects','📥','My prospects'],['assigned','📬','Assigned leads']]],['Account',[['ilia','🔐','ILIA connection'],['profile','👤','Profile'],['help','❓','Help']]]],primary:['home','links','prospects','ilia']}};
 const allNav=r=>MENU[r].sections.flatMap(s=>s[1]);
 
 // ---------------- Helpers ----------------
@@ -471,7 +491,7 @@ const nid=p=>p+'-'+(++DB.seq);
 const log=what=>DB.activity.unshift({who:myName(),what,when:'just now'});
 const notify=(to,ic,t,d)=>DB.notifs.unshift({to,ic,t,d,when:'just now',read:false});
 const myNotifKey=()=>UI.role==='agent'?ME.agent:UI.role==='imo'?'IMO:'+myImo():'ADMIN';
-const TYPES={qr:['🔳','QR flyer'],social:['📱','Social post'],text:['💬','Text message'],email:['✉️','Email'],event:['🎪','Event card'],link:['🔗','Plain link']};
+const TYPES={ad:['📣','Paid ad campaign'],qr:['🔳','QR flyer'],social:['📱','Social post'],text:['💬','Text message'],email:['✉️','Email'],event:['🎪','Event card'],link:['🔗','Plain link']};
 const live=a=>!!a&&a.conn==='connected';
 function stageInfo(p){
   if(p.stage==='results') return ['Saw results','p-info'];
@@ -571,6 +591,7 @@ const INFO={
    ?`<p>The agent's <b>Agent Link code</b> does it. This is ILIA's existing sign-up, with no new code.</p>${steps(['The prospect chooses Kai-Zen or IUL in the funnel.','Partner Hub sends them to <b>myilia.com/register?agentLink=&lt;the agent\'s code for that product&gt;</b>.','They create their own login (name, phone, email, password + code).','ILIA saves <b>that agent</b> on the client\'s policy, plus the IMO, carrier and product. They appear in the agent\'s <b>Client Management</b>.'])}<p>ILIA records the source as "agent link". Which asset they came from stays in Partner Hub.</p>`
    :`<p><b>Fallback mode:</b> the agent adds the client themselves.</p>${steps(['In ILIA, use <b>Agent Dashboard → Add Client</b>.','ILIA saves <b>the agent</b> on the client\'s policy automatically.','ILIA emails the client their invite.','Set Lead Source to <b>OTHER → "Partner Hub"</b> so ILIA knows where it came from.'])}`}),
  recheck:()=>({t:'How your connection stays valid',b:`<p>Partner Hub re-checks your Agent Link codes with ILIA <b>every night</b>.</p>${steps(['If a code stops resolving (removed, or you moved IMO), your links pause automatically.','You\'ll be asked to paste your current codes from ILIA → Agent Links.','Once they check out again, your links go live. Past prospects stay in your history.'])}`}),
+ campaign:()=>({t:'How campaign leads get to an agent',b:`<p>Paid ads (TikTok, Meta, YouTube…) run in the <b>IMO's or J's own ad account</b>. Partner Hub doesn't create ad accounts; it gives each campaign a <b>tracked link</b> to paste into the ad.</p>${steps(['<b>Prospect clicks the ad</b> → the same selling funnel, tagged with the campaign. They add their <b>state</b> in the questions.','<b>⚡ Auto-assign campaigns:</b> at "Create my account", Partner Hub picks an agent in that IMO who is <b>licensed in their state</b>, with the fewest recent leads. The prospect signs up on ILIA\'s page with <b>that agent\'s Agent Link code</b>, so they\'re tied to them instantly.','<b>📬 Lead pool campaigns:</b> after seeing their numbers, the prospect asks to be matched and gives name, email, phone + consent. The lead lands in <b>Leads</b>; the IMO/admin assigns it to a licensed agent.','<b>The agent follows up</b> and sends their <b>personal link</b> (their Agent Link). When the lead signs up in ILIA, they\'re the agent\'s client.'])}<div class="who"><span class="pill p-ok">No new ILIA code</span><span class="pill p-info">Licensed-state routing</span></div><p style="margin-top:10px"><b>Watch:</b> ad platforms restrict financial / insurance ads; carrier and state ad rules apply; phone/text follow-up needs consent.</p>`}),
  notIn:()=>({t:'Why you need an ILIA account first',b:`<p>Every client must land in ILIA under you. That only works if you're an ILIA agent with Agent Links, so <b>an ILIA account is required</b> before you can use Partner Hub.</p>${steps(['Register on the existing NIW agent registration page and select <b>Judy\'s</b> or <b>Josh\'s IMO</b>.','NIW approves you and you get your ILIA login.','In ILIA → <b>Agent Links</b>, copy your Kai-Zen (Allianz Life) and IUL (Allianz Life) links.','Come back here, paste them, and you\'re in.'])}`})
 };
 const modeExplain=()=>UI.ho==='v2'
@@ -617,7 +638,7 @@ const ADMIN={
    <div class="card tablecard">${imoTable()}</div>`;},
  prospects(){ const {bar,out}=filters(DB.pros,{imos:true,agents:DB.agents.filter(a=>a.conn==='connected')});
   return `${head('Prospects','Everyone who reached their numbers from any agent\'s link. Financial answers are visible only to the agent of record.')}<div class="card tablecard">${bar}${proRows(out,{agent:true})}</div>`;},
- marketing(){ const lib=DB.assets.filter(a=>a.owner==='CMS'), own=DB.assets.filter(a=>a.owner!=='CMS');
+ marketing(){ const lib=DB.assets.filter(a=>a.owner==='CMS'&&!a.hidden), own=DB.assets.filter(a=>a.owner!=='CMS');
   return `${head('Marketing','CMS library assets are available to every agent. Agents can also create their own.',`<button class="btn pri" data-open="addAsset">＋ Library asset</button>`)}
    <h3 style="font-size:15px;margin:0 0 10px">CMS library</h3><div class="grid g3">${lib.map(a=>assetCard(a,'admin')).join('')}</div>
    <h3 style="font-size:15px;margin:22px 0 10px">Agents' own marketing</h3><div class="grid g3">${own.map(a=>assetCard(a,'admin')).join('')}</div>`;},
@@ -646,6 +667,7 @@ const ADMIN={
    <div class="grid g2"><div class="card"><h3>🚀 Kai-Zen boost eligibility</h3>${num('kzMinIncome','Minimum household income','Below this, prospects see IUL only',10000,'$')}${num('kzMinAge','Minimum age','',1)}${num('kzMaxAge','Maximum age','',1)}${sw('showBoost',cur('showBoost'),'Show the boost on results','')}</div>
    <div class="card"><h3>⚠ Affordability flag</h3>${num('affMax','"Not the best fit" above','% of income (top of band)',1,'%')}${num('affStretch','"Stretch" above','% of typical income',1,'%')}${num('defYears','Default years paying','',1,' yrs')}<p class="sub" style="margin:8px 0 0">To confirm with Allianz / compliance.</p></div>
    <div class="card"><h3>Questions & steps</h3>${sw('qGoal',cur('qGoal'),'Ask "What matters most?"','')}${sw('qHealth',cur('qHealth'),'Ask health + nicotine','')}${sw('showLearnMore',cur('showLearnMore'),'Show "Learn more" content','')}</div></div>`;},
+ campaigns(){ return CAMP.campaigns(); }, leadpool(){ return CAMP.leadpool(); },
  activity(){ return `${head('Activity log','Every change in the CMS')}<div class="card tablecard">${rows([{h:'When',w:'.7fr',v:a=>a.when},{h:'Who',v:a=>esc(a.who)},{h:'What',w:'2.4fr',v:a=>esc(a.what)}],DB.activity)}</div>`;}
 };
 const SETKEYS=['kzMinIncome','kzMinAge','kzMaxAge','affMax','affStretch','defYears','showBoost','qGoal','qHealth','showLearnMore'];
@@ -666,8 +688,56 @@ function assetCard(a,view){ const t=TYPES[a.type], v=DB.links.filter(l=>l.asset=
    <div class="preview-ad"><h4>${esc(a.headline)}</h4><p>${esc(a.msg)}</p><span class="pill p-info">→ IUL selling funnel</span></div>
    <div class="assetfoot">${a.status==='paused'?'<span class="pill p-bad">Paused</span>':''}<span class="pill ${a.owner==='CMS'?'p-grp':'p-mute'}">${owner}</span><span class="pill p-info">${v} visits</span><span class="pill p-ok">${n} prospects</span></div><div class="assetfoot">${acts}</div></div>`; }
 
+// ---------------- Paid campaigns + lead routing (CMS only, no ILIA code) ----------------
+const CH={tiktok:['🎵','TikTok'],meta:['📘','Facebook / Meta'],instagram:['📸','Instagram'],youtube:['▶️','YouTube'],google:['🔎','Google'],linkedin:['💼','LinkedIn'],other:['📣','Other']};
+const STATES=['AZ','CA','FL','GA','IL','NV','NY','NC','OH','OK','PA','TX'];
+const LSTAT={new:['New · unassigned','p-bad'],assigned:['Assigned','p-warn'],contacted:['Contacted','p-info'],linksent:['Personal link sent','p-info'],signedup:['Signed up in ILIA','p-ok']};
+const CP=id=>DB.campaigns.find(c=>c.id===id);
+const ownerName=o=>o==='ADMIN'?'Partner Hub (J)':IM(o).name;
+const myCampaigns=()=>UI.role==='admin'?DB.campaigns:DB.campaigns.filter(c=>c.owner===myImo());
+const myPool=()=>UI.role==='admin'?DB.leads:DB.leads.filter(l=>CP(l.cmp).owner===myImo());
+function eligible(owner,state){ return DB.agents.filter(a=>a.conn==='connected'&&(a.states||[]).includes(state)&&(owner==='ADMIN'||!owner||a.imo===owner)); }
+function loadOf(a){ return DB.leads.filter(l=>l.agent===a.id&&['assigned','contacted'].includes(l.status)).length+DB.pros.filter(p=>p.agent===a.id&&p.link&&p.link.startsWith('CP-')).length; }
+function pickAgent(owner,state){ const e=eligible(owner,state); if(!e.length) return null; return e.slice().sort((x,y)=>loadOf(x)-loadOf(y))[0]; }
+function cmpUrl(c){ const roster=DB.agents.filter(a=>a.conn==='connected'&&(c.owner==='ADMIN'||a.imo===c.owner)).map(a=>a.name+':'+(a.states||[]).join('.')+':'+(a.kz||'')+':'+(a.iul||'')).join('|');
+  const p=new URLSearchParams({prospect:'1',cmp:c.id,route:c.routing,imo:ownerName(c.owner),roster,h:'v2'}); return funnelBase()+'?'+p.toString(); }
+function cmpStats(c){ const ps=DB.pros.filter(p=>p.link===c.id), ls=DB.leads.filter(l=>l.cmp===c.id); const leadsN=c.routing==='auto'?ps.length:ls.length;
+  const signed=c.routing==='auto'?ps.filter(p=>['account','invited'].includes(p.stage)).length:ls.filter(l=>l.status==='signedup').length;
+  return {leads:leadsN,signed,cpl:leadsN?Math.round(c.spend/leadsN):0,cpa:signed?Math.round(c.spend/signed):0}; }
+const routePill=c=>c.routing==='auto'?'<span class="pill p-ok">⚡ Auto-assign by state</span>':'<span class="pill p-warn">📬 Lead pool → assign</span>';
+function leadRows(list,o){ o=o||{};
+  return rows([{h:'Lead',w:'1.4fr',v:l=>`${esc(l.name)}<small>${l.id} · ${l.ageH<24?l.ageH+'h':Math.round(l.ageH/24)+'d'} ago</small>`},
+    {h:'State',w:'.5fr',v:l=>`<b>${l.state}</b>`},{h:'Interest',w:'.8fr',v:l=>l.product?`<span class="pill ${l.product==='kz'?'p-kz':'p-info'}">${l.product==='kz'?'🚀 Kai-Zen':'IUL'}</span>`:'<span class="pill p-mute">Not sure</span>'},
+    {h:'Campaign',w:'1.3fr',v:l=>`${CH[CP(l.cmp).channel][0]} ${esc(CP(l.cmp).name.split(' · ')[0])}<small>${l.cmp} · ${esc(ownerName(CP(l.cmp).owner))}</small>`},
+    {h:'Status',w:'1fr',v:l=>`<span class="pill ${LSTAT[l.status][1]}">${LSTAT[l.status][0]}</span>${l.status==='new'&&l.ageH>=24?'<small style="color:var(--bad)">⏰ over 24h</small>':''}`},
+    {h:'Agent',w:'1fr',v:l=>l.agent?esc(AG(l.agent).name):'<span class="pill p-mute">—</span>'},
+    {h:'',w:'1fr',v:l=>o.agent?`<div class="acts-cell"><button class="btn pri xs" data-open="sendlink:${l.id}">${l.status==='linksent'||l.status==='signedup'?'Resend link':'Send my link'}</button>${l.status==='assigned'?`<button class="btn sec xs" data-lstat="${l.id}:contacted">Contacted</button>`:''}</div>`
+      :`<div class="acts-cell"><button class="btn ${l.agent?'sec':'pri'} xs" data-open="assign:${l.id}">${l.agent?'Reassign':'Assign'}</button></div>`}],list,{empty:o.empty||'No leads yet.'}); }
+const CAMP={
+ campaigns(){ const list=myCampaigns(), tot=list.reduce((s,c)=>({spend:s.spend+c.spend,clicks:s.clicks+c.clicks,leads:s.leads+cmpStats(c).leads,signed:s.signed+cmpStats(c).signed}),{spend:0,clicks:0,leads:0,signed:0});
+  return `${head('Campaigns',(UI.role==='admin'?'All paid campaigns':esc(IM(myImo()).name)+' paid campaigns')+'. You run the ads in your own TikTok / Meta / YouTube account; Partner Hub gives each campaign a tracked link and routes the leads.',`<button class="btn pri" data-open="newCmp">＋ New campaign</button>`)}
+   <div class="banner info">ℹ️ <div><b>How paid campaigns reach the right agent ${info('campaign','How campaign leads get to an agent')}</b><br><span style="color:var(--ink-2)">Campaign traffic isn't owned by one agent. Each lead is routed to an agent <b>licensed in the prospect's state</b>, then signs up in ILIA with that agent's Agent Link. No ILIA code.</span></div></div>
+   <div class="grid g4" style="margin-bottom:14px"><div class="card stat"><span>Ad spend (entered)</span><b>${fmt(tot.spend)}</b></div><div class="card stat"><span>Clicks</span><b>${tot.clicks}</b></div><div class="card stat"><span>Leads / routed prospects</span><b>${tot.leads}</b><small>${tot.leads?fmt(tot.spend/tot.leads):'—'} per lead</small></div><div class="card stat"><span>Signed up in ILIA</span><b>${tot.signed}</b><small>${tot.signed?fmt(tot.spend/tot.signed):'—'} per sign-up</small></div></div>
+   <div class="card tablecard">${rows([{h:'Campaign',w:'1.8fr',v:c=>`${CH[c.channel][0]} ${esc(c.name)}<small>${c.id} · ${esc(ownerName(c.owner))} · since ${c.created}</small>`},{h:'Routing',w:'1.3fr',v:routePill},
+     {h:'Spend',w:'.7fr',v:c=>fmt(c.spend)},{h:'Clicks',w:'.6fr',v:c=>c.clicks},{h:'Leads',w:'.6fr',v:c=>cmpStats(c).leads},{h:'Signed up',w:'.7fr',v:c=>cmpStats(c).signed},{h:'Cost / lead',w:'.8fr',v:c=>cmpStats(c).cpl?fmt(cmpStats(c).cpl):'—'},
+     {h:'Status',w:'.7fr',v:c=>c.status==='active'?'<span class="pill p-ok">Active</span>':'<span class="pill p-mute">Paused</span>'}],list,{click:c=>`data-open="cmp:${c.id}"`,empty:'No campaigns yet. Create one to get a tracked link for your ads.'})}</div>`;},
+ leadpool(){ const all=myPool(), F=UI.filter, list=all.filter(l=>(!F.lst||l.status===F.lst)&&(!F.lcmp||l.cmp===F.lcmp)), nw=all.filter(l=>l.status==='new');
+  return `${head('Leads','Leads from your "lead pool" campaigns, plus anyone who asked to be matched with an agent. Assign each one to an agent licensed in their state.',nw.length?`<button class="btn pri" data-autoall="1">⚡ Auto-assign ${nw.length} new</button>`:'')}
+   ${nw.some(l=>l.ageH>=24)?`<div class="banner warn">⏰ <div><b>${nw.filter(l=>l.ageH>=24).length} lead${nw.filter(l=>l.ageH>=24).length>1?'s have':' has'} waited over 24 hours</b><br><span style="color:var(--ink-2)">Fast follow-up converts best. Assign them now.</span></div></div>`:''}
+   <div class="summ">${['new','assigned','linksent','signedup'].map(s=>`<div class="card stat" style="cursor:pointer" data-fset="lst:${F.lst===s?'':s}"><span>${LSTAT[s][0]}</span><b>${all.filter(l=>l.status===s).length}</b></div>`).join('')}</div>
+   <div class="card tablecard"><div class="tbar"><select data-filt="lst"><option value="">All statuses</option>${Object.entries(LSTAT).map(([k,v])=>`<option value="${k}" ${F.lst===k?'selected':''}>${v[0]}</option>`).join('')}</select>
+     <select data-filt="lcmp"><option value="">All campaigns</option>${myCampaigns().filter(c=>c.routing==='pool').map(c=>`<option value="${c.id}" ${F.lcmp===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select><span class="sp"></span><span class="sub" style="margin:0">${list.length} leads · contact consent ✓ on all</span></div>
+   ${leadRows(list)}</div>`;},
+ assigned(){ const a=me(), list=DB.leads.filter(l=>l.agent===a.id), routed=DB.pros.filter(p=>p.agent===a.id&&p.link&&p.link.startsWith('CP-'));
+  return `${head('Assigned leads','Leads your IMO or Partner Hub routed to you from paid campaigns')}
+   <div class="banner info">📬 <div><b>Follow up fast, then send your personal link ${info('campaign','How campaign leads get to an agent')}</b><br><span style="color:var(--ink-2)">Your personal link uses your Agent Link, so when they sign up in ILIA they're your client automatically.</span></div></div>
+   <div class="card tablecard">${leadRows(list,{agent:true,empty:'No assigned leads yet.'})}</div>
+   ${routed.length?`<h3 style="font-size:15px;margin:22px 0 10px">⚡ Auto-assigned from campaigns (${routed.length})</h3><p class="sub">These prospects were matched to you at sign-up by state. No follow-up step needed; they're already your clients in ILIA if they finished.</p><div class="card tablecard">${proRows(routed)}</div>`:''}`;}
+};
+
 // ---------------- IMO admin (Judy) ----------------
 const IMO={
+ campaigns(){ return CAMP.campaigns(); }, leadpool(){ return CAMP.leadpool(); },
  dash(){ const id=myImo(), s=stats({link:l=>AG(l.agent).imo===id,pro:p=>AG(p.agent).imo===id}), ags=DB.agents.filter(a=>a.imo===id), pend=[];
   const team=ags.filter(a=>a.conn==='connected').map(a=>({a,n:DB.pros.filter(p=>p.agent===a.id).length})).sort((x,y)=>y.n-x.n), mx=Math.max(...team.map(t=>t.n),1);
   return `${head('Welcome back, Judy',esc(IM(id).name)+' · IMO admin · last 30 days',`<button class="btn sec" data-open="inviteCms">✉️ Invite an agent to the CMS</button>`)}
@@ -725,6 +795,7 @@ function connectBlock(compact){ const a=me(), F=UI.form, mode=F.cmode||'have';
     <button class="btn pri" data-checklinks="1">Verify with ILIA ${''}</button> ${info('agent')}`;
 }
 const AGENT={
+ assigned(){ return CAMP.assigned(); },
  onboard(){ const a=me(), st=UI.step, bar=`<div class="steps">${[0,1,2,3,4].map(i=>`<div class="${i<=st?'on':''}"></div>`).join('')}</div>`;
   if(st===0) return `<div class="wiz">${bar}<h2>Welcome to Partner Hub</h2><p class="lead">IUL → Kai-Zen boost marketing for <b>ILIA agents</b>, run by J <b>outside ILIA</b>. You'll need your ILIA agent account. Every prospect from your links becomes your client in ILIA.</p>${tip}
      ${field('oname','Full name','Sam Rivera')}${field('oemail','Email (use the one you log in to ILIA with)','sam.rivera@example.com',{type:'email'})}${field('ophone','Mobile','(555) 014-2290',{type:'tel'})}
@@ -749,7 +820,7 @@ const AGENT={
  links(){ const a=me(), L=DB.links.filter(l=>l.agent===a.id);
   return `${head('My links','Each link belongs to you and carries an asset ID. When a prospect chooses a plan, you add them in ILIA, so they are your client.',`<button class="btn pri" data-open="newLink">＋ New link</button>`)}${connBanner()}
    <div class="grid g2">${L.map(l=>`<div class="card">${linkBlock(l,true)}</div>`).join('')||'<div class="card empty">No links yet.</div>'}</div>`;},
- library(){ const a=me(), list=DB.assets.filter(x=>x.status==='active'&&(x.owner==='CMS'||x.owner===a.id));
+ library(){ const a=me(), list=DB.assets.filter(x=>x.status==='active'&&!x.hidden&&(x.owner==='CMS'||x.owner===a.id));
   return `${head('Marketing library','J\'s CMS library plus anything you create. Get a personal tracked link for any of them.',`<button class="btn pri" data-open="newLink" data-mode="own">＋ Create my own</button>`)}<div class="grid g3">${list.map(x=>assetCard(x,'agent')).join('')}</div>`;},
  prospects(){ const a=me(), list=DB.pros.filter(p=>p.agent===a.id), todo=list.filter(p=>p.stage==='account'); const {bar,out}=filters(list,{});
   return `${head('My prospects','People who reached their numbers from your links. Anonymous until they start their ILIA account.',`<button class="btn sec" data-sim="1" ${live(a)?'':'disabled'}>＋ Simulate a scan</button>`)}
@@ -760,6 +831,7 @@ const AGENT={
   return `${head('ILIA connection','Your ILIA Agent Links tie every prospect to you in ILIA')}
    <div class="grid g2"><div class="card"><h3>Your Agent Links</h3><p class="sub">Required to use Partner Hub</p>${connectBlock(true)}
      <div class="btnrow"><button class="btn sec sm" data-reverify="1">Re-check with ILIA now</button><button class="btn sec sm" data-replacelinks="1">Replace codes</button></div></div>
+   <div class="card"><h3>Licensed states</h3><p class="sub">Used to route campaign leads to you. Only states you're licensed in.</p><div class="chipsel">${STATES.map(s=>`<button aria-pressed="${(a.states||[]).includes(s)}" data-lic="${s}">${s}</button>`).join('')}</div></div>
    <div class="card"><h3>How your prospects reach ILIA ${info('client','How the client is tied to the agent in ILIA')}</h3><p class="sub">Set by J (CMS Admin)</p>${modeExplain()}
      <div class="flowsteps"><div><span class="n">1</span><div><b>Prospect uses your CMS link</b>The CMS knows the link is yours</div></div><div><span class="n">2</span><div><b>Sees numbers anonymously, chooses IUL or Kai-Zen</b>No contact form before results</div></div>
      <div><span class="n">3</span><div><b>${UI.ho==='v2'?'Goes to ILIA sign-up with your code':'Gives details → you add them in ILIA'}</b>${UI.ho==='v2'?'myilia.com/register?agentLink=&lt;your Kai-Zen or IUL code&gt;':'Agent Dashboard → Add Client'}</div></div><div><span class="n">4</span><div><b>Client is yours in ILIA</b>Shows in your ILIA Client Management</div></div></div></div></div>`;},
@@ -799,7 +871,7 @@ const MODALS={
    <div class="tpl"><b>💬 Text message</b>${esc(a.type==='text'?a.msg:'Hi! Have 60 seconds? See what tax-free retirement income could look like for you:')} [link]</div>
    <div class="tpl"><b>✉️ Email</b>${esc(a.headline)}. ${esc(a.msg)} I'm ${esc(ag.name)} and can walk you through it. [link]</div><div class="tpl"><b>📱 Social caption</b>${esc(a.headline)} 👉 [link]</div>`,
    `<button class="btn sec" data-copy="${esc(url)}">📋 Copy link</button><button class="btn sec" data-dlqr="1">⬇ Download QR</button><a class="btn pri" href="${esc(url)}" target="_blank" rel="noopener">▶ Open as prospect</a>`);},
- newLink(){ const a=me(), mine=DB.links.filter(l=>l.agent===a.id).map(l=>l.asset), lib=DB.assets.filter(x=>x.status==='active'&&(x.owner==='CMS'||x.owner===a.id)&&!mine.includes(x.id)), mode=UI.form.mode||'lib';
+ newLink(){ const a=me(), mine=DB.links.filter(l=>l.agent===a.id).map(l=>l.asset), lib=DB.assets.filter(x=>x.status==='active'&&!x.hidden&&(x.owner==='CMS'||x.owner===a.id)&&!mine.includes(x.id)), mode=UI.form.mode||'lib';
   return modal('New link',`<div class="chipsel" style="margin-bottom:14px"><button aria-pressed="${mode==='lib'}" data-mode="lib">From library</button><button aria-pressed="${mode==='own'}" data-mode="own">Create my own</button></div>
    ${mode==='lib'?(lib.length?`<div class="choices">${lib.map(x=>`<button class="chc" aria-pressed="${UI.form.asset===x.id}" data-pickasset="${x.id}"><span style="font-size:22px">${TYPES[x.type][0]}</span><div><b>${esc(x.name)}</b><small>${TYPES[x.type][1]} · ${x.id}</small></div></button>`).join('')}</div>`:'<div class="empty">You have links for every library asset. Create your own.</div>')
    :`${tip}<div class="f"><label>Type</label><div class="typegrid">${Object.entries(TYPES).map(([k,v])=>`<button aria-pressed="${(UI.form.type||'text')===k}" data-type="${k}"><span>${v[0]}</span>${v[1]}</button>`).join('')}</div></div>${field('aname','Name','Text to my clients')}${field('ahead','Headline','Quick retirement check')}${field('amsg','Message','Hi! This 60-second check shows what tax-free retirement income could look like for you:',{type:'textarea'})}<p class="sub">You're responsible for your own marketing (carrier and state rules).</p>`}`,
@@ -820,6 +892,30 @@ const MODALS={
    <h3 style="font-size:14px;margin:0 0 8px">Who validates what ${info('chain','Who validates whom')}</h3><div class="flowsteps" style="margin:0"><div><span class="n">1</span><div><b>J → the IMO admin</b>Once, with the NIW partner team</div></div><div><span class="n">2</span><div><b>IMO admin → each agent</b>By finding the agent's ILIA login email in ILIA → Agents</div></div><div><span class="n">3</span><div><b>Agent → each client</b>By adding them in ILIA with Add Client</div></div></div>`,
    `${i.status!=='active'?`<button class="btn sec" data-imoaccept="${id}">Demo: admin accepts invite</button><button class="btn sec" data-imoresend="${id}">Resend invite</button>`:''}<button class="btn pri" data-close="1">Done</button>`);},
  inviteCms(){ const id=myImo(); return modal('Invite an agent to the CMS',`${tip}${field('cname','Agent name','Jordan Hale')}${field('cemail2','Agent email','jordan.hale@example.com',{type:'email'})}<p class="sub">They get a Partner Hub sign-up link tagged to ${esc(IM(id).name)}. If they're not in ILIA yet, they'll be guided to register under your IMO first.</p>`,`<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="inviteCms" data-need="cname,cemail2">Send invite</button>`);},
+ newCmp(){ const F=UI.form, ch=F.ch||'tiktok', rt=F.rt||'auto', isAdmin=UI.role==='admin';
+  return modal('New campaign',`${tip}${field('cname','Campaign name','Retire without market losses')}
+   <div class="f"><label>Channel</label><div class="typegrid">${Object.entries(CH).map(([k,v])=>`<button aria-pressed="${ch===k}" data-ch="${k}"><span>${v[0]}</span>${v[1]}</button>`).join('')}</div></div>
+   ${isAdmin?`<div class="f"><label>Owner</label><div class="chipsel"><button aria-pressed="${(F.cown||'ADMIN')==='ADMIN'}" data-cown="ADMIN">Partner Hub (all agents)</button>${DB.imos.filter(i=>i.status==='active').map(i=>`<button aria-pressed="${F.cown===i.id}" data-cown="${i.id}">${esc(i.name)}</button>`).join('')}</div></div>`:''}
+   <div class="f"><label>Lead routing ${info('campaign','How campaign leads get to an agent')}</label><div class="choices">
+     <button class="chc" aria-pressed="${rt==='auto'}" data-rt="auto"><div><b>⚡ Auto-assign by state (recommended)</b><small>Prospect is matched to a licensed agent at sign-up and signs up with their Agent Link. Instant, no manual step.</small></div></button>
+     <button class="chc" aria-pressed="${rt==='pool'}" data-rt="pool"><div><b>📬 Lead pool → assign</b><small>Prospect asks to be matched and leaves contact details after their results. You assign the lead; the agent sends their personal link.</small></div></button></div></div>
+   ${field('cspend','Planned spend (optional, for cost per lead)','1000',{type:'text'})}`,
+   `<button class="btn sec" data-close="1">Cancel</button><button class="btn pri" data-save="newCmp" data-need="cname">Create campaign</button>`,true);},
+ cmp(id){ const c=CP(id), url=cmpUrl(c), s=cmpStats(c), elig=DB.agents.filter(a=>a.conn==='connected'&&(c.owner==='ADMIN'||a.imo===c.owner));
+  return modal(c.name,`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"><span class="pill p-grp">${CH[c.channel][0]} ${CH[c.channel][1]}</span>${routePill(c)}<span class="pill p-mute">${esc(ownerName(c.owner))}</span></div>
+   <div class="linkcard" style="margin-bottom:12px">${qrBox(url,130)}<div style="min-width:0"><b>Tracked campaign link</b><div class="url" style="margin:6px 0">${esc(url.replace(/^https?:\/\//,'').slice(0,110))}…</div><div class="btnrow"><button class="btn sec sm" data-copy="${esc(url)}">📋 Copy</button><a class="btn pri sm" href="${esc(url)}" target="_blank" rel="noopener">▶ Open as prospect</a></div></div></div>
+   <h3 style="font-size:14px;margin:0 0 6px">Set up in ${CH[c.channel][1]}</h3><div class="flowsteps" style="margin-top:0"><div><span class="n">1</span><div>Create the ad in <b>your own</b> ${CH[c.channel][1]} ads account.</div></div><div><span class="n">2</span><div>Paste the tracked link as the ad's destination URL.</div></div><div><span class="n">3</span><div>Enter spend here when it's known, to see cost per lead.</div></div></div>
+   <div class="kv" style="margin:12px 0"><span>Clicks</span><b>${c.clicks}</b><span>${c.routing==='auto'?'Routed prospects':'Pool leads'}</span><b>${s.leads}</b><span>Signed up in ILIA</span><b>${s.signed}</b><span>Cost per lead</span><b>${s.cpl?fmt(s.cpl):'—'}</b><span>Eligible agents</span><b>${elig.map(a=>esc(a.name)+' ('+(a.states||[]).join(', ')+')').join(' · ')||'none'}</b></div>`,
+   `<button class="btn sec" data-cstat="${c.id}">${c.status==='active'?'⏸ Pause':'▶ Resume'}</button><button class="btn pri" data-simcmp="${c.id}">⚡ Simulate ad traffic</button>`,true);},
+ assign(id){ const l=DB.leads.find(x=>x.id===id), c=CP(l.cmp), e=eligible(c.owner,l.state), best=pickAgent(c.owner,l.state);
+  return modal('Assign '+l.name,`<div class="kv" style="margin-bottom:12px"><span>State</span><b>${l.state}</b><span>Interest</span><b>${l.product==='kz'?'Kai-Zen':l.product==='iul'?'IUL':'Not sure'}</b><span>From</span><b>${esc(c.name)}</b><span>Contact</span><b>${esc(l.email)} · ${l.phone} · consent ✓</b></div>
+   <p class="sub" style="margin:0 0 8px">Only agents <b>licensed in ${l.state}</b>${c.owner==='ADMIN'?'':' in '+esc(IM(c.owner).name)} are shown.</p>
+   <div class="choices">${e.map(a=>`<button class="chc" aria-pressed="${(UI.form.agent||'')===a.id}" data-pick="${a.id}">${av(a.name)}<div style="flex:1"><b>${esc(a.name)} ${best&&best.id===a.id?'<span class="pill p-ok">Suggested · lowest load</span>':''}</b><small>Licensed: ${(a.states||[]).join(', ')} · ${loadOf(a)} open leads</small></div></button>`).join('')||'<div class="empty">No connected agent is licensed in '+l.state+'. Ask an agent to add it, or recruit one.</div>'}</div>`,
+   `<button class="btn sec" data-close="1">Cancel</button>${best?`<button class="btn sec" data-autoone="${l.id}">⚡ Auto-assign</button>`:''}<button class="btn pri" data-doassign="${l.id}" ${UI.form.agent?'':'disabled'}>Assign</button>`);},
+ sendlink(id){ const l=DB.leads.find(x=>x.id===id), a=me(), L=DB.links.find(x=>x.agent===a.id&&x.status==='active'), url=L?linkUrl(L):'';
+  const txt=`Hi ${l.name.split(' ')[0]}, this is ${a.name}, a licensed agent. Thanks for your interest in ${l.product==='kz'?'the Kai-Zen boost':'IUL'}! Here's your personal link to see your numbers and set up your account: ${url}`;
+  return modal('Send your link to '+l.name,`<p class="sub">Your personal link uses your Agent Link, so they become <b>your</b> client in ILIA when they sign up.</p><div class="kv" style="margin-bottom:10px"><span>Email</span><b>${esc(l.email)}</b><span>Mobile</span><b>${l.phone} · consent ✓</b></div><div class="copyblk">${esc(txt)}</div>`,
+   `<button class="btn sec" data-copy="${esc(txt)}">📋 Copy message</button><button class="btn sec" data-sendvia="${l.id}:text">💬 Text</button><button class="btn pri" data-sendvia="${l.id}:email">✉️ Email</button>`);},
  more(){ return modal('Menu',`<div class="morelist">${MENU[UI.role].sections.map(([s,items])=>`<div class="sec">${s}</div>${items.map(([k,ic,l])=>`<button data-nav="${k}"><span>${ic}</span>${l}</button>`).join('')}`).join('')}</div>`,'');}
 };
 function modal(title,body,foot,wide,drawer){ return `<div class="mback ${drawer?'drawer':''}" data-backdrop="1"><div class="modal ${wide?'wide':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="mh"><h3>${esc(title)}</h3><button class="x" data-close="1" aria-label="Close">×</button></div><div class="mb">${body}</div>${foot?`<div class="mf">${foot}</div>`:''}</div></div>`; }
@@ -833,7 +929,8 @@ function render(){
   const todo=role==='agent'&&UI.ho==='v1'?DB.pros.filter(p=>p.agent===a.id&&p.stage==='account').length:0;
   const pendImo=role==='imo'?DB.agents.filter(x=>x.imo===myImo()&&x.conn==='pending').length:0;
   const who=role==='agent'?{name:a.name,title:'Agent · '+(a.conn==='connected'?'ILIA connected':'not connected')}:ME[role];
-  const cnt=k=>k==='notifications'&&unread?`<span class="cnt">${unread}</span>`:k==='prospects'&&todo?`<span class="cnt">${todo}</span>`:k==='agents'&&pendImo?`<span class="cnt">${pendImo}</span>`:k==='ilia'&&role==='agent'&&a.conn!=='connected'&&!onboarding?'<span class="cnt">!</span>':'';
+  const poolNew=role!=='agent'?myPool().filter(l=>l.status==='new').length:0, myAssigned=role==='agent'&&a?DB.leads.filter(l=>l.agent===a.id&&l.status==='assigned').length:0;
+  const cnt=k=>k==='leadpool'&&poolNew?`<span class="cnt">${poolNew}</span>`:k==='assigned'&&myAssigned?`<span class="cnt">${myAssigned}</span>`:k==='notifications'&&unread?`<span class="cnt">${unread}</span>`:k==='prospects'&&todo?`<span class="cnt">${todo}</span>`:k==='agents'&&pendImo?`<span class="cnt">${pendImo}</span>`:k==='ilia'&&role==='agent'&&a.conn!=='connected'&&!onboarding?'<span class="cnt">!</span>':'';
   const side=MENU[role].sections.map(([s,items])=>`<div class="nsec">${s}</div>${items.map(([k,ic,l])=>`<button data-nav="${k}" ${UI.screen===k?'aria-current="page"':''} ${onboarding?'disabled':''}><span class="ic">${ic}</span>${l}${cnt(k)}</button>`).join('')}`).join('');
   const screens=role==='admin'?ADMIN:role==='imo'?IMO:AGENT;
   const content=onboarding?AGENT.onboard():(screens[UI.screen]||screens[nav[0][0]])();
@@ -865,6 +962,9 @@ function save(kind){ const F=UI.form, [k1,k2]=kind.split(':');
     const L={id:nid('LK'),agent:a.id,asset:aid,clicks:0,status:'active'}; DB.links.unshift(L); log('Created link '+L.id); UI.modal=live(a)?{name:'share:'+L.id}:null; UI.form={}; toast(live(a)?'Your link is ready.':'Link created. It goes live once your ILIA connection is done.'); return; }
   if(k1==='editAsset'){ Object.assign(AS(k2),{name:F.aname,headline:F.ahead,msg:F.amsg}); UI.modal=null; toast('Saved '+k2+'.'); return; }
   if(k1==='addAsset'){ const id='AS-0'+(DB.seq+=3); DB.assets.unshift({id,owner:'CMS',type:F.type||'qr',name:F.aname,headline:F.ahead,msg:F.amsg,status:'active',created:'Today'}); DB.agents.forEach(a=>notify(a.id,'🎨','New library asset','J added "'+F.aname+'" to the library.')); log('Added library asset '+id); UI.modal=null; toast(id+' added to the library for every agent.'); return; }
+  if(k1==='newCmp'){ const id='CP-0'+(DB.campaigns.length+1)+(DB.seq++%10); const owner=UI.role==='admin'?(F.cown||'ADMIN'):myImo();
+    DB.campaigns.unshift({id,name:F.cname,owner,channel:F.ch||'tiktok',routing:F.rt||'auto',spend:+(String(F.cspend||'0').replace(/[^0-9]/g,''))||0,clicks:0,status:'active',created:'Today'});
+    DB.assets.push({id,owner:'CMS',type:'ad',name:F.cname,headline:F.cname,msg:'',status:'active',created:'Today',hidden:true}); log('Created campaign '+id); UI.modal={name:'cmp:'+id}; UI.form={}; toast('Campaign created. Copy its tracked link into your ad.'); return; }
   if(k1==='addImo'){ DB.imos.push({id:nid('I'),name:F.iname,admin:F.iadmin,adminEmail:F.iemail,iliaImoId:'',since:'Oct 2026',status:'invited',verified:'NIW partner team · today'}); log('Added IMO '+F.iname+' and invited '+F.iadmin); UI.modal=null; toast(F.iname+' added. Invite sent to '+F.iadmin+'.'); return; }
   if(k1==='inviteCms'){ log('Invited '+F.cname+' to the CMS'); UI.modal=null; toast('Sign-up link sent to '+F.cname+', tagged to '+IM(myImo()).name+'.'); return; }
 }
@@ -908,6 +1008,24 @@ document.addEventListener('click',e=>{
   if(d.num){ const [k,by]=d.num.split(':'); UI.form['s_'+k]=Math.max(0,cur(k)+ +by); keep(); return; }
   if(d.savesettings){ SETKEYS.forEach(k=>{ if(UI.form['s_'+k]!==undefined){ DB.settings[k]=UI.form['s_'+k]; delete UI.form['s_'+k]; } }); log('Published funnel settings'); toast('Published to every agent\'s funnel.'); return; }
   if(d.saveprofile){ toast('Profile saved.'); return; }
+  if(d.ch){ UI.form.ch=d.ch; keep(); return; }
+  if(d.rt){ UI.form.rt=d.rt; keep(); return; }
+  if(d.cown){ UI.form.cown=d.cown; keep(); return; }
+  if(d.lic){ const a=me(); a.states=a.states||[]; const i=a.states.indexOf(d.lic); i<0?a.states.push(d.lic):a.states.splice(i,1); keep(); return; }
+  if(d.cstat){ const c=CP(d.cstat); c.status=c.status==='active'?'paused':'active'; log((c.status==='paused'?'Paused ':'Resumed ')+c.id); UI.modal=null; toast(c.name+(c.status==='paused'?' paused. Its link shows "temporarily unavailable".':' is active again.')); return; }
+  if(d.simcmp){ const c=CP(d.simcmp); c.clicks+=40; const owners=DB.agents.filter(a=>a.conn==='connected'&&(c.owner==='ADMIN'||a.imo===c.owner)); const sts=[...new Set(owners.flatMap(a=>a.states||[]))].concat(['NY']);
+    const FN=['Rae','Sol','Tom','Uri','Val','Wyn'], LN=['Lake','Moon','Park','Quill','Reed','Snow']; let msg=[];
+    for(let k=0;k<3;k++){ const state=sts[Math.floor(Math.random()*sts.length)], nm=FN[Math.floor(Math.random()*6)]+' '+LN[Math.floor(Math.random()*6)];
+      if(c.routing==='auto'){ const ag=pickAgent(c.owner,state); if(!ag){ msg.push(state+': no licensed agent → sent to Leads'); DB.leads.unshift({id:nid('L'),name:nm,email:nm.toLowerCase().replace(' ','.')+'@example.com',phone:'(555) 05'+k+'-'+(3000+DB.seq),state,product:'kz',cmp:c.id,status:'new',agent:null,ageH:0,consent:true}); continue; }
+        DB.pros.unshift({id:'P-'+(++DB.seq+7000),name:null,email:'',phone:'',link:c.id,agent:ag.id,asset:c.id,stage:k===0?'account':'results',product:k===0?'kz':null,qual:true,flag:null,call:false,when:'just now',state,ans:{age:45,goal:'Tax-free retirement income',amount:38000,years:5,hh:'$100–250k',health:'Good'},iliaLead:null});
+        notify(ag.id,'⚡','Campaign prospect matched to you','From '+c.name+' ('+state+').'); msg.push(state+' → '+ag.name.split(' ')[0]); }
+      else { DB.leads.unshift({id:nid('L'),name:nm,email:nm.toLowerCase().replace(' ','.')+'@example.com',phone:'(555) 05'+k+'-'+(3000+DB.seq),state,product:['kz','iul',null][k],cmp:c.id,status:'new',agent:null,ageH:0,consent:true}); msg.push(state+' → Leads'); } }
+    log('Simulated traffic on '+c.id); toast('40 clicks · '+msg.join(' · ')); return; }
+  if(d.autoone){ const l=DB.leads.find(x=>x.id===d.autoone), ag=pickAgent(CP(l.cmp).owner,l.state); if(ag){ l.agent=ag.id; l.status='assigned'; notify(ag.id,'📬','New lead assigned',l.name+' ('+l.state+') from '+CP(l.cmp).name+'.'); log('Auto-assigned '+l.id+' to '+ag.name); } UI.modal=null; toast(ag?l.name+' → '+ag.name+' (licensed in '+l.state+').':'No licensed agent for '+l.state+'.'); return; }
+  if(d.doassign){ const l=DB.leads.find(x=>x.id===d.doassign), ag=AG(UI.form.agent); l.agent=ag.id; l.status='assigned'; notify(ag.id,'📬','New lead assigned',l.name+' ('+l.state+') from '+CP(l.cmp).name+'.'); log('Assigned '+l.id+' to '+ag.name); UI.modal=null; toast(l.name+' assigned to '+ag.name+'.'); return; }
+  if(d.autoall){ let n=0, miss=0; myPool().filter(l=>l.status==='new').forEach(l=>{ const ag=pickAgent(CP(l.cmp).owner,l.state); if(ag){ l.agent=ag.id; l.status='assigned'; n++; notify(ag.id,'📬','New lead assigned',l.name+' ('+l.state+').'); } else miss++; }); log('Auto-assigned '+n+' leads'); toast(n+' assigned by state'+(miss?' · '+miss+' have no licensed agent':'')+'.'); return; }
+  if(d.lstat){ const [id,st]=d.lstat.split(':'); DB.leads.find(x=>x.id===id).status=st; toast('Marked as '+LSTAT[st][0].toLowerCase()+'.'); return; }
+  if(d.sendvia){ const [id,via]=d.sendvia.split(':'), l=DB.leads.find(x=>x.id===id); l.status=l.status==='signedup'?'signedup':'linksent'; log('Sent personal link to '+l.name+' by '+via); UI.modal=null; toast('Personal link sent to '+l.name+' by '+via+' (demo).'); return; }
   if(d.astatus){ const [id,st]=d.astatus.split(':'); AS(id).status=st; log((st==='paused'?'Paused ':'Resumed ')+id); toast(id+(st==='paused'?' paused.':' resumed.')); return; }
   if(d.mklink){ const a=me(), L={id:nid('LK'),agent:a.id,asset:d.mklink,clicks:0,status:'active'}; DB.links.unshift(L); UI.modal=live(a)?{name:'share:'+L.id}:null; UI.form={}; toast(live(a)?'Your link is ready.':'Link created. It goes live once you\'re connected to ILIA.'); return; }
   if(d.lstatus){ const [id,st]=d.lstatus.split(':'); DB.links.find(l=>l.id===id).status=st; toast(st==='paused'?'Link paused.':'Link resumed.'); return; }
@@ -942,7 +1060,7 @@ document.addEventListener('click',e=>{
   if(d.replacelinks){ const a=me(); a.conn='new'; a.kz=null; a.iul=null; a.status='onboarding'; UI.step=2; UI.form={}; render(); toast('Paste your current Agent Links. Partner Hub is locked until they check out.'); return; }
   if(d.odone){ const a=me(); a.status='active'; a.last='Today'; UI.screen='home'; UI.form={}; render(); toast('Welcome! Share your link to get your first prospect.'); return; }
 },true);
-document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-astatus],[data-lstatus],[data-dellink],[data-markinv],[data-confirm],[data-reject],[data-remind],[data-remindimo],[data-sim],[data-savesettings],[data-saveprofile],[data-mklink],[data-regopen],[data-reverify],[data-imoaccept],[data-imoresend]'); if(b) keep(); });
+document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-astatus],[data-lstatus],[data-dellink],[data-markinv],[data-confirm],[data-reject],[data-remind],[data-remindimo],[data-sim],[data-savesettings],[data-saveprofile],[data-mklink],[data-regopen],[data-reverify],[data-imoaccept],[data-imoresend],[data-cstat],[data-simcmp],[data-autoone],[data-doassign],[data-autoall],[data-lstat],[data-sendvia],[data-lic]'); if(b) keep(); });
 document.addEventListener('change',e=>{ const t=e.target; if(!t.dataset) return; if(t.dataset.f) UI.form[t.dataset.f]=t.value; if(t.dataset.ivchk){ UI.form.ivchk=t.checked; keep(); } if(t.dataset.attest){ UI.form.attest=t.checked; keep(); }
   if(t.dataset.filt&&t.tagName==='SELECT'){ UI.filter[t.dataset.filt]=t.value||undefined; keep(); } });
 document.addEventListener('input',e=>{ const t=e.target; if(!t.dataset) return; if(t.dataset.f) UI.form[t.dataset.f]=t.value; if(t.dataset.filt&&t.type==='search'){ UI.filter[t.dataset.filt]=t.value; keep(); } });
