@@ -409,9 +409,9 @@ body.embed .notes{top:16px}
   <div class="step main"><div class="n">Step 2</div><b>Your numbers</b><p>Calculator results and a growth chart. Adjust the yearly amount, years and start age, and results update live.</p></div>
   <div class="step boost"><div class="n">Step 3</div><b>Kai-Zen boost</b><p>The same numbers with leverage, side by side, for prospects who qualify.</p></div>
   <div class="step main"><div class="n">Step 4</div><b>Choose plan</b><p>Pick IUL or Kai-Zen straight from the results, then review and confirm.</p></div>
-  <div class="step wall"><div class="n">Step 5 · The wall</div><b>Start ILIA account</b><p>First time they give name + email. Tied to the agent who owns the link.</p></div>
-  <div class="step iliaS"><div class="n">Step 6 · v1</div><b>Agent invites in ILIA</b><p>Details go to the agent, who adds them with ILIA's Add Client. No new ILIA code.</p></div>
-  <div class="step iliaS"><div class="n">Step 6 · v2</div><b>Auto-sent to ILIA</b><p>CMS sends the lead to ILIA automatically. Needs new ILIA code + approval (parked).</p></div>
+  <div class="step wall"><div class="n">Step 5 · The wall</div><b>Start ILIA account</b><p>First time they give name + email, on ILIA's own sign-up page (main) or to the agent (fallback).</p></div>
+  <div class="step iliaS"><div class="n">Step 6 · fallback</div><b>Agent adds client</b><p>Details go to the agent, who adds them with ILIA's Add Client. No new ILIA code.</p></div>
+  <div class="step iliaS"><div class="n">Step 6 · main</div><b>ILIA sign-up via Agent Link</b><p>Prospect creates their own ILIA account on ILIA's existing sign-up page, using the agent's Agent Link code. Tied to the agent instantly. No ILIA code.</p></div>
 </div>
 <div class="branch">
   <div><b>Learn more</b> opens the deep content from the current IUL marketing: how an IUL works, taxes, safety, borrowing, the Kai-Zen boost (with their own eligibility) and FAQs. Every section links back to "see it in my numbers", and "Back to my numbers" / "Choose my plan" stay pinned at the bottom.</div>
@@ -442,7 +442,7 @@ body.embed .notes{top:16px}
     <button id="bWeb" aria-pressed="false">🖥 Web</button>
   </div>
   <button class="tbtn" id="bReset">↺ Start over</button>
-  <div class="seg" role="group" aria-label="ILIA handoff"><button id="bV1" aria-pressed="true">v1 · Agent invites</button><button id="bV2" aria-pressed="false">v2 · Auto-send</button></div>
+  <div class="seg" role="group" aria-label="ILIA handoff"><button id="bV2" aria-pressed="true">Agent Link sign-up (main)</button><button id="bV1" aria-pressed="false">Fallback · agent adds client</button></div>
   <span class="tlabel">Jump to:</span>
   <button class="tbtn" data-jump="results">Results</button>
   <button class="tbtn" data-jump="learn">Learn more</button>
@@ -469,7 +469,9 @@ body.embed .notes{top:16px}
 if(/[?&]embed=1/.test(location.search)) document.body.classList.add('embed');
 const QP=new URLSearchParams(location.search);
 const PROSPECT=QP.get('prospect')==='1';
-let H=QP.get('h')==='v2'?'v2':'v1';
+let H=QP.get('h')==='v1'?'v1':'v2';
+const KZC=(QP.get('kz')||'5c1e9a40-2b7d-4e61-9f3a-0d8e7b21c4aa').replace(/[^0-9a-f-]/gi,''), IULC=(QP.get('iul')||'9b0f3d12-7e44-4c2a-8a6b-51f0c2e9d7b3').replace(/[^0-9a-f-]/gi,'');
+const regUrl=()=>'myilia.com/register?agentLink='+(S.product==='kz'?KZC:IULC);
 const ILIAID=(QP.get('ilia')||'').replace(/[<>&"]/g,'');
 const AGENT=(QP.get('agent')||'').replace(/[<>&"]/g,'');
 if(PROSPECT) document.body.classList.add('prospect');
@@ -571,8 +573,8 @@ const NOTES={
  learn:{t:'Learn more',b:['Built from the current IUL marketing: how it works, taxes (3 tanks), safety (0% floor + annual reset chart), borrowing, the Kai-Zen boost, FAQs.','Boost section shows <b>their own eligibility</b> from their answers.','Topic chips pin to the top; each section has "See it in my numbers".','"Back to my numbers" and "Choose my plan" stay pinned at the bottom.'],k:'sections viewed'},
  confirm:{t:'Choose + confirm plan',b:['Two decisions: <b>product</b> (IUL or Kai-Zen) and <b>numbers</b>.','"Change my numbers" goes straight back to results with everything kept.','Kai-Zen only selectable if they qualify.','Acknowledges these are estimates; final numbers come from the carrier illustration.'],k:'decision: IUL or Kai-Zen + numbers'},
  agent:{t:'Talk to my agent',b:['Available from every screen.','Agent = the ILIA agent who shared the link.','Optional: the prospect may leave a phone number for a call. That is their choice, not a gate.'],k:'agent contact requested'},
- wall:{t:'The wall → ILIA account',b:['Explains ILIA and that this is the first time we ask for details.','<b>v1:</b> details go to the agent, who invites them from ILIA, so the client is tied to the agent.','<b>v2:</b> the CMS sends the lead to ILIA\'s partner intake with the agent\'s ILIA ID (needs approval).','Switch v1 / v2 with the toolbar above.'],k:'plan confirmed'},
- ilia:{t:'Start ILIA account',b:['<b>First and only time</b> the prospect gives name, email and phone.','<b>v1:</b> CMS-hosted form; no password (they set it from the agent\'s ILIA invite). Agent gets a to-do in the CMS.','<b>v2:</b> ILIA-branded account creation (concept) with password; lead already assigned to the agent\'s ILIA ID.','"Change plan or numbers" goes back until submitted.'],k:'details submitted → agent to-do (v1) / sent to ILIA (v2)'},
+ wall:{t:'The wall → ILIA account',b:['Explains ILIA and that this is the first time we ask for details.','<b>Main:</b> the prospect goes to ILIA\'s existing sign-up page with the agent\'s Agent Link code for the chosen product, so they\'re tied to that agent.','<b>Fallback:</b> details go to the agent, who adds them in ILIA.','Switch with the toolbar above.'],k:'plan confirmed'},
+ ilia:{t:'Start ILIA account',b:['<b>First and only time</b> the prospect gives name, email and phone.','<b>Main:</b> ILIA\'s existing sign-up page (register?agentLink=code): name, phone, email, password, then a one-time code. Partner Hub never sees the details.','<b>Fallback:</b> CMS-hosted form with no password; the agent gets a to-do.','"Change plan or numbers" goes back until submitted.'],k:'details submitted → agent to-do (v1) / sent to ILIA (v2)'},
  done:{t:'Confirmation',b:['<b>v1:</b> "Watch for your ILIA invite" from the agent, then the normal ILIA steps.','<b>v2:</b> account created in ILIA, tied to the agent; application starts.','Kai-Zen adds the leverage/trust step.','Status after this, back in the CMS, is still an open decision.'],k:'handoff complete'}
 };
 const QORDER=['land','goals','about','health','money','start'];
@@ -814,31 +816,35 @@ const SCREENS={
  wall(){const v=calc(S,S.product==='kz');
    return `<div class="body"><div class="inner wallscr">
    <div class="wallicon">🔒</div><h2 class="q">Great choice!</h2>
-   <p class="help">${H==='v1'?'Last step: start your secure <b>ILIA</b> account. ILIA is the enrollment platform your agent, <b>Agent Name</b>, uses. Tell us where to send your invite.':'Next, create your secure <b>ILIA</b> account. ILIA is the enrollment platform your agent, <b>Agent Name</b>, uses. Your plan comes with you.'}</p>
+   <p class="help">${H==='v1'?'Last step: start your secure <b>ILIA</b> account. ILIA is the enrollment platform your agent, <b>Agent Name</b>, uses. Tell us where to send your invite.':'Next, create your secure <b>ILIA</b> account. We\'re taking you to ILIA\'s sign-up page, already linked to your agent, <b>Agent Name</b>, and your '+(S.product==='kz'?'Kai-Zen':'IUL')+' plan.'}</p>
    <p class="help" style="font-size:13px">This is the first time we ask for your name and email.</p>
-   <div class="payload"><h5>Prototype note: what the CMS hands to ILIA (${H==='v1'?'v1 · to the agent, who invites in ILIA':'v2 · to ILIA partner intake'})</h5>
+   <div class="payload"><h5>Prototype note: ${H==='v1'?'what the CMS hands to the agent (fallback · agent adds client)':'the CMS sends the prospect to ILIA\'s existing sign-up (no ILIA code)'}</h5>
+     ${H==='v2'?`<div><span>Goes to</span><b style="word-break:break-all">${regUrl()}</b></div>`:''}
      <div><span>Product</span><b>${S.product==='kz'?'Kai-Zen (IUL + leverage)':'IUL'} · Allianz</b></div>
      <div><span>Confirmed numbers</span><b>${fmt(S.amount)}/yr · ${S.years} yrs · income at ${v.start}</b></div>
      <div><span>Calculator answers</span><b>age ${S.age} · ${S.sex||'—'} · ${S.health||'—'} · nicotine ${S.nic||'—'}</b></div>
-     <div><span>Agent of record</span><b>Agent Name · ${ILIAID||'their ILIA account (IMO-confirmed)'}</b></div>
+     <div><span>Agent of record</span><b>Agent Name · via their ${S.product==='kz'?'Kai-Zen':'IUL'} Agent Link code</b></div>
      ${(()=>{const a=afford(S.amount,S.hh); return a&&a.level!=='ok'?`<div><span>Affordability flag</span><b>${a.level==='over'?'Over guideline'+(S.affKeep?' · paying from savings':''):'Stretch'} (~${a.pct}% of income)</b></div>`:'';})()}
      <div><span>Source</span><b>CMS link ${QP.get('l')||'LK-101'} · asset ${QP.get('a')||'AS-0047'}</b></div>
-     <div><span>Prospect details</span><b>Collected on the next screen</b></div>
+     <div><span>Prospect details</span><b>${H==='v2'?'Entered on ILIA\'s page. Partner Hub never sees them':'Collected on the next screen'}</b></div>
    </div></div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="ilia">${H==='v1'?'Start my account →':'Go to ILIA →'}</button>`)}`},
  ilia(){const kzSel=S.product==='kz', v=calc(S,kzSel), A=S.acct, v1=H==='v1';
-   const ok=S.name&&A.last&&/.+@.+\..+/.test(S.email)&&A.dob&&A.state&&(v1||A.pw)&&A.terms;
+   const ok=v1?(S.name&&A.last&&/.+@.+\..+/.test(S.email)&&A.dob&&A.state&&A.terms):(S.name&&A.last&&/.+@.+\..+/.test(S.email)&&S.phone&&A.pw&&A.pw2&&A.pw===A.pw2&&A.terms);
    return `<div class="body"><div class="inner wide">
-     <p class="kicker" style="color:var(--ilia-2)">${v1?'Start your ILIA account':'Step 1 of enrollment'}</p><h2 class="q">${v1?'Where should Agent Name send your ILIA invite?':'Create your ILIA account'}</h2>
-     <p class="help">${v1?'Agent Name will send your secure ILIA invite, usually within one business day. You\'ll set your password there.':'Your agent and chosen plan are already attached. This takes about a minute.'}</p>
+     <p class="kicker" style="color:var(--ilia-2)">${v1?'Start your ILIA account':'ILIA · Create your account'}</p><h2 class="q">${v1?'Where should Agent Name send your ILIA invite?':'Create your ILIA account'}</h2>
+     <p class="help">${v1?'Agent Name will send your secure ILIA invite, usually within one business day. You\'ll set your password there.':'This is ILIA\'s existing sign-up page, opened with Agent Name\'s Agent Link. Your account is created under them.'}</p>
      <div class="ilia-grid">
        <div class="formcard"><h4>Your details</h4>
          <div class="two"><div class="field"><label for="aF">First name</label><input id="aF" type="text" value="${S.name}" data-input="name"></div>
          <div class="field"><label for="aL">Last name</label><input id="aL" type="text" value="${A.last}" data-acct="last"></div></div>
          <div class="field"><label for="aE">Email</label><input id="aE" type="email" value="${S.email}" data-input="email"></div>
-         <div class="two"><div class="field"><label for="aP">Mobile</label><input id="aP" type="tel" value="${S.phone}" data-input="phone"></div>
+         ${v1?`<div class="two"><div class="field"><label for="aP">Mobile</label><input id="aP" type="tel" value="${S.phone}" data-input="phone"></div>
          <div class="field"><label for="aD">Date of birth</label><input id="aD" type="text" placeholder="MM/DD/YYYY" value="${A.dob}" data-acct="dob"></div></div>
-         <div class="field"><label for="aS">State</label><select id="aS" data-acct="state"><option value="">Select…</option>${['Arizona','California','Florida','Georgia','Illinois','New York','North Carolina','Ohio','Pennsylvania','Texas'].map(s=>`<option ${A.state===s?'selected':''}>${s}</option>`).join('')}</select></div>
-         ${v1?'':`<div class="field"><label for="aW">Create a password</label><input id="aW" type="password" value="${A.pw}" data-acct="pw" autocomplete="new-password"></div>`}
+         <div class="field"><label for="aS">State</label><select id="aS" data-acct="state"><option value="">Select…</option>${['Arizona','California','Florida','Georgia','Illinois','New York','North Carolina','Ohio','Pennsylvania','Texas'].map(s=>`<option ${A.state===s?'selected':''}>${s}</option>`).join('')}</select></div>`
+         :`<div class="field"><label for="aP">Phone</label><input id="aP" type="tel" value="${S.phone}" data-input="phone"></div>
+         <div class="two"><div class="field"><label for="aW">Password</label><input id="aW" type="password" value="${A.pw}" data-acct="pw" autocomplete="new-password"></div>
+         <div class="field"><label for="aW2">Confirm password</label><input id="aW2" type="password" value="${A.pw2||''}" data-acct="pw2" autocomplete="new-password"></div></div>
+         <p class="disc" style="margin:-4px 0 10px">ILIA then sends a one-time code to verify the account.</p>`}
          <label class="check" style="margin-top:0"><input type="checkbox" data-terms="1" ${A.terms?'checked':''}> ${v1?'I agree that my details are shared with Agent Name to set up my ILIA account, and to receive enrollment messages.':'I agree to the ILIA terms of use and privacy policy, and to receive enrollment messages.'}</label>
          <p class="disc" style="color:var(--brand)">Demo tip: click any empty field to fill in sample details.</p>
        </div>
@@ -852,10 +858,10 @@ const SCREENS={
            <p style="margin:10px 0 0"><button class="linkbtn" data-go="confirm">✎ Change plan or numbers</button></p>
            <p class="disc">Estimate only. Your official numbers come from your Allianz illustration in the next steps.</p>
          </div>
-         <div class="plan" style="margin-top:12px;display:flex;gap:10px;align-items:center"><div class="wallicon" style="width:40px;height:40px;font-size:18px;margin:0;border-radius:12px">👤</div><div style="font-size:13px"><b>Agent Name</b> is your agent<br><span style="color:var(--ink-3)">${ILIAID?ILIAID+' · ':''}Your account is tied to them in ILIA.</span></div></div>
+         <div class="plan" style="margin-top:12px;display:flex;gap:10px;align-items:center"><div class="wallicon" style="width:40px;height:40px;font-size:18px;margin:0;border-radius:12px">👤</div><div style="font-size:13px"><b>Agent Name</b> is your agent<br><span style="color:var(--ink-3)">${v1?'They\'ll add you in ILIA, so your account is tied to them.':'Linked by their Agent Link code. You\'ll be their client in ILIA.'}</span></div></div>
        </div>
      </div>
-   </div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="done" id="goDone" ${ok?'':'disabled'}>${v1?'Send my details to Agent Name':'Create account & start enrollment'}</button>`)}`},
+   </div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="done" id="goDone" ${ok?'':'disabled'}>${v1?'Send my details to Agent Name':'Create my ILIA account'}</button>`)}`},
  done(){const kzSel=S.product==='kz', v1=H==='v1';
    const app=kzSel?[['Complete your application','Personal, beneficiary and financial details.'],['Review your Allianz illustration','Your official numbers, with your agent.'],['Kai-Zen leverage and trust documents','Set up the premium financing and trust.','kz'],['Health and underwriting','Health questions, and an exam if needed.'],['Sign and submit','e-Sign everything in one place.']]
      :[['Complete your application','Personal, beneficiary and financial details.'],['Review your Allianz illustration','Your official numbers, with your agent.'],['Health and underwriting','Health questions, and an exam if needed.'],['Sign and submit','e-Sign everything in one place.']];
@@ -863,10 +869,10 @@ const SCREENS={
    return `<div class="body"><div class="inner wide" style="max-width:720px">
      <div class="wallscr" style="padding-top:0"><div class="wallicon" style="background:var(--good-soft);color:var(--good)">✓</div>
      <h2 class="q">${v1?"You're all set, ":'Welcome to ILIA, '}${S.name||'there'}</h2>
-     <p class="help">${v1?'Agent Name has your details and your <b>'+(kzSel?'IUL + Kai-Zen boost':'IUL')+'</b> choice, and will send your secure ILIA invite.':'Your account is ready and your <b>'+(kzSel?'IUL + Kai-Zen boost':'IUL')+'</b> application has started. Agent Name has been notified.'}</p></div>
+     <p class="help">${v1?'Agent Name has your details and your <b>'+(kzSel?'IUL + Kai-Zen boost':'IUL')+'</b> choice, and will send your secure ILIA invite.':'Your ILIA account is created under <b>Agent Name</b> for <b>'+(kzSel?'IUL + Kai-Zen boost':'IUL')+'</b> with Allianz. You now appear in their ILIA Client Management.'}</p></div>
      <p style="margin:6px 0 0"><b>Your next steps</b></p>
      <ol class="steps">${steps.map(([t,d,c],i)=>`<li class="${i===0?'now':''} ${c||''}"><span class="sn">${i+1}</span><div><b>${t}</b>${d}</div></li>`).join('')}</ol>
-     <p class="disc">${v1?'v1: the CMS gives the agent a to-do; the agent invites the client from their own ILIA account, so the client is tied to them.':'v2: the CMS sent this lead to ILIA with the agent\'s ILIA ID (needs Simplicity / ILIA approval).'} Actual steps follow ILIA's existing Allianz ${kzSel?'Kai-Zen':'IUL'} enrollment flow.</p>
+     <p class="disc">${v1?'Fallback: the CMS gives the agent a to-do; the agent adds the client with ILIA\'s Add Client, so the client is tied to them.':'Main: ILIA\'s existing sign-up page saved the agent from their Agent Link code. No ILIA code.'} Actual steps follow ILIA's existing Allianz ${kzSel?'Kai-Zen':'IUL'} enrollment flow.</p>
    </div></div>${foot(v1?`<button class="btn secondary" data-learn="basics">Learn more while you wait</button>`:`<button class="btn ilia">Start my application →</button>`)}`}
 };
 
@@ -932,12 +938,12 @@ function demoPerson(){
 }
 function refreshButtons(){
   const b=$('#toResults'); if(b) b.disabled=!(S.name.trim()&&/.+@.+\..+/.test(S.email));
-  const A=S.acct, d=$('#goDone'); if(d) d.disabled=!(S.name&&A.last&&/.+@.+\..+/.test(S.email)&&A.dob&&A.state&&(H==='v1'||A.pw)&&A.terms);
+  const A=S.acct, d=$('#goDone'); if(d) d.disabled=!(H==='v1'?(S.name&&A.last&&/.+@.+\..+/.test(S.email)&&A.dob&&A.state&&A.terms):(S.name&&A.last&&/.+@.+\..+/.test(S.email)&&S.phone&&A.pw&&A.pw2&&A.pw===A.pw2&&A.terms));
 }
 function demoFill(t){
   const D=demoPerson();
   if(t.dataset.input&&!t.value){ t.value=D[t.dataset.input]; S[t.dataset.input]=t.value; }
-  if(t.dataset.acct&&!t.value){ t.value=D[t.dataset.acct]; S.acct[t.dataset.acct]=t.value; }
+  if(t.dataset.acct&&!t.value){ t.value=t.dataset.acct==='pw2'?(S.acct.pw||D.pw):D[t.dataset.acct]; S.acct[t.dataset.acct]=t.value; }
   refreshButtons();
 }
 
