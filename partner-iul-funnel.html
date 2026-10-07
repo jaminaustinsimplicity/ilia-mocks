@@ -352,7 +352,7 @@ input[type=range]{width:100%;accent-color:var(--brand)}
 .aff .kzn{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--ink-2)}
 .affbanner{display:flex;gap:10px;align-items:flex-start;background:var(--warn-soft);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--ink-2);margin:0 0 12px}
 .affbanner b{color:var(--ink)}
-/* Prospect mode (opened from a member's link / QR) */
+/* Prospect mode (opened from an agent's CMS link / QR) */
 body.prospect .pagenav, body.prospect .wrap > *:not(#proto), body.prospect #proto > h2, body.prospect #proto > .sub, body.prospect .toolbar, body.prospect #proto > .disc, body.prospect .notes, body.prospect .browserbar{display:none !important}
 body.prospect .wrap{max-width:none;padding:0}
 body.prospect .stage{display:block}
@@ -396,26 +396,26 @@ body.embed .notes{top:16px}
 <div class="wrap">
 
 <h1>IUL Selling Funnel: Design Draft</h1>
-<p class="lead">This is what a prospect sees after a group member shares a link or QR code. A few short questions lead to their own IUL numbers, which they can adjust. The same numbers are shown with the Kai-Zen boost. They <b>choose a plan</b> (IUL or Kai-Zen plus their numbers) and land on <b>ILIA account creation</b> with that plan carried over. At any point they can <b>learn more</b> and come back to their numbers. Designed phone-first, since most people will arrive by QR, with a wider web layout.</p>
+<p class="lead">This is what a prospect sees after an <b>ILIA agent</b> shares a link or QR code from J's Partner Hub CMS (outside ILIA). A few short questions lead to their own IUL numbers, which they can adjust, <b>with no contact form before results</b>. The same numbers are shown with the Kai-Zen boost. They <b>choose a plan</b> (IUL or Kai-Zen plus their numbers) and only then give their details to start their <b>ILIA account</b>, tied to the agent who shared the link. At any point they can <b>learn more</b> and come back to their numbers. Designed phone-first, since most people will arrive by QR, with a wider web layout.</p>
 <div class="chips">
-  <span class="chip">Lane: W-PARTNER</span><span class="chip">Q5 · based on Josh's flow</span><span class="chip">Working draft · Oct 7, 2026</span>
+  <span class="chip">Lane: W-PARTNER</span><span class="chip">Q5 · based on Josh's flow</span><span class="chip">No contact gate (Judy)</span><span class="chip">Working draft · Oct 7, 2026</span>
 </div>
 
 <h2>The flow</h2>
 <p class="sub">The main path is 7 steps. "Learn more" and "Talk to my agent" are side paths that always return to the prospect's numbers. A stepper at the top of the funnel lets the prospect jump back to their answers, numbers or plan at any time before the account is created.</p>
 <div class="flow">
-  <div class="step main"><div class="n">Entry</div><b>Link or QR</b><p>From a group member. It carries the member and asset ID, so every step is tracked.</p></div>
-  <div class="step main"><div class="n">Step 1</div><b>Short questions</b><p>5 quick screens of taps, plus where to send results. About 60 seconds.</p></div>
+  <div class="step main"><div class="n">Entry</div><b>Link or QR</b><p>From an ILIA agent, via J's CMS. It carries the CMS link + asset ID, which the CMS maps to the agent's ILIA ID.</p></div>
+  <div class="step main"><div class="n">Step 1</div><b>Short questions</b><p>5 quick screens of taps. <b>No name or email asked.</b> About 60 seconds.</p></div>
   <div class="step main"><div class="n">Step 2</div><b>Your numbers</b><p>Calculator results and a growth chart. Adjust the yearly amount, years and start age, and results update live.</p></div>
   <div class="step boost"><div class="n">Step 3</div><b>Kai-Zen boost</b><p>The same numbers with leverage, side by side, for prospects who qualify.</p></div>
   <div class="step main"><div class="n">Step 4</div><b>Choose plan</b><p>Pick IUL or Kai-Zen straight from the results, then review and confirm.</p></div>
-  <div class="step wall"><div class="n">Step 5 · The wall</div><b>Handoff</b><p>Product, numbers, prospect and agent of record pass to ILIA.</p></div>
-  <div class="step iliaS"><div class="n">Step 6 · ILIA</div><b>Create account</b><p>Pre-filled with what they've already told us. Their chosen plan is shown alongside.</p></div>
-  <div class="step iliaS"><div class="n">Step 7 · ILIA</div><b>Enrollment starts</b><p>Next steps for the plan they chose, guided by their agent.</p></div>
+  <div class="step wall"><div class="n">Step 5 · The wall</div><b>Start ILIA account</b><p>First time they give name + email. Tied to the agent's ILIA ID from the link.</p></div>
+  <div class="step iliaS"><div class="n">Step 6 · v1</div><b>Agent invites in ILIA</b><p>Details go to the agent, who sends the ILIA invite. No ILIA integration.</p></div>
+  <div class="step iliaS"><div class="n">Step 6 · v2</div><b>Auto-sent to ILIA</b><p>CMS sends the lead to ILIA with the agent's ID; prospect creates their account. Needs approval.</p></div>
 </div>
 <div class="branch">
   <div><b>Learn more</b> opens the deep content from the current IUL marketing: how an IUL works, taxes, safety, borrowing, the Kai-Zen boost (with their own eligibility) and FAQs. Every section links back to "see it in my numbers", and "Back to my numbers" / "Choose my plan" stay pinned at the bottom.</div>
-  <div><b>Talk to my agent</b> (always in the header) shows the agent card and a call request. The agent is the member's selected ILIA agent, and the request is tracked to the member.</div>
+  <div><b>Talk to my agent</b> (always in the header) shows the agent card and a call request. The agent is the ILIA agent who shared the link. A call request is the only time a prospect shares contact details before the account step, and only if they choose to.</div>
 </div>
 
 <h2>The short question set</h2>
@@ -428,7 +428,7 @@ body.embed .notes{top:16px}
   <tr><td>3</td><td><b>Your health:</b> overall health + nicotine/tobacco/marijuana</td><td>Excellent · Good · Average · Below average · No / Yes</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: average or better</span></td></tr>
   <tr><td>4</td><td><b>Your numbers:</b> yearly amount + household income</td><td>$10k · $25k · $50k · $100k+ · Under $100k / $100–250k / $250–500k / $500k+</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: household income $100k+</span><span class="pill p-lead">Affordability flag</span> yearly amount vs ~20%-of-income guideline</td></tr>
   <tr><td>5</td><td><b>When do you want income to start?</b></td><td>60 · 65 · 70</td><td><span class="pill p-calc">Calculator</span></td></tr>
-  <tr><td>6</td><td><b>Where should we send your results?</b></td><td>First name · email · mobile</td><td><span class="pill p-lead">Lead</span> captured <i>before</i> results so drop-offs can be followed up. Open question: required or optional?</td></tr>
+  <tr><td>—</td><td><b><s>Where should we send your results?</s></b></td><td><i>Removed</i></td><td><span class="pill p-lead">Decided</span> No contact form before results (Judy). Name, email and phone are asked only at ILIA account creation. Visits before that are tracked anonymously to the agent's link.</td></tr>
   <tr><td>·</td><td><i>Defaults (adjustable on results)</i></td><td>Years paying = 5 · Income until age 90 · Death benefit sized from the contribution</td><td><span class="pill p-calc">Calculator</span></td></tr>
 </table>
 </div>
@@ -442,6 +442,7 @@ body.embed .notes{top:16px}
     <button id="bWeb" aria-pressed="false">🖥 Web</button>
   </div>
   <button class="tbtn" id="bReset">↺ Start over</button>
+  <div class="seg" role="group" aria-label="ILIA handoff"><button id="bV1" aria-pressed="true">v1 · Agent invites</button><button id="bV2" aria-pressed="false">v2 · Auto-send</button></div>
   <span class="tlabel">Jump to:</span>
   <button class="tbtn" data-jump="results">Results</button>
   <button class="tbtn" data-jump="learn">Learn more</button>
@@ -451,7 +452,7 @@ body.embed .notes{top:16px}
 
 <div class="stage" id="stage">
   <div class="device">
-    <div class="browserbar"><i></i><i></i><i></i><span id="urlbar">yourplan.example/j/member-ab12?asset=QR-0047</span></div>
+    <div class="browserbar"><i></i><i></i><i></i><span id="urlbar">partnerhub.example/LK-101?asset=AS-0047</span></div>
     <div class="screen"><div class="app" id="app"></div></div>
   </div>
   <aside class="notes" id="notes"></aside>
@@ -468,6 +469,8 @@ body.embed .notes{top:16px}
 if(/[?&]embed=1/.test(location.search)) document.body.classList.add('embed');
 const QP=new URLSearchParams(location.search);
 const PROSPECT=QP.get('prospect')==='1';
+let H=QP.get('h')==='v2'?'v2':'v1';
+const ILIAID=(QP.get('ilia')||'').replace(/[<>&"]/g,'');
 const AGENT=(QP.get('agent')||'').replace(/[<>&"]/g,'');
 if(PROSPECT) document.body.classList.add('prospect');
 const $=s=>document.querySelector(s);
@@ -532,7 +535,7 @@ function demoAnswers(){
   if(!S.goals.length) S.goals=['income','safe'];
   S.sex=S.sex||'female'; S.health=S.health||'good'; S.nic=S.nic||'no';
   S.amount=S.amount||50000; S.hh=S.hh||'250'; S.start=S.start||65;
-  if(!S.name){ const d=demoPerson(); S.name=d.name; S.email=d.email; S.phone=d.phone; }
+
 }
 
 // ---------- Chart ----------
@@ -557,28 +560,28 @@ function chart(iul,kz,showKz){
 
 // ---------- Notes per screen ----------
 const NOTES={
- land:{t:'Landing',b:['Arrives from a member\'s <b>link or QR scan</b>. The URL carries the member and asset ID.','Agent of record shown at the top (the member\'s selected ILIA agent). Group logo slot is optional (branding TBD).','One promise, one button. Education sits behind "Learn more" later.'],k:'visit · member · asset'},
+ land:{t:'Landing',b:['Arrives from an <b>ILIA agent\'s CMS link or QR</b>. The URL carries the CMS link ID + asset ID, and the CMS knows which ILIA agent owns it.','The agent who shared the link is shown at the top. Logo slot optional (branding TBD).','One promise, one button. Education sits behind "Learn more" later.'],k:'visit · CMS link · asset'},
  goals:{t:'Q1 · Desire',b:['Multi-select.','The answer decides what the results lead with (income first, death benefit first, or cash value first).'],k:'goal(s) selected'},
  about:{t:'Q2 · About you',b:['Age drives the calculator and is part of the Kai-Zen check (18–65).','Sex is needed for pricing.'],k:'step reached'},
  health:{t:'Q3 · Health',b:['Self-rated health class, no medical details yet.','Below average is not eligible for the boost (they still get IUL numbers).'],k:'step reached'},
  money:{t:'Q4 · Your numbers + affordability',b:['Yearly amount is the main calculator input. Household income is a band (also the Kai-Zen $100k+ check).','<b>Live affordability flag</b> based on the industry guideline that yearly premium paid from earnings should be no more than ~20% of income:','✓ <b>Comfortable</b> ≤15% of a typical income in the band · <b>Stretch</b> above that · <b>⚠ Not the best fit</b> above 20% of the top of the band.','For ⚠, the prospect must either take the suggested amount (~12% of income) or say they\'d pay from savings. Savings cases are flagged for the agent; carriers allow premiums from assets but review them.','The same check runs when they edit numbers on results, and the flag travels to ILIA with the handoff.','Thresholds are a starting point to confirm with the carrier/compliance.'],k:'affordability level · suggestion used / kept'},
- start:{t:'Q5 · Income start',b:['Three taps, adjustable on results.','Years paying defaults to 5; income runs to age 90.'],k:'step reached'},
+ start:{t:'Q5 · Income start',b:['Three taps, adjustable on results.','Next goes <b>straight to their numbers</b>. There\'s no contact form (Judy).'],k:'step reached'},
  contact:{t:'Q6 · Send my results',b:['Captures the lead <b>before</b> results, so members can see drop-offs and the agent can follow up.','<b>Open:</b> required vs optional.','Demo: click any field to fill sample details.'],k:'lead created (tied to member + agent)'},
- results:{t:'Your numbers + boost',b:['Leads with their own numbers and the goal they picked.','<b>Adjust</b> yearly amount, years paying, income start and age. Results and chart update live.','<b>Web:</b> IUL and Kai-Zen side by side. <b>Mobile:</b> tabs, with the boost amount on the tab.','<b>✎ Edit my numbers</b> on each plan: change amount, years, start age or age, see <b>before → after</b>, then <b>Save & update</b>. The card highlights what changed.','Each plan card has its own <b>Choose</b> button, so picking a plan is one tap.','"Why?" chips jump to the matching Learn more section.','Stepper at the top: jump back to answers at any time.'],k:'results viewed · adjustments · boost viewed · plan chosen'},
+ results:{t:'Your numbers + boost',b:['<b>Anonymous.</b> No name or email has been asked yet; the visit is tracked to the agent\'s link.','Leads with their own numbers and the goal they picked.','<b>Adjust</b> yearly amount, years paying, income start and age. Results and chart update live.','<b>Web:</b> IUL and Kai-Zen side by side. <b>Mobile:</b> tabs, with the boost amount on the tab.','<b>✎ Edit my numbers</b> on each plan: change amount, years, start age or age, see <b>before → after</b>, then <b>Save & update</b>. The card highlights what changed.','Each plan card has its own <b>Choose</b> button, so picking a plan is one tap.','"Why?" chips jump to the matching Learn more section.','Stepper at the top: jump back to answers at any time.'],k:'results viewed · adjustments · boost viewed · plan chosen'},
  learn:{t:'Learn more',b:['Built from the current IUL marketing: how it works, taxes (3 tanks), safety (0% floor + annual reset chart), borrowing, the Kai-Zen boost, FAQs.','Boost section shows <b>their own eligibility</b> from their answers.','Topic chips pin to the top; each section has "See it in my numbers".','"Back to my numbers" and "Choose my plan" stay pinned at the bottom.'],k:'sections viewed'},
  confirm:{t:'Choose + confirm plan',b:['Two decisions: <b>product</b> (IUL or Kai-Zen) and <b>numbers</b>.','"Change my numbers" goes straight back to results with everything kept.','Kai-Zen only selectable if they qualify.','Acknowledges these are estimates; final numbers come from the carrier illustration.'],k:'decision: IUL or Kai-Zen + numbers'},
- agent:{t:'Talk to my agent',b:['Available from every screen.','Agent = the member\'s selected ILIA agent (from the CMS list).','Request is tracked to the member and goes to the agent.'],k:'agent contact requested'},
- wall:{t:'The wall → handoff',b:['A short "taking you to ILIA" moment so the change of site isn\'t a surprise.','Box shows what we\'d likely pass into ILIA (still open: exact fields, and whether ILIA keeps the group/member reference).'],k:'handoff sent'},
- ilia:{t:'ILIA · Create account',b:['<b>Inside ILIA</b> (concept). The look changes to ILIA\'s secure enrollment.','Pre-filled from the funnel: name, email, mobile, and the chosen plan + numbers.','Only new asks: last name, date of birth, state, password, terms.','"Change plan or numbers" goes back across the wall until the account is created.','Agent of record shown, so the prospect knows who is guiding them.'],k:'(ILIA) account creation started'},
- done:{t:'ILIA · Enrollment starts',b:['Account created and tied to the agent of record.','Next steps differ by plan: Kai-Zen adds the leverage/trust steps.','From here it\'s ILIA\'s existing Allianz enrollment flow.','Post-wall status back to the CMS is still an open decision.'],k:'(ILIA) account created'}
+ agent:{t:'Talk to my agent',b:['Available from every screen.','Agent = the ILIA agent who shared the link.','Optional: the prospect may leave a phone number for a call. That is their choice, not a gate.'],k:'agent contact requested'},
+ wall:{t:'The wall → ILIA account',b:['Explains ILIA and that this is the first time we ask for details.','<b>v1:</b> details go to the agent, who invites them from ILIA, so the client is tied to the agent.','<b>v2:</b> the CMS sends the lead to ILIA\'s partner intake with the agent\'s ILIA ID (needs approval).','Switch v1 / v2 with the toolbar above.'],k:'plan confirmed'},
+ ilia:{t:'Start ILIA account',b:['<b>First and only time</b> the prospect gives name, email and phone.','<b>v1:</b> CMS-hosted form; no password (they set it from the agent\'s ILIA invite). Agent gets a to-do in the CMS.','<b>v2:</b> ILIA-branded account creation (concept) with password; lead already assigned to the agent\'s ILIA ID.','"Change plan or numbers" goes back until submitted.'],k:'details submitted → agent to-do (v1) / sent to ILIA (v2)'},
+ done:{t:'Confirmation',b:['<b>v1:</b> "Watch for your ILIA invite" from the agent, then the normal ILIA steps.','<b>v2:</b> account created in ILIA, tied to the agent; application starts.','Kai-Zen adds the leverage/trust step.','Status after this, back in the CMS, is still an open decision.'],k:'handoff complete'}
 };
-const QORDER=['land','goals','about','health','money','start','contact'];
+const QORDER=['land','goals','about','health','money','start'];
 const JOURNEY=[['goals','Answers'],['results','Numbers'],['confirm','Plan'],['ilia','Account']];
 const stageOf=s=>({goals:0,about:0,health:0,money:0,start:0,contact:0,results:1,learn:1,agent:1,confirm:2,wall:3,ilia:3,done:4}[s]);
 
 // ---------- Rendering ----------
 function header(){
-  if(S.screen==='ilia'||S.screen==='done') return `<div class="iliabar"><span class="mark">ILIA</span><span class="sec">🔒 Secure enrollment</span><span class="ag">Your agent<br><b>Agent Name</b></span></div>`;
+  if(H==='v2'&&(S.screen==='ilia'||S.screen==='done')) return `<div class="iliabar"><span class="mark">ILIA</span><span class="sec">🔒 Secure enrollment</span><span class="ag">Your agent<br><b>Agent Name</b></span></div>`;
   const top=`<div class="topbar"><div class="logo">GROUP<br>LOGO</div>
     <div class="agent"><b>Agent Name</b><small>Your licensed agent · (555) 000-0000</small></div>
     <button class="talk" data-go="agent">Talk to my agent</button></div>`;
@@ -610,7 +613,7 @@ const SCREENS={
    <p style="margin-top:16px"><button class="linkbtn" data-learn="basics">New to IULs? Learn the basics first →</button></p>
    </div></div>${foot(`<button class="btn primary" data-go="goals">See my numbers →</button>`)}`},
  goals(){return `<div class="body"><div class="inner">${back('land')}
-   <p class="kicker">Question 1 of 6</p><h2 class="q">What matters most to you?</h2><p class="help">Pick as many as you like.</p>
+   <p class="kicker">Question 1 of 5</p><h2 class="q">What matters most to you?</h2><p class="help">Pick as many as you like.</p>
    <div class="opts two">
    ${optBtn('goals','income','Tax-free retirement income','Supplement Social Security and savings','🏖️',1)}
    ${optBtn('goals','protect','Protect my family','A death benefit that passes tax-free','👨‍👩‍👧',1)}
@@ -618,25 +621,25 @@ const SCREENS={
    ${optBtn('goals','access','Access cash when I need it','Borrow against your policy','🔓',1)}
    </div></div></div>${foot(`<button class="btn primary" data-go="about" ${S.goals.length?'':'disabled'}>Next</button>`)}`},
  about(){return `<div class="body"><div class="inner">${back('goals')}
-   <p class="kicker">Question 2 of 6</p><h2 class="q">A little about you</h2><p class="help">Used to estimate your policy costs.</p>
+   <p class="kicker">Question 2 of 5</p><h2 class="q">A little about you</h2><p class="help">Used to estimate your policy costs.</p>
    <div class="field"><label>Your age</label><div class="stepper"><button data-age="-1" aria-label="Younger">−</button><output>${S.age}</output><button data-age="1" aria-label="Older">+</button></div></div>
    <div class="field"><label>Sex</label><div class="row">${optBtn('sex','male','Male')}${optBtn('sex','female','Female')}</div></div>
    </div></div>${foot(`<button class="btn primary" data-go="health" ${S.sex?'':'disabled'}>Next</button>`)}`},
  health(){return `<div class="body"><div class="inner">${back('about')}
-   <p class="kicker">Question 3 of 6</p><h2 class="q">How's your health?</h2><p class="help">Your best guess is fine. Nothing medical is needed yet.</p>
+   <p class="kicker">Question 3 of 5</p><h2 class="q">How's your health?</h2><p class="help">Your best guess is fine. Nothing medical is needed yet.</p>
    <div class="field"><label>Overall health</label><div class="row">${optBtn('health','excellent','Excellent')}${optBtn('health','good','Good')}${optBtn('health','average','Average')}${optBtn('health','below','Below average')}</div></div>
    <div class="field"><label>Any nicotine, tobacco or marijuana use?</label><div class="row">${optBtn('nic','no','No')}${optBtn('nic','yes','Yes')}</div></div>
    </div></div>${foot(`<button class="btn primary" data-go="money" ${S.health&&S.nic?'':'disabled'}>Next</button>`)}`},
  money(){return `<div class="body"><div class="inner">${back('health')}
-   <p class="kicker">Question 4 of 6</p><h2 class="q">Your numbers</h2><p class="help">You can change these on the next screen.</p>
+   <p class="kicker">Question 4 of 5</p><h2 class="q">Your numbers</h2><p class="help">You can change these on the next screen.</p>
    <div class="field"><label>How much could you put in each year?</label><div class="row">${optBtn('amount',10000,'$10k')}${optBtn('amount',25000,'$25k')}${optBtn('amount',50000,'$50k')}${optBtn('amount',100000,'$100k+')}</div></div>
    <div class="field"><label>Household income</label><div class="row">${optBtn('hh','u100','Under $100k')}${optBtn('hh','100','$100–250k')}${optBtn('hh','250','$250–500k')}${optBtn('hh','500','$500k+')}</div></div>
    ${affBlock('q4')}
    </div></div>${foot(`<button class="btn primary" data-go="start" ${S.amount&&S.hh&&!(afford(S.amount,S.hh).level==='over'&&!S.affKeep)?'':'disabled'}>Next</button>`)}`},
  start(){return `<div class="body"><div class="inner">${back('money')}
-   <p class="kicker">Question 5 of 6</p><h2 class="q">When would you like income to start?</h2><p class="help">The age you'd start drawing tax-free income.</p>
+   <p class="kicker">Question 5 of 5</p><h2 class="q">When would you like income to start?</h2><p class="help">The age you'd start drawing tax-free income.</p>
    <div class="row">${optBtn('start',60,'Age 60')}${optBtn('start',65,'Age 65')}${optBtn('start',70,'Age 70')}</div>
-   </div></div>${foot(`<button class="btn primary" data-go="contact" ${S.start?'':'disabled'}>Next</button>`)}`},
+   </div></div>${foot(`<button class="btn primary" data-go="results" ${S.start?'':'disabled'}>See my numbers →</button>`)}`},
  contact(){const ok=S.name.trim()&&/.+@.+\..+/.test(S.email);
    return `<div class="body"><div class="inner">${back('start')}
    <p class="kicker">Last step</p><h2 class="q">Where should we send your results?</h2><p class="help">We'll save your numbers so you can come back to them. Your agent may follow up.</p>
@@ -810,22 +813,23 @@ const SCREENS={
    </div></div></div>${foot(`<button class="btn secondary" data-go="${S.prev||'land'}">← Back</button>`)}`},
  wall(){const v=calc(S,S.product==='kz');
    return `<div class="body"><div class="inner wallscr">
-   <div class="wallicon">🔒</div><h2 class="q">Great choice, ${S.name||'there'}</h2>
-   <p class="help">We're taking you to <b>ILIA</b>, our secure enrollment platform, to create your account. Your plan and details come with you.</p>
-   <div class="payload"><h5>Prototype note: what's handed to ILIA (open)</h5>
+   <div class="wallicon">🔒</div><h2 class="q">Great choice!</h2>
+   <p class="help">${H==='v1'?'Last step: start your secure <b>ILIA</b> account. ILIA is the enrollment platform your agent, <b>Agent Name</b>, uses. Tell us where to send your invite.':'Next, create your secure <b>ILIA</b> account. ILIA is the enrollment platform your agent, <b>Agent Name</b>, uses. Your plan comes with you.'}</p>
+   <p class="help" style="font-size:13px">This is the first time we ask for your name and email.</p>
+   <div class="payload"><h5>Prototype note: what the CMS hands to ILIA (${H==='v1'?'v1 · to the agent, who invites in ILIA':'v2 · to ILIA partner intake'})</h5>
      <div><span>Product</span><b>${S.product==='kz'?'Kai-Zen (IUL + leverage)':'IUL'} · Allianz</b></div>
      <div><span>Confirmed numbers</span><b>${fmt(S.amount)}/yr · ${S.years} yrs · income at ${v.start}</b></div>
-     <div><span>Prospect</span><b>${S.name||'—'} · ${S.email||'—'}</b></div>
      <div><span>Calculator answers</span><b>age ${S.age} · ${S.sex||'—'} · ${S.health||'—'} · nicotine ${S.nic||'—'}</b></div>
-     <div><span>Agent of record</span><b>Member's selected ILIA agent</b></div>
+     <div><span>Agent of record</span><b>Agent Name · ${ILIAID||'ILIA agent ID'}</b></div>
      ${(()=>{const a=afford(S.amount,S.hh); return a&&a.level!=='ok'?`<div><span>Affordability flag</span><b>${a.level==='over'?'Over guideline'+(S.affKeep?' · paying from savings':''):'Stretch'} (~${a.pct}% of income)</b></div>`:'';})()}
-     <div><span>Source</span><b>${QP.get('m')||'member-ab12'} · asset ${QP.get('a')||'QR-0047'}</b></div>
-   </div></div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="ilia">Go to ILIA →</button>`)}`},
- ilia(){const kzSel=S.product==='kz', v=calc(S,kzSel), A=S.acct;
-   const ok=A.last&&A.dob&&A.state&&A.pw&&A.terms;
+     <div><span>Source</span><b>CMS link ${QP.get('l')||'LK-101'} · asset ${QP.get('a')||'AS-0047'}</b></div>
+     <div><span>Prospect details</span><b>Collected on the next screen</b></div>
+   </div></div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="ilia">${H==='v1'?'Start my account →':'Go to ILIA →'}</button>`)}`},
+ ilia(){const kzSel=S.product==='kz', v=calc(S,kzSel), A=S.acct, v1=H==='v1';
+   const ok=S.name&&A.last&&/.+@.+\..+/.test(S.email)&&A.dob&&A.state&&(v1||A.pw)&&A.terms;
    return `<div class="body"><div class="inner wide">
-     <p class="kicker" style="color:var(--ilia-2)">Step 1 of enrollment</p><h2 class="q">Create your account, ${S.name||'there'}</h2>
-     <p class="help">We've filled in what you already told us. This takes about a minute.</p>
+     <p class="kicker" style="color:var(--ilia-2)">${v1?'Start your ILIA account':'Step 1 of enrollment'}</p><h2 class="q">${v1?'Where should Agent Name send your ILIA invite?':'Create your ILIA account'}</h2>
+     <p class="help">${v1?'Agent Name will send your secure ILIA invite, usually within one business day. You\'ll set your password there.':'Your agent and chosen plan are already attached. This takes about a minute.'}</p>
      <div class="ilia-grid">
        <div class="formcard"><h4>Your details</h4>
          <div class="two"><div class="field"><label for="aF">First name</label><input id="aF" type="text" value="${S.name}" data-input="name"></div>
@@ -834,46 +838,36 @@ const SCREENS={
          <div class="two"><div class="field"><label for="aP">Mobile</label><input id="aP" type="tel" value="${S.phone}" data-input="phone"></div>
          <div class="field"><label for="aD">Date of birth</label><input id="aD" type="text" placeholder="MM/DD/YYYY" value="${A.dob}" data-acct="dob"></div></div>
          <div class="field"><label for="aS">State</label><select id="aS" data-acct="state"><option value="">Select…</option>${['Arizona','California','Florida','Georgia','Illinois','New York','North Carolina','Ohio','Pennsylvania','Texas'].map(s=>`<option ${A.state===s?'selected':''}>${s}</option>`).join('')}</select></div>
-         <div class="field"><label for="aW">Create a password</label><input id="aW" type="password" value="${A.pw}" data-acct="pw" autocomplete="new-password"></div>
-         <label class="check" style="margin-top:0"><input type="checkbox" data-terms="1" ${A.terms?'checked':''}> I agree to the ILIA terms of use and privacy policy, and to receive enrollment messages.</label>
+         ${v1?'':`<div class="field"><label for="aW">Create a password</label><input id="aW" type="password" value="${A.pw}" data-acct="pw" autocomplete="new-password"></div>`}
+         <label class="check" style="margin-top:0"><input type="checkbox" data-terms="1" ${A.terms?'checked':''}> ${v1?'I agree that my details are shared with Agent Name to set up my ILIA account, and to receive enrollment messages.':'I agree to the ILIA terms of use and privacy policy, and to receive enrollment messages.'}</label>
          <p class="disc" style="color:var(--brand)">Demo tip: click any empty field to fill in sample details.</p>
        </div>
        <div>
          <div class="plan ${kzSel?'kz':''}"><div class="ph"><b>Your chosen plan</b><span class="badge">${kzSel?'🚀 Kai-Zen':'IUL'}</span></div>
            <div class="big" style="font-size:26px">${fmt(v.income)}<small> /yr income</small></div>
            <div class="summary" style="margin-top:10px">
-             <div><span>Plan</span><b>${kzSel?'IUL + Kai-Zen boost':'IUL'}</b></div>
-             <div><span>Carrier</span><b>Allianz</b></div>
-             <div><span>You pay</span><b>${fmt(S.amount)}/yr · ${S.years} yrs</b></div>
-             <div><span>Income</span><b>Age ${v.start}–90</b></div>
-             <div><span>Death benefit</span><b>${fmtK(v.db)}</b></div>
+             <div><span>Plan</span><b>${kzSel?'IUL + Kai-Zen boost':'IUL'}</b></div><div><span>Carrier</span><b>Allianz</b></div>
+             <div><span>You pay</span><b>${fmt(S.amount)}/yr · ${S.years} yrs</b></div><div><span>Income</span><b>Age ${v.start}–90</b></div><div><span>Death benefit</span><b>${fmtK(v.db)}</b></div>
            </div>
            <p style="margin:10px 0 0"><button class="linkbtn" data-go="confirm">✎ Change plan or numbers</button></p>
            <p class="disc">Estimate only. Your official numbers come from your Allianz illustration in the next steps.</p>
          </div>
-         <div class="plan" style="margin-top:12px;display:flex;gap:10px;align-items:center"><div class="wallicon" style="width:40px;height:40px;font-size:18px;margin:0;border-radius:12px">👤</div><div style="font-size:13px"><b>Agent Name</b> is your agent<br><span style="color:var(--ink-3)">They'll be notified when your account is ready.</span></div></div>
+         <div class="plan" style="margin-top:12px;display:flex;gap:10px;align-items:center"><div class="wallicon" style="width:40px;height:40px;font-size:18px;margin:0;border-radius:12px">👤</div><div style="font-size:13px"><b>Agent Name</b> is your agent<br><span style="color:var(--ink-3)">${ILIAID?ILIAID+' · ':''}Your account is tied to them in ILIA.</span></div></div>
        </div>
      </div>
-   </div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="done" id="goDone" ${ok?'':'disabled'}>Create account & start enrollment</button>`)}`},
- done(){const kzSel=S.product==='kz';
-   const steps=kzSel?[
-      ['Complete your application','Personal, beneficiary and financial details.'],
-      ['Review your Allianz illustration','Your official numbers, with your agent.'],
-      ['Kai-Zen leverage and trust documents','Set up the premium financing and trust.','kz'],
-      ['Health and underwriting','Health questions, and an exam if needed.'],
-      ['Sign and submit','e-Sign everything in one place.']]:[
-      ['Complete your application','Personal, beneficiary and financial details.'],
-      ['Review your Allianz illustration','Your official numbers, with your agent.'],
-      ['Health and underwriting','Health questions, and an exam if needed.'],
-      ['Sign and submit','e-Sign everything in one place.']];
+   </div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="done" id="goDone" ${ok?'':'disabled'}>${v1?'Send my details to Agent Name':'Create account & start enrollment'}</button>`)}`},
+ done(){const kzSel=S.product==='kz', v1=H==='v1';
+   const app=kzSel?[['Complete your application','Personal, beneficiary and financial details.'],['Review your Allianz illustration','Your official numbers, with your agent.'],['Kai-Zen leverage and trust documents','Set up the premium financing and trust.','kz'],['Health and underwriting','Health questions, and an exam if needed.'],['Sign and submit','e-Sign everything in one place.']]
+     :[['Complete your application','Personal, beneficiary and financial details.'],['Review your Allianz illustration','Your official numbers, with your agent.'],['Health and underwriting','Health questions, and an exam if needed.'],['Sign and submit','e-Sign everything in one place.']];
+   const steps=v1?[['Watch for your ILIA invite','Agent Name sends it from ILIA, usually within one business day.'],['Create your ILIA account','Set your password from the invite email.']].concat(app):app;
    return `<div class="body"><div class="inner wide" style="max-width:720px">
      <div class="wallscr" style="padding-top:0"><div class="wallicon" style="background:var(--good-soft);color:var(--good)">✓</div>
-     <h2 class="q">Welcome to ILIA, ${S.name||'there'}</h2>
-     <p class="help">Your account is ready and your <b>${kzSel?'IUL + Kai-Zen boost':'IUL'}</b> application has started. Agent Name has been notified.</p></div>
+     <h2 class="q">${v1?"You're all set, ":'Welcome to ILIA, '}${S.name||'there'}</h2>
+     <p class="help">${v1?'Agent Name has your details and your <b>'+(kzSel?'IUL + Kai-Zen boost':'IUL')+'</b> choice, and will send your secure ILIA invite.':'Your account is ready and your <b>'+(kzSel?'IUL + Kai-Zen boost':'IUL')+'</b> application has started. Agent Name has been notified.'}</p></div>
      <p style="margin:6px 0 0"><b>Your next steps</b></p>
      <ol class="steps">${steps.map(([t,d,c],i)=>`<li class="${i===0?'now':''} ${c||''}"><span class="sn">${i+1}</span><div><b>${t}</b>${d}</div></li>`).join('')}</ol>
-     <p class="disc">Concept of the ILIA landing only. Actual steps follow ILIA's existing Allianz ${kzSel?'Kai-Zen':'IUL'} enrollment flow.</p>
-   </div></div>${foot(`<button class="btn ilia">Start my application →</button>`)}`}
+     <p class="disc">${v1?'v1: the CMS gives the agent a to-do; the agent invites the client from their own ILIA account, so the client is tied to them.':'v2: the CMS sent this lead to ILIA with the agent\'s ILIA ID (needs Simplicity / ILIA approval).'} Actual steps follow ILIA's existing Allianz ${kzSel?'Kai-Zen':'IUL'} enrollment flow.</p>
+   </div></div>${foot(v1?`<button class="btn secondary" data-learn="basics">Learn more while you wait</button>`:`<button class="btn ilia">Start my application →</button>`)}`}
 };
 
 function sheet(){
@@ -905,8 +899,8 @@ function render(){
   app.innerHTML=AGENT?html.split('Agent Name').join(AGENT):html;
   if(S.flash) S.flash.fresh=false;
   const n=NOTES[S.screen];
-  $('#notes').innerHTML=`<div class="scr">${device==='web'?'Web':'Mobile'} · ${S.screen==='ilia'||S.screen==='done'?'inside ILIA':'funnel (outside ILIA)'}</div><h3>${n.t}</h3><ul>${n.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="track">📊 Tracked: <code>${n.k}</code></div>`;
-  $('#urlbar').textContent=(S.screen==='ilia'||S.screen==='done')?'ilia.example/enroll/create-account':'yourplan.example/j/member-ab12?asset=QR-0047';
+  $('#notes').innerHTML=`<div class="scr">${device==='web'?'Web':'Mobile'} · ${H==='v2'&&(S.screen==='ilia'||S.screen==='done')?'inside ILIA':'funnel (outside ILIA)'} · handoff ${H}</div><h3>${n.t}</h3><ul>${n.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="track">📊 Tracked: <code>${n.k}</code></div>`;
+  $('#urlbar').textContent=(H==='v2'&&(S.screen==='ilia'||S.screen==='done'))?'ilia.example/enroll/create-account':'partnerhub.example/'+(QP.get('l')||'LK-101')+'?asset='+(QP.get('a')||'AS-0047');
 }
 function go(to,opts){
   opts=opts||{};
@@ -938,7 +932,7 @@ function demoPerson(){
 }
 function refreshButtons(){
   const b=$('#toResults'); if(b) b.disabled=!(S.name.trim()&&/.+@.+\..+/.test(S.email));
-  const A=S.acct, d=$('#goDone'); if(d) d.disabled=!(A.last&&A.dob&&A.state&&A.pw&&A.terms);
+  const A=S.acct, d=$('#goDone'); if(d) d.disabled=!(S.name&&A.last&&/.+@.+\..+/.test(S.email)&&A.dob&&A.state&&(H==='v1'||A.pw)&&A.terms);
 }
 function demoFill(t){
   const D=demoPerson();
@@ -1002,6 +996,8 @@ function setDevice(d){
   render();
 }
 $('#bMobile').onclick=()=>setDevice('mobile');
+const setH=h=>{ H=h; $('#bV1').setAttribute('aria-pressed',H==='v1'); $('#bV2').setAttribute('aria-pressed',H==='v2'); render(); };
+$('#bV1').onclick=()=>setH('v1'); $('#bV2').onclick=()=>setH('v2'); setTimeout(()=>setH(H),0);
 $('#bWeb').onclick=()=>setDevice('web');
 $('#bReset').onclick=()=>jump('land');
 setDevice(PROSPECT&&window.innerWidth>=760?'web':'mobile');
