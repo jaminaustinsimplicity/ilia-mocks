@@ -13,6 +13,8 @@
   --boost:#e0661f; --boost-soft:#fdeee4;
   --good:#17864a; --good-soft:#e3f4ea;
   --warn:#a86d12; --warn-soft:#fbf1dc;
+  --bad:#c2364a;
+  --ilia:#15233f; --ilia-2:#2b6cb0;
   --frame:#1b2130;
   --shadow:0 1px 2px rgba(18,24,38,.06),0 8px 24px rgba(18,24,38,.07);
 }
@@ -20,35 +22,45 @@
   :root:not([data-theme="light"]){
     --bg:#0e121a; --surface:#161b26; --surface-2:#1d2330; --ink:#e8ebf2; --ink-2:#a6aec1; --ink-3:#7f879b; --line:#2a3142;
     --brand:#4c9be8; --brand-ink:#0b1220; --brand-soft:#15283d; --boost:#f28a4c; --boost-soft:#35231a;
-    --good:#4cc07c; --good-soft:#15301f; --warn:#e2a94a; --warn-soft:#33281a; --frame:#3a4358; --shadow:none;
+    --good:#4cc07c; --good-soft:#15301f; --warn:#e2a94a; --warn-soft:#33281a; --bad:#f06b7d; --ilia:#0b1426; --ilia-2:#5b9ae0; --frame:#3a4358; --shadow:none;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0e121a; --surface:#161b26; --surface-2:#1d2330; --ink:#e8ebf2; --ink-2:#a6aec1; --ink-3:#7f879b; --line:#2a3142;
   --brand:#4c9be8; --brand-ink:#0b1220; --brand-soft:#15283d; --boost:#f28a4c; --boost-soft:#35231a;
-  --good:#4cc07c; --good-soft:#15301f; --warn:#e2a94a; --warn-soft:#33281a; --frame:#3a4358; --shadow:none;
+  --good:#4cc07c; --good-soft:#15301f; --warn:#e2a94a; --warn-soft:#33281a; --bad:#f06b7d; --ilia:#0b1426; --ilia-2:#5b9ae0; --frame:#3a4358; --shadow:none;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased}
-.wrap{max-width:1240px;margin:0 auto;padding:28px 16px 64px}
+
+/* Page nav back to parent */
+.pagenav{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.pagenav .in{max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pagenav a.backlink{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:var(--brand);text-decoration:none;padding:7px 12px;border-radius:9px;background:var(--brand-soft)}
+.pagenav a.backlink:hover{text-decoration:underline}
+.pagenav .crumb{color:var(--ink-3);font-size:13px}
+.pagenav .jump{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--ink-3)}
+.pagenav .jump button{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:600 12.5px Inter,sans-serif;padding:6px 10px;border-radius:8px;cursor:pointer}
+.pagenav .jump button:hover{color:var(--brand);border-color:var(--brand)}
+
+.wrap{max-width:1240px;margin:0 auto;padding:24px 16px 64px}
 h1{font-size:28px;line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
 h2{font-size:19px;margin:42px 0 6px}
 .lead{color:var(--ink-2);max-width:860px;margin:0}
 .sub{color:var(--ink-2);margin:0 0 16px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .chip{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2)}
-.chip a{color:inherit}
 
 /* Flow diagram */
-.flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:4px 2px 10px}
+.flow{display:flex;align-items:stretch;overflow-x:auto;padding:4px 2px 10px}
 .step{flex:1 0 150px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow);position:relative;margin-right:22px}
 .step:last-child{margin-right:0}
 .step:not(:last-child)::after{content:"→";position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-weight:700}
 .step .n{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em}
 .step b{display:block;margin:2px 0 4px;font-size:14px}
 .step p{margin:0;font-size:12.5px;color:var(--ink-2);line-height:1.4}
-.step.boost{border-top:4px solid var(--boost)} .step.wall{border-top:4px solid var(--ink)} .step.main{border-top:4px solid var(--brand)}
+.step.boost{border-top:4px solid var(--boost)} .step.wall{border-top:4px solid var(--ink)} .step.main{border-top:4px solid var(--brand)} .step.iliaS{border-top:4px solid var(--ilia-2)}
 .branch{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .branch div{background:var(--surface-2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink-2)}
 .branch b{color:var(--ink)}
@@ -68,10 +80,12 @@ td:first-child{font-weight:700;color:var(--ink-3);width:30px}
 .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
 .seg button{border:0;background:transparent;color:var(--ink-2);font:600 13px Inter,sans-serif;padding:7px 14px;border-radius:7px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-.reset{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:600 13px Inter,sans-serif;padding:8px 12px;border-radius:9px;cursor:pointer}
+.tbtn{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:600 13px Inter,sans-serif;padding:8px 12px;border-radius:9px;cursor:pointer}
+.tbtn:hover{color:var(--brand);border-color:var(--brand)}
+.tlabel{font-size:12.5px;color:var(--ink-3);margin-left:6px}
 .stage{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start}
 .stage.web{grid-template-columns:1fr}
-.notes{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);position:sticky;top:16px}
+.notes{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);position:sticky;top:64px}
 .notes h3{margin:0 0 4px;font-size:15px}
 .notes .scr{font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
 .notes ul{margin:8px 0 0;padding-left:18px;font-size:13.5px;color:var(--ink-2)} .notes li{margin:4px 0}
@@ -80,9 +94,9 @@ td:first-child{font-weight:700;color:var(--ink-3);width:30px}
 
 /* Device frames */
 .device{background:var(--frame);border-radius:38px;padding:12px;box-shadow:var(--shadow);width:390px;max-width:100%}
-.device .screen{background:var(--bg);border-radius:28px;overflow:hidden;height:760px;display:flex;flex-direction:column}
+.device .screen{background:var(--bg);border-radius:28px;overflow:hidden;height:780px;display:flex;flex-direction:column}
 .stage.web .device{width:100%;border-radius:14px;padding:0;background:var(--surface);border:1px solid var(--line)}
-.stage.web .device .screen{border-radius:0 0 14px 14px;height:auto;min-height:640px}
+.stage.web .device .screen{border-radius:0 0 14px 14px;height:820px}
 .browserbar{display:none;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);border-radius:14px 14px 0 0}
 .stage.web .browserbar{display:flex}
 .browserbar i{width:10px;height:10px;border-radius:50%;background:var(--line);display:inline-block}
@@ -91,16 +105,26 @@ td:first-child{font-weight:700;color:var(--ink-3);width:30px}
 /* App inside frame */
 .app{flex:1;display:flex;flex-direction:column;min-height:0}
 .topbar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
-.logo{width:30px;height:30px;border-radius:8px;background:var(--surface-2);border:1px dashed var(--ink-3);display:grid;place-items:center;font-size:9px;font-weight:700;color:var(--ink-3)}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--surface-2);border:1px dashed var(--ink-3);display:grid;place-items:center;font-size:8px;font-weight:700;color:var(--ink-3);text-align:center;line-height:1.1;flex:none}
 .agent{flex:1;min-width:0}
 .agent b{display:block;font-size:13px}
 .agent small{color:var(--ink-3);font-size:11.5px}
 .talk{border:1px solid var(--line);background:var(--surface);color:var(--brand);font:600 12px Inter,sans-serif;padding:6px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}
 .progress{height:4px;background:var(--surface-2)} .progress div{height:100%;background:var(--brand);transition:width .25s}
-.body{flex:1;overflow-y:auto;padding:22px 18px 18px}
-.stage.web .body{padding:36px 40px}
+/* journey stepper (after questions) */
+.journey{display:flex;background:var(--surface);border-bottom:1px solid var(--line);padding:0 8px;overflow-x:auto}
+.journey button{flex:1;min-width:0;border:0;background:transparent;padding:9px 4px 8px;font:600 11.5px Inter,sans-serif;color:var(--ink-3);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:5px}
+.journey button .d{width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font-size:10px;background:var(--surface-2);color:var(--ink-3);flex:none}
+.journey button.done .d{background:var(--good);color:#fff}
+.journey button.cur{color:var(--brand);border-bottom-color:var(--brand)}
+.journey button.cur .d{background:var(--brand);color:#fff}
+.journey button[disabled]{cursor:default;opacity:.6}
+.stage.web .journey{justify-content:center;gap:10px} .stage.web .journey button{flex:0 0 auto;padding:11px 14px;font-size:13px}
+
+.body{flex:1;overflow-y:auto;padding:22px 18px 18px;scroll-behavior:smooth}
+.stage.web .body{padding:32px 40px}
 .inner{max-width:560px;margin:0 auto}
-.stage.web .inner.wide{max-width:1040px}
+.stage.web .inner.wide{max-width:1060px}
 .kicker{font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px}
 .q{font-size:23px;line-height:1.25;font-weight:800;margin:0 0 6px;letter-spacing:-.01em}
 .stage.web .q{font-size:30px}
@@ -113,22 +137,26 @@ td:first-child{font-weight:700;color:var(--ink-3);width:30px}
 .opt[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .row .opt{flex:1 1 calc(50% - 8px);justify-content:center;text-align:center;padding:13px 8px}
-.field{margin:0 0 20px}
+.field{margin:0 0 18px}
 .field label{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
 .stepper{display:flex;align-items:center;gap:12px}
 .stepper button{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-size:20px;cursor:pointer}
 .stepper output{font-size:28px;font-weight:800;min-width:64px;text-align:center}
-input[type=text],input[type=email],input[type=tel]{width:100%;padding:13px 14px;border-radius:11px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:500 15px Inter,sans-serif}
-input:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+input[type=text],input[type=email],input[type=tel],input[type=password],select{width:100%;padding:13px 14px;border-radius:11px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:500 15px Inter,sans-serif}
+input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .foot{padding:12px 16px 16px;background:var(--surface);border-top:1px solid var(--line);display:flex;gap:10px}
 .stage.web .foot{justify-content:center;padding:16px 40px}
-.stage.web .foot .btn{flex:0 0 auto;min-width:200px}
+.stage.web .foot .btn{flex:0 0 auto;min-width:210px}
 .btn{flex:1;border:0;border-radius:12px;padding:14px 16px;font:700 15px Inter,sans-serif;cursor:pointer}
 .btn.primary{background:var(--brand);color:var(--brand-ink)}
 .btn.secondary{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
 .btn.boost{background:var(--boost);color:#fff}
+.btn.ilia{background:var(--ilia-2);color:#fff}
+.btn.sm{flex:0 0 auto;padding:10px 14px;font-size:13.5px;border-radius:10px}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .back{background:none;border:0;color:var(--ink-3);font:600 13px Inter,sans-serif;padding:0;margin-bottom:12px;cursor:pointer}
+.linkbtn{background:none;border:0;color:var(--brand);font:600 13px Inter,sans-serif;cursor:pointer;padding:0;text-align:left}
+.disc{font-size:11.5px;color:var(--ink-3);margin-top:14px;line-height:1.45}
 
 /* Landing */
 .hero{text-align:center;padding-top:10px}
@@ -143,8 +171,9 @@ input:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-
 
 /* Results */
 .res-grid{display:grid;gap:14px}
-.stage.web .res-grid{grid-template-columns:300px 1fr;align-items:start}
+.stage.web .res-grid{grid-template-columns:290px 1fr;align-items:start}
 .adjust{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stage.web .adjust{position:sticky;top:0}
 .adjust h4{margin:0 0 10px;font-size:14px}
 .slider{margin:0 0 14px}
 .slider .top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
@@ -155,8 +184,9 @@ input[type=range]{width:100%;accent-color:var(--brand)}
 .mini button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
 .cards{display:grid;gap:12px}
 .stage.web .cards{grid-template-columns:1fr 1fr}
-.pcard{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:16px;position:relative}
-.pcard.kz{border-color:var(--boost);background:linear-gradient(180deg,var(--boost-soft),var(--surface) 60%)}
+.pcard{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:16px;position:relative;display:flex;flex-direction:column}
+.pcard.kz{border-color:var(--boost);background:linear-gradient(180deg,var(--boost-soft),var(--surface) 55%)}
+.pcard.sel{box-shadow:0 0 0 3px var(--brand-soft)}
 .pcard h4{margin:0;font-size:15px}
 .pcard .tagline{font-size:12.5px;color:var(--ink-2);margin:2px 0 12px}
 .big{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
@@ -165,8 +195,10 @@ input[type=range]{width:100%;accent-color:var(--brand)}
 .metric{background:var(--surface-2);border-radius:10px;padding:9px 10px}
 .metric span{display:block;font-size:11.5px;color:var(--ink-3)}
 .metric b{font-size:16px}
-.plus{display:inline-block;margin-top:10px;font-size:13px;font-weight:700;color:var(--boost);background:var(--surface);border:1px solid var(--boost);padding:3px 9px;border-radius:999px}
+.plus{align-self:flex-start;display:inline-block;margin-top:10px;font-size:13px;font-weight:700;color:var(--boost);background:var(--surface);border:1px solid var(--boost);padding:3px 9px;border-radius:999px}
 .ribbon{position:absolute;top:-10px;right:12px;background:var(--boost);color:#fff;font-size:11px;font-weight:800;letter-spacing:.04em;padding:3px 9px;border-radius:999px;text-transform:uppercase}
+.choose{margin-top:14px;display:flex}
+.choose .btn{padding:11px 14px;font-size:14px}
 .ptabs{display:flex;background:var(--surface-2);border-radius:11px;padding:3px;margin-bottom:12px}
 .ptabs button{flex:1;border:0;background:transparent;padding:9px 6px;border-radius:9px;font:700 13px Inter,sans-serif;color:var(--ink-2);cursor:pointer}
 .ptabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
@@ -176,10 +208,15 @@ input[type=range]{width:100%;accent-color:var(--brand)}
 .nq{background:var(--warn-soft);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;color:var(--ink-2)}
 .nq b{color:var(--ink)}
 .howkz{font-size:13px;color:var(--ink-2);margin:10px 0 0}
-.disc{font-size:11.5px;color:var(--ink-3);margin-top:14px;line-height:1.45}
-.edit-link{background:none;border:0;color:var(--brand);font:600 13px Inter,sans-serif;cursor:pointer;padding:0}
-.sheet{display:none}
-.stage:not(.web) .adjust.collapsed{display:none}
+.stage:not(.web) .adjust{display:none}
+.chartbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.chartbox h4{margin:0 0 2px;font-size:14px}
+.chartbox .lg{display:flex;gap:14px;font-size:12px;color:var(--ink-2);margin:4px 0 6px}
+.chartbox .lg i{display:inline-block;width:12px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.chartbox svg{width:100%;height:auto;display:block}
+.why{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.why button{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:600 12.5px Inter,sans-serif;padding:7px 11px;border-radius:999px;cursor:pointer}
+.why button:hover{color:var(--brand);border-color:var(--brand)}
 
 /* Confirm */
 .choice{display:grid;gap:10px}
@@ -187,22 +224,57 @@ input[type=range]{width:100%;accent-color:var(--brand)}
 .choice .opt{flex-direction:column;align-items:flex-start;gap:4px;padding:16px}
 .choice .opt .big{font-size:22px}
 .summary{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px}
-.summary div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)}
+.summary div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
 .summary div:last-child{border-bottom:0}
 .summary span{color:var(--ink-2)}
 .check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;color:var(--ink-2)}
-.check input{margin-top:3px;width:18px;height:18px;accent-color:var(--brand)}
+.check input{margin-top:3px;width:18px;height:18px;accent-color:var(--brand);flex:none}
 
 /* Learn more */
-.acc{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:10px;overflow:hidden}
-.acc button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px;border:0;background:transparent;color:var(--ink);font:700 15px Inter,sans-serif;text-align:left;cursor:pointer}
-.acc .c{display:none;padding:0 14px 14px;font-size:14px;color:var(--ink-2)}
+.lsub{position:sticky;top:-22px;z-index:2;background:var(--bg);margin:0 -18px 14px;padding:10px 18px;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--line)}
+.stage.web .lsub{top:-32px;margin:0 -40px 18px;padding:12px 40px;justify-content:center}
+.lsub button{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:600 12.5px Inter,sans-serif;padding:7px 11px;border-radius:999px;cursor:pointer}
+.lsub button.kz{border-color:var(--boost);color:var(--boost)}
+.lsec{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;scroll-margin-top:60px}
+.lsec.kz{border:1.5px solid var(--boost);background:linear-gradient(180deg,var(--boost-soft),var(--surface) 40%)}
+.lsec h3{margin:0 0 4px;font-size:19px;letter-spacing:-.01em}
+.stage.web .lsec h3{font-size:22px}
+.lsec .lk{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin:0 0 4px}
+.lsec.kz .lk{color:var(--boost)}
+.lsec p{margin:0 0 10px;color:var(--ink-2);font-size:14px}
+.g4{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.stage.web .g4{grid-template-columns:repeat(4,1fr)}
+.g3{display:grid;gap:10px}
+.stage.web .g3{grid-template-columns:repeat(3,1fr)}
+.tile{background:var(--surface-2);border-radius:12px;padding:12px;font-size:13px;color:var(--ink-2)}
+.tile b{display:block;color:var(--ink);font-size:14px;margin-bottom:2px}
+.tile .tn{width:24px;height:24px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px;margin-bottom:6px}
+.lsec.kz .tile .tn{background:var(--boost)}
+.vid{display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--bg);border-radius:12px;padding:14px;margin:4px 0 12px;font-weight:600;font-size:14px}
+.vid span{width:36px;height:36px;border-radius:50%;background:var(--bg);color:var(--ink);display:grid;place-items:center;font-size:13px;flex:none}
+.hbar{margin:6px 0}
+.hbar .lbl{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-2);margin-bottom:3px}
+.hbar .lbl b{color:var(--ink)}
+.hbar .tr{height:12px;border-radius:6px;background:var(--surface-2);overflow:hidden}
+.hbar .tr div{height:100%;border-radius:6px;background:var(--ink-3)}
+.hbar.best .tr div{background:var(--brand)}
+.ticks{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+.ticks li{display:flex;gap:8px;font-size:13.5px;color:var(--ink-2)}
+.ticks li::before{content:"✓";color:var(--good);font-weight:800}
+.qual{display:grid;gap:8px;margin:10px 0}
+.qual div{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.qual .ok{color:var(--good);font-weight:700} .qual .no{color:var(--bad);font-weight:700}
+.timeline{display:grid;gap:8px;margin:10px 0}
+.stage.web .timeline{grid-template-columns:repeat(4,1fr)}
+.usecases{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.usecases span{background:var(--surface-2);border-radius:999px;padding:6px 11px;font-size:13px;color:var(--ink-2)}
+.seeit{margin-top:12px}
+.acc{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:8px;overflow:hidden}
+.acc button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 14px;border:0;background:transparent;color:var(--ink);font:700 14px Inter,sans-serif;text-align:left;cursor:pointer}
+.acc .c{display:none;padding:0 14px 14px;font-size:13.5px;color:var(--ink-2)}
 .acc.open .c{display:block}
-.acc .c ul{margin:6px 0 0;padding-left:18px}
-.acc.kz{border-color:var(--boost)}
-.stage.web .learn-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
 
-/* Wall */
+/* Wall / ILIA */
 .wallscr{text-align:center;padding-top:16px}
 .wallicon{width:64px;height:64px;border-radius:18px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:30px;margin:0 auto 14px}
 .payload{text-align:left;margin-top:18px;background:var(--surface);border:1.5px dashed var(--ink-3);border-radius:12px;padding:12px 14px;font-size:13px}
@@ -210,46 +282,114 @@ input[type=range]{width:100%;accent-color:var(--brand)}
 .payload div{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--line)}
 .payload div:last-child{border:0}
 .payload span{color:var(--ink-3)}
+.iliabar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--ilia);color:#fff}
+.iliabar .mark{font-weight:800;letter-spacing:.12em;font-size:15px}
+.iliabar .sec{font-size:11.5px;opacity:.8;display:flex;align-items:center;gap:5px}
+.iliabar .ag{margin-left:auto;font-size:12px;opacity:.9;text-align:right;line-height:1.3}
+.ilia-grid{display:grid;gap:14px}
+.stage.web .ilia-grid{grid-template-columns:1fr 360px;align-items:start}
+.plan{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:16px}
+.plan.kz{border-color:var(--boost)}
+.plan .ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.plan .badge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:6px;background:var(--brand-soft);color:var(--brand)}
+.plan.kz .badge{background:var(--boost-soft);color:var(--boost)}
+.formcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.formcard h4{margin:0 0 12px;font-size:15px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.steps{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px}
+.steps li{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;color:var(--ink-2)}
+.steps li b{display:block;color:var(--ink);font-size:14px}
+.steps li .sn{width:26px;height:26px;border-radius:50%;background:var(--surface-2);color:var(--ink-2);display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}
+.steps li.now{border-color:var(--ilia-2)} .steps li.now .sn{background:var(--ilia-2);color:#fff}
+.steps li.kz .sn{background:var(--boost-soft);color:var(--boost)}
 
+/* Edit-my-numbers sheet */
+.app{position:relative}
+.editbtn{margin-top:12px;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--brand);background:var(--surface);color:var(--brand);font:700 13.5px Inter,sans-serif;padding:8px 12px;border-radius:10px;cursor:pointer}
+.pcard.kz .editbtn{border-color:var(--boost);color:var(--boost)}
+.updated{align-self:flex-start;margin-top:10px;font-size:12.5px;font-weight:700;color:var(--good);background:var(--good-soft);padding:4px 9px;border-radius:8px}
+.pcard.flash{animation:flash 1.4s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 4px var(--good)}100%{box-shadow:0 0 0 0 transparent}}
+.sheet-back{position:absolute;inset:0;background:rgba(10,14,22,.5);z-index:5}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-radius:20px 20px 0 0;padding:8px 18px 16px;max-height:92%;overflow-y:auto;box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+.stage.web .sheet{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);width:560px;max-width:94%;border-radius:18px;padding:20px 24px}
+.sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 12px}
+.stage.web .sheet .grab{display:none}
+.sheet h3{margin:0;font-size:18px}
+.sheet .sh-sub{color:var(--ink-2);font-size:13px;margin:2px 0 10px}
+.erow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.erow > span{font-weight:600;font-size:14px}
+.erow small{display:block;font-weight:500;color:var(--ink-3);font-size:12px}
+.estep{display:flex;align-items:center;gap:8px}
+.estep button{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-size:18px;cursor:pointer}
+.estep output{min-width:80px;text-align:center;font-weight:800;font-size:16px}
+.echips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 2px}
+.echips button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink-2);font:600 12.5px Inter,sans-serif;padding:6px 10px;border-radius:8px;cursor:pointer}
+.echips button[aria-pressed=true]{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
+.preview{margin-top:12px;background:var(--surface-2);border-radius:12px;padding:12px}
+.preview h5{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+.prow{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;font-size:13px;padding:4px 0}
+.prow .was{color:var(--ink-3);text-decoration:line-through}
+.prow .now{font-weight:800}
+.prow .dl{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:6px;white-space:nowrap}
+.dl.up{color:var(--good);background:var(--good-soft)} .dl.down{color:var(--bad);background:var(--surface)} .dl.same{color:var(--ink-3)}
+.sheet .acts{display:flex;gap:10px;margin-top:14px}
+footer{margin-top:40px;font-size:12px;color:var(--ink-3)}
+body.embed .pagenav{display:none}
 body.embed .wrap{padding:16px 16px 24px}
 body.embed .wrap > *:not(#proto){display:none}
 body.embed #proto > h2{margin-top:0}
-footer{margin-top:40px;font-size:12px;color:var(--ink-3)}
+body.embed .notes{top:16px}
 @media (max-width:900px){
   .stage{grid-template-columns:1fr}
   .notes{position:static}
   .device{margin:0 auto}
   .branch{grid-template-columns:1fr}
+  .pagenav .jump{margin-left:0}
 }
 @media (max-width:480px){
   .device{padding:0;border-radius:0;background:transparent;box-shadow:none;width:100%}
-  .device .screen{border-radius:14px;border:1px solid var(--line);height:720px}
+  .device .screen{border-radius:14px;border:1px solid var(--line);height:740px}
+  .pagenav .crumb{display:none}
 }
 </style>
 </head>
 <body>
+<nav class="pagenav" aria-label="Page">
+  <div class="in">
+    <a class="backlink" href="partner-iul-kaizen-workflow.html">← Back to workflow chart</a>
+    <span class="crumb">W-PARTNER · Partner IUL + Kai-Zen · Funnel prototype</span>
+    <div class="jump">Demo jump:
+      <button data-jump="land">Start</button>
+      <button data-jump="results">Results</button>
+      <button data-jump="learn">Learn more</button>
+      <button data-jump="confirm">Choose plan</button>
+      <button data-jump="ilia">ILIA account</button>
+    </div>
+  </div>
+</nav>
 <div class="wrap">
 
 <h1>IUL Selling Funnel: Design Draft</h1>
-<p class="lead">This is what a prospect sees after a group member shares a link or QR code. A few short questions lead to their own IUL numbers, which they can adjust. The same numbers are shown with the Kai-Zen boost. Then they either <b>confirm</b> (choose IUL or Kai-Zen plus their numbers) and go to ILIA account creation, or they <b>learn more</b>. Designed phone-first, since most people will arrive by QR, with a wider web layout.</p>
+<p class="lead">This is what a prospect sees after a group member shares a link or QR code. A few short questions lead to their own IUL numbers, which they can adjust. The same numbers are shown with the Kai-Zen boost. They <b>choose a plan</b> (IUL or Kai-Zen plus their numbers) and land on <b>ILIA account creation</b> with that plan carried over. At any point they can <b>learn more</b> and come back to their numbers. Designed phone-first, since most people will arrive by QR, with a wider web layout.</p>
 <div class="chips">
   <span class="chip">Lane: W-PARTNER</span><span class="chip">Q5 · based on Josh's flow</span><span class="chip">Working draft · Oct 7, 2026</span>
-  <span class="chip"><a href="partner-iul-kaizen-workflow.html">← Full workflow chart</a></span>
 </div>
 
 <h2>The flow</h2>
-<p class="sub">The main path is 6 steps. "Learn more" and "Talk to my agent" are side paths, and both return to the prospect's numbers.</p>
+<p class="sub">The main path is 7 steps. "Learn more" and "Talk to my agent" are side paths that always return to the prospect's numbers. A stepper at the top of the funnel lets the prospect jump back to their answers, numbers or plan at any time before the account is created.</p>
 <div class="flow">
   <div class="step main"><div class="n">Entry</div><b>Link or QR</b><p>From a group member. It carries the member and asset ID, so every step is tracked.</p></div>
   <div class="step main"><div class="n">Step 1</div><b>Short questions</b><p>5 quick screens of taps, plus where to send results. About 60 seconds.</p></div>
-  <div class="step main"><div class="n">Step 2</div><b>Your IUL numbers</b><p>Calculator results from their answers.</p></div>
-  <div class="step main"><div class="n">Step 3</div><b>Play with the numbers</b><p>Change the yearly amount, years paying and income start age. Results update live.</p></div>
-  <div class="step boost"><div class="n">Step 4</div><b>Kai-Zen boost</b><p>The same numbers with leverage, side by side, for prospects who qualify.</p></div>
-  <div class="step main"><div class="n">Step 5</div><b>Confirm</b><p>Choose IUL or Kai-Zen and lock the numbers.</p></div>
-  <div class="step wall"><div class="n">Step 6 · The wall</div><b>ILIA account creation</b><p>Product, numbers and agent of record go to ILIA for enrollment.</p></div>
+  <div class="step main"><div class="n">Step 2</div><b>Your numbers</b><p>Calculator results and a growth chart. Adjust the yearly amount, years and start age, and results update live.</p></div>
+  <div class="step boost"><div class="n">Step 3</div><b>Kai-Zen boost</b><p>The same numbers with leverage, side by side, for prospects who qualify.</p></div>
+  <div class="step main"><div class="n">Step 4</div><b>Choose plan</b><p>Pick IUL or Kai-Zen straight from the results, then review and confirm.</p></div>
+  <div class="step wall"><div class="n">Step 5 · The wall</div><b>Handoff</b><p>Product, numbers, prospect and agent of record pass to ILIA.</p></div>
+  <div class="step iliaS"><div class="n">Step 6 · ILIA</div><b>Create account</b><p>Pre-filled with what they've already told us. Their chosen plan is shown alongside.</p></div>
+  <div class="step iliaS"><div class="n">Step 7 · ILIA</div><b>Enrollment starts</b><p>Next steps for the plan they chose, guided by their agent.</p></div>
 </div>
 <div class="branch">
-  <div><b>Learn more</b> (from results) opens the deep content: how an IUL works, taxes, safety, borrowing, how the Kai-Zen boost works, and FAQs. A "Back to my numbers" button stays visible.</div>
+  <div><b>Learn more</b> opens the deep content from the current IUL marketing: how an IUL works, taxes, safety, borrowing, the Kai-Zen boost (with their own eligibility) and FAQs. Every section links back to "see it in my numbers", and "Back to my numbers" / "Choose my plan" stay pinned at the bottom.</div>
   <div><b>Talk to my agent</b> (always in the header) shows the agent card and a call request. The agent is the member's selected ILIA agent, and the request is tracked to the member.</div>
 </div>
 
@@ -270,27 +410,32 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-3)}
 
 <div id="proto">
 <h2>Clickable prototype</h2>
-<p class="sub">Click through it like a prospect would. Switch between phone and web. The notes on the right explain each screen and what gets tracked.</p>
+<p class="sub">Click through it like a prospect would, all the way to ILIA account creation. Switch between phone and web. The notes explain each screen and what gets tracked. Tip: click any form field to fill in sample details.</p>
 <div class="toolbar">
   <div class="seg" role="group" aria-label="Device">
     <button id="bMobile" aria-pressed="true">📱 Mobile</button>
     <button id="bWeb" aria-pressed="false">🖥 Web</button>
   </div>
-  <button class="reset" id="bReset">↺ Start over</button>
+  <button class="tbtn" id="bReset">↺ Start over</button>
+  <span class="tlabel">Jump to:</span>
+  <button class="tbtn" data-jump="results">Results</button>
+  <button class="tbtn" data-jump="learn">Learn more</button>
+  <button class="tbtn" data-jump="confirm">Choose plan</button>
+  <button class="tbtn" data-jump="ilia">ILIA account</button>
 </div>
 
 <div class="stage" id="stage">
   <div class="device">
-    <div class="browserbar"><i></i><i></i><i></i><span>yourplan.example/j/<b>member-ab12</b>?asset=QR-0047</span></div>
+    <div class="browserbar"><i></i><i></i><i></i><span id="urlbar">yourplan.example/j/member-ab12?asset=QR-0047</span></div>
     <div class="screen"><div class="app" id="app"></div></div>
   </div>
   <aside class="notes" id="notes"></aside>
 </div>
 
-<p class="disc" style="max-width:900px">All numbers in this prototype are <b>illustrative placeholders</b> from a simple growth formula, so the screens can be clicked through. They are not Allianz or Kai-Zen illustrations. Where the real numbers come from (ILIA's estimator, an Allianz illustration service, or something else) is an open requirement.</p>
+<p class="disc" style="max-width:900px">All numbers in this prototype are <b>illustrative placeholders</b> from a simple growth formula, so the screens can be clicked through. They are not Allianz or Kai-Zen illustrations. Where the real numbers come from (ILIA's estimator, an Allianz illustration service, or something else) is an open requirement. The ILIA screens are a concept for the landing step only; ILIA's existing enrollment flow is unchanged.</p>
 </div>
 
-<footer>W-PARTNER working draft for requirements discussion. No client data. Agent, group and links are placeholders.</footer>
+<footer>W-PARTNER working draft for requirements discussion. No client data. Agent, group, people and links are placeholders.</footer>
 </div>
 
 <script>
@@ -299,64 +444,99 @@ if(/[?&]embed=1/.test(location.search)) document.body.classList.add('embed');
 const $=s=>document.querySelector(s);
 const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
 const fmtK=n=>n>=1e6?('$'+(n/1e6).toFixed(n>=1e7?1:2).replace(/\.?0+$/,'')+'M'):('$'+Math.round(n/1000).toLocaleString('en-US')+'k');
-const DEF={screen:'land',goals:[],age:45,sex:null,health:null,nic:null,amount:null,hh:null,start:null,name:'',email:'',phone:'',years:5,product:null,ack:false,tab:'iul',showAdjust:false,open:{}};
+const DEF={screen:'land',goals:[],age:45,sex:null,health:null,nic:null,amount:null,hh:null,start:null,name:'',email:'',phone:'',years:5,product:null,ack:false,tab:'iul',showAdjust:false,open:{},acct:{last:'',dob:'',state:'',pw:'',terms:false},prev:null,learnFrom:null};
 let S=JSON.parse(JSON.stringify(DEF));
 let device='mobile';
 
-// ---------- Illustrative model ----------
+// ---------- Illustrative model (placeholder only) ----------
 function calc(st,lev){
   const P=st.amount||25000, a=st.age, N=st.years, Sa=Math.max(st.start||65,a+N+1,lev?a+16:0);
   const healthAdj={excellent:1.0,good:0.97,average:0.93,below:0.86}[st.health||'good'];
   const nicAdj=st.nic==='yes'?0.88:1, sexAdj=st.sex==='female'?1.02:1;
   const r=0.06, charge=0.85*healthAdj*nicAdj*sexAdj;
-  const mult=lev?3:1, yrs=Sa-a;
-  // grow premiums to income start
+  const mult=lev?3:1, yrs=Sa-a, series=[];
   let cv=0;
   for(let t=0;t<yrs;t++){ if(t<N) cv+=P*mult; cv*=1+r;
-    if(lev && t===Math.min(14,yrs-1)){ cv-=P*(mult-1)*N*1.35; } }
+    if(lev && t===Math.min(14,yrs-1)){ cv-=P*(mult-1)*N*1.35; }
+    series.push({age:a+t+1,v:Math.max(cv*charge,0)}); }
   cv=Math.max(cv*charge,0);
   const n=Math.max(90-Sa,5), ann=cv*(0.05/(1-Math.pow(1.05,-n)));
   const db=P*N*3.6*(lev?1.45:1)*healthAdj;
-  return {cv,income:ann,db,paid:P*N,start:Sa,lenderPct:lev?Math.round((mult-1)/mult*100):0};
+  return {cv,income:ann,db,paid:P*N,start:Sa,lenderPct:lev?Math.round((mult-1)/mult*100):0,series,total:ann*n};
 }
 function qualifies(st){
-  const reasons=[];
-  if(!(st.age>=18&&st.age<=65)) reasons.push('age 18–65');
-  if(st.hh==='u100') reasons.push('household income of $100k+');
-  if(st.health==='below') reasons.push('average or better health');
-  return {ok:reasons.length===0,reasons};
+  const chk=[
+    {k:'Household income of $100k+',ok:st.hh&&st.hh!=='u100'},
+    {k:'Age 18–65',ok:st.age>=18&&st.age<=65},
+    {k:'Average or better health',ok:st.health&&st.health!=='below'}];
+  return {ok:chk.every(c=>c.ok),chk,reasons:chk.filter(c=>!c.ok).map(c=>c.k.toLowerCase())};
+}
+function demoAnswers(){
+  if(!S.goals.length) S.goals=['income','safe'];
+  S.sex=S.sex||'female'; S.health=S.health||'good'; S.nic=S.nic||'no';
+  S.amount=S.amount||50000; S.hh=S.hh||'250'; S.start=S.start||65;
+  if(!S.name){ const d=demoPerson(); S.name=d.name; S.email=d.email; S.phone=d.phone; }
+}
+
+// ---------- Chart ----------
+function chart(iul,kz,showKz){
+  const W=600,H=190,pl=46,pr=12,pt=12,pb=26;
+  const all=iul.series.concat(showKz?kz.series:[]);
+  const minA=Math.min(...all.map(p=>p.age)), maxA=Math.max(...all.map(p=>p.age));
+  const maxV=Math.max(...all.map(p=>p.v))*1.08||1;
+  const x=a=>pl+(a-minA)/(maxA-minA||1)*(W-pl-pr), y=v=>H-pb-(v/maxV)*(H-pt-pb);
+  const path=s=>s.map((p,i)=>(i?'L':'M')+x(p.age).toFixed(1)+' '+y(p.v).toFixed(1)).join(' ');
+  const area=s=>path(s)+` L${x(s[s.length-1].age).toFixed(1)} ${H-pb} L${x(s[0].age).toFixed(1)} ${H-pb} Z`;
+  let grid='';
+  for(let i=0;i<=3;i++){ const v=maxV*i/3, yy=y(v); grid+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-width="1"/><text x="${pl-6}" y="${yy+4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${i?fmtK(v):'$0'}</text>`; }
+  const ticks=[]; const step=Math.max(5,Math.round((maxA-minA)/5/5)*5);
+  for(let a=Math.ceil(minA/5)*5;a<=maxA;a+=step) ticks.push(`<text x="${x(a)}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${a}</text>`);
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cash value growth by age">${grid}${ticks.join('')}
+    <path d="${area(iul.series)}" fill="var(--brand)" opacity=".08"/>
+    ${showKz?`<path d="${area(kz.series)}" fill="var(--boost)" opacity=".08"/><path d="${path(kz.series)}" fill="none" stroke="var(--boost)" stroke-width="2.5" stroke-linejoin="round"/>`:''}
+    <path d="${path(iul.series)}" fill="none" stroke="var(--brand)" stroke-width="2.5" stroke-linejoin="round"/>
+    <text x="${W-pr}" y="${H-8}" text-anchor="end" font-size="11" fill="var(--ink-3)">age →</text></svg>`;
 }
 
 // ---------- Notes per screen ----------
 const NOTES={
- land:{t:'Landing',b:['Arrives from a member\'s <b>link or QR scan</b>. The URL carries the member and asset ID.','Agent of record shown at the top (the member\'s selected ILIA agent). Group logo slot is optional (branding TBD).','One promise, one button. Education is not shown here; it sits behind "Learn more" later.'],k:'visit · member · asset'},
- goals:{t:'Q1 · Desire',b:['Multi-select, so they can pick more than one.','The answer decides what the results lead with (e.g. income first vs death benefit first).','Can\'t be skipped, but takes one tap.'],k:'goal(s) selected'},
- about:{t:'Q2 · About you',b:['Age drives the calculator and is part of the Kai-Zen check (18–65).','Sex is needed for pricing. Kept as a simple 2-tap choice.'],k:'step reached'},
- health:{t:'Q3 · Health',b:['A self-rated health class, no medical details.','Below average is not eligible for the Kai-Zen boost (they still get IUL numbers).'],k:'step reached'},
- money:{t:'Q4 · Your numbers',b:['Yearly amount is the main calculator input.','Household income is <b>only</b> asked as a band. It\'s the Kai-Zen check ($100k+).','Bands avoid a "how much do you earn" text box, which loses people.'],k:'step reached'},
- start:{t:'Q5 · Income start',b:['Three taps, adjustable on results.','Years paying defaults to 5 and income runs to age 90. Both can be adjusted on results.'],k:'step reached'},
- contact:{t:'Q6 · Send my results',b:['Captures the lead <b>before</b> results, so members can see drop-offs and the agent can follow up.','<b>Open:</b> required vs optional. Optional = more finishes; required = more leads.','Text and email consent wording needed.'],k:'lead created (tied to member + agent)'},
- results:{t:'Results + boost',b:['Leads with their own numbers and the goal they picked.','<b>Adjust</b> the yearly amount, years paying and income start age. Results update live.','<b>Web:</b> IUL and Kai-Zen side by side. <b>Mobile:</b> tabs, with the boost amount on the tab.','If they don\'t qualify for the boost, they see why and the IUL path stays open.','Two clear next steps: <b>Confirm my plan</b> or <b>Learn more</b>.'],k:'results viewed · adjustments · boost viewed'},
- learn:{t:'Learn more',b:['The deep content from the current IUL marketing, in short expandable sections.','"Back to my numbers" and "Confirm my plan" are always one tap away.','Sections opened are tracked (which content convinces people).'],k:'sections opened'},
- confirm:{t:'Confirm',b:['The prospect makes the two decisions: <b>product</b> (IUL or Kai-Zen) and <b>numbers</b>.','Kai-Zen only selectable if they qualify.','Acknowledges these are estimates. The final numbers come from the carrier illustration in enrollment.'],k:'decision: IUL or Kai-Zen'},
- agent:{t:'Talk to my agent',b:['Available from every screen.','Agent = the member\'s selected ILIA agent (from the CMS list).','Call request is tracked to the member and goes to the agent.'],k:'agent contact requested'},
- wall:{t:'The wall → ILIA',b:['The prospect moves to ILIA account creation, already decided.','Box shows what we\'d likely pass into ILIA (still open: exact fields, and whether ILIA keeps the group/member reference).','From here it\'s ILIA\'s existing enrollment flow (Allianz).'],k:'handoff sent · prospect left funnel'}
+ land:{t:'Landing',b:['Arrives from a member\'s <b>link or QR scan</b>. The URL carries the member and asset ID.','Agent of record shown at the top (the member\'s selected ILIA agent). Group logo slot is optional (branding TBD).','One promise, one button. Education sits behind "Learn more" later.'],k:'visit · member · asset'},
+ goals:{t:'Q1 · Desire',b:['Multi-select.','The answer decides what the results lead with (income first, death benefit first, or cash value first).'],k:'goal(s) selected'},
+ about:{t:'Q2 · About you',b:['Age drives the calculator and is part of the Kai-Zen check (18–65).','Sex is needed for pricing.'],k:'step reached'},
+ health:{t:'Q3 · Health',b:['Self-rated health class, no medical details yet.','Below average is not eligible for the boost (they still get IUL numbers).'],k:'step reached'},
+ money:{t:'Q4 · Your numbers',b:['Yearly amount is the main calculator input.','Household income is asked as a band. It\'s the Kai-Zen check ($100k+).'],k:'step reached'},
+ start:{t:'Q5 · Income start',b:['Three taps, adjustable on results.','Years paying defaults to 5; income runs to age 90.'],k:'step reached'},
+ contact:{t:'Q6 · Send my results',b:['Captures the lead <b>before</b> results, so members can see drop-offs and the agent can follow up.','<b>Open:</b> required vs optional.','Demo: click any field to fill sample details.'],k:'lead created (tied to member + agent)'},
+ results:{t:'Your numbers + boost',b:['Leads with their own numbers and the goal they picked.','<b>Adjust</b> yearly amount, years paying, income start and age. Results and chart update live.','<b>Web:</b> IUL and Kai-Zen side by side. <b>Mobile:</b> tabs, with the boost amount on the tab.','<b>✎ Edit my numbers</b> on each plan: change amount, years, start age or age, see <b>before → after</b>, then <b>Save & update</b>. The card highlights what changed.','Each plan card has its own <b>Choose</b> button, so picking a plan is one tap.','"Why?" chips jump to the matching Learn more section.','Stepper at the top: jump back to answers at any time.'],k:'results viewed · adjustments · boost viewed · plan chosen'},
+ learn:{t:'Learn more',b:['Built from the current IUL marketing: how it works, taxes (3 tanks), safety (0% floor + annual reset chart), borrowing, the Kai-Zen boost, FAQs.','Boost section shows <b>their own eligibility</b> from their answers.','Topic chips pin to the top; each section has "See it in my numbers".','"Back to my numbers" and "Choose my plan" stay pinned at the bottom.'],k:'sections viewed'},
+ confirm:{t:'Choose + confirm plan',b:['Two decisions: <b>product</b> (IUL or Kai-Zen) and <b>numbers</b>.','"Change my numbers" goes straight back to results with everything kept.','Kai-Zen only selectable if they qualify.','Acknowledges these are estimates; final numbers come from the carrier illustration.'],k:'decision: IUL or Kai-Zen + numbers'},
+ agent:{t:'Talk to my agent',b:['Available from every screen.','Agent = the member\'s selected ILIA agent (from the CMS list).','Request is tracked to the member and goes to the agent.'],k:'agent contact requested'},
+ wall:{t:'The wall → handoff',b:['A short "taking you to ILIA" moment so the change of site isn\'t a surprise.','Box shows what we\'d likely pass into ILIA (still open: exact fields, and whether ILIA keeps the group/member reference).'],k:'handoff sent'},
+ ilia:{t:'ILIA · Create account',b:['<b>Inside ILIA</b> (concept). The look changes to ILIA\'s secure enrollment.','Pre-filled from the funnel: name, email, mobile, and the chosen plan + numbers.','Only new asks: last name, date of birth, state, password, terms.','"Change plan or numbers" goes back across the wall until the account is created.','Agent of record shown, so the prospect knows who is guiding them.'],k:'(ILIA) account creation started'},
+ done:{t:'ILIA · Enrollment starts',b:['Account created and tied to the agent of record.','Next steps differ by plan: Kai-Zen adds the leverage/trust steps.','From here it\'s ILIA\'s existing Allianz enrollment flow.','Post-wall status back to the CMS is still an open decision.'],k:'(ILIA) account created'}
 };
-const ORDER=['land','goals','about','health','money','start','contact'];
+const QORDER=['land','goals','about','health','money','start','contact'];
+const JOURNEY=[['goals','Answers'],['results','Numbers'],['confirm','Plan'],['ilia','Account']];
+const stageOf=s=>({goals:0,about:0,health:0,money:0,start:0,contact:0,results:1,learn:1,agent:1,confirm:2,wall:3,ilia:3,done:4}[s]);
 
 // ---------- Rendering ----------
 function header(){
-  const idx=ORDER.indexOf(S.screen); const pct=idx<0?100:Math.round(idx/(ORDER.length)*100);
-  return `<div class="topbar"><div class="logo">GROUP<br>LOGO</div>
+  if(S.screen==='ilia'||S.screen==='done') return `<div class="iliabar"><span class="mark">ILIA</span><span class="sec">🔒 Secure enrollment</span><span class="ag">Your agent<br><b>Agent Name</b></span></div>`;
+  const top=`<div class="topbar"><div class="logo">GROUP<br>LOGO</div>
     <div class="agent"><b>Agent Name</b><small>Your licensed agent · (555) 000-0000</small></div>
-    <button class="talk" data-go="agent">Talk to my agent</button></div>
-    <div class="progress"><div style="width:${pct}%"></div></div>`;
+    <button class="talk" data-go="agent">Talk to my agent</button></div>`;
+  const qi=QORDER.indexOf(S.screen);
+  if(qi>=0) return top+`<div class="progress"><div style="width:${Math.round(qi/QORDER.length*100)}%"></div></div>`;
+  const cur=stageOf(S.screen);
+  return top+`<nav class="journey" aria-label="Your progress">${JOURNEY.map(([to,l],i)=>{
+    const cls=i<cur?'done':i===cur?'cur':''; const dis=i>cur+0||to==='ilia';
+    return `<button class="${cls}" ${dis&&i!==cur?'disabled':''} data-go="${to}"><span class="d">${i<cur?'✓':i+1}</span>${l}</button>`;}).join('')}</nav>`;
 }
 function optBtn(field,val,label,sub,ic,multi){
   const on=multi?S[field].includes(val):S[field]===val;
   return `<button class="opt" aria-pressed="${on}" data-${multi?'toggle':'set'}="${field}" data-val="${val}">${ic?`<span class="ic">${ic}</span>`:''}<span>${label}${sub?`<small>${sub}</small>`:''}</span></button>`;
 }
-function foot(btns){return `<div class="foot">${btns}</div>`}
+const foot=btns=>`<div class="foot">${btns}</div>`;
 const back=to=>`<button class="back" data-go="${to}">← Back</button>`;
 
 const SCREENS={
@@ -369,7 +549,9 @@ const SCREENS={
      <div class="benefit">🛡️<div><b>No market losses</b><span>0% floor when the market drops.</span></div></div>
      <div class="benefit">💸<div><b>Tax-advantaged</b><span>Grow and access cash tax-efficiently.</span></div></div>
      <div class="benefit">🚀<div><b>Boost option</b><span>Leverage could multiply your results.</span></div></div>
-   </div></div></div>${foot(`<button class="btn primary" data-go="goals">See my numbers →</button>`)}`},
+   </div>
+   <p style="margin-top:16px"><button class="linkbtn" data-learn="basics">New to IULs? Learn the basics first →</button></p>
+   </div></div>${foot(`<button class="btn primary" data-go="goals">See my numbers →</button>`)}`},
  goals(){return `<div class="body"><div class="inner">${back('land')}
    <p class="kicker">Question 1 of 6</p><h2 class="q">What matters most to you?</h2><p class="help">Pick as many as you like.</p>
    <div class="opts two">
@@ -409,7 +591,7 @@ const SCREENS={
  results(){
    const iul=calc(S,false), kz=calc(S,true), q=qualifies(S);
    const lead=S.goals.includes('income')||!S.goals.length?'income':S.goals.includes('protect')?'db':'cv';
-   const head=v=>lead==='income'?`<div class="big">${fmt(v.income)}<small> /yr tax-free income</small></div><div class="howkz" style="margin-top:4px">from age ${v.start} to 90</div>`
+   const head=v=>lead==='income'?`<div class="big">${fmt(v.income)}<small> /yr tax-free income</small></div><div class="howkz" style="margin-top:4px">from age ${v.start} to 90 · about ${fmtK(v.total)} in total</div>`
      :lead==='db'?`<div class="big">${fmtK(v.db)}<small> death benefit</small></div><div class="howkz" style="margin-top:4px">passes to your family income-tax-free</div>`
      :`<div class="big">${fmtK(v.cv)}<small> cash value</small></div><div class="howkz" style="margin-top:4px">at age ${v.start}, protected by a 0% floor</div>`;
    const metrics=v=>`<div class="metrics">
@@ -418,69 +600,159 @@ const SCREENS={
       ${lead!=='db'?`<div class="metric"><span>Death benefit</span><b>${fmtK(v.db)}</b></div>`:''}
       <div class="metric"><span>You pay in total</span><b>${fmtK(v.paid)}</b></div></div>`;
    const diff=kz.income-iul.income;
-   const kzCard=q.ok?`<div class="pcard kz ${S.tab==='kz'?'':'hide-m'}"><span class="ribbon">Boost</span>
+   const upd=p=>S.flash&&S.flash.plan===p?`<span class="updated">✓ Updated: ${S.flash.text}</span>`:'';
+   const fl=p=>S.flash&&S.flash.plan===p&&S.flash.fresh?'flash':'';
+   const iulCard=`<div class="pcard ${fl('iul')} ${S.tab==='iul'?'':'hide-m'} ${S.product==='iul'?'sel':''}"><h4>IUL</h4><p class="tagline">Your own premiums, indexed growth, 0% floor.</p>${head(iul)}${metrics(iul)}
+       ${upd('iul')}<button class="editbtn" data-edit="iul">✎ Edit my numbers</button>
+       <div class="choose"><button class="btn ${q.ok?'secondary':'primary'}" data-choose="iul">Choose IUL →</button></div></div>`;
+   const kzCard=q.ok?`<div class="pcard kz ${fl('kz')} ${S.tab==='kz'?'':'hide-m'} ${S.product==='kz'?'sel':''}"><span class="ribbon">Boost</span>
        <h4>IUL + Kai-Zen boost</h4><p class="tagline">A lender funds about ${kz.lenderPct}% of premiums. You pay the same ${fmt(S.amount)}/yr.</p>
        ${head(kz)}${metrics(kz)}<span class="plus">+${fmt(diff)}/yr more income</span>
-       <p class="howkz">No credit check, no personal guarantee, no out-of-pocket interest. Minimums apply.</p></div>`
-     :`<div class="pcard ${S.tab==='kz'?'':'hide-m'}"><h4>Kai-Zen boost</h4><div class="nq"><b>Not available with your answers.</b> The boost needs ${q.reasons.join(', ')}. Your IUL plan is still available, or <button class="edit-link" data-go="agent">talk to your agent</button>.</div></div>`;
+       <p class="howkz">No credit check, no personal guarantee, no out-of-pocket interest. Minimums apply. <button class="linkbtn" data-learn="kz">How it works</button></p>
+       ${upd('kz')}<button class="editbtn" data-edit="kz">✎ Edit my numbers</button>
+       <div class="choose"><button class="btn boost" data-choose="kz">Choose Kai-Zen boost 🚀</button></div></div>`
+     :`<div class="pcard ${S.tab==='kz'?'':'hide-m'}"><h4>Kai-Zen boost</h4><div class="nq"><b>Not available with your answers.</b> The boost needs ${q.reasons.join(', ')}. Your IUL plan is still available, or <button class="linkbtn" data-go="agent">talk to your agent</button>.</div></div>`;
    const adj=`<div class="adjust ${S.showAdjust?'':'collapsed'}"><h4>Play with your numbers</h4>
      <div class="slider"><div class="top"><span>Yearly amount</span><b>${fmt(S.amount)}</b></div><input type="range" min="10000" max="250000" step="5000" value="${S.amount}" data-range="amount" aria-label="Yearly amount"></div>
      <div class="slider"><div class="top"><span>Years paying</span><b>${S.years} yrs</b></div><div class="mini">${[5,7,10].map(y=>`<button aria-pressed="${S.years===y}" data-years="${y}">${y}</button>`).join('')}</div></div>
-     <div class="slider"><div class="top"><span>Income starts at</span><b>Age ${iul.start}</b></div><input type="range" min="55" max="75" step="1" value="${S.start}" data-range="start" aria-label="Income start age"></div>
+     <div class="slider"><div class="top"><span>Income starts at</span><b>Age ${S.start}</b></div><input type="range" min="55" max="75" step="1" value="${S.start}" data-range="start" aria-label="Income start age"></div>
      <div class="slider"><div class="top"><span>Your age</span><b>${S.age}</b></div><input type="range" min="18" max="75" step="1" value="${S.age}" data-range="age" aria-label="Age"></div>
+     <button class="linkbtn" data-go="goals">Edit my answers</button>
    </div>`;
+   const showKz=q.ok&&(device==='web'||S.tab==='kz');
    return `<div class="body"><div class="inner wide">
      <p class="kicker">Your estimate${S.name?', '+S.name:''}</p><h2 class="q" style="margin-bottom:4px">Here's what your plan could look like</h2>
-     <p class="help">Based on ${fmt(S.amount)}/yr for ${S.years} years, starting at age ${S.age}. <button class="edit-link" data-adjust="1" id="adjToggle">${S.showAdjust?'Hide':'Change numbers'}</button></p>
+     <p class="help">Based on ${fmt(S.amount)}/yr for ${S.years} years, starting at age ${S.age}. <button class="linkbtn" data-edit="${S.tab}">✎ Change numbers</button></p>
      <div class="res-grid">${adj}<div>
        <div class="ptabs"><button aria-pressed="${S.tab==='iul'}" data-tab="iul">IUL</button><button class="kzt" aria-pressed="${S.tab==='kz'}" data-tab="kz">With boost ${q.ok?'🚀 +'+fmtK(diff*(90-kz.start)):''}</button></div>
-       <div class="cards"><div class="pcard ${S.tab==='iul'?'':'hide-m'}"><h4>IUL</h4><p class="tagline">Your own premiums, indexed growth, 0% floor.</p>${head(iul)}${metrics(iul)}</div>${kzCard}</div>
+       <div class="cards">${iulCard}${kzCard}</div>
+       <div class="chartbox"><h4>How your cash value could grow</h4>
+         <div class="lg"><span><i style="background:var(--brand)"></i>IUL</span>${q.ok?'<span><i style="background:var(--boost)"></i>With Kai-Zen boost</span>':''}</div>
+         ${chart(iul,kz,showKz)}</div>
+       <div class="why">
+         <button data-learn="safe">Why no market losses?</button>
+         <button data-learn="tax">Why tax-free income?</button>
+         <button data-learn="loan">How do I access the cash?</button>
+         ${q.ok?'<button data-learn="kz">How does the boost work?</button>':''}
+       </div>
        <p class="disc">Illustrative estimate only, not guaranteed and not a carrier illustration. Your final numbers come from an Allianz illustration during enrollment.</p>
      </div></div></div></div>
-     ${foot(`<button class="btn secondary" data-go="learn">Learn more</button><button class="btn primary" data-go="confirm">Confirm my plan</button>`)}`},
+     ${foot(`<button class="btn secondary" data-learn="basics">Learn more</button><button class="btn primary" data-go="confirm">Choose my plan</button>`)}`},
  learn(){
-   const sec=[
-    ['how','How an IUL works','<ul><li>Permanent life insurance with a cash value account.</li><li>Part of each premium covers insurance costs; the rest goes into cash value.</li><li>Cash value earns interest linked to a market index (e.g. S&P 500).</li></ul>'],
-    ['tax','Tax advantages','<ul><li>Cash value grows tax-deferred.</li><li>Policy loans are generally income-tax-free.</li><li>Death benefit passes to heirs income-tax-free.</li><li>No contribution limits (subject to underwriting), no required minimum distributions.</li></ul>'],
-    ['safe','Safety: 0% floor and annual reset','<ul><li>When the index drops, you are credited 0%, not a loss.</li><li>Gains lock in every year, then the next year starts fresh.</li><li>Upside is capped (caps often around 8–12%).</li></ul>'],
-    ['loan','Borrowing your own money','<ul><li>Borrow against cash value with no credit check.</li><li>Use it for retirement income, medical bills, a business, life events.</li><li>Repay any time, or from the death benefit.</li></ul>'],
-    ['kz','How the Kai-Zen boost works','<ul><li>A lender funds a large share of the premiums (up to about 70%).</li><li>Your cash value grows on up to about 3x what you pay in.</li><li>The loan is repaid from the policy later. No personal guarantee, no out-of-pocket interest.</li><li>Eligibility: household income $100k+, age 18–65, average or better health. Minimums and fees apply (see Kai-Zen disclosures).</li></ul>'],
-    ['faq','Common questions','<ul><li>Is this an investment? No. It is life insurance with cash value.</li><li>What if I stop paying? Your agent will explain the options in your illustration.</li><li>What happens next? You create an account and your agent guides enrollment.</li></ul>']];
-   return `<div class="body"><div class="inner wide">${back('results')}
-     <p class="kicker">Learn more</p><h2 class="q">Everything behind your numbers</h2><p class="help">Open any topic. Your numbers are saved.</p>
-     <div class="learn-grid">${sec.map(([k,t,c])=>`<div class="acc ${k==='kz'?'kz':''} ${S.open[k]?'open':''}"><button data-acc="${k}" aria-expanded="${!!S.open[k]}">${k==='kz'?'🚀 ':''}${t}<span>${S.open[k]?'−':'+'}</span></button><div class="c">${c}</div></div>`).join('')}</div>
-     <p class="disc">Short summaries of the current IUL marketing content. Full video and detail pages would sit behind each topic.</p>
-   </div></div>${foot(`<button class="btn secondary" data-go="results">Back to my numbers</button><button class="btn primary" data-go="confirm">Confirm my plan</button>`)}`},
+   const q=qualifies(S), hasNums=!!S.amount;
+   const tx=[['Taxed every year','Cash, savings, CDs, bonds',312],['Taxed later','401(k), IRA, 403(b)',379],['Tax-advantaged','Roth IRA, 529, IUL',499]];
+   const sp=[[2000,-10.1],[2001,-13],[2002,-23.4],[2003,26.4],[2004,9],[2005,3],[2006,13.6],[2007,3.5],[2008,-38.5],[2009,23.5],[2010,12.8],[2011,0],[2012,13.4],[2013,29.6],[2014,11.4],[2015,-.7],[2016,9.5],[2017,19.4],[2018,-6.2]];
+   const W=600,H=170,mid=95,sc=1.9,bw=W/sp.length;
+   const bars=sp.map(([yr,v],i)=>{const iulv=Math.min(Math.max(v,0),12); const x=i*bw;
+     return `<rect x="${x+2}" y="${v>=0?mid-v*sc:mid}" width="${bw/2-2}" height="${Math.abs(v)*sc}" fill="${v<0?'var(--bad)':'var(--ink-3)'}" opacity=".75"/>
+     <rect x="${x+bw/2}" y="${mid-iulv*sc}" width="${bw/2-2}" height="${Math.max(iulv*sc,1.5)}" fill="var(--brand)"/>
+     ${i%3===0?`<text x="${x+bw/2}" y="${H-4}" text-anchor="middle" font-size="10" fill="var(--ink-3)">${yr}</text>`:''}`}).join('');
+   const seeit=sec=>hasNums?`<div class="seeit"><button class="linkbtn" data-go="results" ${sec?`data-tabto="${sec}"`:''}>See it in my numbers →</button></div>`:`<div class="seeit"><button class="linkbtn" data-go="goals">Get my numbers →</button></div>`;
+   return `<div class="body" id="lbody"><div class="inner wide">
+     <button class="back" data-go="${S.learnFrom||'results'}">← Back</button>
+     <p class="kicker">Learn more</p><h2 class="q">Everything behind your numbers</h2><p class="help">Pick a topic, or scroll through. ${hasNums?'Your numbers are saved.':''}</p>
+     <div class="lsub">
+       <button data-scroll="basics">IUL basics</button><button data-scroll="tax">Taxes</button><button data-scroll="safe">Safety</button><button data-scroll="loan">Borrowing</button><button class="kz" data-scroll="kz">🚀 Kai-Zen boost</button><button data-scroll="faq">FAQ</button>
+     </div>
+
+     <section class="lsec" id="l-basics"><p class="lk">IUL basics</p><h3>The financial road is hard to navigate. An IUL can be your guide.</h3>
+       <p>An Indexed Universal Life policy is permanent life insurance with a cash value account. The cash value earns interest linked to a market index like the S&P 500, with a floor so you don't lose money when the market drops.</p>
+       <div class="vid"><span>▶</span>IULs explained in 60 seconds</div>
+       <div class="g4">
+         <div class="tile"><div class="tn">1</div><b>Set up your policy</b>Choose your death benefit and which index your cash value follows.</div>
+         <div class="tile"><div class="tn">2</div><b>Pay premiums</b>Part covers insurance costs and fees; the rest goes to cash value.</div>
+         <div class="tile"><div class="tn">3</div><b>Grow tax-efficiently</b>Each year, your cash value is credited with the index's interest.</div>
+         <div class="tile"><div class="tn">4</div><b>Access your cash</b>Use withdrawals or tax-efficient policy loans whenever you need.</div>
+       </div>
+       <p style="margin-top:14px"><b style="color:var(--ink)">Accumulation potential by type of life insurance</b></p>
+       <div class="hbar"><div class="lbl"><span>Term life</span><span>No cash value</span></div><div class="tr"><div style="width:6%"></div></div></div>
+       <div class="hbar"><div class="lbl"><span>Whole life</span><span>Fixed rate</span></div><div class="tr"><div style="width:42%"></div></div></div>
+       <div class="hbar"><div class="lbl"><span>Universal life</span><span>Current rate</span></div><div class="tr"><div style="width:58%"></div></div></div>
+       <div class="hbar best"><div class="lbl"><b>Indexed universal life</b><b>Index-linked</b></div><div class="tr"><div style="width:86%"></div></div></div>
+       ${seeit()}</section>
+
+     <section class="lsec" id="l-tax"><p class="lk">Taxes</p><h3>Fill up your tank with the right kind of fuel</h3>
+       <p>Different accounts are taxed differently. Here's $100k growing at 6.65% for 25 years in each (illustrative, assumes a 30% tax rate):</p>
+       ${tx.map(([t,s,v],i)=>`<div class="hbar ${i===2?'best':''}"><div class="lbl"><span><b>${t}</b> · ${s}</span><b>${fmtK(v*1000)}</b></div><div class="tr"><div style="width:${v/5}%"></div></div></div>`).join('')}
+       <ul class="ticks"><li>Cash value grows tax-deferred</li><li>Policy loans and withdrawals are generally income-tax-free</li><li>Death benefit passes to heirs income-tax-free</li><li>No contribution limits (subject to underwriting), no early-withdrawal penalties, no required minimum distributions</li></ul>
+       ${seeit()}</section>
+
+     <section class="lsec" id="l-safe"><p class="lk">Safety</p><h3>Upside from the market, without the downside</h3>
+       <p>With a <b>0% floor</b>, a bad market year is credited 0%, not a loss. With the <b>annual reset</b>, your gains lock in every year. Upside is capped (often around 8–12%).</p>
+       <div class="chartbox" style="margin-top:4px"><h4>Market vs IUL credit, 2000–2018</h4>
+         <div class="lg"><span><i style="background:var(--ink-3)"></i>S&P 500 (approx. price return)</span><span><i style="background:var(--bad)"></i>Market loss</span><span><i style="background:var(--brand)"></i>IUL with 12% cap, 0% floor</span></div>
+         <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Market returns vs IUL credited rates"><line x1="0" x2="${W}" y1="${mid}" y2="${mid}" stroke="var(--line)"/>${bars}</svg></div>
+       <ul class="ticks"><li>No negative years for your cash value</li><li>Gains lock in every year, no matter what the market does next</li><li>Living benefits: tap part of your death benefit for a qualifying illness</li></ul>
+       ${seeit()}</section>
+
+     <section class="lsec" id="l-loan"><p class="lk">Borrowing</p><h3>Borrow your own money, tax-free</h3>
+       <p>A participating policy loan lets you borrow against your cash value, with no credit check or income verification, while the borrowed amount can keep earning interest.</p>
+       <div class="g3">
+         <div class="tile"><b>Typically 4–5% interest</b>Cheaper than most other loans.</div>
+         <div class="tile"><b>Repay any time</b>Or let it come out of the death benefit.</div>
+         <div class="tile"><b>Keep earning</b>Borrowed money can still get index credits.</div>
+       </div>
+       <p style="margin:12px 0 4px"><b style="color:var(--ink)">Use it for whatever you love</b></p>
+       <div class="usecases"><span>🏖️ Retirement income</span><span>🏥 Medical bills</span><span>💼 Start a business</span><span>🏠 Home down payment</span><span>🎓 Tuition</span><span>✈️ Travel</span></div>
+       ${seeit()}</section>
+
+     <section class="lsec kz" id="l-kz"><p class="lk">🚀 Kai-Zen boost</p><h3>Turbocharge your IUL with leverage</h3>
+       <p>Imagine someone else funding up to about 70% of your premiums. Your cash value could grow on up to 3x what you pay in.</p>
+       <div class="timeline">
+         <div class="tile"><div class="tn">1</div><b>You pay</b>Your yearly amount for 5 years.</div>
+         <div class="tile"><div class="tn">2</div><b>A lender adds more</b>Extra premiums funded by a bank, for up to 10 years.</div>
+         <div class="tile"><div class="tn">3</div><b>Cash value grows</b>On the combined premiums.</div>
+         <div class="tile"><div class="tn">4</div><b>Loan repaid from the policy</b>Around year 15, then you keep the growth.</div>
+       </div>
+       <p style="margin:10px 0 0"><b style="color:var(--ink)">${S.hh?'Your eligibility':'Who qualifies'}</b></p>
+       <div class="qual">${q.chk.map(c=>`<div><span>${c.k}</span>${S.hh?`<span class="${c.ok?'ok':'no'}">${c.ok?'✓ Yes':'✗ No'}</span>`:''}</div>`).join('')}</div>
+       <ul class="ticks"><li>No credit checks</li><li>No personal guarantees</li><li>No loan documents</li><li>No out-of-pocket interest payments</li></ul>
+       <p class="disc">Minimums and fees apply (an admin fee is built into contributions; trust fees are non-refundable once the trust is set up). Financing has risks. See the Kai-Zen disclosures.</p>
+       ${hasNums&&q.ok?`<div class="seeit"><button class="btn boost sm" data-go="results" data-tabto="kz">See my boosted numbers 🚀</button></div>`:seeit()}</section>
+
+     <section class="lsec" id="l-faq"><p class="lk">FAQ</p><h3>Common questions</h3>
+       ${[['Is an IUL an investment?','No. It is permanent life insurance with a cash value account linked to an index. You are not invested directly in the market.'],
+          ['What do I need to qualify?','Medical and financial underwriting by the carrier (Allianz). Your agent will help you through it during enrollment.'],
+          ['Are the numbers guaranteed?','No. They are estimates. Your official numbers come from a full carrier illustration during enrollment.'],
+          ['What happens if I stop paying?','Policies have options. Your agent will explain them using your illustration.'],
+          ['What happens after I choose a plan?','You create a secure ILIA account, and your agent guides you through the application.']]
+         .map(([qq,a],i)=>`<div class="acc ${S.open['f'+i]?'open':''}"><button data-acc="f${i}" aria-expanded="${!!S.open['f'+i]}">${qq}<span>${S.open['f'+i]?'−':'+'}</span></button><div class="c">${a}</div></div>`).join('')}
+     </section>
+     <p class="disc">Short summaries of the current IUL marketing content. Not tax or legal advice. Full disclosures to be added.</p>
+   </div></div>${foot(hasNums?`<button class="btn secondary" data-go="results">← My numbers</button><button class="btn primary" data-go="confirm">Choose my plan</button>`:`<button class="btn primary" data-go="goals">Get my numbers →</button>`)}`},
  confirm(){
    const iul=calc(S,false), kz=calc(S,true), q=qualifies(S);
    if(!S.product) S.product=q.ok?'kz':'iul';
    if(!q.ok&&S.product==='kz') S.product='iul';
    const v=S.product==='kz'?kz:iul;
-   return `<div class="body"><div class="inner wide" style="max-width:760px">${back('results')}
-     <p class="kicker">Confirm your plan</p><h2 class="q">Which plan would you like?</h2><p class="help">You can still change your numbers with your agent during enrollment.</p>
+   return `<div class="body"><div class="inner wide" style="max-width:780px">
+     <button class="back" data-go="results">← Back to my numbers</button>
+     <p class="kicker">Choose your plan</p><h2 class="q">Which plan would you like?</h2><p class="help">You can still fine-tune with your agent during enrollment.</p>
      <div class="choice">
-       <button class="opt" aria-pressed="${S.product==='iul'}" data-set="product" data-val="iul"><b>IUL</b><span class="big">${fmt(iul.income)}<small> /yr</small></span><small>Death benefit ${fmtK(iul.db)}</small></button>
-       <button class="opt" aria-pressed="${S.product==='kz'}" data-set="product" data-val="kz" ${q.ok?'':'disabled style="opacity:.5"'}><b>🚀 IUL + Kai-Zen boost</b><span class="big">${fmt(kz.income)}<small> /yr</small></span><small>${q.ok?'Death benefit '+fmtK(kz.db):'Not available with your answers'}</small></button>
+       <button class="opt" aria-pressed="${S.product==='iul'}" data-set="product" data-val="iul"><b>IUL</b><span class="big">${fmt(iul.income)}<small> /yr</small></span><small>Cash value ${fmtK(iul.cv)} · Death benefit ${fmtK(iul.db)}</small></button>
+       <button class="opt" aria-pressed="${S.product==='kz'}" data-set="product" data-val="kz" ${q.ok?'':'disabled style="opacity:.5"'}><b>🚀 IUL + Kai-Zen boost</b><span class="big">${fmt(kz.income)}<small> /yr</small></span><small>${q.ok?'Cash value '+fmtK(kz.cv)+' · Death benefit '+fmtK(kz.db):'Not available with your answers'}</small></button>
      </div>
      <div class="summary">
-       <div><span>Plan</span><b>${S.product==='kz'?'IUL + Kai-Zen':'IUL'} · Allianz</b></div>
+       <div><span>Plan</span><b>${S.product==='kz'?'IUL + Kai-Zen boost':'IUL'} · Allianz</b></div>
        <div><span>You pay</span><b>${fmt(S.amount)}/yr for ${S.years} yrs</b></div>
        <div><span>Income</span><b>${fmt(v.income)}/yr, age ${v.start}–90</b></div>
+       <div><span>Cash value at ${v.start}</span><b>${fmtK(v.cv)}</b></div>
        <div><span>Death benefit</span><b>${fmtK(v.db)}</b></div>
        <div><span>Your agent</span><b>Agent Name</b></div>
      </div>
+     <p style="margin:10px 0 0"><button class="linkbtn" data-go="results">✎ Change my numbers</button> &nbsp;·&nbsp; <button class="linkbtn" data-learn="${S.product==='kz'?'kz':'basics'}">Learn more first</button></p>
      <label class="check"><input type="checkbox" data-ack="1" ${S.ack?'checked':''}> I understand these are estimates. My final numbers come from a full carrier illustration during enrollment.</label>
-   </div></div>${foot(`<button class="btn ${S.product==='kz'?'boost':'primary'}" data-go="wall" id="goWall" ${S.ack?'':'disabled'}>Create my account →</button>`)}`},
+   </div></div>${foot(`<button class="btn secondary" data-go="results">← My numbers</button><button class="btn ${S.product==='kz'?'boost':'primary'}" data-go="wall" id="goWall" ${S.ack?'':'disabled'}>Continue to create account →</button>`)}`},
  agent(){return `<div class="body"><div class="inner" style="text-align:center">${back(S.prev||'land')}
    <div class="wallicon">👤</div><h2 class="q">Agent Name</h2><p class="help">Your licensed agent<br>agent@example.com · (555) 000-0000</p>
    <div class="opts" style="text-align:left;margin-top:10px">
      <button class="opt"><span class="ic">📞</span><span>Request a call<small>Your agent will reach out</small></span></button>
      <button class="opt"><span class="ic">📅</span><span>Book a time<small>Pick a slot on the agent's calendar</small></span></button>
-   </div></div></div>${foot(`<button class="btn secondary" data-go="${S.prev||'land'}">Back</button>`)}`},
+   </div></div></div>${foot(`<button class="btn secondary" data-go="${S.prev||'land'}">← Back</button>`)}`},
  wall(){const v=calc(S,S.product==='kz');
    return `<div class="body"><div class="inner wallscr">
-   <div class="wallicon">✓</div><h2 class="q">You're all set, ${S.name||'there'}</h2>
-   <p class="help">Next, create your secure account to start enrollment. Your agent, Agent Name, will guide you from here.</p>
+   <div class="wallicon">🔒</div><h2 class="q">Great choice, ${S.name||'there'}</h2>
+   <p class="help">We're taking you to <b>ILIA</b>, our secure enrollment platform, to create your account. Your plan and details come with you.</p>
    <div class="payload"><h5>Prototype note: what's handed to ILIA (open)</h5>
      <div><span>Product</span><b>${S.product==='kz'?'Kai-Zen (IUL + leverage)':'IUL'} · Allianz</b></div>
      <div><span>Confirmed numbers</span><b>${fmt(S.amount)}/yr · ${S.years} yrs · income at ${v.start}</b></div>
@@ -488,48 +760,177 @@ const SCREENS={
      <div><span>Calculator answers</span><b>age ${S.age} · ${S.sex||'—'} · ${S.health||'—'} · nicotine ${S.nic||'—'}</b></div>
      <div><span>Agent of record</span><b>Member's selected ILIA agent</b></div>
      <div><span>Source</span><b>member-ab12 · asset QR-0047</b></div>
-   </div></div></div>${foot(`<button class="btn primary">Continue to ILIA →</button>`)}`}
+   </div></div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="ilia">Go to ILIA →</button>`)}`},
+ ilia(){const kzSel=S.product==='kz', v=calc(S,kzSel), A=S.acct;
+   const ok=A.last&&A.dob&&A.state&&A.pw&&A.terms;
+   return `<div class="body"><div class="inner wide">
+     <p class="kicker" style="color:var(--ilia-2)">Step 1 of enrollment</p><h2 class="q">Create your account, ${S.name||'there'}</h2>
+     <p class="help">We've filled in what you already told us. This takes about a minute.</p>
+     <div class="ilia-grid">
+       <div class="formcard"><h4>Your details</h4>
+         <div class="two"><div class="field"><label for="aF">First name</label><input id="aF" type="text" value="${S.name}" data-input="name"></div>
+         <div class="field"><label for="aL">Last name</label><input id="aL" type="text" value="${A.last}" data-acct="last"></div></div>
+         <div class="field"><label for="aE">Email</label><input id="aE" type="email" value="${S.email}" data-input="email"></div>
+         <div class="two"><div class="field"><label for="aP">Mobile</label><input id="aP" type="tel" value="${S.phone}" data-input="phone"></div>
+         <div class="field"><label for="aD">Date of birth</label><input id="aD" type="text" placeholder="MM/DD/YYYY" value="${A.dob}" data-acct="dob"></div></div>
+         <div class="field"><label for="aS">State</label><select id="aS" data-acct="state"><option value="">Select…</option>${['Arizona','California','Florida','Georgia','Illinois','New York','North Carolina','Ohio','Pennsylvania','Texas'].map(s=>`<option ${A.state===s?'selected':''}>${s}</option>`).join('')}</select></div>
+         <div class="field"><label for="aW">Create a password</label><input id="aW" type="password" value="${A.pw}" data-acct="pw" autocomplete="new-password"></div>
+         <label class="check" style="margin-top:0"><input type="checkbox" data-terms="1" ${A.terms?'checked':''}> I agree to the ILIA terms of use and privacy policy, and to receive enrollment messages.</label>
+         <p class="disc" style="color:var(--brand)">Demo tip: click any empty field to fill in sample details.</p>
+       </div>
+       <div>
+         <div class="plan ${kzSel?'kz':''}"><div class="ph"><b>Your chosen plan</b><span class="badge">${kzSel?'🚀 Kai-Zen':'IUL'}</span></div>
+           <div class="big" style="font-size:26px">${fmt(v.income)}<small> /yr income</small></div>
+           <div class="summary" style="margin-top:10px">
+             <div><span>Plan</span><b>${kzSel?'IUL + Kai-Zen boost':'IUL'}</b></div>
+             <div><span>Carrier</span><b>Allianz</b></div>
+             <div><span>You pay</span><b>${fmt(S.amount)}/yr · ${S.years} yrs</b></div>
+             <div><span>Income</span><b>Age ${v.start}–90</b></div>
+             <div><span>Death benefit</span><b>${fmtK(v.db)}</b></div>
+           </div>
+           <p style="margin:10px 0 0"><button class="linkbtn" data-go="confirm">✎ Change plan or numbers</button></p>
+           <p class="disc">Estimate only. Your official numbers come from your Allianz illustration in the next steps.</p>
+         </div>
+         <div class="plan" style="margin-top:12px;display:flex;gap:10px;align-items:center"><div class="wallicon" style="width:40px;height:40px;font-size:18px;margin:0;border-radius:12px">👤</div><div style="font-size:13px"><b>Agent Name</b> is your agent<br><span style="color:var(--ink-3)">They'll be notified when your account is ready.</span></div></div>
+       </div>
+     </div>
+   </div></div>${foot(`<button class="btn secondary" data-go="confirm">← Back</button><button class="btn ilia" data-go="done" id="goDone" ${ok?'':'disabled'}>Create account & start enrollment</button>`)}`},
+ done(){const kzSel=S.product==='kz';
+   const steps=kzSel?[
+      ['Complete your application','Personal, beneficiary and financial details.'],
+      ['Review your Allianz illustration','Your official numbers, with your agent.'],
+      ['Kai-Zen leverage and trust documents','Set up the premium financing and trust.','kz'],
+      ['Health and underwriting','Health questions, and an exam if needed.'],
+      ['Sign and submit','e-Sign everything in one place.']]:[
+      ['Complete your application','Personal, beneficiary and financial details.'],
+      ['Review your Allianz illustration','Your official numbers, with your agent.'],
+      ['Health and underwriting','Health questions, and an exam if needed.'],
+      ['Sign and submit','e-Sign everything in one place.']];
+   return `<div class="body"><div class="inner wide" style="max-width:720px">
+     <div class="wallscr" style="padding-top:0"><div class="wallicon" style="background:var(--good-soft);color:var(--good)">✓</div>
+     <h2 class="q">Welcome to ILIA, ${S.name||'there'}</h2>
+     <p class="help">Your account is ready and your <b>${kzSel?'IUL + Kai-Zen boost':'IUL'}</b> application has started. Agent Name has been notified.</p></div>
+     <p style="margin:6px 0 0"><b>Your next steps</b></p>
+     <ol class="steps">${steps.map(([t,d,c],i)=>`<li class="${i===0?'now':''} ${c||''}"><span class="sn">${i+1}</span><div><b>${t}</b>${d}</div></li>`).join('')}</ol>
+     <p class="disc">Concept of the ILIA landing only. Actual steps follow ILIA's existing Allianz ${kzSel?'Kai-Zen':'IUL'} enrollment flow.</p>
+   </div></div>${foot(`<button class="btn ilia">Start my application →</button>`)}`}
 };
 
+function sheet(){
+  const E=S.edit, lev=E.plan==='kz';
+  const before=calc(S,lev), after=calc(Object.assign({},S,{amount:E.amount,years:E.years,start:E.start,age:E.age}),lev);
+  const row=(l,a,b,f)=>{const d=b-a, same=Math.abs(d)<1, cls=same?'same':d>0?'up':'down';
+    return `<div class="prow"><span>${l}</span><span class="was">${same?'':f(a)}</span><span class="now">${f(b)}</span><span class="dl ${cls}">${same?'no change':(d>0?'+':'−')+f(Math.abs(d))}</span></div>`;};
+  return `<div class="sheet-back" data-edcancel="1"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="Edit my numbers">
+    <div class="grab"></div><h3>✎ Edit my numbers</h3><p class="sh-sub">${lev?'🚀 IUL + Kai-Zen boost':'IUL'} · see the change before you save. Your numbers apply to both plans.</p>
+    <div class="erow" style="border-bottom:0;padding-bottom:0"><span>Yearly amount<small>What you put in each year</small></span><div class="estep"><button data-ed="amount" data-by="-5000" aria-label="Less">−</button><output>${fmt(E.amount)}</output><button data-ed="amount" data-by="5000" aria-label="More">+</button></div></div>
+    <div class="echips" style="padding-bottom:10px;border-bottom:1px solid var(--line)">${[10000,25000,50000,75000,100000,150000].map(v=>`<button aria-pressed="${E.amount===v}" data-edset="amount" data-val="${v}">${fmtK(v)}</button>`).join('')}</div>
+    <div class="erow"><span>Years paying<small>${lev?'Kai-Zen leverage options':'How long you contribute'}</small></span><div class="echips" style="margin:0">${[5,7,10].map(v=>`<button aria-pressed="${E.years===v}" data-edset="years" data-val="${v}">${v} yrs</button>`).join('')}</div></div>
+    <div class="erow"><span>Income starts at<small>Age you start drawing income</small></span><div class="estep"><button data-ed="start" data-by="-1" aria-label="Earlier">−</button><output>Age ${E.start}</output><button data-ed="start" data-by="1" aria-label="Later">+</button></div></div>
+    <div class="erow" style="border-bottom:0"><span>Your age</span><div class="estep"><button data-ed="age" data-by="-1" aria-label="Younger">−</button><output>${E.age}</output><button data-ed="age" data-by="1" aria-label="Older">+</button></div></div>
+    <div class="preview"><h5>Before → after</h5>
+      ${row('Yearly income',before.income,after.income,fmt)}
+      ${row('Cash value',before.cv,after.cv,fmtK)}
+      ${row('Death benefit',before.db,after.db,fmtK)}
+      ${row('You pay in total',before.paid,after.paid,fmtK)}
+      ${after.start!==E.start?`<p class="disc" style="margin:6px 0 0">With the boost, income starts at age ${after.start} at the earliest.</p>`:''}
+    </div>
+    <div class="acts"><button class="btn secondary" data-edcancel="1">Cancel</button><button class="btn ${lev?'boost':'primary'}" data-edsave="1">Save & update</button></div>
+  </div>`;
+}
 function render(){
   const app=$('#app');
-  app.innerHTML=header()+SCREENS[S.screen]();
+  app.innerHTML=header()+SCREENS[S.screen]()+(S.edit&&S.screen==='results'?sheet():'');
+  if(S.flash) S.flash.fresh=false;
   const n=NOTES[S.screen];
-  $('#notes').innerHTML=`<div class="scr">${device==='web'?'Web':'Mobile'} · screen</div><h3>${n.t}</h3><ul>${n.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="track">📊 Tracked in CMS: <code>${n.k}</code></div>`;
-  const body=app.querySelector('.body'); if(body&&render.scrollTop) body.scrollTop=0;
+  $('#notes').innerHTML=`<div class="scr">${device==='web'?'Web':'Mobile'} · ${S.screen==='ilia'||S.screen==='done'?'inside ILIA':'funnel (outside ILIA)'}</div><h3>${n.t}</h3><ul>${n.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="track">📊 Tracked: <code>${n.k}</code></div>`;
+  $('#urlbar').textContent=(S.screen==='ilia'||S.screen==='done')?'ilia.example/enroll/create-account':'yourplan.example/j/member-ab12?asset=QR-0047';
 }
-function go(to){ if(to==='agent'&&S.screen!=='agent') S.prev=S.screen; render.scrollTop=true; S.screen=to; render(); render.scrollTop=false; }
+function go(to,opts){
+  opts=opts||{};
+  if(to==='agent'&&S.screen!=='agent') S.prev=S.screen;
+  if(to==='learn'&&S.screen!=='learn') S.learnFrom=S.screen==='land'?'land':S.screen==='confirm'?'confirm':'results';
+  if(to==='results'&&!S.amount){ to='goals'; }
+  if(to!=='results') S.flash=null; S.edit=null;
+  S.screen=to; render();
+  const body=$('#app .body');
+  if(body){ body.style.scrollBehavior='auto'; body.scrollTop=0; body.style.scrollBehavior=''; }
+  if(opts.section) toSection(opts.section,true);
+}
 
+function keepScroll(inSheet){ const b=$('#app .body'), st=b?b.scrollTop:0, sh=$('#app .sheet'), ss=sh?sh.scrollTop:0; render(); const b2=$('#app .body'); if(b2) b2.scrollTop=st; const sh2=$('#app .sheet'); if(sh2&&inSheet) sh2.scrollTop=ss; }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&S.edit){ S.edit=null; keepScroll(); } });
+function toSection(k,instant){ const el=document.getElementById('l-'+k), body=$('#app .body'); if(!el||!body) return;
+  const top=el.getBoundingClientRect().top-body.getBoundingClientRect().top+body.scrollTop-62;
+  if(instant){ body.style.scrollBehavior='auto'; body.scrollTop=top; body.style.scrollBehavior=''; } else body.scrollTo({top,behavior:'smooth'}); }
+
+// ---------- Demo helpers ----------
+const DEMO_FIRST=['Jordan','Taylor','Morgan','Casey','Riley','Avery','Jamie','Drew','Quinn','Reese'];
+const DEMO_LAST=['Parker','Hayes','Brooks','Reed','Ellis','Carter','Lane','Price','Shaw','Bennett'];
+let demo=null;
+function demoPerson(){
+  if(!demo){ const fi=DEMO_FIRST[Math.floor(Math.random()*DEMO_FIRST.length)], la=DEMO_LAST[Math.floor(Math.random()*DEMO_LAST.length)];
+    const yr=new Date().getFullYear()-(S.age||45), m=String(1+Math.floor(Math.random()*12)).padStart(2,'0'), d=String(1+Math.floor(Math.random()*28)).padStart(2,'0');
+    demo={name:fi,last:la,email:(fi+'.'+la).toLowerCase()+'@example.com',phone:'(555) 01'+Math.floor(Math.random()*10)+'-'+String(Math.floor(1000+Math.random()*9000)),dob:m+'/'+d+'/'+yr,state:'Texas',pw:'demo-'+Math.random().toString(36).slice(2,10)}; }
+  return demo;
+}
+function refreshButtons(){
+  const b=$('#toResults'); if(b) b.disabled=!(S.name.trim()&&/.+@.+\..+/.test(S.email));
+  const A=S.acct, d=$('#goDone'); if(d) d.disabled=!(A.last&&A.dob&&A.state&&A.pw&&A.terms);
+}
+function demoFill(t){
+  const D=demoPerson();
+  if(t.dataset.input&&!t.value){ t.value=D[t.dataset.input]; S[t.dataset.input]=t.value; }
+  if(t.dataset.acct&&!t.value){ t.value=D[t.dataset.acct]; S.acct[t.dataset.acct]=t.value; }
+  refreshButtons();
+}
+
+// ---------- Events ----------
 document.addEventListener('click',e=>{
+  const jb=e.target.closest('[data-jump]');
+  if(jb){ jump(jb.dataset.jump); return; }
+  const inp=e.target.closest('#app input[data-input], #app input[data-acct], #app select[data-acct]');
+  if(inp){ if(inp.tagName==='SELECT'){ if(!inp.value){ inp.value=demoPerson().state; S.acct.state=inp.value; refreshButtons(); } } else demoFill(inp); return; }
   const t=e.target.closest('button'); if(!t||!$('#app').contains(t)) return;
   const d=t.dataset;
-  if(d.go){ if(!t.disabled) go(d.go); return; }
+  if(d.edit){ S.edit={plan:d.edit,amount:S.amount,years:S.years,start:S.start,age:S.age}; keepScroll(); return; }
+  if(d.edcancel){ S.edit=null; keepScroll(); return; }
+  if(d.ed){ const E=S.edit, lim={amount:[5000,500000],start:[55,80],age:[18,80]}[d.ed]; E[d.ed]=Math.min(lim[1],Math.max(lim[0],E[d.ed]+ +d.by)); keepScroll(true); return; }
+  if(d.edset){ S.edit[d.edset]=+d.val; keepScroll(true); return; }
+  if(d.edsave){ const E=S.edit, lev=E.plan==='kz', b=calc(S,lev); Object.assign(S,{amount:E.amount,years:E.years,start:E.start,age:E.age}); const a=calc(S,lev), di=a.income-b.income;
+    S.flash={plan:E.plan,fresh:true,text:Math.abs(di)<1?'numbers saved':(di>0?'+':'−')+fmt(Math.abs(di))+'/yr income'}; S.tab=E.plan; S.edit=null; keepScroll(); return; }
+  if(d.choose){ S.product=d.choose; go('confirm'); return; }
+  if(d.learn){ go('learn',{section:d.learn}); return; }
+  if(d.scroll){ toSection(d.scroll,false); return; }
+  if(d.go){ if(t.disabled) return; if(d.tabto) S.tab=d.tabto; go(d.go); return; }
   if(d.set){ let v=d.val; if(['amount','start'].includes(d.set)) v=+v; S[d.set]=v; render(); return; }
   if(d.toggle){ const a=S[d.toggle], i=a.indexOf(d.val); i<0?a.push(d.val):a.splice(i,1); render(); return; }
   if(d.age){ S.age=Math.min(80,Math.max(18,S.age+ +d.age)); render(); return; }
   if(d.tab){ S.tab=d.tab; render(); return; }
   if(d.years){ S.years=+d.years; render(); return; }
   if(d.adjust){ S.showAdjust=!S.showAdjust; render(); return; }
-  if(d.acc){ S.open[d.acc]=!S.open[d.acc]; render(); return; }
+  if(d.acc){ const body=$('#app .body'), st=body?body.scrollTop:0; S.open[d.acc]=!S.open[d.acc]; render(); const b2=$('#app .body'); if(b2) b2.scrollTop=st; return; }
 });
 document.addEventListener('input',e=>{
   const t=e.target; if(!$('#app').contains(t)) return;
-  if(t.dataset.input){ S[t.dataset.input]=t.value; const b=$('#toResults'); if(b) b.disabled=!(S.name.trim()&&/.+@.+\..+/.test(S.email)); }
-  if(t.dataset.range){ S[t.dataset.range]=+t.value; const pos=t.dataset.range; render(); const el=document.querySelector(`[data-range="${pos}"]`); if(el) el.focus(); }
+  if(t.dataset.input){ S[t.dataset.input]=t.value; refreshButtons(); }
+  if(t.dataset.acct){ S.acct[t.dataset.acct]=t.value; refreshButtons(); }
+  if(t.dataset.range){ const k=t.dataset.range; S[k]=+t.value; const body=$('#app .body'), st=body?body.scrollTop:0; render(); const b2=$('#app .body'); if(b2) b2.scrollTop=st; const el=document.querySelector(`[data-range="${k}"]`); if(el) el.focus(); }
 });
-document.addEventListener('change',e=>{ const t=e.target; if(t.dataset&&t.dataset.ack){ S.ack=t.checked; const b=$('#goWall'); if(b) b.disabled=!S.ack; } });
-
-// Demo helper: clicking an empty contact field fills it with sample data (no typing needed to demo)
-const DEMO_FIRST=['Jordan','Taylor','Morgan','Casey','Riley','Avery','Jamie','Drew','Quinn','Reese'];
-const DEMO_LAST=['Parker','Hayes','Brooks','Reed','Morgan','Ellis','Carter','Lane','Price','Shaw'];
-function demoFill(t){
-  if(!t.dataset.input||t.value) return;
-  if(!S._demo){ const fi=DEMO_FIRST[Math.floor(Math.random()*DEMO_FIRST.length)], la=DEMO_LAST[Math.floor(Math.random()*DEMO_LAST.length)]; S._demo={name:fi,email:(fi+'.'+la).toLowerCase()+'@example.com',phone:'(555) 01'+Math.floor(Math.random()*10)+'-'+String(Math.floor(1000+Math.random()*9000))}; }
-  t.value=S._demo[t.dataset.input]; S[t.dataset.input]=t.value;
-  const b=document.getElementById('toResults'); if(b) b.disabled=!(S.name.trim()&&/.+@.+..+/.test(S.email));
+document.addEventListener('change',e=>{ const t=e.target; if(!t.dataset) return;
+  if(t.dataset.ack){ S.ack=t.checked; const b=$('#goWall'); if(b) b.disabled=!S.ack; }
+  if(t.dataset.terms){ S.acct.terms=t.checked; refreshButtons(); }
+  if(t.dataset.acct&&t.tagName==='SELECT'){ S.acct.state=t.value; refreshButtons(); }
+});
+function jump(to){
+  if(to==='land'){ S=JSON.parse(JSON.stringify(DEF)); demo=null; if(device==='web') S.showAdjust=true; go('land'); scrollToProto(); return; }
+  demoAnswers();
+  if(to==='confirm'||to==='ilia'){ const q=qualifies(S); S.product=S.product||(q.ok?'kz':'iul'); S.ack=true; }
+  if(to==='ilia'){ const D=demoPerson(); S.acct.last=S.acct.last||''; }
+  if(to==='learn') S.learnFrom='results';
+  go(to); scrollToProto();
 }
-document.addEventListener('click',e=>{ const t=e.target; if(t.matches&&t.matches('#app input[data-input]')) demoFill(t); });
-
+function scrollToProto(){ if(document.body.classList.contains('embed')) return; const p=document.getElementById('proto'); if(p) window.scrollTo({top:p.getBoundingClientRect().top+window.scrollY-60,behavior:'smooth'}); }
 function setDevice(d){
   device=d; $('#stage').classList.toggle('web',d==='web');
   $('#bMobile').setAttribute('aria-pressed',d==='mobile'); $('#bWeb').setAttribute('aria-pressed',d==='web');
@@ -538,8 +939,8 @@ function setDevice(d){
 }
 $('#bMobile').onclick=()=>setDevice('mobile');
 $('#bWeb').onclick=()=>setDevice('web');
-$('#bReset').onclick=()=>{S=JSON.parse(JSON.stringify(DEF)); if(device==='web') S.showAdjust=true; render();};
-setDevice(window.innerWidth<700?'mobile':'mobile');
+$('#bReset').onclick=()=>jump('land');
+setDevice('mobile');
 })();
 </script>
 </body>
