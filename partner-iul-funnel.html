@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IUL Selling Funnel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6fa; --surface:#fff; --surface-2:#f0f3f8; --ink:#121826; --ink-2:#4d566b; --ink-3:#7a8399; --line:#dfe3ec;
+  --brand:#0b6bcb; --brand-ink:#fff; --brand-soft:#e6f0fb;
+  --boost:#e0661f; --boost-soft:#fdeee4;
+  --good:#17864a; --good-soft:#e3f4ea;
+  --warn:#a86d12; --warn-soft:#fbf1dc;
+  --frame:#1b2130;
+  --shadow:0 1px 2px rgba(18,24,38,.06),0 8px 24px rgba(18,24,38,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e121a; --surface:#161b26; --surface-2:#1d2330; --ink:#e8ebf2; --ink-2:#a6aec1; --ink-3:#7f879b; --line:#2a3142;
+    --brand:#4c9be8; --brand-ink:#0b1220; --brand-soft:#15283d; --boost:#f28a4c; --boost-soft:#35231a;
+    --good:#4cc07c; --good-soft:#15301f; --warn:#e2a94a; --warn-soft:#33281a; --frame:#3a4358; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e121a; --surface:#161b26; --surface-2:#1d2330; --ink:#e8ebf2; --ink-2:#a6aec1; --ink-3:#7f879b; --line:#2a3142;
+  --brand:#4c9be8; --brand-ink:#0b1220; --brand-soft:#15283d; --boost:#f28a4c; --boost-soft:#35231a;
+  --good:#4cc07c; --good-soft:#15301f; --warn:#e2a94a; --warn-soft:#33281a; --frame:#3a4358; --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
+h2{font-size:19px;margin:42px 0 6px}
+.lead{color:var(--ink-2);max-width:860px;margin:0}
+.sub{color:var(--ink-2);margin:0 0 16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2)}
+.chip a{color:inherit}
+
+/* Flow diagram */
+.flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:4px 2px 10px}
+.step{flex:1 0 150px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow);position:relative;margin-right:22px}
+.step:last-child{margin-right:0}
+.step:not(:last-child)::after{content:"→";position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-weight:700}
+.step .n{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em}
+.step b{display:block;margin:2px 0 4px;font-size:14px}
+.step p{margin:0;font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.step.boost{border-top:4px solid var(--boost)} .step.wall{border-top:4px solid var(--ink)} .step.main{border-top:4px solid var(--brand)}
+.branch{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.branch div{background:var(--surface-2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink-2)}
+.branch b{color:var(--ink)}
+
+/* Questions table */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 16px;box-shadow:var(--shadow);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);font-weight:600}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:700;color:var(--ink-3);width:30px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px;margin:1px 2px 1px 0}
+.p-calc{background:var(--brand-soft);color:var(--brand)} .p-boost{background:var(--boost-soft);color:var(--boost)} .p-desire{background:var(--good-soft);color:var(--good)} .p-lead{background:var(--warn-soft);color:var(--warn)}
+
+/* Prototype stage */
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--ink-2);font:600 13px Inter,sans-serif;padding:7px 14px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.reset{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:600 13px Inter,sans-serif;padding:8px 12px;border-radius:9px;cursor:pointer}
+.stage{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start}
+.stage.web{grid-template-columns:1fr}
+.notes{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);position:sticky;top:16px}
+.notes h3{margin:0 0 4px;font-size:15px}
+.notes .scr{font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+.notes ul{margin:8px 0 0;padding-left:18px;font-size:13.5px;color:var(--ink-2)} .notes li{margin:4px 0}
+.notes .track{margin-top:12px;padding:10px;border-radius:9px;background:var(--surface-2);font-size:12.5px;color:var(--ink-2)}
+.notes .track code{font-size:12px;color:var(--ink)}
+
+/* Device frames */
+.device{background:var(--frame);border-radius:38px;padding:12px;box-shadow:var(--shadow);width:390px;max-width:100%}
+.device .screen{background:var(--bg);border-radius:28px;overflow:hidden;height:760px;display:flex;flex-direction:column}
+.stage.web .device{width:100%;border-radius:14px;padding:0;background:var(--surface);border:1px solid var(--line)}
+.stage.web .device .screen{border-radius:0 0 14px 14px;height:auto;min-height:640px}
+.browserbar{display:none;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);border-radius:14px 14px 0 0}
+.stage.web .browserbar{display:flex}
+.browserbar i{width:10px;height:10px;border-radius:50%;background:var(--line);display:inline-block}
+.browserbar span{flex:1;font-size:12px;color:var(--ink-3);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 10px;margin-left:6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+/* App inside frame */
+.app{flex:1;display:flex;flex-direction:column;min-height:0}
+.topbar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--surface-2);border:1px dashed var(--ink-3);display:grid;place-items:center;font-size:9px;font-weight:700;color:var(--ink-3)}
+.agent{flex:1;min-width:0}
+.agent b{display:block;font-size:13px}
+.agent small{color:var(--ink-3);font-size:11.5px}
+.talk{border:1px solid var(--line);background:var(--surface);color:var(--brand);font:600 12px Inter,sans-serif;padding:6px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.progress{height:4px;background:var(--surface-2)} .progress div{height:100%;background:var(--brand);transition:width .25s}
+.body{flex:1;overflow-y:auto;padding:22px 18px 18px}
+.stage.web .body{padding:36px 40px}
+.inner{max-width:560px;margin:0 auto}
+.stage.web .inner.wide{max-width:1040px}
+.kicker{font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px}
+.q{font-size:23px;line-height:1.25;font-weight:800;margin:0 0 6px;letter-spacing:-.01em}
+.stage.web .q{font-size:30px}
+.help{color:var(--ink-2);margin:0 0 18px;font-size:14px}
+.opts{display:grid;gap:10px}
+.stage.web .opts.two{grid-template-columns:1fr 1fr}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:500 15px Inter,sans-serif;cursor:pointer}
+.opt .ic{width:34px;height:34px;flex:none;border-radius:9px;background:var(--surface-2);display:grid;place-items:center;font-size:17px}
+.opt small{display:block;color:var(--ink-3);font-size:12.5px}
+.opt[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row .opt{flex:1 1 calc(50% - 8px);justify-content:center;text-align:center;padding:13px 8px}
+.field{margin:0 0 20px}
+.field label{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
+.stepper{display:flex;align-items:center;gap:12px}
+.stepper button{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-size:20px;cursor:pointer}
+.stepper output{font-size:28px;font-weight:800;min-width:64px;text-align:center}
+input[type=text],input[type=email],input[type=tel]{width:100%;padding:13px 14px;border-radius:11px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:500 15px Inter,sans-serif}
+input:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.foot{padding:12px 16px 16px;background:var(--surface);border-top:1px solid var(--line);display:flex;gap:10px}
+.stage.web .foot{justify-content:center;padding:16px 40px}
+.stage.web .foot .btn{flex:0 0 auto;min-width:200px}
+.btn{flex:1;border:0;border-radius:12px;padding:14px 16px;font:700 15px Inter,sans-serif;cursor:pointer}
+.btn.primary{background:var(--brand);color:var(--brand-ink)}
+.btn.secondary{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+.btn.boost{background:var(--boost);color:#fff}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.back{background:none;border:0;color:var(--ink-3);font:600 13px Inter,sans-serif;padding:0;margin-bottom:12px;cursor:pointer}
+
+/* Landing */
+.hero{text-align:center;padding-top:10px}
+.hero .q{font-size:27px}
+.stage.web .hero .q{font-size:40px}
+.benefits{display:grid;gap:8px;margin:20px 0 0;text-align:left}
+.stage.web .benefits{grid-template-columns:repeat(3,1fr)}
+.benefit{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:13.5px}
+.benefit b{display:block}
+.benefit span{color:var(--ink-2)}
+.time{display:inline-block;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--good);background:var(--good-soft);padding:4px 10px;border-radius:999px}
+
+/* Results */
+.res-grid{display:grid;gap:14px}
+.stage.web .res-grid{grid-template-columns:300px 1fr;align-items:start}
+.adjust{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.adjust h4{margin:0 0 10px;font-size:14px}
+.slider{margin:0 0 14px}
+.slider .top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.slider .top b{font-size:14px}
+input[type=range]{width:100%;accent-color:var(--brand)}
+.mini{display:flex;gap:6px}
+.mini button{flex:1;padding:8px 0;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px Inter,sans-serif;cursor:pointer}
+.mini button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.cards{display:grid;gap:12px}
+.stage.web .cards{grid-template-columns:1fr 1fr}
+.pcard{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:16px;position:relative}
+.pcard.kz{border-color:var(--boost);background:linear-gradient(180deg,var(--boost-soft),var(--surface) 60%)}
+.pcard h4{margin:0;font-size:15px}
+.pcard .tagline{font-size:12.5px;color:var(--ink-2);margin:2px 0 12px}
+.big{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.big small{font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:0}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.metric{background:var(--surface-2);border-radius:10px;padding:9px 10px}
+.metric span{display:block;font-size:11.5px;color:var(--ink-3)}
+.metric b{font-size:16px}
+.plus{display:inline-block;margin-top:10px;font-size:13px;font-weight:700;color:var(--boost);background:var(--surface);border:1px solid var(--boost);padding:3px 9px;border-radius:999px}
+.ribbon{position:absolute;top:-10px;right:12px;background:var(--boost);color:#fff;font-size:11px;font-weight:800;letter-spacing:.04em;padding:3px 9px;border-radius:999px;text-transform:uppercase}
+.ptabs{display:flex;background:var(--surface-2);border-radius:11px;padding:3px;margin-bottom:12px}
+.ptabs button{flex:1;border:0;background:transparent;padding:9px 6px;border-radius:9px;font:700 13px Inter,sans-serif;color:var(--ink-2);cursor:pointer}
+.ptabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ptabs button.kzt[aria-pressed="true"]{color:var(--boost)}
+.stage.web .ptabs{display:none}
+.stage:not(.web) .pcard.hide-m{display:none}
+.nq{background:var(--warn-soft);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;color:var(--ink-2)}
+.nq b{color:var(--ink)}
+.howkz{font-size:13px;color:var(--ink-2);margin:10px 0 0}
+.disc{font-size:11.5px;color:var(--ink-3);margin-top:14px;line-height:1.45}
+.edit-link{background:none;border:0;color:var(--brand);font:600 13px Inter,sans-serif;cursor:pointer;padding:0}
+.sheet{display:none}
+.stage:not(.web) .adjust.collapsed{display:none}
+
+/* Confirm */
+.choice{display:grid;gap:10px}
+.stage.web .choice{grid-template-columns:1fr 1fr}
+.choice .opt{flex-direction:column;align-items:flex-start;gap:4px;padding:16px}
+.choice .opt .big{font-size:22px}
+.summary{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px}
+.summary div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)}
+.summary div:last-child{border-bottom:0}
+.summary span{color:var(--ink-2)}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;color:var(--ink-2)}
+.check input{margin-top:3px;width:18px;height:18px;accent-color:var(--brand)}
+
+/* Learn more */
+.acc{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:10px;overflow:hidden}
+.acc button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px;border:0;background:transparent;color:var(--ink);font:700 15px Inter,sans-serif;text-align:left;cursor:pointer}
+.acc .c{display:none;padding:0 14px 14px;font-size:14px;color:var(--ink-2)}
+.acc.open .c{display:block}
+.acc .c ul{margin:6px 0 0;padding-left:18px}
+.acc.kz{border-color:var(--boost)}
+.stage.web .learn-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+
+/* Wall */
+.wallscr{text-align:center;padding-top:16px}
+.wallicon{width:64px;height:64px;border-radius:18px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:30px;margin:0 auto 14px}
+.payload{text-align:left;margin-top:18px;background:var(--surface);border:1.5px dashed var(--ink-3);border-radius:12px;padding:12px 14px;font-size:13px}
+.payload h5{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+.payload div{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--line)}
+.payload div:last-child{border:0}
+.payload span{color:var(--ink-3)}
+
+footer{margin-top:40px;font-size:12px;color:var(--ink-3)}
+@media (max-width:900px){
+  .stage{grid-template-columns:1fr}
+  .notes{position:static}
+  .device{margin:0 auto}
+  .branch{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .device{padding:0;border-radius:0;background:transparent;box-shadow:none;width:100%}
+  .device .screen{border-radius:14px;border:1px solid var(--line);height:720px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>IUL Selling Funnel: Design Draft</h1>
+<p class="lead">This is what a prospect sees after a group member shares a link or QR code. A few short questions lead to their own IUL numbers, which they can adjust. The same numbers are shown with the Kai-Zen boost. Then they either <b>confirm</b> (choose IUL or Kai-Zen plus their numbers) and go to ILIA account creation, or they <b>learn more</b>. Designed phone-first, since most people will arrive by QR, with a wider web layout.</p>
+<div class="chips">
+  <span class="chip">Lane: W-PARTNER</span><span class="chip">Q5 · based on Josh's flow</span><span class="chip">Working draft · Oct 7, 2026</span>
+  <span class="chip"><a href="partner-iul-kaizen-workflow.html">← Full workflow chart</a></span>
+</div>
+
+<h2>The flow</h2>
+<p class="sub">The main path is 6 steps. "Learn more" and "Talk to my agent" are side paths, and both return to the prospect's numbers.</p>
+<div class="flow">
+  <div class="step main"><div class="n">Entry</div><b>Link or QR</b><p>From a group member. It carries the member and asset ID, so every step is tracked.</p></div>
+  <div class="step main"><div class="n">Step 1</div><b>Short questions</b><p>5 quick screens of taps, plus where to send results. About 60 seconds.</p></div>
+  <div class="step main"><div class="n">Step 2</div><b>Your IUL numbers</b><p>Calculator results from their answers.</p></div>
+  <div class="step main"><div class="n">Step 3</div><b>Play with the numbers</b><p>Change the yearly amount, years paying and income start age. Results update live.</p></div>
+  <div class="step boost"><div class="n">Step 4</div><b>Kai-Zen boost</b><p>The same numbers with leverage, side by side, for prospects who qualify.</p></div>
+  <div class="step main"><div class="n">Step 5</div><b>Confirm</b><p>Choose IUL or Kai-Zen and lock the numbers.</p></div>
+  <div class="step wall"><div class="n">Step 6 · The wall</div><b>ILIA account creation</b><p>Product, numbers and agent of record go to ILIA for enrollment.</p></div>
+</div>
+<div class="branch">
+  <div><b>Learn more</b> (from results) opens the deep content: how an IUL works, taxes, safety, borrowing, how the Kai-Zen boost works, and FAQs. A "Back to my numbers" button stays visible.</div>
+  <div><b>Talk to my agent</b> (always in the header) shows the agent card and a call request. The agent is the member's selected ILIA agent, and the request is tracked to the member.</div>
+</div>
+
+<h2>The short question set</h2>
+<p class="sub">This is the fewest questions that can still (a) produce real calculator numbers, (b) check Kai-Zen eligibility and (c) learn what the prospect cares about. Everything else gets a sensible default the prospect can adjust on the results screen.</p>
+<div class="panel">
+<table>
+  <tr><th>#</th><th>Screen / question</th><th>Answers</th><th>Used for</th></tr>
+  <tr><td>1</td><td><b>What matters most to you?</b></td><td>Tax-free retirement income · Protect my family · Grow without market losses · Access cash when I need it (pick any)</td><td><span class="pill p-desire">Desire</span> sets what the results lead with</td></tr>
+  <tr><td>2</td><td><b>About you:</b> age + sex</td><td>Age stepper · Male / Female</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: age 18–65</span></td></tr>
+  <tr><td>3</td><td><b>Your health:</b> overall health + nicotine/tobacco/marijuana</td><td>Excellent · Good · Average · Below average · No / Yes</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: average or better</span></td></tr>
+  <tr><td>4</td><td><b>Your numbers:</b> yearly amount + household income</td><td>$10k · $25k · $50k · $100k+ · Under $100k / $100–250k / $250–500k / $500k+</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: household income $100k+</span></td></tr>
+  <tr><td>5</td><td><b>When do you want income to start?</b></td><td>60 · 65 · 70</td><td><span class="pill p-calc">Calculator</span></td></tr>
+  <tr><td>6</td><td><b>Where should we send your results?</b></td><td>First name · email · mobile</td><td><span class="pill p-lead">Lead</span> captured <i>before</i> results so drop-offs can be followed up. Open question: required or optional?</td></tr>
+  <tr><td>·</td><td><i>Defaults (adjustable on results)</i></td><td>Years paying = 5 · Income until age 90 · Death benefit sized from the contribution</td><td><span class="pill p-calc">Calculator</span></td></tr>
+</table>
+</div>
+
+<h2>Clickable prototype</h2>
+<p class="sub">Click through it like a prospect would. Switch between phone and web. The notes on the right explain each screen and what gets tracked.</p>
+<div class="toolbar">
+  <div class="seg" role="group" aria-label="Device">
+    <button id="bMobile" aria-pressed="true">📱 Mobile</button>
+    <button id="bWeb" aria-pressed="false">🖥 Web</button>
+  </div>
+  <button class="reset" id="bReset">↺ Start over</button>
+</div>
+
+<div class="stage" id="stage">
+  <div class="device">
+    <div class="browserbar"><i></i><i></i><i></i><span>yourplan.example/j/<b>member-ab12</b>?asset=QR-0047</span></div>
+    <div class="screen"><div class="app" id="app"></div></div>
+  </div>
+  <aside class="notes" id="notes"></aside>
+</div>
+
+<p class="disc" style="max-width:900px">All numbers in this prototype are <b>illustrative placeholders</b> from a simple growth formula, so the screens can be clicked through. They are not Allianz or Kai-Zen illustrations. Where the real numbers come from (ILIA's estimator, an Allianz illustration service, or something else) is an open requirement.</p>
+
+<footer>W-PARTNER working draft for requirements discussion. No client data. Agent, group and links are placeholders.</footer>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
+const fmtK=n=>n>=1e6?('$'+(n/1e6).toFixed(n>=1e7?1:2).replace(/\.?0+$/,'')+'M'):('$'+Math.round(n/1000).toLocaleString('en-US')+'k');
+const DEF={screen:'land',goals:[],age:45,sex:null,health:null,nic:null,amount:null,hh:null,start:null,name:'',email:'',phone:'',years:5,product:null,ack:false,tab:'iul',showAdjust:false,open:{}};
+let S=JSON.parse(JSON.stringify(DEF));
+let device='mobile';
+
+// ---------- Illustrative model ----------
+function calc(st,lev){
+  const P=st.amount||25000, a=st.age, N=st.years, Sa=Math.max(st.start||65,a+N+1,lev?a+16:0);
+  const healthAdj={excellent:1.0,good:0.97,average:0.93,below:0.86}[st.health||'good'];
+  const nicAdj=st.nic==='yes'?0.88:1, sexAdj=st.sex==='female'?1.02:1;
+  const r=0.06, charge=0.85*healthAdj*nicAdj*sexAdj;
+  const mult=lev?3:1, yrs=Sa-a;
+  // grow premiums to income start
+  let cv=0;
+  for(let t=0;t<yrs;t++){ if(t<N) cv+=P*mult; cv*=1+r;
+    if(lev && t===Math.min(14,yrs-1)){ cv-=P*(mult-1)*N*1.35; } }
+  cv=Math.max(cv*charge,0);
+  const n=Math.max(90-Sa,5), ann=cv*(0.05/(1-Math.pow(1.05,-n)));
+  const db=P*N*3.6*(lev?1.45:1)*healthAdj;
+  return {cv,income:ann,db,paid:P*N,start:Sa,lenderPct:lev?Math.round((mult-1)/mult*100):0};
+}
+function qualifies(st){
+  const reasons=[];
+  if(!(st.age>=18&&st.age<=65)) reasons.push('age 18–65');
+  if(st.hh==='u100') reasons.push('household income of $100k+');
+  if(st.health==='below') reasons.push('average or better health');
+  return {ok:reasons.length===0,reasons};
+}
+
+// ---------- Notes per screen ----------
+const NOTES={
+ land:{t:'Landing',b:['Arrives from a member\'s <b>link or QR scan</b>. The URL carries the member and asset ID.','Agent of record shown at the top (the member\'s selected ILIA agent). Group logo slot is optional (branding TBD).','One promise, one button. Education is not shown here; it sits behind "Learn more" later.'],k:'visit · member · asset'},
+ goals:{t:'Q1 · Desire',b:['Multi-select, so they can pick more than one.','The answer decides what the results lead with (e.g. income first vs death benefit first).','Can\'t be skipped, but takes one tap.'],k:'goal(s) selected'},
+ about:{t:'Q2 · About you',b:['Age drives the calculator and is part of the Kai-Zen check (18–65).','Sex is needed for pricing. Kept as a simple 2-tap choice.'],k:'step reached'},
+ health:{t:'Q3 · Health',b:['A self-rated health class, no medical details.','Below average is not eligible for the Kai-Zen boost (they still get IUL numbers).'],k:'step reached'},
+ money:{t:'Q4 · Your numbers',b:['Yearly amount is the main calculator input.','Household income is <b>only</b> asked as a band. It\'s the Kai-Zen check ($100k+).','Bands avoid a "how much do you earn" text box, which loses people.'],k:'step reached'},
+ start:{t:'Q5 · Income start',b:['Three taps, adjustable on results.','Years paying defaults to 5 and income runs to age 90. Both can be adjusted on results.'],k:'step reached'},
+ contact:{t:'Q6 · Send my results',b:['Captures the lead <b>before</b> results, so members can see drop-offs and the agent can follow up.','<b>Open:</b> required vs optional. Optional = more finishes; required = more leads.','Text and email consent wording needed.'],k:'lead created (tied to member + agent)'},
+ results:{t:'Results + boost',b:['Leads with their own numbers and the goal they picked.','<b>Adjust</b> the yearly amount, years paying and income start age. Results update live.','<b>Web:</b> IUL and Kai-Zen side by side. <b>Mobile:</b> tabs, with the boost amount on the tab.','If they don\'t qualify for the boost, they see why and the IUL path stays open.','Two clear next steps: <b>Confirm my plan</b> or <b>Learn more</b>.'],k:'results viewed · adjustments · boost viewed'},
+ learn:{t:'Learn more',b:['The deep content from the current IUL marketing, in short expandable sections.','"Back to my numbers" and "Confirm my plan" are always one tap away.','Sections opened are tracked (which content convinces people).'],k:'sections opened'},
+ confirm:{t:'Confirm',b:['The prospect makes the two decisions: <b>product</b> (IUL or Kai-Zen) and <b>numbers</b>.','Kai-Zen only selectable if they qualify.','Acknowledges these are estimates. The final numbers come from the carrier illustration in enrollment.'],k:'decision: IUL or Kai-Zen'},
+ agent:{t:'Talk to my agent',b:['Available from every screen.','Agent = the member\'s selected ILIA agent (from the CMS list).','Call request is tracked to the member and goes to the agent.'],k:'agent contact requested'},
+ wall:{t:'The wall → ILIA',b:['The prospect moves to ILIA account creation, already decided.','Box shows what we\'d likely pass into ILIA (still open: exact fields, and whether ILIA keeps the group/member reference).','From here it\'s ILIA\'s existing enrollment flow (Allianz).'],k:'handoff sent · prospect left funnel'}
+};
+const ORDER=['land','goals','about','health','money','start','contact'];
+
+// ---------- Rendering ----------
+function header(){
+  const idx=ORDER.indexOf(S.screen); const pct=idx<0?100:Math.round(idx/(ORDER.length)*100);
+  return `<div class="topbar"><div class="logo">GROUP<br>LOGO</div>
+    <div class="agent"><b>Agent Name</b><small>Your licensed agent · (555) 000-0000</small></div>
+    <button class="talk" data-go="agent">Talk to my agent</button></div>
+    <div class="progress"><div style="width:${pct}%"></div></div>`;
+}
+function optBtn(field,val,label,sub,ic,multi){
+  const on=multi?S[field].includes(val):S[field]===val;
+  return `<button class="opt" aria-pressed="${on}" data-${multi?'toggle':'set'}="${field}" data-val="${val}">${ic?`<span class="ic">${ic}</span>`:''}<span>${label}${sub?`<small>${sub}</small>`:''}</span></button>`;
+}
+function foot(btns){return `<div class="foot">${btns}</div>`}
+const back=to=>`<button class="back" data-go="${to}">← Back</button>`;
+
+const SCREENS={
+ land(){return `<div class="body"><div class="inner hero">
+   <p class="kicker">Indexed Universal Life</p>
+   <h1 class="q">See how much tax-free retirement income you could build</h1>
+   <p class="help">Answer a few quick questions to see your own numbers, plus how much more you could get with a premium boost.</p>
+   <span class="time">⏱ About 60 seconds · No obligation</span>
+   <div class="benefits">
+     <div class="benefit">🛡️<div><b>No market losses</b><span>0% floor when the market drops.</span></div></div>
+     <div class="benefit">💸<div><b>Tax-advantaged</b><span>Grow and access cash tax-efficiently.</span></div></div>
+     <div class="benefit">🚀<div><b>Boost option</b><span>Leverage could multiply your results.</span></div></div>
+   </div></div></div>${foot(`<button class="btn primary" data-go="goals">See my numbers →</button>`)}`},
+ goals(){return `<div class="body"><div class="inner">${back('land')}
+   <p class="kicker">Question 1 of 6</p><h2 class="q">What matters most to you?</h2><p class="help">Pick as many as you like.</p>
+   <div class="opts two">
+   ${optBtn('goals','income','Tax-free retirement income','Supplement Social Security and savings','🏖️',1)}
+   ${optBtn('goals','protect','Protect my family','A death benefit that passes tax-free','👨‍👩‍👧',1)}
+   ${optBtn('goals','safe','Grow without market losses','0% floor, gains lock in yearly','📈',1)}
+   ${optBtn('goals','access','Access cash when I need it','Borrow against your policy','🔓',1)}
+   </div></div></div>${foot(`<button class="btn primary" data-go="about" ${S.goals.length?'':'disabled'}>Next</button>`)}`},
+ about(){return `<div class="body"><div class="inner">${back('goals')}
+   <p class="kicker">Question 2 of 6</p><h2 class="q">A little about you</h2><p class="help">Used to estimate your policy costs.</p>
+   <div class="field"><label>Your age</label><div class="stepper"><button data-age="-1" aria-label="Younger">−</button><output>${S.age}</output><button data-age="1" aria-label="Older">+</button></div></div>
+   <div class="field"><label>Sex</label><div class="row">${optBtn('sex','male','Male')}${optBtn('sex','female','Female')}</div></div>
+   </div></div>${foot(`<button class="btn primary" data-go="health" ${S.sex?'':'disabled'}>Next</button>`)}`},
+ health(){return `<div class="body"><div class="inner">${back('about')}
+   <p class="kicker">Question 3 of 6</p><h2 class="q">How's your health?</h2><p class="help">Your best guess is fine. Nothing medical is needed yet.</p>
+   <div class="field"><label>Overall health</label><div class="row">${optBtn('health','excellent','Excellent')}${optBtn('health','good','Good')}${optBtn('health','average','Average')}${optBtn('health','below','Below average')}</div></div>
+   <div class="field"><label>Any nicotine, tobacco or marijuana use?</label><div class="row">${optBtn('nic','no','No')}${optBtn('nic','yes','Yes')}</div></div>
+   </div></div>${foot(`<button class="btn primary" data-go="money" ${S.health&&S.nic?'':'disabled'}>Next</button>`)}`},
+ money(){return `<div class="body"><div class="inner">${back('health')}
+   <p class="kicker">Question 4 of 6</p><h2 class="q">Your numbers</h2><p class="help">You can change these on the next screen.</p>
+   <div class="field"><label>How much could you put in each year?</label><div class="row">${optBtn('amount',10000,'$10k')}${optBtn('amount',25000,'$25k')}${optBtn('amount',50000,'$50k')}${optBtn('amount',100000,'$100k+')}</div></div>
+   <div class="field"><label>Household income</label><div class="row">${optBtn('hh','u100','Under $100k')}${optBtn('hh','100','$100–250k')}${optBtn('hh','250','$250–500k')}${optBtn('hh','500','$500k+')}</div></div>
+   </div></div>${foot(`<button class="btn primary" data-go="start" ${S.amount&&S.hh?'':'disabled'}>Next</button>`)}`},
+ start(){return `<div class="body"><div class="inner">${back('money')}
+   <p class="kicker">Question 5 of 6</p><h2 class="q">When would you like income to start?</h2><p class="help">The age you'd start drawing tax-free income.</p>
+   <div class="row">${optBtn('start',60,'Age 60')}${optBtn('start',65,'Age 65')}${optBtn('start',70,'Age 70')}</div>
+   </div></div>${foot(`<button class="btn primary" data-go="contact" ${S.start?'':'disabled'}>Next</button>`)}`},
+ contact(){const ok=S.name.trim()&&/.+@.+\..+/.test(S.email);
+   return `<div class="body"><div class="inner">${back('start')}
+   <p class="kicker">Last step</p><h2 class="q">Where should we send your results?</h2><p class="help">We'll save your numbers so you can come back to them. Your agent may follow up.</p>
+   <div class="field"><label for="fName">First name</label><input id="fName" type="text" data-input="name" value="${S.name}" autocomplete="given-name"></div>
+   <div class="field"><label for="fEmail">Email</label><input id="fEmail" type="email" data-input="email" value="${S.email}" autocomplete="email"></div>
+   <div class="field"><label for="fPhone">Mobile <span style="color:var(--ink-3);font-weight:500">(optional)</span></label><input id="fPhone" type="tel" data-input="phone" value="${S.phone}" autocomplete="tel"></div>
+   <p class="disc">Consent wording for email and text goes here (to be defined).</p>
+   </div></div>${foot(`<button class="btn primary" id="toResults" data-go="results" ${ok?'':'disabled'}>Show my results</button>`)}`},
+ results(){
+   const iul=calc(S,false), kz=calc(S,true), q=qualifies(S);
+   const lead=S.goals.includes('income')||!S.goals.length?'income':S.goals.includes('protect')?'db':'cv';
+   const head=v=>lead==='income'?`<div class="big">${fmt(v.income)}<small> /yr tax-free income</small></div><div class="howkz" style="margin-top:4px">from age ${v.start} to 90</div>`
+     :lead==='db'?`<div class="big">${fmtK(v.db)}<small> death benefit</small></div><div class="howkz" style="margin-top:4px">passes to your family income-tax-free</div>`
+     :`<div class="big">${fmtK(v.cv)}<small> cash value</small></div><div class="howkz" style="margin-top:4px">at age ${v.start}, protected by a 0% floor</div>`;
+   const metrics=v=>`<div class="metrics">
+      ${lead!=='income'?`<div class="metric"><span>Yearly income (age ${v.start}–90)</span><b>${fmt(v.income)}</b></div>`:''}
+      ${lead!=='cv'?`<div class="metric"><span>Cash value at ${v.start}</span><b>${fmtK(v.cv)}</b></div>`:''}
+      ${lead!=='db'?`<div class="metric"><span>Death benefit</span><b>${fmtK(v.db)}</b></div>`:''}
+      <div class="metric"><span>You pay in total</span><b>${fmtK(v.paid)}</b></div></div>`;
+   const diff=kz.income-iul.income;
+   const kzCard=q.ok?`<div class="pcard kz ${S.tab==='kz'?'':'hide-m'}"><span class="ribbon">Boost</span>
+       <h4>IUL + Kai-Zen boost</h4><p class="tagline">A lender funds about ${kz.lenderPct}% of premiums. You pay the same ${fmt(S.amount)}/yr.</p>
+       ${head(kz)}${metrics(kz)}<span class="plus">+${fmt(diff)}/yr more income</span>
+       <p class="howkz">No credit check, no personal guarantee, no out-of-pocket interest. Minimums apply.</p></div>`
+     :`<div class="pcard ${S.tab==='kz'?'':'hide-m'}"><h4>Kai-Zen boost</h4><div class="nq"><b>Not available with your answers.</b> The boost needs ${q.reasons.join(', ')}. Your IUL plan is still available, or <button class="edit-link" data-go="agent">talk to your agent</button>.</div></div>`;
+   const adj=`<div class="adjust ${S.showAdjust?'':'collapsed'}"><h4>Play with your numbers</h4>
+     <div class="slider"><div class="top"><span>Yearly amount</span><b>${fmt(S.amount)}</b></div><input type="range" min="10000" max="250000" step="5000" value="${S.amount}" data-range="amount" aria-label="Yearly amount"></div>
+     <div class="slider"><div class="top"><span>Years paying</span><b>${S.years} yrs</b></div><div class="mini">${[5,7,10].map(y=>`<button aria-pressed="${S.years===y}" data-years="${y}">${y}</button>`).join('')}</div></div>
+     <div class="slider"><div class="top"><span>Income starts at</span><b>Age ${iul.start}</b></div><input type="range" min="55" max="75" step="1" value="${S.start}" data-range="start" aria-label="Income start age"></div>
+     <div class="slider"><div class="top"><span>Your age</span><b>${S.age}</b></div><input type="range" min="18" max="75" step="1" value="${S.age}" data-range="age" aria-label="Age"></div>
+   </div>`;
+   return `<div class="body"><div class="inner wide">
+     <p class="kicker">Your estimate${S.name?', '+S.name:''}</p><h2 class="q" style="margin-bottom:4px">Here's what your plan could look like</h2>
+     <p class="help">Based on ${fmt(S.amount)}/yr for ${S.years} years, starting at age ${S.age}. <button class="edit-link" data-adjust="1" id="adjToggle">${S.showAdjust?'Hide':'Change numbers'}</button></p>
+     <div class="res-grid">${adj}<div>
+       <div class="ptabs"><button aria-pressed="${S.tab==='iul'}" data-tab="iul">IUL</button><button class="kzt" aria-pressed="${S.tab==='kz'}" data-tab="kz">With boost ${q.ok?'🚀 +'+fmtK(diff*(90-kz.start)):''}</button></div>
+       <div class="cards"><div class="pcard ${S.tab==='iul'?'':'hide-m'}"><h4>IUL</h4><p class="tagline">Your own premiums, indexed growth, 0% floor.</p>${head(iul)}${metrics(iul)}</div>${kzCard}</div>
+       <p class="disc">Illustrative estimate only, not guaranteed and not a carrier illustration. Your final numbers come from an Allianz illustration during enrollment.</p>
+     </div></div></div></div>
+     ${foot(`<button class="btn secondary" data-go="learn">Learn more</button><button class="btn primary" data-go="confirm">Confirm my plan</button>`)}`},
+ learn(){
+   const sec=[
+    ['how','How an IUL works','<ul><li>Permanent life insurance with a cash value account.</li><li>Part of each premium covers insurance costs; the rest goes into cash value.</li><li>Cash value earns interest linked to a market index (e.g. S&P 500).</li></ul>'],
+    ['tax','Tax advantages','<ul><li>Cash value grows tax-deferred.</li><li>Policy loans are generally income-tax-free.</li><li>Death benefit passes to heirs income-tax-free.</li><li>No contribution limits (subject to underwriting), no required minimum distributions.</li></ul>'],
+    ['safe','Safety: 0% floor and annual reset','<ul><li>When the index drops, you are credited 0%, not a loss.</li><li>Gains lock in every year, then the next year starts fresh.</li><li>Upside is capped (caps often around 8–12%).</li></ul>'],
+    ['loan','Borrowing your own money','<ul><li>Borrow against cash value with no credit check.</li><li>Use it for retirement income, medical bills, a business, life events.</li><li>Repay any time, or from the death benefit.</li></ul>'],
+    ['kz','How the Kai-Zen boost works','<ul><li>A lender funds a large share of the premiums (up to about 70%).</li><li>Your cash value grows on up to about 3x what you pay in.</li><li>The loan is repaid from the policy later. No personal guarantee, no out-of-pocket interest.</li><li>Eligibility: household income $100k+, age 18–65, average or better health. Minimums and fees apply (see Kai-Zen disclosures).</li></ul>'],
+    ['faq','Common questions','<ul><li>Is this an investment? No. It is life insurance with cash value.</li><li>What if I stop paying? Your agent will explain the options in your illustration.</li><li>What happens next? You create an account and your agent guides enrollment.</li></ul>']];
+   return `<div class="body"><div class="inner wide">${back('results')}
+     <p class="kicker">Learn more</p><h2 class="q">Everything behind your numbers</h2><p class="help">Open any topic. Your numbers are saved.</p>
+     <div class="learn-grid">${sec.map(([k,t,c])=>`<div class="acc ${k==='kz'?'kz':''} ${S.open[k]?'open':''}"><button data-acc="${k}" aria-expanded="${!!S.open[k]}">${k==='kz'?'🚀 ':''}${t}<span>${S.open[k]?'−':'+'}</span></button><div class="c">${c}</div></div>`).join('')}</div>
+     <p class="disc">Short summaries of the current IUL marketing content. Full video and detail pages would sit behind each topic.</p>
+   </div></div>${foot(`<button class="btn secondary" data-go="results">Back to my numbers</button><button class="btn primary" data-go="confirm">Confirm my plan</button>`)}`},
+ confirm(){
+   const iul=calc(S,false), kz=calc(S,true), q=qualifies(S);
+   if(!S.product) S.product=q.ok?'kz':'iul';
+   if(!q.ok&&S.product==='kz') S.product='iul';
+   const v=S.product==='kz'?kz:iul;
+   return `<div class="body"><div class="inner wide" style="max-width:760px">${back('results')}
+     <p class="kicker">Confirm your plan</p><h2 class="q">Which plan would you like?</h2><p class="help">You can still change your numbers with your agent during enrollment.</p>
+     <div class="choice">
+       <button class="opt" aria-pressed="${S.product==='iul'}" data-set="product" data-val="iul"><b>IUL</b><span class="big">${fmt(iul.income)}<small> /yr</small></span><small>Death benefit ${fmtK(iul.db)}</small></button>
+       <button class="opt" aria-pressed="${S.product==='kz'}" data-set="product" data-val="kz" ${q.ok?'':'disabled style="opacity:.5"'}><b>🚀 IUL + Kai-Zen boost</b><span class="big">${fmt(kz.income)}<small> /yr</small></span><small>${q.ok?'Death benefit '+fmtK(kz.db):'Not available with your answers'}</small></button>
+     </div>
+     <div class="summary">
+       <div><span>Plan</span><b>${S.product==='kz'?'IUL + Kai-Zen':'IUL'} · Allianz</b></div>
+       <div><span>You pay</span><b>${fmt(S.amount)}/yr for ${S.years} yrs</b></div>
+       <div><span>Income</span><b>${fmt(v.income)}/yr, age ${v.start}–90</b></div>
+       <div><span>Death benefit</span><b>${fmtK(v.db)}</b></div>
+       <div><span>Your agent</span><b>Agent Name</b></div>
+     </div>
+     <label class="check"><input type="checkbox" data-ack="1" ${S.ack?'checked':''}> I understand these are estimates. My final numbers come from a full carrier illustration during enrollment.</label>
+   </div></div>${foot(`<button class="btn ${S.product==='kz'?'boost':'primary'}" data-go="wall" id="goWall" ${S.ack?'':'disabled'}>Create my account →</button>`)}`},
+ agent(){return `<div class="body"><div class="inner" style="text-align:center">${back(S.prev||'land')}
+   <div class="wallicon">👤</div><h2 class="q">Agent Name</h2><p class="help">Your licensed agent<br>agent@example.com · (555) 000-0000</p>
+   <div class="opts" style="text-align:left;margin-top:10px">
+     <button class="opt"><span class="ic">📞</span><span>Request a call<small>Your agent will reach out</small></span></button>
+     <button class="opt"><span class="ic">📅</span><span>Book a time<small>Pick a slot on the agent's calendar</small></span></button>
+   </div></div></div>${foot(`<button class="btn secondary" data-go="${S.prev||'land'}">Back</button>`)}`},
+ wall(){const v=calc(S,S.product==='kz');
+   return `<div class="body"><div class="inner wallscr">
+   <div class="wallicon">✓</div><h2 class="q">You're all set, ${S.name||'there'}</h2>
+   <p class="help">Next, create your secure account to start enrollment. Your agent, Agent Name, will guide you from here.</p>
+   <div class="payload"><h5>Prototype note: what's handed to ILIA (open)</h5>
+     <div><span>Product</span><b>${S.product==='kz'?'Kai-Zen (IUL + leverage)':'IUL'} · Allianz</b></div>
+     <div><span>Confirmed numbers</span><b>${fmt(S.amount)}/yr · ${S.years} yrs · income at ${v.start}</b></div>
+     <div><span>Prospect</span><b>${S.name||'—'} · ${S.email||'—'}</b></div>
+     <div><span>Calculator answers</span><b>age ${S.age} · ${S.sex||'—'} · ${S.health||'—'} · nicotine ${S.nic||'—'}</b></div>
+     <div><span>Agent of record</span><b>Member's selected ILIA agent</b></div>
+     <div><span>Source</span><b>member-ab12 · asset QR-0047</b></div>
+   </div></div></div>${foot(`<button class="btn primary">Continue to ILIA →</button>`)}`}
+};
+
+function render(){
+  const app=$('#app');
+  app.innerHTML=header()+SCREENS[S.screen]();
+  const n=NOTES[S.screen];
+  $('#notes').innerHTML=`<div class="scr">${device==='web'?'Web':'Mobile'} · screen</div><h3>${n.t}</h3><ul>${n.b.map(x=>`<li>${x}</li>`).join('')}</ul><div class="track">📊 Tracked in CMS: <code>${n.k}</code></div>`;
+  const body=app.querySelector('.body'); if(body&&render.scrollTop) body.scrollTop=0;
+}
+function go(to){ if(to==='agent'&&S.screen!=='agent') S.prev=S.screen; render.scrollTop=true; S.screen=to; render(); render.scrollTop=false; }
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button'); if(!t||!$('#app').contains(t)) return;
+  const d=t.dataset;
+  if(d.go){ if(!t.disabled) go(d.go); return; }
+  if(d.set){ let v=d.val; if(['amount','start'].includes(d.set)) v=+v; S[d.set]=v; render(); return; }
+  if(d.toggle){ const a=S[d.toggle], i=a.indexOf(d.val); i<0?a.push(d.val):a.splice(i,1); render(); return; }
+  if(d.age){ S.age=Math.min(80,Math.max(18,S.age+ +d.age)); render(); return; }
+  if(d.tab){ S.tab=d.tab; render(); return; }
+  if(d.years){ S.years=+d.years; render(); return; }
+  if(d.adjust){ S.showAdjust=!S.showAdjust; render(); return; }
+  if(d.acc){ S.open[d.acc]=!S.open[d.acc]; render(); return; }
+});
+document.addEventListener('input',e=>{
+  const t=e.target; if(!$('#app').contains(t)) return;
+  if(t.dataset.input){ S[t.dataset.input]=t.value; const b=$('#toResults'); if(b) b.disabled=!(S.name.trim()&&/.+@.+\..+/.test(S.email)); }
+  if(t.dataset.range){ S[t.dataset.range]=+t.value; const pos=t.dataset.range; render(); const el=document.querySelector(`[data-range="${pos}"]`); if(el) el.focus(); }
+});
+document.addEventListener('change',e=>{ const t=e.target; if(t.dataset&&t.dataset.ack){ S.ack=t.checked; const b=$('#goWall'); if(b) b.disabled=!S.ack; } });
+
+function setDevice(d){
+  device=d; $('#stage').classList.toggle('web',d==='web');
+  $('#bMobile').setAttribute('aria-pressed',d==='mobile'); $('#bWeb').setAttribute('aria-pressed',d==='web');
+  if(d==='web') S.showAdjust=true;
+  render();
+}
+$('#bMobile').onclick=()=>setDevice('mobile');
+$('#bWeb').onclick=()=>setDevice('web');
+$('#bReset').onclick=()=>{S=JSON.parse(JSON.stringify(DEF)); if(device==='web') S.showAdjust=true; render();};
+setDevice(window.innerWidth<700?'mobile':'mobile');
+})();
+</script>
+</body>
+</html>
