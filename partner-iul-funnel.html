@@ -426,7 +426,7 @@ body.embed .notes{top:16px}
   <tr><td>1</td><td><b>What matters most to you?</b></td><td>Tax-free retirement income · Protect my family · Grow without market losses · Access cash when I need it (pick any)</td><td><span class="pill p-desire">Desire</span> sets what the results lead with</td></tr>
   <tr><td>2</td><td><b>About you:</b> age + sex</td><td>Age stepper · Male / Female</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: age 18–65</span></td></tr>
   <tr><td>3</td><td><b>Your health:</b> overall health + nicotine/tobacco/marijuana</td><td>Excellent · Good · Average · Below average · No / Yes</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: average or better</span></td></tr>
-  <tr><td>4</td><td><b>Your numbers:</b> yearly amount + household income</td><td>$10k · $25k · $50k · $100k+ · Under $100k / $100–250k / $250–500k / $500k+</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: household income $100k+</span><span class="pill p-lead">Affordability flag</span> yearly amount vs ~20%-of-income guideline</td></tr>
+  <tr><td>4</td><td><b>Your numbers:</b> yearly amount + household income</td><td>$20–25k · $26–50k · $51–99k · $100k+ (ranges) · Under $100k / $100–250k / $250–500k / $500k+</td><td><span class="pill p-calc">Calculator</span><span class="pill p-boost">Boost: household income $100k+</span><span class="pill p-lead">Affordability flag</span> yearly amount vs ~20%-of-income guideline</td></tr>
   <tr><td>5</td><td><b>When do you want income to start?</b></td><td>60 · 65 · 70</td><td><span class="pill p-calc">Calculator</span></td></tr>
   <tr><td>—</td><td><b><s>Where should we send your results?</s></b></td><td><i>Removed</i></td><td><span class="pill p-lead">Decided</span> No contact form before results (Judy). Name, email and phone are asked only at ILIA account creation. Visits before that are tracked anonymously to the agent's link.</td></tr>
   <tr><td>·</td><td><i>Defaults (adjustable on results)</i></td><td>Years paying = 5 · Income until age 90 · Death benefit sized from the contribution</td><td><span class="pill p-calc">Calculator</span></td></tr>
@@ -502,28 +502,33 @@ function calc(st,lev){
 // Industry guideline: yearly premium generally no more than ~20% of annual income; above that needs
 // assets/savings review by underwriting. Bands -> [low, typical, high] household income.
 const BANDS={u100:[0,75000,100000],'100':[100000,150000,250000],'250':[250000,350000,500000],'500':[500000,650000,Infinity]};
+// Yearly-amount ranges (Q4). rep = the starting value used by the calculator; the prospect can fine-tune on results.
+const AMTB=[{k:'a',lo:20000,rep:22500,label:'$20–25k'},{k:'b',lo:26000,rep:38000,label:'$26–50k'},{k:'c',lo:51000,rep:75000,label:'$51–99k'},{k:'d',lo:100000,rep:100000,label:'$100k+'}];
+const bandOf=v=>AMTB.find(b=>b.rep===v);
+const amtLabel=v=>{ const b=bandOf(v); return b?b.label:fmt(v); };
+function levelFor(lo,repv,hh){ const [,typ,hi]=BANDS[hh]; if(hi!==Infinity&&lo>hi*0.20) return 'over'; if(repv>typ*0.15) return 'stretch'; return 'ok'; }
 function afford(amount,hh){
   if(!amount||!hh) return null;
-  const [lo,typ,hi]=BANDS[hh], pctTyp=amount/typ;
-  const round5=v=>Math.max(5000,Math.round(v/5000)*5000);
-  const suggest=round5(typ*0.12);
-  let level='ok';
-  if(hi!==Infinity && amount>hi*0.20) level='over';
-  else if(amount>typ*0.15) level='stretch';
-  return {level,pct:Math.round(pctTyp*100),suggest:Math.min(suggest,amount),marker:Math.min(pctTyp/0.30,1)*100};
+  const [lo0,typ]=BANDS[hh], b=bandOf(amount), lo=b?b.lo:amount, pctTyp=amount/typ;
+  const level=levelFor(lo,amount,hh);
+  // suggestion: highest range that is comfortable; else highest range that isn't "over"; never higher than the current amount
+  const lower=AMTB.filter(x=>x.rep<amount);
+  const okB=lower.filter(x=>levelFor(x.lo,x.rep,hh)==='ok').pop(), notOver=lower.filter(x=>levelFor(x.lo,x.rep,hh)!=='over').pop();
+  const sug=okB||notOver||null;
+  return {level,pct:Math.round(pctTyp*100),suggest:sug?sug.rep:null,suggestLabel:sug?sug.label:null,marker:Math.min(pctTyp/0.30,1)*100,label:amtLabel(amount)};
 }
 function affBlock(where){
   const a=afford(S.amount,S.hh); if(!a) return '';
-  const amt=S.amount>=100000?fmt(S.amount)+'+':fmt(S.amount);
+  const amt=a.label;
   const band={u100:'under $100k','100':'$100–250k','250':'$250–500k','500':'$500k+'}[S.hh];
   const kz=S.hh==='u100'?'<div class="kzn">🚀 The Kai-Zen boost needs a household income of $100k+, so you\'ll see IUL numbers only.</div>':'';
   const gauge=`<div class="gauge"><i style="left:${a.marker}%"></i></div><div class="gl"><span>Comfortable</span><span>Stretch</span><span>Over guideline</span></div>`;
-  if(a.level==='ok') return `<div class="aff ok"><b>✓ Looks comfortable</b><p>About ${a.pct}% of a typical household income in your range.</p>${kz}</div>`;
+  if(a.level==='ok') return `<div class="aff ok"><b>✓ Looks comfortable</b><p>${a.label}/yr is about ${a.pct}% of a typical household income in your range.</p>${kz}</div>`;
   if(a.level==='stretch') return `<div class="aff stretch"><b>Heads up: this is a stretch</b><p>${amt}/yr is about ${a.pct}% of a typical income in your range. Make sure it's comfortable for at least 5 years. You can lower it on the next screen.</p>${gauge}
-    <div class="acts"><button data-affuse="${a.suggest}">Try ${fmt(a.suggest)}/yr</button></div>${kz}</div>`;
+    ${a.suggest?`<div class="acts"><button data-affuse="${a.suggest}">Try ${a.suggestLabel}/yr</button></div>`:'<p style="margin:0;font-size:12.5px">This is our lowest range. Your agent can talk you through a smaller plan.</p>'}${kz}</div>`;
   return `<div class="aff over" role="alert"><b>⚠ This might not be the best fit for you</b>
     <p>Putting in ${amt}/yr on a household income ${band} is more than most people can keep up. Carriers usually look for yearly premiums under about <b>20% of income</b>, and you'd need to keep paying for at least 5 years.</p>${gauge}
-    <div class="acts"><button class="pri" data-affuse="${a.suggest}">Use ${fmt(a.suggest)}/yr instead</button><button aria-pressed="${!!S.affKeep}" data-affkeep="1">I'd pay from savings: keep it</button></div>
+    <div class="acts">${a.suggest?`<button class="pri" data-affuse="${a.suggest}">Use ${a.suggestLabel}/yr instead</button>`:''}<button aria-pressed="${!!S.affKeep}" data-affkeep="1">I'd pay from savings: keep it</button></div>
     ${S.affKeep?'<p style="margin:8px 0 0;font-size:12.5px">Got it. Your agent will review whether this works with your savings before anything is final.</p>':''}${kz}</div>`;
 }
 function qualifies(st){
@@ -536,7 +541,7 @@ function qualifies(st){
 function demoAnswers(){
   if(!S.goals.length) S.goals=['income','safe'];
   S.sex=S.sex||'female'; S.health=S.health||'good'; S.nic=S.nic||'no';
-  S.amount=S.amount||50000; S.hh=S.hh||'250'; S.start=S.start||65;
+  S.amount=S.amount||38000; S.hh=S.hh||'250'; S.start=S.start||65;
 
 }
 
@@ -566,7 +571,7 @@ const NOTES={
  goals:{t:'Q1 · Desire',b:['Multi-select.','The answer decides what the results lead with (income first, death benefit first, or cash value first).'],k:'goal(s) selected'},
  about:{t:'Q2 · About you',b:['Age drives the calculator and is part of the Kai-Zen check (18–65).','Sex is needed for pricing.'],k:'step reached'},
  health:{t:'Q3 · Health',b:['Self-rated health class, no medical details yet.','Below average is not eligible for the boost (they still get IUL numbers).'],k:'step reached'},
- money:{t:'Q4 · Your numbers + affordability',b:['Yearly amount is the main calculator input. Household income is a band (also the Kai-Zen $100k+ check).','<b>Live affordability flag</b> based on the industry guideline that yearly premium paid from earnings should be no more than ~20% of income:','✓ <b>Comfortable</b> ≤15% of a typical income in the band · <b>Stretch</b> above that · <b>⚠ Not the best fit</b> above 20% of the top of the band.','For ⚠, the prospect must either take the suggested amount (~12% of income) or say they\'d pay from savings. Savings cases are flagged for the agent; carriers allow premiums from assets but review them.','The same check runs when they edit numbers on results, and the flag travels to ILIA with the handoff.','Thresholds are a starting point to confirm with the carrier/compliance.'],k:'affordability level · suggestion used / kept'},
+ money:{t:'Q4 · Your numbers + affordability',b:['Yearly amount is a <b>range</b>: $20–25k · $26–50k · $51–99k · $100k+. The calculator starts at a typical value ($22.5k / $38k / $75k / $100k); the exact amount can be edited on results.','Household income is a band (also the Kai-Zen $100k+ check).','<b>Range logic:</b> "Not the best fit" only if even the <b>bottom</b> of the range is over 20% of the top of their income band (benefit of the doubt). "Stretch" if the typical value is over 15% of a typical income. The suggestion is the highest comfortable range. If none is lower, it points them to their agent.','<b>Live affordability flag</b> based on the industry guideline that yearly premium paid from earnings should be no more than ~20% of income:','For ⚠, the prospect must either take the suggested range or say they would pay from savings (flagged for the agent; carriers allow premiums from assets but review them).','The same check runs when they edit numbers on results, and the flag travels to ILIA with the handoff.','Thresholds are a starting point to confirm with the carrier/compliance.'],k:'affordability level · suggestion used / kept'},
  start:{t:'Q5 · Income start',b:['Three taps, adjustable on results.','Next goes <b>straight to their numbers</b>. There\'s no contact form (Judy).'],k:'step reached'},
  contact:{t:'Q6 · Send my results',b:['Captures the lead <b>before</b> results, so members can see drop-offs and the agent can follow up.','<b>Open:</b> required vs optional.','Demo: click any field to fill sample details.'],k:'lead created (tied to member + agent)'},
  results:{t:'Your numbers + boost',b:['<b>Anonymous.</b> No name or email has been asked yet; the visit is tracked to the agent\'s link.','Leads with their own numbers and the goal they picked.','<b>Adjust</b> yearly amount, years paying, income start and age. Results and chart update live.','<b>Web:</b> IUL and Kai-Zen side by side. <b>Mobile:</b> tabs, with the boost amount on the tab.','<b>✎ Edit my numbers</b> on each plan: change amount, years, start age or age, see <b>before → after</b>, then <b>Save & update</b>. The card highlights what changed.','Each plan card has its own <b>Choose</b> button, so picking a plan is one tap.','"Why?" chips jump to the matching Learn more section.','Stepper at the top: jump back to answers at any time.'],k:'results viewed · adjustments · boost viewed · plan chosen'},
@@ -634,7 +639,7 @@ const SCREENS={
    </div></div>${foot(`<button class="btn primary" data-go="money" ${S.health&&S.nic?'':'disabled'}>Next</button>`)}`},
  money(){return `<div class="body"><div class="inner">${back('health')}
    <p class="kicker">Question 4 of 5</p><h2 class="q">Your numbers</h2><p class="help">You can change these on the next screen.</p>
-   <div class="field"><label>How much could you put in each year?</label><div class="row">${optBtn('amount',10000,'$10k')}${optBtn('amount',25000,'$25k')}${optBtn('amount',50000,'$50k')}${optBtn('amount',100000,'$100k+')}</div></div>
+   <div class="field"><label>How much could you put in each year?</label><div class="row">${AMTB.map(b=>optBtn('amount',b.rep,b.label)).join('')}</div><div class="hint" style="font-size:12px;color:var(--ink-3);margin-top:6px">Pick a range. You can fine-tune the exact amount on the next screen.</div></div>
    <div class="field"><label>Household income</label><div class="row">${optBtn('hh','u100','Under $100k')}${optBtn('hh','100','$100–250k')}${optBtn('hh','250','$250–500k')}${optBtn('hh','500','$500k+')}</div></div>
    ${affBlock('q4')}
    </div></div>${foot(`<button class="btn primary" data-go="start" ${S.amount&&S.hh&&!(afford(S.amount,S.hh).level==='over'&&!S.affKeep)?'':'disabled'}>Next</button>`)}`},
@@ -685,8 +690,8 @@ const SCREENS={
    const showKz=q.ok&&(device==='web'||S.tab==='kz');
    return `<div class="body"><div class="inner wide">
      <p class="kicker">Your estimate${S.name?', '+S.name:''}</p><h2 class="q" style="margin-bottom:4px">Here's what your plan could look like</h2>
-     ${(()=>{const a=afford(S.amount,S.hh); return a&&a.level==='over'?`<div class="affbanner">⚠<div><b>${fmt(S.amount)}/yr is over the usual guideline for your income.</b> ${S.affKeep?'You said you\'d pay from savings, so your agent will review it.':''} <button class="linkbtn" data-affuse="${a.suggest}">See ${fmt(a.suggest)}/yr instead</button></div></div>`:'';})()}
-     <p class="help">Based on ${fmt(S.amount)}/yr for ${S.years} years, starting at age ${S.age}. <button class="linkbtn" data-edit="${S.tab}">✎ Change numbers</button></p>
+     ${(()=>{const a=afford(S.amount,S.hh); return a&&a.level==='over'?`<div class="affbanner">⚠<div><b>${a.label}/yr is over the usual guideline for your income.</b> ${S.affKeep?'You said you\'d pay from savings, so your agent will review it.':''} ${a.suggest?`<button class="linkbtn" data-affuse="${a.suggest}">See ${a.suggestLabel}/yr instead</button>`:''}</div></div>`:'';})()}
+     <p class="help">Based on ${bandOf(S.amount)?bandOf(S.amount).label+' (estimated at '+fmt(S.amount)+')':fmt(S.amount)}/yr for ${S.years} years, starting at age ${S.age}. <button class="linkbtn" data-edit="${S.tab}">✎ Change numbers</button></p>
      <div class="res-grid">${adj}<div>
        <div class="ptabs"><button aria-pressed="${S.tab==='iul'}" data-tab="iul">IUL</button><button class="kzt" aria-pressed="${S.tab==='kz'}" data-tab="kz">With boost ${q.ok?'🚀 +'+fmtK(diff*(90-kz.start)):''}</button></div>
        <div class="cards">${iulCard}${kzCard}</div>
@@ -884,7 +889,7 @@ function sheet(){
   return `<div class="sheet-back" data-edcancel="1"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="Edit my numbers">
     <div class="grab"></div><h3>✎ Edit my numbers</h3><p class="sh-sub">${lev?'🚀 IUL + Kai-Zen boost':'IUL'} · see the change before you save. Your numbers apply to both plans.</p>
     <div class="erow" style="border-bottom:0;padding-bottom:0"><span>Yearly amount<small>What you put in each year</small></span><div class="estep"><button data-ed="amount" data-by="-5000" aria-label="Less">−</button><output>${fmt(E.amount)}</output><button data-ed="amount" data-by="5000" aria-label="More">+</button></div></div>
-    <div class="echips" style="padding-bottom:10px;border-bottom:1px solid var(--line)">${[10000,25000,50000,75000,100000,150000].map(v=>`<button aria-pressed="${E.amount===v}" data-edset="amount" data-val="${v}">${fmtK(v)}</button>`).join('')}</div>
+    <div class="echips" style="padding-bottom:10px;border-bottom:1px solid var(--line)">${[...AMTB.map(b=>b.rep),150000].map(v=>`<button aria-pressed="${E.amount===v}" data-edset="amount" data-val="${v}">${amtLabel(v)}</button>`).join('')}</div>
     <div class="erow"><span>Years paying<small>${lev?'Kai-Zen leverage options':'How long you contribute'}</small></span><div class="echips" style="margin:0">${[5,7,10].map(v=>`<button aria-pressed="${E.years===v}" data-edset="years" data-val="${v}">${v} yrs</button>`).join('')}</div></div>
     <div class="erow"><span>Income starts at<small>Age you start drawing income</small></span><div class="estep"><button data-ed="start" data-by="-1" aria-label="Earlier">−</button><output>Age ${E.start}</output><button data-ed="start" data-by="1" aria-label="Later">+</button></div></div>
     <div class="erow" style="border-bottom:0"><span>Your age</span><div class="estep"><button data-ed="age" data-by="-1" aria-label="Younger">−</button><output>${E.age}</output><button data-ed="age" data-by="1" aria-label="Older">+</button></div></div>
