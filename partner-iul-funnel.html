@@ -160,6 +160,25 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
 
 /* Landing */
 .hero{text-align:center;padding-top:10px}
+/* Landing toggle: Education vs Numbers */
+.landtog{display:flex;gap:6px;padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+.landtog button{flex:1;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink-2);font:700 14px Inter,sans-serif;padding:10px 8px;border-radius:12px;cursor:pointer}
+.landtog button[aria-selected=true]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);box-shadow:0 2px 8px rgba(11,107,203,.25)}
+.stage.web .landtog{justify-content:center} .stage.web .landtog button{flex:0 0 240px}
+.edu-sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px;text-align:left}
+.edu-sec h3{margin:0 0 8px;font-size:16px}
+.edu-g{display:grid;gap:8px} .stage.web .edu-g{grid-template-columns:repeat(3,1fr)}
+.edu-c{background:var(--surface-2);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink-2)} .edu-c b{display:block;color:var(--ink);font-size:14px}
+.boostviz{display:grid;gap:6px;margin:6px 0 8px}
+.boostviz .row2{display:grid;grid-template-columns:92px 1fr;gap:8px;align-items:center;font-size:12.5px;color:var(--ink-2)}
+.boostviz .bar{height:22px;border-radius:6px;display:flex;overflow:hidden;background:var(--surface-2)}
+.boostviz .you{background:var(--brand)} .boostviz .bank{background:var(--boost)}
+.fitq{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.fitq:last-of-type{border-bottom:0}
+.fitq .yn{display:flex;gap:6px} .fitq .yn button{border:1.5px solid var(--line);background:var(--surface);border-radius:9px;padding:6px 12px;font:700 13px Inter,sans-serif;cursor:pointer;color:var(--ink)}
+.fitq .yn button[aria-pressed=true]{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.fitres{margin-top:10px;border-radius:10px;padding:10px 12px;font-size:13.5px}
+.fitres.ok{background:var(--good-soft)} .fitres.maybe{background:var(--warn-soft)}
 .hero .q{font-size:27px}
 .stage.web .hero .q{font-size:40px}
 .benefits{display:grid;gap:8px;margin:20px 0 0;text-align:left}
@@ -387,6 +406,7 @@ body.embed .notes{top:16px}
     <div class="jump">Demo jump:
       <button data-jump="land">Start</button>
       <button data-jump="results">Results</button>
+      <button data-jump="edu">Education landing</button>
       <button data-jump="learn">Learn more</button>
       <button data-jump="confirm">Choose plan</button>
       <button data-jump="ilia">ILIA account</button>
@@ -404,7 +424,7 @@ body.embed .notes{top:16px}
 <h2>The flow</h2>
 <p class="sub">The main path is 7 steps. "Learn more" and "Talk to my agent" are side paths that always return to the prospect's numbers. A stepper at the top of the funnel lets the prospect jump back to their answers, numbers or plan at any time before the account is created.</p>
 <div class="flow">
-  <div class="step main"><div class="n">Entry</div><b>Link or QR</b><p>From an ILIA agent, via J's CMS. It carries the CMS link + asset ID; the CMS knows which agent owns it.</p></div>
+  <div class="step main"><div class="n">Entry</div><b>Link or QR → landing</b><p>Opens on <b>Education</b> (how it works + fit check) or <b>Numbers</b>, as the agent chose. A toggle switches between them. From an ILIA agent, via J's CMS. It carries the CMS link + asset ID; the CMS knows which agent owns it.</p></div>
   <div class="step main"><div class="n">Step 1</div><b>Short questions</b><p>5 quick screens of taps. <b>No name or email asked.</b> About 60 seconds.</p></div>
   <div class="step main"><div class="n">Step 2</div><b>Your numbers</b><p>Calculator results and a growth chart. Adjust the yearly amount, years and start age, and results update live.</p></div>
   <div class="step boost"><div class="n">Step 3</div><b>Kai-Zen boost</b><p>The same numbers with leverage, side by side, for prospects who qualify.</p></div>
@@ -445,6 +465,8 @@ body.embed .notes{top:16px}
   <div class="seg" role="group" aria-label="ILIA handoff"><button id="bV2" aria-pressed="true">Agent Link sign-up (main)</button><button id="bV1" aria-pressed="false">Fallback · agent adds client</button></div>
   <span class="tlabel">Jump to:</span>
   <button class="tbtn" data-jump="results">Results</button>
+  <button class="tbtn" data-jump="edu">Education landing</button>
+  <button class="tbtn" data-jump="land">Numbers landing</button>
   <button class="tbtn" data-jump="learn">Learn more</button>
   <button class="tbtn" data-jump="confirm">Choose plan</button>
   <button class="tbtn" data-jump="ilia">ILIA account</button>
@@ -485,7 +507,7 @@ if(PROSPECT) document.body.classList.add('prospect');
 const $=s=>document.querySelector(s);
 const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
 const fmtK=n=>n>=1e6?('$'+(n/1e6).toFixed(n>=1e7?1:2).replace(/\.?0+$/,'')+'M'):('$'+Math.round(n/1000).toLocaleString('en-US')+'k');
-const DEF={screen:'land',goals:[],age:45,sex:null,health:null,nic:null,amount:null,hh:null,start:null,name:'',email:'',phone:'',years:5,product:null,ack:false,tab:'iul',showAdjust:false,open:{},acct:{last:'',dob:'',state:'',pw:'',terms:false},prev:null,learnFrom:null};
+const DEF={screen:(QP.get('land')==='edu'?'edu':'land'),fit:{},goals:[],age:45,sex:null,health:null,nic:null,amount:null,hh:null,start:null,name:'',email:'',phone:'',years:5,product:null,ack:false,tab:'iul',showAdjust:false,open:{},acct:{last:'',dob:'',state:'',pw:'',terms:false},prev:null,learnFrom:null};
 let S=JSON.parse(JSON.stringify(DEF));
 let device='mobile';
 
@@ -576,7 +598,8 @@ function chart(iul,kz,showKz){
 const NOTES={
  match:{t:'Get matched (lead-pool campaigns)',b:['Only for <b>paid campaigns set to "lead pool"</b>, or when no agent is licensed in their state.','Asked <b>after</b> results, never before (Judy\'s rule holds).','Consent wording for calls/texts.','The lead lands in the IMO/admin <b>Leads</b> tab to assign to a licensed agent.'],k:'pool lead created'},
  matched:{t:'Matched: waiting for agent',b:['The agent follows up and sends their personal link (their Agent Link). ILIA sign-up through it makes the lead their client. No ILIA code.'],k:'lead in pool'},
- land:{t:'Landing',b:['Arrives from an <b>ILIA agent\'s CMS link or QR</b>. The URL carries the CMS link ID + asset ID, and the CMS knows which ILIA agent owns it.','The agent who shared the link is shown at the top. Logo slot optional (branding TBD).','One promise, one button. Education sits behind "Learn more" later.'],k:'visit · CMS link · asset'},
+ edu:{t:'Landing · Education (Judy\'s hook)',b:['For prospects who want to <b>understand the fit</b> before seeing numbers.','4 short parts: what an IUL is, what the Kai-Zen boost is (visual), a <b>quick 3-question fit check</b> (no contact info), who it\'s usually for.','Big toggle at the top switches to <b>See my numbers</b> at any time.','The agent picks which landing a link opens on (CMS → link settings). Default for Judy\'s preference: Education.'],k:'landing view · fit check answers · toggle use'},
+ land:{t:'Landing · Numbers',b:['Opens here when the agent chose the <b>Numbers</b> landing.','Big toggle at the top switches to <b>How it works</b> (education) at any time.','Arrives from an <b>ILIA agent\'s CMS link or QR</b>. The URL carries the CMS link ID + asset ID, and the CMS knows which ILIA agent owns it.','The agent who shared the link is shown at the top. Logo slot optional (branding TBD).','One promise, one button. Education sits behind "Learn more" later.'],k:'visit · CMS link · asset'},
  goals:{t:'Q1 · Desire',b:['Multi-select.','The answer decides what the results lead with (income first, death benefit first, or cash value first).'],k:'goal(s) selected'},
  about:{t:'Q2 · About you',b:['<b>State</b> is asked here (not contact info). It routes campaign prospects to an agent licensed there.','Age drives the calculator and is part of the Kai-Zen check (18–65).','Sex is needed for pricing.'],k:'step reached'},
  health:{t:'Q3 · Health',b:['Self-rated health class, no medical details yet.','Below average is not eligible for the boost (they still get IUL numbers).'],k:'step reached'},
@@ -602,6 +625,7 @@ function header(){
   const top=`<div class="topbar"><div class="logo">GROUP<br>LOGO</div>
     <div class="agent"><b>${camp?'Licensed agents':'Agent Name'}</b><small>${camp?IMONAME+' · matched to your state':'Your licensed agent · (555) 000-0000'}</small></div>
     <button class="talk" data-go="agent">Talk to my agent</button></div>`;
+  if(S.screen==='land'||S.screen==='edu') return top+`<div class="landtog" role="tablist" aria-label="Choose what to see first"><button role="tab" aria-selected="${S.screen==='edu'}" data-go="edu">📘 How it works</button><button role="tab" aria-selected="${S.screen==='land'}" data-go="land">🔢 See my numbers</button></div>`;
   const qi=QORDER.indexOf(S.screen);
   if(qi>=0) return top+`<div class="progress"><div style="width:${Math.round(qi/QORDER.length*100)}%"></div></div>`;
   const cur=stageOf(S.screen);
@@ -617,6 +641,30 @@ const foot=btns=>`<div class="foot">${btns}</div>`;
 const back=to=>`<button class="back" data-go="${to}">← Back</button>`;
 
 const SCREENS={
+ edu(){ const F=S.fit||{}, ans=['inc','age','hl'].filter(k=>F[k]!==undefined).length, allYes=F.inc==='y'&&F.age==='y'&&F.hl==='y';
+   const yn=(k,q)=>`<div class="fitq"><span>${q}</span><div class="yn"><button aria-pressed="${F[k]==='y'}" data-fit="${k}:y">Yes</button><button aria-pressed="${F[k]==='n'}" data-fit="${k}:n">No</button></div></div>`;
+   return `<div class="body"><div class="inner wide hero" style="max-width:760px">
+   <p class="kicker">IUL + Kai-Zen boost</p>
+   <h1 class="q">Is an IUL with a boost a good fit for you?</h1>
+   <p class="help">A two-minute look at how it works, before any numbers.</p>
+   <div class="edu-sec"><h3>1 · What is an IUL?</h3><div class="edu-g">
+     <div class="edu-c"><b>🛡️ Protection for life</b>Permanent life insurance with a cash value account that builds over time.</div>
+     <div class="edu-c"><b>📈 Growth without market losses</b>Your cash value follows an index like the S&P 500, with a 0% floor in down years.</div>
+     <div class="edu-c"><b>💸 Tax-advantaged access</b>Use your cash value later through tax-efficient policy loans, such as for retirement income.</div></div></div>
+   <div class="edu-sec"><h3>2 · What's the Kai-Zen boost?</h3><p class="help" style="margin:0 0 6px">A lender helps fund your premiums, so your cash value can grow on more money than you put in.</p>
+     <div class="boostviz"><div class="row2"><span>IUL on its own</span><div class="bar"><div class="you" style="width:33%"></div></div></div>
+     <div class="row2"><span>IUL + boost</span><div class="bar"><div class="you" style="width:33%"></div><div class="bank" style="width:67%"></div></div></div>
+     <div class="row2"><span></span><span><span style="color:var(--brand);font-weight:700">■ You pay</span> &nbsp; <span style="color:var(--boost);font-weight:700">■ Lender adds (up to ~70%)</span></span></div></div>
+     <p class="help" style="margin:0;font-size:13px">No credit checks, no personal guarantees, no out-of-pocket interest. The loan is repaid from the policy later. Minimums and fees apply.</p></div>
+   <div class="edu-sec"><h3>3 · Quick fit check</h3>
+     ${yn('inc','Household income of $100k or more?')}${yn('age','Between ages 18 and 65?')}${yn('hl','Average or better health?')}
+     ${ans===3?(allYes?'<div class="fitres ok">✓ <b>You may qualify for the boost.</b> See what it could do with your own numbers.</div>':'<div class="fitres maybe"><b>An IUL may still be a fit,</b> even if the boost isn\'t. Your numbers will show both, or your agent can talk it through.</div>'):'<p class="disc" style="margin:8px 0 0">Answer all three to see your fit.</p>'}</div>
+   <div class="edu-sec"><h3>4 · Who it's usually for</h3><div class="edu-g">
+     <div class="edu-c"><b>Higher earners</b>Looking for tax-efficient growth beyond a 401(k) or IRA.</div>
+     <div class="edu-c"><b>Planners</b>Want retirement income plus protection for their family.</div>
+     <div class="edu-c"><b>Steady savers</b>Can commit a yearly amount for at least 5 years.</div></div></div>
+   <p style="margin-top:14px"><button class="linkbtn" data-learn="basics">Read the full guide →</button></p>
+   </div></div>${foot(`<button class="btn secondary" data-go="agent">Talk to my agent</button><button class="btn primary" data-go="goals">See my numbers →</button>`)}`},
  land(){return `<div class="body"><div class="inner hero">
    <p class="kicker">Indexed Universal Life</p>
    <h1 class="q">See how much tax-free retirement income you could build</h1>
@@ -627,9 +675,9 @@ const SCREENS={
      <div class="benefit">💸<div><b>Tax-advantaged</b><span>Grow and access cash tax-efficiently.</span></div></div>
      <div class="benefit">🚀<div><b>Boost option</b><span>Leverage could multiply your results.</span></div></div>
    </div>
-   <p style="margin-top:16px"><button class="linkbtn" data-learn="basics">New to IULs? Learn the basics first →</button></p>
+   <p style="margin-top:16px"><button class="linkbtn" data-go="edu">New to IULs? See how it works first →</button></p>
    </div></div>${foot(`<button class="btn primary" data-go="goals">See my numbers →</button>`)}`},
- goals(){return `<div class="body"><div class="inner">${back('land')}
+ goals(){return `<div class="body"><div class="inner">${back(S.landFrom||'land')}
    <p class="kicker">Question 1 of 5</p><h2 class="q">What matters most to you?</h2><p class="help">Pick as many as you like.</p>
    <div class="opts two">
    ${optBtn('goals','income','Tax-free retirement income','Supplement Social Security and savings','🏖️',1)}
@@ -941,6 +989,7 @@ function render(){
   $('#urlbar').textContent=(H==='v2'&&(S.screen==='ilia'||S.screen==='done'))?'ilia.example/enroll/create-account':'partnerhub.example/'+(QP.get('l')||'LK-101')+'?asset='+(QP.get('a')||'AS-0047');
 }
 function go(to,opts){
+  if((S.screen==='land'||S.screen==='edu')&&to==='goals') S.landFrom=S.screen;
   opts=opts||{};
   if(to==='agent'&&S.screen!=='agent') S.prev=S.screen;
   if(to==='learn'&&S.screen!=='learn') S.learnFrom=S.screen==='land'?'land':S.screen==='confirm'?'confirm':'results';
@@ -1000,6 +1049,7 @@ document.addEventListener('click',e=>{
   if(d.learn){ go('learn',{section:d.learn}); return; }
   if(d.scroll){ toSection(d.scroll,false); return; }
   if(d.go){ if(t.disabled) return; if(d.tabto) S.tab=d.tabto; go(d.go); return; }
+  if(d.fit){ const [k,v]=d.fit.split(':'); S.fit=S.fit||{}; S.fit[k]=v; if(k==='inc'&&v==='n'&&!S.hh) S.hh='u100'; render(); return; }
   if(d.set){ if(d.set==='state') AGENT_LIVE=null; let v=d.val; if(['amount','start'].includes(d.set)) v=+v; S[d.set]=v; if(d.set==='amount'||d.set==='hh') S.affKeep=false; render(); return; }
   if(d.toggle){ const a=S[d.toggle], i=a.indexOf(d.val); i<0?a.push(d.val):a.splice(i,1); render(); return; }
   if(d.age){ S.age=Math.min(80,Math.max(18,S.age+ +d.age)); render(); return; }
@@ -1020,6 +1070,7 @@ document.addEventListener('change',e=>{ const t=e.target; if(!t.dataset) return;
   if(t.dataset.acct&&t.tagName==='SELECT'){ S.acct.state=t.value; refreshButtons(); }
 });
 function jump(to){
+  if(to==='edu'){ S=JSON.parse(JSON.stringify(DEF)); demo=null; if(device==='web') S.showAdjust=true; go('edu'); scrollToProto(); return; }
   if(to==='land'){ S=JSON.parse(JSON.stringify(DEF)); demo=null; if(device==='web') S.showAdjust=true; go('land'); scrollToProto(); return; }
   demoAnswers();
   if(to==='confirm'||to==='ilia'){ const q=qualifies(S); S.product=S.product||(q.ok?'kz':'iul'); S.ack=true; }
