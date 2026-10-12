@@ -1391,9 +1391,11 @@
               <tr><td>Death benefit at age 90</td><td><code>db_age_90</code></td></tr>
               <tr><td>In-force crediting rate</td><td><code>inforce_rate</code></td></tr>
               <tr><td>Low point value</td><td><code>low_point</code> (per option)</td></tr>
+              <tr><td>Illustration date <span class="newflag">Judy 10/12</span></td><td><code>illustration_date</code> — tag every scraped value with its illustration's date</td></tr>
               <tr><td>Policy # / insured</td><td>matching key → client</td></tr>
             </tbody>
           </table>
+          <p style="margin:10px 0 0;font-size:11.5px;color:var(--faint)"><b>Low-point month (Judy 10/12):</b> the low point is the cash surrender value at <b>month = (policy year × 12) + 1</b> — e.g. Year 11 → <b>month 133</b>. Validate by running at a 0% low point (that section reads 0.00%).</p>
         </div>
         <div class="scr-card">
           <h3>Where the data goes</h3>
@@ -2801,7 +2803,7 @@ const CD_HTML=`<title>DBR in Yearly Policy Breakdown</title>
       <div class="refg">
         <div class="fld"><label>Elected this year</label><input class="ro js-elected-year" value="Half — $250,000" readonly></div>
         <div class="fld"><label>Cumulative reduced to date <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Do we track a running total of reductions across years, and show it here?</span></span></label><input class="ro js-cumulative" value="$250,000" readonly></div>
-        <div class="fld"><label>Remaining allowable (50% cap) <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Only 50% reduction per 12-month period — is "remaining" a running cap tracked year to year?</span></span></label><input class="ro" value="$250,000" readonly><span class="hint2">the most that can still be reduced</span></div>
+        <div class="fld"><label>Remaining allowable (50% cap) <span class="always">✓ Judy 10/12</span></label><input class="ro" value="$250,000" readonly><span class="hint2">the most that can still be reduced — <b>reducible again after 12 months</b>, as a named or max amount, never &gt;50% (running cap)</span></div>
       </div>
       <div class="term-note"><b>Term status:</b> term rider partially reduced ($250k of $400k). Once the term rider is fully removed, no further term reduction is needed — remaining reductions come from the base. <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Once the term is off, is base reduction the only remaining lever? And does "term off" mean we skip term in later years?</span></span></div>
       <div class="health-flag"><b>⚠ Health check:</b> if the client's health has changed, we generally do <b>not</b> reduce the DB (keep coverage for heirs). <span class="askjudy"><span class="aj-i">i</span>Judy<span class="aj-pop"><span class="aj-h">Confirm with Judy</span>Where is the health flag captured, and does it block or just warn on a reduction?</span></span></div>
@@ -2819,7 +2821,7 @@ const CD_HTML=`<title>DBR in Yearly Policy Breakdown</title>
         <div class="jsh">📝 From Judy's session — to define (Judy)</div>
         <ul>
           <li><b>Revised-DBR derivation — now in Ben's scraper</b> (Judy/Ben/Paul, late Sep): no separate formula needed; confirm the derived fields + display with Judy (Oct 3).</li>
-          <li><b>Multi-year cap:</b> only 50% reduction per rolling 12-month period — track the running remaining.</li>
+          <li><b>Multi-year cap <span class="always">✓ Judy 10/12</span>:</b> only 50% per rolling 12-month period; <b>reducible again after 12 months</b>, named or max amount, never &gt;50% — track the running remaining.</li>
           <li><b>Health changed → don't reduce</b> the DB (warn or block).</li>
           <li><b>Change eligible year:</b> a client may decline for years, then start reducing later (e.g. after 65 — for cash, or to not over-fund the DB to heirs).</li>
           <li><b>"Least reduction, best DB":</b> cost-of-insurance / age guidance — the smallest reduction that keeps the best death benefit.</li>
