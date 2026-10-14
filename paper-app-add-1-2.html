@@ -27,9 +27,9 @@
   *{box-sizing:border-box}
   [hidden]{display:none !important}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.45}
-  .restartbar{display:flex;justify-content:flex-end;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
-  .restart{border:1px solid var(--accent);background:var(--surface);color:var(--accent);border-radius:14px;padding:3px 12px;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
-  .restart:hover{background:var(--accent-soft)}
+  .restartbar{display:flex;justify-content:flex-start;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .restart{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:14px;padding:3px 12px;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+  .restart:hover{opacity:.9}
   .banner{background:var(--note-soft);color:var(--note);border-bottom:1px solid var(--note);padding:8px 16px;font-size:12.5px;font-weight:500}
   .shell{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 36px)}
   @media (max-width:860px){.shell{grid-template-columns:1fr}.side{display:none}}
@@ -87,7 +87,7 @@
 </head>
 <body>
 <div class="banner">MOCK for devs · Paper App Flow 1.2 · ST-1 "Add Paper Application" screen. Not live. All names are sample data.</div>
-<div class="restartbar"><button class="restart" type="button" onclick="location.reload()">↺ Start over</button></div>
+<div class="restartbar"><button class="restart" type="button" onclick="location.reload()">↺ Start over (reset the mock)</button></div>
 <div class="shell">
   <aside class="side">
     <div class="logo">ilia<small>ADMIN</small></div>
@@ -115,7 +115,7 @@
             <div id="agentSearchWrap">
               <div class="field">
                 <label>Agent <span class="req">*</span></label>
-                <input id="agentSearch" placeholder="Start typing an agent's name…" autocomplete="off">
+                <input id="agentSearch" placeholder="Click to pick a sample agent" autocomplete="off" readonly style="cursor:pointer">
               </div>
               <div class="results" id="agentResults" hidden></div>
             </div>
@@ -166,10 +166,10 @@
             <h2><span class="num">4</span>Client details</h2>
             <p class="hint">ILIA checks the email isn't already in use.</p>
             <div class="row">
-              <div class="field"><label>First Name <span class="req">*</span></label><input id="cFirst"></div>
-              <div class="field"><label>Last Name <span class="req">*</span></label><input id="cLast"></div>
-              <div class="field"><label>Email <span class="req">*</span></label><input id="cEmail" type="email"></div>
-              <div class="field"><label>Phone Number <span class="req">*</span></label><input id="cPhone"></div>
+              <div class="field"><label>First Name <span class="req">*</span></label><input id="cFirst" readonly placeholder="Click to fill" style="cursor:pointer"></div>
+              <div class="field"><label>Last Name <span class="req">*</span></label><input id="cLast" readonly placeholder="Click to fill" style="cursor:pointer"></div>
+              <div class="field"><label>Email <span class="req">*</span></label><input id="cEmail" readonly placeholder="Click to fill" style="cursor:pointer"></div>
+              <div class="field"><label>Phone Number <span class="req">*</span></label><input id="cPhone" readonly placeholder="Click to fill" style="cursor:pointer"></div>
             </div>
           </div>
 
@@ -212,7 +212,7 @@
           <li><b>On create:</b> admin lands on the <b>new client's page</b> (today: participants list). Emails + action item are ST-3 (shown here for context).</li>
         </ol>
         <span class="tag">Try it</span>
-        <div class="demo">Type <b>Jordan</b> (1 IMO), <b>Priya</b> (2 IMOs) or <b>Taylor</b> (no IMO) to see each IMO behaviour.</div>
+        <div class="demo">No typing needed: <b>click any field</b> and sample data fills in. In the Agent list, pick <b>Jordan</b> (1 IMO), <b>Priya</b> (2 IMOs) or <b>Taylor</b> (no IMO) to see each IMO behaviour.</div>
       </aside>
     </div>
   </main>
@@ -235,7 +235,7 @@
     var box = $("agentResults");
     q = q.trim().toLowerCase();
     if(!q){ box.hidden = true; box.innerHTML = ""; return; }
-    var hits = AGENTS.filter(function(a){ return a.name.toLowerCase().indexOf(q) !== -1; });
+    var hits = q === "*" ? AGENTS : AGENTS.filter(function(a){ return a.name.toLowerCase().indexOf(q) !== -1; });
     box.innerHTML = hits.length ? "" : "<button type='button' disabled>No ILIA agent found</button>";
     hits.forEach(function(a){
       var b = document.createElement("button");
@@ -308,7 +308,10 @@
     $("create").disabled = !(hasAgent && hasImo && hasProd && clientOk());
   }
 
-  $("agentSearch").addEventListener("input", function(e){ renderResults(e.target.value); });
+  $("agentSearch").addEventListener("click", function(){ renderResults("*"); });
+  var SAMPLE = {cFirst:"Sam", cLast:"Rivera", cEmail:"sam.rivera@example.com", cPhone:"(555) 010-0100"};
+  ["cFirst","cLast","cEmail","cPhone"].forEach(function(id){ $(id).addEventListener("click", function(){ if(!$(id).value){ $(id).value = SAMPLE[id]; refresh(); } }); });
+  $("carrier").addEventListener("mousedown", function(e){ if(!$("carrier").value){ e.preventDefault(); $("carrier").value = "securian"; setProduct(); refresh(); } });
   $("agentClear").addEventListener("click", clearAgent);
   $("imoSelect").addEventListener("change", function(e){ state.imo = e.target.value; refresh(); });
   $("carrier").addEventListener("change", function(){ setProduct(); refresh(); });
