@@ -49,10 +49,9 @@
   .row.paper{background:var(--warn-soft)}
   .row.paper .s{color:var(--warn);font-weight:700}
   .row.real{background:var(--ok-soft)}
-  .row.gone{color:var(--faint);text-decoration:line-through}
-  .row.gone .s,.row.gone .d{color:var(--faint)}
+  .row.na{background:var(--surface-2);color:var(--muted)}
+  .row.na .s{color:var(--muted);font-style:italic;white-space:nowrap}
   .tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:8px;margin-left:6px;vertical-align:1px;text-decoration:none}
-  .tag.hide{background:var(--note-soft);color:var(--note)}
   .tag.t8{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
   .tag.t3{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
   .rules{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-top:18px}
@@ -67,11 +66,11 @@
 <div class="banner">SAMPLE SCREEN for devs · Paper App Flow 1.2 · T-6 Participant Status for paper apps (admin + agent). Concept only, not live. Sample data.</div>
 <div class="wrap">
   <h1>Participant Status: today vs paper app</h1>
-  <p class="lede">For paper apps, the e-app steps happened on paper, so several lines don't apply. They are <b>hidden</b>, and replaced by one <b>"Paper App"</b> line with the date the case entered ILIA. Lines that our new workflow actually records show <b>real dates</b>. Step 3 onward is the normal ILIA flow.</p>
+  <p class="lede">For paper apps, the e-app steps happened on paper, so several lines don't apply. They <b>stay on screen</b>, greyed, with the status <b>"Not needed – Paper App"</b>. A new <b>"Paper App"</b> line shows the date the case entered ILIA. Lines that our new workflow actually records show <b>real dates</b>. Step 3 onward is the normal ILIA flow.</p>
   <div class="legend">
     <span><i class="sw" style="background:var(--warn-soft);border:1px solid var(--warn)"></i>Paper App line (date = paper app created)</span>
     <span><i class="sw" style="background:var(--ok-soft);border:1px solid var(--ok)"></i>Real date from the new paper workflow</span>
-    <span><i class="sw" style="background:var(--note-soft)"></i>Hidden for paper apps</span>
+    <span><i class="sw" style="background:var(--surface-2);border:1px solid var(--border)"></i>"Not needed – Paper App" (still shown, greyed)</span>
   </div>
 
   <div class="cols">
@@ -113,16 +112,16 @@
         <div class="row"><span>Opened Email Invite</span><span class="d">10-14-2026</span><span class="s ok">Completed</span></div>
         <div class="row"><span>Created Account</span><span class="d"></span><span class="s inc">Incomplete</span></div>
         <div class="sec"><span class="k">Kai-</span>Zen Enrollment Process</div>
-        <div class="row gone"><span>Started Enrollment<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
+        <div class="row na"><span>Started Enrollment</span><span class="d"></span><span class="s">Not needed – Paper App</span></div>
         <div class="step">Steps 1 &amp; 2: Paper App</div>
         <div class="row paper"><span>Paper application received (signed on paper)</span><span class="d">10-14-2026</span><span class="s">Paper App</span></div>
-        <div class="row gone"><span>Basic info, contribution, Required Doc<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
-        <div class="row gone"><span>Questionnaire Completed<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
-        <div class="row gone"><span>Client Application Signed<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
-        <div class="row gone"><span>Agent Report Signed<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
+        <div class="row na"><span>Basic info, contribution, Required Doc</span><span class="d"></span><span class="s">Not needed – Paper App</span></div>
+        <div class="row na"><span>Questionnaire Completed</span><span class="d"></span><span class="s">Not needed – Paper App</span></div>
+        <div class="row na"><span>Client Application Signed</span><span class="d"></span><span class="s">Not needed – Paper App</span></div>
+        <div class="row na"><span>Agent Report Signed</span><span class="d"></span><span class="s">Not needed – Paper App</span></div>
         <div class="row real"><span>Paper App Details Completed<span class="tag t3">T-3/T-4</span></span><span class="d">10-16-2026</span><span class="s ok">Completed</span></div>
         <div class="row real"><span>Application Submitted to Carrier<span class="tag t8">T-8</span></span><span class="d">10-17-2026</span><span class="s ok">Completed</span></div>
-        <div class="row gone"><span>Application Received By Carrier<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
+        <div class="row na"><span>Application Received By Carrier</span><span class="d"></span><span class="s">Not needed – Paper App</span></div>
         <div class="step">Step 3: Proposal (normal ILIA from here)</div>
         <div class="row"><span>Submitted to Agent</span><span class="d"></span><span class="s inc">Incomplete</span></div>
         <div class="row"><span>Approved by Agent</span><span class="d"></span><span class="s inc">Incomplete</span></div>
@@ -142,12 +141,12 @@
       <thead><tr><th>Line</th><th>Paper app behaviour</th><th>Where the date comes from</th></tr></thead>
       <tbody>
         <tr><td>Invited · Opened Email Invite · Created Account</td><td>No change</td><td>The client creation email (T-3), as today</td></tr>
-        <tr><td>Started Enrollment</td><td><b>Hidden</b></td><td>—</td></tr>
-        <tr><td><b>Paper application received (signed on paper)</b> <i>(new line)</i></td><td>Replaces Step 1 and the e-app lines of Step 2. Shows "Paper App".</td><td>Date the paper app was created (T-1)</td></tr>
-        <tr><td>Basic info · Questionnaire Completed · Client Application Signed · Agent Report Signed</td><td><b>Hidden</b> (done on paper). Must never show "Completed" for a paper app.</td><td>—</td></tr>
+        <tr><td>Started Enrollment</td><td><b>"Not needed – Paper App"</b> (greyed)</td><td>—</td></tr>
+        <tr><td><b>Paper application received (signed on paper)</b> <i>(new line)</i></td><td>Added at the top of Steps 1 &amp; 2. Shows "Paper App".</td><td>Date the paper app was created (T-1)</td></tr>
+        <tr><td>Basic info · Questionnaire Completed · Client Application Signed · Agent Report Signed</td><td><b>"Not needed – Paper App"</b> (greyed; done on paper). Must never show "Completed" for a paper app.</td><td>—</td></tr>
         <tr><td><b>Paper App Details Completed</b> <i>(new line)</i></td><td>Incomplete until the admin finishes the required details + Application Kit</td><td>When "Complete Paper App Details" auto-completes (T-3 / T-4)</td></tr>
         <tr><td>Application Submitted to Carrier</td><td>Real status</td><td>When the admin completes "Mark Application Sent to Carrier" (T-8)</td></tr>
-        <tr><td>Application Received By Carrier</td><td><b>Hidden</b> (nothing in the paper flow records it)</td><td>—</td></tr>
+        <tr><td>Application Received By Carrier</td><td><b>"Not needed – Paper App"</b> (greyed; nothing in the paper flow records it)</td><td>—</td></tr>
         <tr><td>Step 3 Proposal · Step 4</td><td>No change, the normal ILIA flow</td><td>As today</td></tr>
       </tbody>
     </table>
