@@ -314,6 +314,7 @@
   $("carrier").addEventListener("mousedown", function(e){ if(!$("carrier").value){ e.preventDefault(); $("carrier").value = "securian"; setProduct(); refresh(); } });
   $("agentClear").addEventListener("click", clearAgent);
   $("imoSelect").addEventListener("change", function(e){ state.imo = e.target.value; refresh(); });
+  $("imoSelect").addEventListener("mousedown", function(e){ var s = $("imoSelect"); if(!s.value && s.options.length > 1){ e.preventDefault(); s.value = s.options[1].value; state.imo = s.value; refresh(); } });
   $("carrier").addEventListener("change", function(){ setProduct(); refresh(); });
   ["cFirst","cLast","cEmail","cPhone"].forEach(function(id){ $(id).addEventListener("input", refresh); });
 
