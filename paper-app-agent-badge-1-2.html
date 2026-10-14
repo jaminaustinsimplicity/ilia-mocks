@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agent Paper App Badge · Flow 1.2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@700&display=swap">
+<style>
+  :root{
+    --bg:#f4f6fa;--surface:#fff;--surface-2:#f7f9fc;--head:#e9eef8;--border:#dfe4ec;
+    --ink:#202427;--muted:#5d6672;--accent:#3971EC;--accent-soft:#eaf1fe;
+    --warn:#b7791f;--warn-soft:#fbf3e3;--note:#d43f3a;--note-soft:#fdeceb;
+    --ff:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--head:#1b2432;--border:#2a3340;
+    --ink:#e7ecf2;--muted:#9da8b6;--accent:#6b97f5;--accent-soft:#1a2740;
+    --warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--head:#1b2432;--border:#2a3340;
+    --ink:#e7ecf2;--muted:#9da8b6;--accent:#6b97f5;--accent-soft:#1a2740;
+    --warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.45}
+  .banner{background:var(--note-soft);color:var(--note);border-bottom:1px solid var(--note);padding:8px 16px;font-size:12.5px;font-weight:500}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+  .label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px}
+  .frame{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border)}
+  .logo{font-weight:700;font-size:20px}
+  .logo small{font-size:10px;letter-spacing:.12em;color:var(--accent);margin-left:6px}
+  .who{color:var(--muted);font-size:13px}
+  .inner{padding:18px 20px}
+  h1{font-family:'Playfair Display',Georgia,serif;font-size:30px;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 14px;font-size:13px}
+  .tablewrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:760px}
+  th{background:var(--head);text-align:left;font-weight:500;padding:12px 14px}
+  td{padding:12px 14px;border-bottom:1px solid var(--border)}
+  td a{color:var(--accent);text-decoration:none}
+  tr.paper td{background:var(--warn-soft)}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);margin-left:8px;vertical-align:2px;white-space:nowrap}
+  tr.paper .badge{background:var(--surface)}
+  .call{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13px;color:var(--ink)}
+  .call .n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--note);color:#fff;font-weight:700;font-size:12px;display:grid;place-items:center}
+  .crumb{font-size:13px;color:var(--muted);margin-bottom:6px}
+  .crumb a{color:var(--accent);text-decoration:none}
+  .hdr{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .hdr .badge{font-size:12.5px;padding:3px 11px;font-family:var(--ff)}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-top:14px;overflow-x:auto}
+  .tabs span{font-size:12px;font-weight:500;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);padding:12px 12px;white-space:nowrap}
+  .tabs span.on{color:var(--accent);border-bottom:2px solid var(--accent)}
+  .rules{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-top:26px}
+  .rules h3{margin:0 0 8px;font-size:15px}
+  .rules ul{margin:0;padding-left:18px}
+  .rules li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="banner">SAMPLE SCREEN for devs · Paper App Flow 1.2 · T-5 "Paper App" tag in the agent portal. Concept only, not live. All names are sample data.</div>
+<div class="wrap">
+
+  <div class="label">Screen 1 · Agent portal → Client Management</div>
+  <div class="frame">
+    <div class="topbar"><div class="logo">ilia<small>AGENT</small></div><div class="who">Welcome! Jordan</div></div>
+    <div class="inner">
+      <h1>Client Management</h1>
+      <p class="sub">Select from the list of clients below to view their details, enrollment status, and more.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>First Name</th><th>Last Name</th><th>Email</th><th>Participant Type</th><th>ilia Product Type</th><th>Carrier</th><th>Account Status</th></tr></thead>
+          <tbody>
+            <tr class="paper"><td><a href="#">Sam</a></td><td><a href="#">Rivera</a><span class="badge">PAPER APP</span></td><td>sam.rivera@example.com</td><td>Individual</td><td>Kai-Zen Paper Workflow</td><td>Securian</td><td>Invited</td></tr>
+            <tr><td><a href="#">Taylor</a></td><td><a href="#">Morgan</a></td><td>taylor.m@example.com</td><td>Individual</td><td>Kai-Zen</td><td>National Life - (LSW)</td><td>Enrolling</td></tr>
+            <tr><td><a href="#">Chris</a></td><td><a href="#">Patel</a></td><td>chris.p@example.com</td><td>Individual</td><td>Kai-Zen</td><td>Allianz Life</td><td>Enrolled</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="call"><span class="n">1</span><div><b>"PAPER APP" tag</b> right after the client's name, on every paper-app client in the agent's list. Small, amber, read-only. Normal e-app clients look the same as today.</div></div>
+    </div>
+  </div>
+
+  <div class="label">Screen 2 · Agent portal → that client's page</div>
+  <div class="frame">
+    <div class="topbar"><div class="logo">ilia<small>AGENT</small></div><div class="who">Welcome! Jordan</div></div>
+    <div class="inner">
+      <div class="crumb"><a href="#">Client Management</a> / <a href="#">Individual</a> / Sam Rivera</div>
+      <div class="hdr"><h1>Sam Rivera</h1><span class="badge">PAPER APP</span></div>
+      <p class="sub">View details, status updates, enrollment, documents, and your action items.</p>
+      <div class="tabs"><span class="on">Client Profile</span><span>Participant Status</span><span>Enrollment Details</span><span>My Action Items</span><span>Illustrations</span><span>Documents</span><span>Notes</span></div>
+      <div class="call"><span class="n">2</span><div><b>Same tag next to the client's name</b> at the top of their page, so the agent knows they're on a paper-app case wherever they are in the record.</div></div>
+    </div>
+  </div>
+
+  <div class="rules">
+    <h3>Rules for devs (T-5)</h3>
+    <ul>
+      <li>Show the tag when the client's policy is a paper app (carrier Securian/Symetra, product <b>Kai-Zen Paper Workflow</b>, created via Add Paper Application).</li>
+      <li>Tag text: <b>PAPER APP</b>. Display only, not clickable.</li>
+      <li>Places: <b>(1)</b> agent Client Management list, next to the name; <b>(2)</b> agent's client page header.</li>
+      <li>The tag <b>stays permanently</b>. It records how the case came in, even after the client signs.</li>
+      <li>No new "Paper Apps" filter for agents in this task.</li>
+      <li>Admin-side tags are covered in other tasks (action items, client page).</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
