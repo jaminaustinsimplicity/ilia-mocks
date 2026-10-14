@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add Paper Application · Flow 1.2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#f4f6fa;--surface:#fff;--surface-2:#f7f9fc;--border:#dfe4ec;--border-strong:#c3cad6;
+    --ink:#202427;--muted:#5d6672;--faint:#8c95a2;
+    --accent:#3971EC;--accent-soft:#eaf1fe;--ok:#1b9e63;--ok-soft:#e5f5ed;--warn:#b7791f;--warn-soft:#fbf3e3;
+    --note:#d43f3a;--note-soft:#fdeceb;
+    --ff:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--border:#2a3340;--border-strong:#3c4757;
+    --ink:#e7ecf2;--muted:#9da8b6;--faint:#6f7a88;--accent:#6b97f5;--accent-soft:#1a2740;
+    --ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--border:#2a3340;--border-strong:#3c4757;
+    --ink:#e7ecf2;--muted:#9da8b6;--faint:#6f7a88;--accent:#6b97f5;--accent-soft:#1a2740;
+    --ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.45}
+  .banner{background:var(--note-soft);color:var(--note);border-bottom:1px solid var(--note);padding:8px 16px;font-size:12.5px;font-weight:500}
+  .shell{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 36px)}
+  @media (max-width:860px){.shell{grid-template-columns:1fr}.side{display:none}}
+  .side{background:var(--surface);border-right:1px solid var(--border);padding:18px 0}
+  .logo{padding:0 20px 18px;font-weight:700;font-size:22px;letter-spacing:-.02em}
+  .logo small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--accent);margin-top:2px}
+  .nav a{display:block;padding:9px 20px;color:var(--muted);text-decoration:none;font-size:13.5px}
+  .nav a.on{color:var(--accent);background:var(--accent-soft);font-weight:500}
+  .main{padding:20px 28px 60px;max-width:1240px}
+  @media (max-width:600px){.main{padding:16px}}
+  .back{color:var(--accent);font-size:13px;text-decoration:none}
+  h1{font-size:15px;color:var(--muted);font-weight:500;margin:14px 0 14px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:22px;align-items:start}
+  @media (max-width:1100px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px 22px}
+  .sec{margin-bottom:22px}
+  .sec h2{display:flex;align-items:center;gap:10px;font-size:17px;color:var(--accent);font-weight:500;margin:0 0 4px}
+  .num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;flex:none}
+  .sec.locked{opacity:.45;pointer-events:none}
+  .hint{font-size:12.5px;color:var(--muted);margin:0 0 12px 32px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:600px){.row{grid-template-columns:1fr}}
+  .field{position:relative;margin-bottom:14px}
+  .field label{position:absolute;top:-8px;left:10px;background:var(--surface);padding:0 4px;font-size:11.5px;color:var(--muted)}
+  .field label .req{color:var(--note)}
+  .field input,.field select{width:100%;height:46px;border:1px solid var(--border-strong);border-radius:4px;padding:0 12px;font:inherit;color:var(--ink);background:var(--surface)}
+  .field input:focus,.field select:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+  .field input[readonly]{background:var(--surface-2);color:var(--muted)}
+  .results{border:1px solid var(--border);border-radius:4px;margin-top:-8px;margin-bottom:14px;background:var(--surface);overflow:hidden}
+  .results button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 12px;font:inherit;color:var(--ink);cursor:pointer;border-bottom:1px solid var(--border)}
+  .results button:last-child{border-bottom:0}
+  .results button:hover{background:var(--accent-soft)}
+  .results small{color:var(--muted)}
+  .picked{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:6px;padding:10px 14px;margin-bottom:14px}
+  .picked b{display:block}
+  .picked span{font-size:12.5px;color:var(--muted)}
+  .linkbtn{border:0;background:none;color:var(--accent);font:inherit;font-size:13px;cursor:pointer}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:12px;background:var(--ok-soft);color:var(--ok)}
+  .btn{background:var(--accent);color:#fff;border:0;border-radius:22px;height:42px;padding:0 26px;font:inherit;font-weight:500;letter-spacing:.03em;cursor:pointer}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .notes{position:sticky;top:16px}
+  .notes h3{margin:0 0 10px;font-size:14px;color:var(--note)}
+  .notes ol{margin:0;padding-left:18px;font-size:12.8px;color:var(--ink)}
+  .notes li{margin-bottom:9px}
+  .notes .tag{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--note);margin-top:14px;display:block}
+  .demo{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);font-size:12.3px;color:var(--muted)}
+  .done{display:none}
+  .done.show{display:block}
+  .done h2{color:var(--ok);font-size:18px;margin:0 0 6px}
+  .trig{border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-top:12px;background:var(--surface-2)}
+  .trig b{display:block;margin-bottom:3px}
+  .trig p{margin:0;font-size:13px;color:var(--muted)}
+  .email{margin-top:8px;border-left:3px solid var(--accent);padding:8px 12px;background:var(--surface);font-size:13px;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="banner">MOCK for devs · Paper App Flow 1.2 · ST-1 "Add Paper Application" screen. Not live. All names are sample data.</div>
+<div class="shell">
+  <aside class="side">
+    <div class="logo">ilia<small>ADMIN</small></div>
+    <nav class="nav">
+      <a href="#" class="on">Account Management</a>
+      <a href="#">Carrier Requests</a>
+      <a href="#">Notifications</a>
+      <a href="#">Tranche Management</a>
+      <a href="#">Document Management</a>
+      <a href="#">NIW Action Items</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <a href="#" class="back">‹ Back</a>
+    <h1>Add Paper Application</h1>
+
+    <div class="layout">
+      <div>
+        <div class="card" id="form">
+          <!-- 1 AGENT -->
+          <div class="sec" id="secAgent">
+            <h2><span class="num">1</span>Agent</h2>
+            <p class="hint">Search for the client's agent. Agents must already be registered in ILIA.</p>
+            <div id="agentSearchWrap">
+              <div class="field">
+                <label>Agent <span class="req">*</span></label>
+                <input id="agentSearch" placeholder="Start typing an agent's name…" autocomplete="off">
+              </div>
+              <div class="results" id="agentResults" hidden></div>
+            </div>
+            <div class="picked" id="agentPicked" hidden>
+              <div><b id="agentName"></b><span id="agentMeta"></span></div>
+              <button class="linkbtn" id="agentClear" type="button">Change</button>
+            </div>
+          </div>
+
+          <!-- 2 IMO -->
+          <div class="sec locked" id="secImo">
+            <h2><span class="num">2</span>IMO</h2>
+            <p class="hint" id="imoHint">Pick an agent first.</p>
+            <div class="field" id="imoSingle" hidden>
+              <label>IMO</label>
+              <input id="imoSingleVal" readonly>
+            </div>
+            <div class="field" id="imoMulti" hidden>
+              <label>Select IMO <span class="req">*</span></label>
+              <select id="imoSelect"></select>
+            </div>
+          </div>
+
+          <!-- 3 CARRIER + PRODUCT -->
+          <div class="sec locked" id="secCarrier">
+            <h2><span class="num">3</span>Carrier &amp; product</h2>
+            <p class="hint">Choose the carrier, then the ILIA product type.</p>
+            <div class="row">
+              <div class="field">
+                <label>Carrier <span class="req">*</span></label>
+                <select id="carrier">
+                  <option value="">Select carrier</option>
+                  <option value="securian">Securian</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>ilia Product Type <span class="req">*</span></label>
+                <select id="product" disabled>
+                  <option value="">Select carrier first</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 CLIENT -->
+          <div class="sec locked" id="secClient">
+            <h2><span class="num">4</span>Client details</h2>
+            <p class="hint">ILIA checks the email isn't already in use.</p>
+            <div class="row">
+              <div class="field"><label>First Name <span class="req">*</span></label><input id="cFirst"></div>
+              <div class="field"><label>Last Name <span class="req">*</span></label><input id="cLast"></div>
+              <div class="field"><label>Email <span class="req">*</span></label><input id="cEmail" type="email"></div>
+              <div class="field"><label>Phone Number <span class="req">*</span></label><input id="cPhone"></div>
+            </div>
+          </div>
+
+          <button class="btn" id="create" disabled>CREATE PAPER APPLICATION</button>
+        </div>
+
+        <!-- RESULT -->
+        <div class="card done" id="done">
+          <h2>✓ Paper application created</h2>
+          <p id="doneSummary" style="margin:0;color:var(--muted)"></p>
+          <div class="trig">
+            <b>📧 Email to client: "Your Kai-Zen application is in ILIA"</b>
+            <p>Existing email (already works). The button takes them to create their ILIA account.</p>
+          </div>
+          <div class="trig">
+            <b>📧 Email to agent (the only agent email until the client signs the proposal)</b>
+            <div class="email">
+              <b style="display:inline">Subject:</b> <span class="cn"></span>'s paper application is now in ILIA<br><br>
+              Hi <span class="an"></span>, <span class="cn"></span>'s Kai-Zen paper application is now in ILIA. You'll now see <span class="cn"></span> in your ILIA portal.<br><br>
+              <span style="color:var(--accent);font-weight:500">[ View in ILIA ]</span><br>— The NIW / ILIA Team
+            </div>
+          </div>
+          <div class="trig">
+            <b>✅ Admin action item: "Complete paper app details"</b>
+            <p>Shows in NIW Action Items. Admin enters the enrollment details and uploads the application kit. ("Upload &amp; Send Proposal" is NOT created yet.)</p>
+          </div>
+          <p style="margin-top:14px"><button class="linkbtn" id="again" type="button">↺ Start over</button></p>
+        </div>
+      </div>
+
+      <aside class="card notes">
+        <h3>Dev notes · what changes vs today</h3>
+        <ol>
+          <li><b>New order:</b> Agent → IMO → Carrier &amp; product → Client → Create. Today it's Type/Carrier → Client → Agent.</li>
+          <li><b>"Invite a new agent" is removed.</b> Only existing ILIA agents can be picked, so no On Hold / pending-agent path.</li>
+          <li><b>IMO step is new.</b> Agent has 1 IMO → shown, auto-selected. More than 1 → admin must pick one. (Today ILIA picks the IMO silently.)</li>
+          <li><b>Carrier then ilia Product Type</b>, the same pattern as the agent's "Create a new invitation" screen. <b>Securian → exactly one product: "Kai-Zen Paper Workflow"</b>, auto-selected. Replaces the old "Paper Application Type" box.</li>
+          <li>The carrier list in this mock shows <b>Securian only</b>, for clarity.</li>
+          <li><b>On create:</b> client email (exists) + one short agent email + admin action item "Complete paper app details".</li>
+        </ol>
+        <span class="tag">Try it</span>
+        <div class="demo">Type <b>Jordan</b> (agent with 1 IMO) or <b>Priya</b> (agent with 2 IMOs) to see both IMO behaviours.</div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  var AGENTS = [
+    {name:"Jordan Ellis", email:"jordan.ellis@example.com", imos:["Summit Financial Group"]},
+    {name:"Priya Nandakumar", email:"priya.n@example.com", imos:["Summit Financial Group","Horizon Wealth Partners"]},
+    {name:"Marcus Reid", email:"marcus.reid@example.com", imos:["Northstar Advisors"]}
+  ];
+  var $ = function(id){ return document.getElementById(id); };
+  var state = {agent:null, imo:"", carrier:"", product:""};
+
+  function lock(id, on){ $(id).classList.toggle("locked", on); }
+
+  function renderResults(q){
+    var box = $("agentResults");
+    q = q.trim().toLowerCase();
+    if(!q){ box.hidden = true; box.innerHTML = ""; return; }
+    var hits = AGENTS.filter(function(a){ return a.name.toLowerCase().indexOf(q) !== -1; });
+    box.innerHTML = hits.length ? "" : "<button type='button' disabled>No ILIA agent found</button>";
+    hits.forEach(function(a){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.innerHTML = a.name + " <small>· " + a.email + " · " + a.imos.length + (a.imos.length === 1 ? " IMO" : " IMOs") + "</small>";
+      b.onclick = function(){ pickAgent(a); };
+      box.appendChild(b);
+    });
+    box.hidden = false;
+  }
+
+  function pickAgent(a){
+    state.agent = a;
+    $("agentSearchWrap").hidden = true;
+    $("agentPicked").hidden = false;
+    $("agentName").textContent = a.name;
+    $("agentMeta").textContent = a.email;
+    lock("secImo", false);
+    if(a.imos.length === 1){
+      state.imo = a.imos[0];
+      $("imoHint").innerHTML = "This agent has one IMO, so it's selected automatically. <span class='pill'>Auto</span>";
+      $("imoSingle").hidden = false; $("imoMulti").hidden = true;
+      $("imoSingleVal").value = a.imos[0];
+    } else {
+      state.imo = "";
+      $("imoHint").textContent = "This agent belongs to " + a.imos.length + " IMOs. Pick the one this paper app is for.";
+      $("imoSingle").hidden = true; $("imoMulti").hidden = false;
+      var sel = $("imoSelect");
+      sel.innerHTML = "<option value=''>Select IMO</option>";
+      a.imos.forEach(function(i){ var o = document.createElement("option"); o.value = i; o.textContent = i; sel.appendChild(o); });
+    }
+    refresh();
+  }
+
+  function clearAgent(){
+    state = {agent:null, imo:"", carrier:"", product:""};
+    $("agentSearchWrap").hidden = false; $("agentPicked").hidden = true;
+    $("agentSearch").value = ""; renderResults("");
+    $("imoSingle").hidden = true; $("imoMulti").hidden = true;
+    $("imoHint").textContent = "Pick an agent first.";
+    $("carrier").value = ""; setProduct();
+    refresh();
+  }
+
+  function setProduct(){
+    var p = $("product");
+    state.carrier = $("carrier").value;
+    if(state.carrier === "securian"){
+      p.innerHTML = "<option value='kzpaper'>Kai-Zen Paper Workflow</option>";
+      p.disabled = false; state.product = "kzpaper";
+    } else {
+      p.innerHTML = "<option value=''>Select carrier first</option>";
+      p.disabled = true; state.product = "";
+    }
+  }
+
+  function clientOk(){
+    return ["cFirst","cLast","cEmail","cPhone"].every(function(id){ return $(id).value.trim() !== ""; }) && /\S+@\S+\.\S+/.test($("cEmail").value);
+  }
+
+  function refresh(){
+    var hasAgent = !!state.agent, hasImo = !!state.imo, hasProd = !!state.product;
+    lock("secImo", !hasAgent);
+    lock("secCarrier", !(hasAgent && hasImo));
+    lock("secClient", !(hasAgent && hasImo && hasProd));
+    $("create").disabled = !(hasAgent && hasImo && hasProd && clientOk());
+  }
+
+  $("agentSearch").addEventListener("input", function(e){ renderResults(e.target.value); });
+  $("agentClear").addEventListener("click", clearAgent);
+  $("imoSelect").addEventListener("change", function(e){ state.imo = e.target.value; refresh(); });
+  $("carrier").addEventListener("change", function(){ setProduct(); refresh(); });
+  ["cFirst","cLast","cEmail","cPhone"].forEach(function(id){ $(id).addEventListener("input", refresh); });
+
+  $("create").addEventListener("click", function(){
+    var cn = $("cFirst").value.trim() + " " + $("cLast").value.trim();
+    var an = state.agent.name.split(" ")[0];
+    $("doneSummary").textContent = cn + " · Securian · Kai-Zen Paper Workflow · Agent " + state.agent.name + " (" + state.imo + ")";
+    Array.prototype.forEach.call(document.querySelectorAll(".cn"), function(el){ el.textContent = cn; });
+    Array.prototype.forEach.call(document.querySelectorAll(".an"), function(el){ el.textContent = an; });
+    $("form").style.display = "none";
+    $("done").classList.add("show");
+    window.scrollTo(0,0);
+  });
+
+  $("again").addEventListener("click", function(){
+    ["cFirst","cLast","cEmail","cPhone"].forEach(function(id){ $(id).value = ""; });
+    clearAgent();
+    $("done").classList.remove("show");
+    $("form").style.display = "";
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>
