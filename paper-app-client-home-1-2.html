@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paper App Client Home · Flow 1.2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@700&display=swap">
+<style>
+  :root{
+    --bg:#f4f6fa;--surface:#fff;--surface-2:#f7f9fc;--border:#dfe4ec;--ink:#202427;--muted:#5d6672;--faint:#9aa2ad;
+    --accent:#3971EC;--accent-soft:#eaf1fe;--ok:#1b9e63;--ok-soft:#e5f5ed;--green:#2fcf86;--warn:#b7791f;--warn-soft:#fbf3e3;
+    --note:#d43f3a;--note-soft:#fdeceb;--lock:#eceef2;--ff:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--border:#2a3340;--ink:#e7ecf2;--muted:#9da8b6;--faint:#5f6a78;
+    --accent:#6b97f5;--accent-soft:#1a2740;--ok:#3ccf8e;--ok-soft:#13291f;--green:#3ccf8e;--warn:#e3a849;--warn-soft:#2b2312;
+    --note:#f07a74;--note-soft:#2e1716;--lock:#1c2430;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--border:#2a3340;--ink:#e7ecf2;--muted:#9da8b6;--faint:#5f6a78;
+    --accent:#6b97f5;--accent-soft:#1a2740;--ok:#3ccf8e;--ok-soft:#13291f;--green:#3ccf8e;--warn:#e3a849;--warn-soft:#2b2312;
+    --note:#f07a74;--note-soft:#2e1716;--lock:#1c2430;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.45}
+  .banner{background:var(--note-soft);color:var(--note);border-bottom:1px solid var(--note);padding:8px 16px;font-size:12.5px;font-weight:500}
+  .shell{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 36px)}
+  @media (max-width:900px){.shell{grid-template-columns:1fr}}
+  .side{background:var(--surface);border-right:1px solid var(--border);padding:18px 0}
+  @media (max-width:900px){.side{border-right:0;border-bottom:1px solid var(--border)}}
+  .logo{padding:0 22px 6px;font-weight:700;font-size:22px}
+  .kz{padding:0 22px 16px;font-size:26px;font-weight:700;color:var(--accent);letter-spacing:-.02em}
+  .nav div{display:flex;align-items:center;gap:8px;padding:9px 22px;font-size:14px;color:var(--ink)}
+  .nav div.off{color:var(--faint);text-decoration:line-through}
+  .nav .x{font-size:10px;font-weight:700;color:var(--note);background:var(--note-soft);border-radius:8px;padding:1px 6px;text-decoration:none;margin-left:auto}
+  .main{padding:22px 28px 60px;min-width:0}
+  @media (max-width:600px){.main{padding:16px}}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+  h1{font-family:'Playfair Display',Georgia,serif;font-size:36px;margin:0 0 6px}
+  .sub{color:var(--muted);margin:0 0 14px}
+  .ring{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;text-align:center;background:conic-gradient(var(--accent) 0 50%,var(--border) 50% 100%);position:relative;flex:none}
+  .ring::before{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--bg)}
+  .ring div{position:relative;font-size:12px;color:var(--muted)}
+  .ring b{display:block;font-size:26px;color:var(--ink)}
+  .info{display:flex;gap:12px;align-items:flex-start;background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:14px 16px;margin:6px 0 18px}
+  .info .i{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:13px}
+  .info b{display:block;margin-bottom:2px}
+  .info p{margin:0;font-size:13.5px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+  @media (max-width:1150px){.layout{grid-template-columns:1fr}}
+  .lbl{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  .card{display:flex;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 20px;margin-bottom:12px}
+  .card.lock{background:var(--lock)}
+  .card .num{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;border:2px solid var(--border);color:var(--muted);background:var(--surface)}
+  .card .num.done{background:var(--green);border-color:var(--green);color:#fff}
+  .card .tx{flex:1;min-width:0}
+  .card .st{font-size:13px;font-weight:500;color:var(--green)}
+  .card .st.warn{color:var(--warn)}
+  .card .st.mute{color:var(--muted)}
+  .card h3{margin:2px 0 2px;font-size:17px;font-weight:500}
+  .card p{margin:0;font-size:13.5px;color:var(--muted)}
+  .card .wait{margin-top:6px;font-size:13px;color:var(--ink);background:var(--surface);border:1px dashed var(--border);border-radius:6px;padding:6px 10px;display:inline-block}
+  .acts{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+  .btn{border-radius:20px;height:36px;padding:0 20px;font:inherit;font-weight:500;border:1px solid var(--accent);background:var(--surface);color:var(--accent);white-space:nowrap}
+  .btn.dis{border-color:var(--border);color:var(--faint);background:var(--lock)}
+  .lnk{color:var(--accent);font-weight:500;font-size:13.5px}
+  .done-pill{font-size:12.5px;font-weight:700;color:var(--green);display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .call{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--note);color:#fff;font-size:11px;font-weight:700;margin-left:6px;vertical-align:2px}
+  .side-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
+  .side-card h3{margin:0 0 12px;font-size:16px;font-weight:500}
+  .side-card dl{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;margin:0;font-size:13.5px}
+  .side-card dt{color:var(--muted)}
+  .side-card dd{margin:0;text-align:right}
+  .rules{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-top:22px}
+  .rules h3{margin:0 0 8px;font-size:15px}
+  .rules ol{margin:0;padding-left:20px}
+  .rules li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="banner">SAMPLE SCREEN for devs · Paper App Flow 1.2 · T-7 client Enrollment Home for a paper-app client. Concept only, not live. Sample data. Red numbers match the rules below.</div>
+<div class="shell">
+  <aside class="side">
+    <div class="logo">ilia</div>
+    <div class="kz">Kai-Zen</div>
+    <nav class="nav">
+      <div>Home Dashboard</div>
+      <div>Action Items</div>
+      <div>Kai-Zen Details</div>
+      <div>Introduction Video</div>
+      <div class="off">Estimate My Benefits <span class="x">NOT SHOWN FOR PAPER APPS · 5</span></div>
+      <div>Financial Solutions</div>
+      <div>How It Works</div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1>Enrollment Home</h1>
+        <p class="sub">Follow the enrollment process outlined below.</p>
+      </div>
+      <div class="ring"><div><b>50%</b>completed<span class="call">3</span></div></div>
+    </div>
+
+    <div class="info">
+      <span class="i">i</span>
+      <div><b>Your paper application is in. <span class="call">1</span></b>
+      <p>We're confirming your details and documents, then we'll submit your application to the carrier. Once the carrier has it, we'll email you when your proposal is ready to review and sign.</p></div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <p class="lbl">Enrollment steps</p>
+
+        <div class="card">
+          <div class="num">1</div>
+          <div class="tx"><div class="st warn">Step 1 · Review your details</div><h3>Basic Info</h3><p>Check your personal details. Add anything missing or upload documents.</p></div>
+          <div class="acts"><span class="btn">Edit</span><span class="lnk">Upload More Documents</span></div>
+        </div>
+
+        <div class="card">
+          <div class="num done">✓</div>
+          <div class="tx"><div class="st">Step 2 · Completed on paper <span class="call">2</span></div><h3>Enrollment Application</h3><p>Your application was completed and signed on paper.</p></div>
+          <div class="acts"><span class="done-pill">✓ Completed on paper</span></div>
+        </div>
+
+        <div class="card lock">
+          <div class="num">3</div>
+          <div class="tx"><div class="st mute">Step 3</div><h3>Review Proposal and Sign</h3><p>Review your Kai-Zen policy offer and sign.</p>
+            <div class="wait">🔒 Available once the carrier returns your proposal. We'll email you. <span class="call">4</span></div></div>
+          <div class="acts"><span class="btn dis">Review and Sign</span></div>
+        </div>
+
+        <div class="card lock">
+          <div class="num">4</div>
+          <div class="tx"><div class="st mute">Step 4</div><h3>Initial Contribution Details</h3><p>How to make payment for your first year contribution.</p></div>
+          <div class="acts"><span class="btn dis">Make Payment</span></div>
+        </div>
+      </div>
+
+      <aside class="side-card">
+        <h3>Enrollment Details</h3>
+        <dl>
+          <dt>ilia Product Type</dt><dd>Kai-Zen Paper Workflow</dd>
+          <dt>Carrier</dt><dd>Securian</dd>
+          <dt>My Agent</dt><dd>Jordan Ellis</dd>
+          <dt>Current Tranche</dt><dd>79</dd>
+        </dl>
+      </aside>
+    </div>
+
+    <div class="rules">
+      <h3>Rules for devs (T-7), paper-app clients only</h3>
+      <ol>
+        <li><b>Info banner</b> at the top with the wording shown. It matches the client creation email.</li>
+        <li><b>Step 2</b> shows a green check and <b>"Completed on paper"</b>. No "Start Application" button, no enrollment validation. <i>(Clients see "Completed on paper"; admin/agent screens show "N/A – Paper App", per T-6.)</i></li>
+        <li><b>Progress circle</b> counts Step 2 as done for paper clients, so it doesn't look stuck.</li>
+        <li><b>Step 3 stays locked</b> until the proposal reaches the client (after agent approval), with the line "Available once the carrier returns your proposal. We'll email you."</li>
+        <li><b>"Estimate My Benefits" is hidden</b> from the menu for paper clients (no estimator illustrations).</li>
+        <li><b>Step 1 stays open:</b> the client can edit their details and upload documents at any time. They are never locked out.</li>
+        <li><b>No "Confirm my details" button.</b> The admin's required fields + Application Kit decide when the case moves on.</li>
+        <li><b>Step 4</b> is unchanged.</li>
+      </ol>
+    </div>
+  </main>
+</div>
+</body>
+</html>
