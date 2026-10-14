@@ -107,7 +107,7 @@
           <!-- 1 AGENT -->
           <div class="sec" id="secAgent">
             <h2><span class="num">1</span>Agent</h2>
-            <p class="hint">Search for the client's agent. Agents must already be registered in ILIA.</p>
+            <p class="hint">Search active ILIA agents by name.</p>
             <div id="agentSearchWrap">
               <div class="field">
                 <label>Agent <span class="req">*</span></label>
@@ -145,6 +145,7 @@
                 <select id="carrier">
                   <option value="">Select carrier</option>
                   <option value="securian">Securian</option>
+                  <option value="symetra">Symetra</option>
                 </select>
               </div>
               <div class="field">
@@ -201,12 +202,13 @@
           <li><b>New order:</b> Agent → IMO → Carrier &amp; product → Client → Create. Today it's Type/Carrier → Client → Agent.</li>
           <li><b>"Invite a new agent" is removed.</b> Only existing ILIA agents can be picked, so no On Hold / pending-agent path.</li>
           <li><b>IMO step is new.</b> Agent has 1 IMO → shown, auto-selected. More than 1 → admin must pick one. (Today ILIA picks the IMO silently.)</li>
-          <li><b>Carrier then ilia Product Type</b>, the same pattern as the agent's "Create a new invitation" screen. <b>Securian → exactly one product: "Kai-Zen Paper Workflow"</b>, auto-selected. Replaces the old "Paper Application Type" box.</li>
-          <li>The carrier list in this mock shows <b>Securian only</b>, for clarity.</li>
-          <li><b>On create:</b> client email (exists) + one short agent email + admin action item "Complete paper app details".</li>
+          <li><b>Carrier then ilia Product Type</b>, the same pattern as the agent's "Create a new invitation" screen. <b>Securian or Symetra → exactly one product: "Kai-Zen Paper Workflow"</b>, auto-selected. Replaces the old "Paper Application Type" box.</li>
+          <li><b>Carriers (MVP): Securian and Symetra only.</b> Both map to the single product "Kai-Zen Paper Workflow".</li>
+          <li><b>Agent search = active agents only.</b> Agent with <b>no IMO</b> → message + Create blocked.</li>
+          <li><b>On create:</b> admin lands on the <b>new client's page</b> (today: participants list). Emails + action item are ST-3 (shown here for context).</li>
         </ol>
         <span class="tag">Try it</span>
-        <div class="demo">Type <b>Jordan</b> (agent with 1 IMO) or <b>Priya</b> (agent with 2 IMOs) to see both IMO behaviours.</div>
+        <div class="demo">Type <b>Jordan</b> (1 IMO), <b>Priya</b> (2 IMOs) or <b>Taylor</b> (no IMO) to see each IMO behaviour.</div>
       </aside>
     </div>
   </main>
@@ -217,7 +219,8 @@
   var AGENTS = [
     {name:"Jordan Ellis", email:"jordan.ellis@example.com", imos:["Summit Financial Group"]},
     {name:"Priya Nandakumar", email:"priya.n@example.com", imos:["Summit Financial Group","Horizon Wealth Partners"]},
-    {name:"Marcus Reid", email:"marcus.reid@example.com", imos:["Northstar Advisors"]}
+    {name:"Marcus Reid", email:"marcus.reid@example.com", imos:["Northstar Advisors"]},
+    {name:"Taylor Brooks", email:"taylor.b@example.com", imos:[]}
   ];
   var $ = function(id){ return document.getElementById(id); };
   var state = {agent:null, imo:"", carrier:"", product:""};
@@ -233,7 +236,7 @@
     hits.forEach(function(a){
       var b = document.createElement("button");
       b.type = "button";
-      b.innerHTML = a.name + " <small>· " + a.email + " · " + a.imos.length + (a.imos.length === 1 ? " IMO" : " IMOs") + "</small>";
+      b.innerHTML = a.name + " <small>· " + a.email + " · " + (a.imos.length === 0 ? "no IMO" : a.imos.length + (a.imos.length === 1 ? " IMO" : " IMOs")) + "</small>";
       b.onclick = function(){ pickAgent(a); };
       box.appendChild(b);
     });
@@ -247,7 +250,11 @@
     $("agentName").textContent = a.name;
     $("agentMeta").textContent = a.email;
     lock("secImo", false);
-    if(a.imos.length === 1){
+    if(a.imos.length === 0){
+      state.imo = "";
+      $("imoHint").innerHTML = "<span style='color:var(--note);font-weight:500'>This agent has no IMO in ILIA. Add one before creating a paper app.</span>";
+      $("imoSingle").hidden = true; $("imoMulti").hidden = true;
+    } else if(a.imos.length === 1){
       state.imo = a.imos[0];
       $("imoHint").innerHTML = "This agent has one IMO, so it's selected automatically. <span class='pill'>Auto</span>";
       $("imoSingle").hidden = false; $("imoMulti").hidden = true;
@@ -276,7 +283,7 @@
   function setProduct(){
     var p = $("product");
     state.carrier = $("carrier").value;
-    if(state.carrier === "securian"){
+    if(state.carrier === "securian" || state.carrier === "symetra"){
       p.innerHTML = "<option value='kzpaper'>Kai-Zen Paper Workflow</option>";
       p.disabled = false; state.product = "kzpaper";
     } else {
@@ -306,7 +313,7 @@
   $("create").addEventListener("click", function(){
     var cn = $("cFirst").value.trim() + " " + $("cLast").value.trim();
     var an = state.agent.name.split(" ")[0];
-    $("doneSummary").textContent = cn + " · Securian · Kai-Zen Paper Workflow · Agent " + state.agent.name + " (" + state.imo + ")";
+    $("doneSummary").textContent = cn + " · " + $("carrier").options[$("carrier").selectedIndex].text + " · Kai-Zen Paper Workflow · Agent " + state.agent.name + " (" + state.imo + ")";
     Array.prototype.forEach.call(document.querySelectorAll(".cn"), function(el){ el.textContent = cn; });
     Array.prototype.forEach.call(document.querySelectorAll(".an"), function(el){ el.textContent = an; });
     $("form").style.display = "none";
