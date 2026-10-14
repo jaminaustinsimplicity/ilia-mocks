@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paper App Participant Status · Flow 1.2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#f4f6fa;--surface:#fff;--surface-2:#f7f9fc;--border:#dfe4ec;--ink:#202427;--muted:#5d6672;--faint:#9aa2ad;
+    --accent:#3971EC;--accent-soft:#eaf1fe;--ok:#1b9e63;--ok-soft:#e5f5ed;--warn:#b7791f;--warn-soft:#fbf3e3;
+    --note:#d43f3a;--note-soft:#fdeceb;--ff:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--border:#2a3340;--ink:#e7ecf2;--muted:#9da8b6;--faint:#5f6a78;
+    --accent:#6b97f5;--accent-soft:#1a2740;--ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--border:#2a3340;--ink:#e7ecf2;--muted:#9da8b6;--faint:#5f6a78;
+    --accent:#6b97f5;--accent-soft:#1a2740;--ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.45}
+  .banner{background:var(--note-soft);color:var(--note);border-bottom:1px solid var(--note);padding:8px 16px;font-size:12.5px;font-weight:500}
+  .wrap{max-width:1240px;margin:0 auto;padding:20px 16px 60px}
+  h1{font-size:20px;margin:4px 0 4px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:90ch}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;margin-bottom:16px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .sw{width:14px;height:14px;border-radius:3px;display:inline-block}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  @media (max-width:980px){.cols{grid-template-columns:1fr}}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .ph{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .ph b{font-size:14.5px}
+  .ph .t{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:10px}
+  .t.today{background:var(--surface-2);color:var(--muted);border:1px solid var(--border)}
+  .t.paper{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+  .pb{padding:4px 18px 14px}
+  .sec{font-size:15px;font-weight:700;margin:16px 0 4px}
+  .sec .k{color:var(--accent)}
+  .step{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:12px 0 2px}
+  .row{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:7px 8px;border-radius:4px;font-size:13.5px}
+  .row .d{color:var(--ok);font-size:13px;min-width:84px;text-align:right}
+  .row .s{min-width:92px;text-align:right;font-size:13px}
+  .row .s.inc{color:var(--muted)}
+  .row .s.ok{color:var(--ok)}
+  .row.paper{background:var(--warn-soft)}
+  .row.paper .s{color:var(--warn);font-weight:700}
+  .row.real{background:var(--ok-soft)}
+  .row.gone{color:var(--faint);text-decoration:line-through}
+  .row.gone .s,.row.gone .d{color:var(--faint)}
+  .tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:8px;margin-left:6px;vertical-align:1px;text-decoration:none}
+  .tag.hide{background:var(--note-soft);color:var(--note)}
+  .tag.t8{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+  .tag.t3{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
+  .rules{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-top:18px}
+  .rules h3{margin:0 0 8px;font-size:15px}
+  .rules table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .rules th{text-align:left;font-weight:500;padding:8px 10px;background:var(--surface-2);border-bottom:1px solid var(--border)}
+  .rules td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  .tw{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="banner">SAMPLE SCREEN for devs · Paper App Flow 1.2 · T-6 Participant Status for paper apps (admin + agent). Concept only, not live. Sample data.</div>
+<div class="wrap">
+  <h1>Participant Status: today vs paper app</h1>
+  <p class="lede">For paper apps, the e-app steps happened on paper, so several lines don't apply. They are <b>hidden</b>, and replaced by one <b>"Paper App"</b> line with the date the case entered ILIA. Lines that our new workflow actually records show <b>real dates</b>. Step 3 onward is the normal ILIA flow.</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--warn-soft);border:1px solid var(--warn)"></i>Paper App line (date = paper app created)</span>
+    <span><i class="sw" style="background:var(--ok-soft);border:1px solid var(--ok)"></i>Real date from the new paper workflow</span>
+    <span><i class="sw" style="background:var(--note-soft)"></i>Hidden for paper apps</span>
+  </div>
+
+  <div class="cols">
+    <!-- TODAY -->
+    <div class="panel">
+      <div class="ph"><b>Today · normal e-app client</b><span class="t today">Unchanged</span></div>
+      <div class="pb">
+        <div class="sec">Invitation and Account Creation</div>
+        <div class="row"><span>Invited</span><span class="d">10-01-2026</span><span class="s ok">Completed</span></div>
+        <div class="row"><span>Opened Email Invite</span><span class="d">10-01-2026</span><span class="s ok">Completed</span></div>
+        <div class="row"><span>Created Account</span><span class="d">10-02-2026</span><span class="s ok">Completed</span></div>
+        <div class="sec"><span class="k">Kai-</span>Zen Enrollment Process</div>
+        <div class="row"><span>Started Enrollment</span><span class="d">10-02-2026</span><span class="s ok">Completed</span></div>
+        <div class="step">Step 1: Basic Info</div>
+        <div class="row"><span>Basic info, contribution, Required Doc (DL, Tax Returns, etc.)</span><span class="d">10-03-2026</span><span class="s ok">Completed</span></div>
+        <div class="step">Step 2: Application</div>
+        <div class="row"><span>Questionnaire Completed</span><span class="d">10-04-2026</span><span class="s ok">Completed</span></div>
+        <div class="row"><span>Client Application Signed</span><span class="d">10-04-2026</span><span class="s ok">Completed</span></div>
+        <div class="row"><span>Agent Report Signed</span><span class="d">10-05-2026</span><span class="s ok">Completed</span></div>
+        <div class="row"><span>Application Submitted to Carrier</span><span class="d">10-05-2026</span><span class="s ok">Completed</span></div>
+        <div class="row"><span>Application Received By Carrier</span><span class="d">10-06-2026</span><span class="s ok">Completed</span></div>
+        <div class="step">Step 3: Proposal</div>
+        <div class="row"><span>Submitted to Agent</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="row"><span>Approved by Agent</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="row"><span>Approved / Signed by Client</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="step">Step 4: Trustee Signs &amp; Final Docs Completed</div>
+        <div class="row"><span>Client Payment Received</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="row"><span>Trustee Signed</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="row"><span>Final Docs Sent To Carrier</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+      </div>
+    </div>
+
+    <!-- PAPER -->
+    <div class="panel">
+      <div class="ph"><b>Paper app client (new)</b><span class="t paper">Paper App</span></div>
+      <div class="pb">
+        <div class="sec">Invitation and Account Creation</div>
+        <div class="row"><span>Invited</span><span class="d">10-14-2026</span><span class="s ok">Completed</span></div>
+        <div class="row"><span>Opened Email Invite</span><span class="d">10-14-2026</span><span class="s ok">Completed</span></div>
+        <div class="row"><span>Created Account</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="sec"><span class="k">Kai-</span>Zen Enrollment Process</div>
+        <div class="row gone"><span>Started Enrollment<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
+        <div class="step">Steps 1 &amp; 2: Paper App</div>
+        <div class="row paper"><span>Paper application received (signed on paper)</span><span class="d">10-14-2026</span><span class="s">Paper App</span></div>
+        <div class="row gone"><span>Basic info, contribution, Required Doc<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
+        <div class="row gone"><span>Questionnaire Completed<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
+        <div class="row gone"><span>Client Application Signed<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
+        <div class="row gone"><span>Agent Report Signed<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
+        <div class="row real"><span>Paper App Details Completed<span class="tag t3">T-3/T-4</span></span><span class="d">10-16-2026</span><span class="s ok">Completed</span></div>
+        <div class="row real"><span>Application Submitted to Carrier<span class="tag t8">T-8</span></span><span class="d">10-17-2026</span><span class="s ok">Completed</span></div>
+        <div class="row gone"><span>Application Received By Carrier<span class="tag hide">HIDDEN</span></span><span class="d"></span><span class="s"></span></div>
+        <div class="step">Step 3: Proposal (normal ILIA from here)</div>
+        <div class="row"><span>Submitted to Agent</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="row"><span>Approved by Agent</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="row"><span>Approved / Signed by Client</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="step">Step 4: Trustee Signs &amp; Final Docs Completed</div>
+        <div class="row"><span>Client Payment Received</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="row"><span>Trustee Signed</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+        <div class="row"><span>Final Docs Sent To Carrier</span><span class="d"></span><span class="s inc">Incomplete</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rules">
+    <h3>Rules for devs (T-6): what each line does for a paper app</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>Line</th><th>Paper app behaviour</th><th>Where the date comes from</th></tr></thead>
+      <tbody>
+        <tr><td>Invited · Opened Email Invite · Created Account</td><td>No change</td><td>The client creation email (T-3), as today</td></tr>
+        <tr><td>Started Enrollment</td><td><b>Hidden</b></td><td>—</td></tr>
+        <tr><td><b>Paper application received (signed on paper)</b> <i>(new line)</i></td><td>Replaces Step 1 and the e-app lines of Step 2. Shows "Paper App".</td><td>Date the paper app was created (T-1)</td></tr>
+        <tr><td>Basic info · Questionnaire Completed · Client Application Signed · Agent Report Signed</td><td><b>Hidden</b> (done on paper). Must never show "Completed" for a paper app.</td><td>—</td></tr>
+        <tr><td><b>Paper App Details Completed</b> <i>(new line)</i></td><td>Incomplete until the admin finishes the required details + Application Kit</td><td>When "Complete Paper App Details" auto-completes (T-3 / T-4)</td></tr>
+        <tr><td>Application Submitted to Carrier</td><td>Real status</td><td>When the admin completes "Mark Application Sent to Carrier" (T-8)</td></tr>
+        <tr><td>Application Received By Carrier</td><td><b>Hidden</b> (nothing in the paper flow records it)</td><td>—</td></tr>
+        <tr><td>Step 3 Proposal · Step 4</td><td>No change, the normal ILIA flow</td><td>As today</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="margin:12px 0 0;font-size:13px;color:var(--muted)">Same behaviour on the <b>admin</b> client page and the <b>agent</b> portal's Participant Status tab.</p>
+  </div>
+</div>
+</body>
+</html>
