@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paper App Action Item · Flow 1.2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@700&display=swap">
+<style>
+  :root{
+    --bg:#f4f6fa;--surface:#fff;--surface-2:#f7f9fc;--head:#e9eef8;--border:#dfe4ec;--border-strong:#c3cad6;
+    --ink:#202427;--muted:#5d6672;--faint:#8c95a2;
+    --accent:#3971EC;--accent-soft:#eaf1fe;--ok:#1b9e63;--ok-soft:#e5f5ed;--warn:#b7791f;--warn-soft:#fbf3e3;
+    --note:#d43f3a;--note-soft:#fdeceb;--scrim:rgba(20,26,36,.38);
+    --ff:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--head:#1b2432;--border:#2a3340;--border-strong:#3c4757;
+    --ink:#e7ecf2;--muted:#9da8b6;--faint:#6f7a88;--accent:#6b97f5;--accent-soft:#1a2740;
+    --ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;--scrim:rgba(0,0,0,.55);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--head:#1b2432;--border:#2a3340;--border-strong:#3c4757;
+    --ink:#e7ecf2;--muted:#9da8b6;--faint:#6f7a88;--accent:#6b97f5;--accent-soft:#1a2740;
+    --ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;--scrim:rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.45}
+  .banner{background:var(--note-soft);color:var(--note);border-bottom:1px solid var(--note);padding:8px 16px;font-size:12.5px;font-weight:500}
+  .shell{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 36px)}
+  @media (max-width:860px){.shell{grid-template-columns:1fr}.side{display:none}}
+  .side{background:var(--surface);border-right:1px solid var(--border);padding:18px 0}
+  .logo{padding:0 20px 18px;font-weight:700;font-size:22px;letter-spacing:-.02em}
+  .logo small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--accent);margin-top:2px}
+  .nav a{display:block;padding:9px 20px;color:var(--muted);text-decoration:none;font-size:13.5px}
+  .nav a.on{color:var(--accent);background:var(--accent-soft);font-weight:500}
+  .main{padding:20px 28px 60px;min-width:0}
+  @media (max-width:600px){.main{padding:16px}}
+  h1{font-family:'Playfair Display',Georgia,serif;font-size:34px;margin:6px 0 14px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start}
+  @media (max-width:1150px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px}
+  .tabs{display:flex;border-bottom:1px solid var(--border);padding:0 14px}
+  .tabs button{border:0;background:none;font:inherit;font-size:12.5px;font-weight:500;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);padding:14px 12px;cursor:pointer;border-bottom:2px solid transparent}
+  .tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+  .tablewrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:760px}
+  th{background:var(--head);text-align:left;font-weight:500;font-size:13.5px;padding:12px 14px;color:var(--ink)}
+  td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+  td a{color:var(--accent);text-decoration:none}
+  tr.new td{background:var(--accent-soft)}
+  tr.new td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+  .chip{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:1px}
+  .chip.paper{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+  .chip.gwt{background:var(--surface-2);color:var(--muted);border:1px solid var(--border-strong)}
+  .chip.next{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+  .btn{background:var(--accent);color:#fff;border:0;border-radius:20px;height:36px;padding:0 18px;font:inherit;font-weight:500;cursor:pointer;white-space:nowrap}
+  .btn.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ok{background:var(--ok)}
+  .notes{padding:18px 20px;position:sticky;top:16px}
+  .notes h3{margin:0 0 10px;font-size:14px;color:var(--note)}
+  .notes ol{margin:0;padding-left:18px;font-size:12.8px}
+  .notes li{margin-bottom:9px}
+  .notes .tag{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--note);margin-top:12px;display:block}
+  .notes .demo{font-size:12.3px;color:var(--muted);margin-top:6px}
+
+  /* drawer */
+  .scrim{position:fixed;inset:0;background:var(--scrim);z-index:10}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--surface);z-index:11;display:flex;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.18)}
+  .dh{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .dh h2{margin:0;font-size:18px}
+  .dh p{margin:3px 0 0;color:var(--muted);font-size:13px}
+  .x{border:0;background:none;font-size:22px;line-height:1;color:var(--muted);cursor:pointer}
+  .db{padding:18px 22px;overflow-y:auto;flex:1}
+  .df{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .blk{margin-bottom:20px}
+  .blk h4{margin:0 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .sum{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13.5px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:12px 14px}
+  .sum dt{color:var(--muted)}
+  .sum dd{margin:0;font-weight:500}
+  .todo{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:6px;padding:11px 14px;margin-bottom:8px}
+  .todo .ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700}
+  .todo.done .ic{background:var(--ok);color:#fff}
+  .todo.miss .ic{border:2px solid var(--warn);color:var(--warn)}
+  .todo .tx{flex:1;min-width:0}
+  .todo .tx b{display:block;font-size:13.5px;font-weight:500}
+  .todo .tx span{font-size:12.3px;color:var(--muted)}
+  .todo a{font-size:13px;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .sent{font-size:13px;display:flex;gap:8px;align-items:baseline;margin-bottom:6px}
+  .sent .ck{color:var(--ok);font-weight:700}
+  .sent span{color:var(--muted)}
+  .warnbox{background:var(--warn-soft);border:1px solid var(--warn);color:var(--ink);border-radius:6px;padding:10px 12px;font-size:13px;margin-top:10px}
+  .toggle{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:4px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:6px;font-size:13.5px;z-index:20}
+</style>
+</head>
+<body>
+<div class="banner">MOCK for devs · Paper App Flow 1.2 · T-3 admin action item "Complete Paper App Details". Not live. All names are sample data.</div>
+<div class="shell">
+  <aside class="side">
+    <div class="logo">ilia<small>ADMIN</small></div>
+    <nav class="nav">
+      <a href="#">Account Management</a>
+      <a href="#">Tranche Management</a>
+      <a href="#">Document Management</a>
+      <a href="#" class="on">NIW Action Items</a>
+      <a href="#">Admin Activity logs</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <h1>Action Items</h1>
+    <div class="layout">
+      <div class="card">
+        <div class="tabs">
+          <button class="on" id="tabPending" type="button">Pending action items</button>
+          <button id="tabDone" type="button">Completed action items</button>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Client Name</th><th>Action Item</th><th>Date Added</th><th>Product</th><th>Current Tranche</th><th style="text-align:right">Action Needed</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="card notes">
+        <h3>Dev notes · T-3 action item</h3>
+        <ol>
+          <li><b>New action item type: "Complete Paper App Details"</b>, created when the admin clicks Create Paper Application (T-1). It shows in NIW Action Items (type Enrollment) with a <span class="chip paper">PAPER</span> tag.</li>
+          <li><b>Button "Complete Details"</b> opens a side panel: paper-app summary, what's still needed, and which emails went out at creation.</li>
+          <li>The <b>"Go to…" links</b> open that client's page (Client Profile / Documents tab). Admin, agent and client can all fill these in.</li>
+          <li><b>"Mark details complete"</b> checks off the item. If something still looks missing, the admin gets a warning but can still continue.</li>
+          <li>On complete: the item moves to <b>Completed action items</b>, and the next item <b>"Mark Application Sent to Carrier"</b> is created (that step is T-8).</li>
+          <li>Paper apps <b>no longer jump straight to "Upload &amp; Send Proposal"</b> at creation.</li>
+        </ol>
+        <span class="tag">Try it</span>
+        <div class="demo">Click <b>Complete Details</b> on the highlighted row. Use the "pretend" toggles in the panel to see the complete vs missing states.</div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden role="dialog" aria-labelledby="dTitle">
+  <div class="dh">
+    <div>
+      <h2 id="dTitle">Complete paper app details</h2>
+      <p>Sam Rivera <span class="chip paper">PAPER</span></p>
+    </div>
+    <button class="x" id="close" type="button" aria-label="Close">×</button>
+  </div>
+  <div class="db">
+    <div class="blk">
+      <h4>Paper application</h4>
+      <dl class="sum">
+        <dt>Client</dt><dd>Sam Rivera</dd>
+        <dt>Agent</dt><dd>Jordan Ellis</dd>
+        <dt>IMO</dt><dd>Summit Financial Group</dd>
+        <dt>Carrier</dt><dd>Securian</dd>
+        <dt>Product</dt><dd>Kai-Zen Paper Workflow</dd>
+        <dt>Created</dt><dd>10-14-2026 by Admin</dd>
+      </dl>
+    </div>
+
+    <div class="blk">
+      <h4>What's needed before sending to the carrier</h4>
+      <div class="todo miss" id="tdProfile">
+        <div class="ic">!</div>
+        <div class="tx"><b>Client profile &amp; enrollment details</b><span id="tdProfileSub">Some required details are still empty</span></div>
+        <a href="#" onclick="return false">Go to Client Profile →</a>
+      </div>
+      <div class="todo miss" id="tdKit">
+        <div class="ic">!</div>
+        <div class="tx"><b>Application kit uploaded</b><span id="tdKitSub">No application documents uploaded yet</span></div>
+        <a href="#" onclick="return false">Go to Documents →</a>
+      </div>
+      <label class="toggle"><input type="checkbox" id="pProfile"> pretend: profile details are filled in</label>
+      <label class="toggle"><input type="checkbox" id="pKit"> pretend: application kit is uploaded</label>
+    </div>
+
+    <div class="blk">
+      <h4>Sent at creation</h4>
+      <div class="sent"><span class="ck">✓</span> Client email "Your Kai-Zen application is in ILIA" <span>· 10-14-2026</span></div>
+      <div class="sent"><span class="ck">✓</span> Agent email "Sam Rivera's paper application is now in ILIA" <span>· 10-14-2026</span></div>
+    </div>
+    <div class="warnbox" id="warn" hidden>Some items above still look incomplete. Mark details complete anyway?</div>
+  </div>
+  <div class="df">
+    <button class="btn ghost" id="cancel" type="button">Close</button>
+    <button class="btn ok" id="complete" type="button">Mark details complete</button>
+  </div>
+</aside>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var pending = [
+    {id:"pa", client:"Sam Rivera", paper:true, item:"Complete Paper App Details", date:"10-14-2026", product:"Kai-Zen", tranche:"79", btn:"Complete Details"},
+    {client:"Zhen Li", item:"Send Proposal to Agent", date:"10-13-2026", product:"Kai-Zen", tranche:"78", btn:"Upload & Send Proposal"},
+    {client:"Jon Westlake", gwt:true, item:"Send Proposal to Agent", date:"10-13-2026", product:"The Greatest Wealth Transfer", tranche:"78", btn:"Upload & Send Proposal"},
+    {client:"Brenda Hart", item:"Approve GWT Docs", date:"10-13-2026", product:"Kai-Zen", tranche:"", btn:"Approve GWT Doc"},
+    {client:"Jing Xu", item:"Approve Client Application / Agent Report", date:"10-13-2026", product:"Kai-Zen", tranche:"78", btn:"Approve Documents"}
+  ];
+  var completed = [];
+  var tab = "pending";
+  var warned = false;
+
+  function esc(s){ var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+  function render(){
+    var list = tab === "pending" ? pending : completed;
+    var html = "";
+    list.forEach(function(r){
+      var chips = (r.paper ? '<span class="chip paper">PAPER</span>' : "") + (r.gwt ? '<span class="chip gwt">GWT</span>' : "") + (r.next ? '<span class="chip next">NEXT STEP · T-8</span>' : "");
+      var cls = (r.id === "pa" && tab === "pending") ? ' class="new"' : "";
+      var action = tab === "pending"
+        ? '<button class="btn" type="button" data-id="' + (r.id || "") + '">' + esc(r.btn) + '</button>'
+        : '<span style="color:var(--ok);font-weight:500">Completed ✓</span>';
+      html += "<tr" + cls + "><td><a href='#' onclick='return false'>" + esc(r.client) + "</a>" + chips + "</td><td>" + esc(r.item) + "</td><td>" + r.date + "</td><td>" + esc(r.product) + "</td><td>" + r.tranche + "</td><td style='text-align:right'>" + action + "</td></tr>";
+    });
+    if(!list.length) html = "<tr><td colspan='6' style='color:var(--muted);text-align:center;padding:24px'>Nothing here yet</td></tr>";
+    $("rows").innerHTML = html;
+    Array.prototype.forEach.call(document.querySelectorAll("#rows button[data-id='pa']"), function(b){ b.onclick = openDrawer; });
+    Array.prototype.forEach.call(document.querySelectorAll("#rows button[data-id='']"), function(b){ b.onclick = function(){ toast("Existing action item, unchanged by this task"); }; });
+  }
+
+  function setTab(t){ tab = t; $("tabPending").classList.toggle("on", t === "pending"); $("tabDone").classList.toggle("on", t === "done"); render(); }
+
+  function syncTodos(){
+    var p = $("pProfile").checked, k = $("pKit").checked;
+    $("tdProfile").className = "todo " + (p ? "done" : "miss");
+    $("tdProfile").querySelector(".ic").textContent = p ? "✓" : "!";
+    $("tdProfileSub").textContent = p ? "Required details are filled in" : "Some required details are still empty";
+    $("tdKit").className = "todo " + (k ? "done" : "miss");
+    $("tdKit").querySelector(".ic").textContent = k ? "✓" : "!";
+    $("tdKitSub").textContent = k ? "Application kit documents uploaded" : "No application documents uploaded yet";
+    warned = false; $("warn").hidden = true; $("complete").textContent = "Mark details complete";
+  }
+
+  function openDrawer(){ $("scrim").hidden = false; $("drawer").hidden = false; syncTodos(); $("close").focus(); }
+  function closeDrawer(){ $("scrim").hidden = true; $("drawer").hidden = true; }
+
+  function complete(){
+    var allGood = $("pProfile").checked && $("pKit").checked;
+    if(!allGood && !warned){ warned = true; $("warn").hidden = false; $("complete").textContent = "Yes, mark complete"; return; }
+    var row = pending.shift();
+    completed.unshift({client:row.client, paper:true, item:row.item, date:row.date, product:row.product, tranche:row.tranche});
+    pending.unshift({id:"next", client:"Sam Rivera", paper:true, next:true, item:"Mark Application Sent to Carrier", date:"10-14-2026", product:"Kai-Zen", tranche:"79", btn:"Mark Sent"});
+    closeDrawer(); render();
+    toast("Details marked complete. Next step created: Mark Application Sent to Carrier");
+  }
+
+  var tt;
+  function toast(msg){ var t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(tt); tt = setTimeout(function(){ t.hidden = true; }, 3200); }
+
+  $("tabPending").onclick = function(){ setTab("pending"); };
+  $("tabDone").onclick = function(){ setTab("done"); };
+  $("close").onclick = closeDrawer; $("cancel").onclick = closeDrawer; $("scrim").onclick = closeDrawer;
+  $("pProfile").onchange = syncTodos; $("pKit").onchange = syncTodos;
+  $("complete").onclick = complete;
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape" && !$("drawer").hidden) closeDrawer(); });
+  render();
+})();
+</script>
+</body>
+</html>
