@@ -65,6 +65,10 @@
   .btn{border-radius:20px;height:36px;padding:0 20px;font:inherit;font-weight:500;border:1px solid var(--accent);background:var(--surface);color:var(--accent);white-space:nowrap}
   .btn.dis{border-color:var(--border);color:var(--faint);background:var(--lock)}
   .lnk{color:var(--accent);font-weight:500;font-size:13.5px}
+  .acts.row{flex-direction:row;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .btn.pri{background:var(--accent);color:#fff}
+  .btn .ic{margin-right:6px}
+  @media (max-width:640px){.card{flex-wrap:wrap}.acts.row{width:100%;justify-content:flex-start}}
   .done-pill{font-size:12.5px;font-weight:700;color:var(--green);display:flex;align-items:center;gap:6px;white-space:nowrap}
   .call{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--note);color:#fff;font-size:11px;font-weight:700;margin-left:6px;vertical-align:2px}
   .side-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
@@ -74,12 +78,12 @@
   .side-card dd{margin:0;text-align:right}
   .rules{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-top:22px}
   .rules h3{margin:0 0 8px;font-size:15px}
-  .rules ol{margin:0;padding-left:20px}
+  .rules ul{margin:0;padding-left:20px}
   .rules li{margin-bottom:6px}
 </style>
 </head>
 <body>
-<div class="banner">SAMPLE SCREEN for devs · Paper App Flow 1.2 · T-7 client Enrollment Home for a paper-app client. Concept only, not live. Sample data. Red numbers match the rules below.</div>
+<div class="banner">SAMPLE SCREEN for devs · Paper App Flow 1.2 · T-7 client Enrollment Home for a paper-app client. Concept only, not live. Sample data.</div>
 <div class="shell">
   <aside class="side">
     <div class="logo">ilia</div>
@@ -89,7 +93,7 @@
       <div>Action Items</div>
       <div>Kai-Zen Details</div>
       <div>Introduction Video</div>
-      <div class="off">Estimate My Benefits <span class="x">NOT SHOWN FOR PAPER APPS · 5</span></div>
+      <div class="off">Estimate My Benefits <span class="x">NOT SHOWN FOR PAPER APPS</span></div>
       <div>Financial Solutions</div>
       <div>How It Works</div>
     </nav>
@@ -101,12 +105,12 @@
         <h1>Enrollment Home</h1>
         <p class="sub">Follow the enrollment process outlined below.</p>
       </div>
-      <div class="ring"><div><b>50%</b>completed<span class="call">3</span></div></div>
+      <div class="ring"><div><b>50%</b>completed</div></div>
     </div>
 
     <div class="info">
       <span class="i">i</span>
-      <div><b>Your paper application is in. <span class="call">1</span></b>
+      <div><b>Your paper application is in.</b>
       <p>We're confirming your details and documents, then we'll submit your application to the carrier. Once the carrier has it, we'll email you when your proposal is ready to review and sign.</p></div>
     </div>
 
@@ -117,19 +121,19 @@
         <div class="card">
           <div class="num">1</div>
           <div class="tx"><div class="st warn">Step 1 · Review your details</div><h3>Basic Info</h3><p>Check your personal details. Add anything missing or upload documents.</p></div>
-          <div class="acts"><span class="btn">Edit</span><span class="lnk">Upload More Documents</span></div>
+          <div class="acts row"><span class="btn pri"><span class="ic">✎</span>Review my details</span><span class="btn"><span class="ic">⤒</span>Upload documents</span></div>
         </div>
 
         <div class="card">
           <div class="num done">✓</div>
-          <div class="tx"><div class="st">Step 2 · Completed on paper <span class="call">2</span></div><h3>Enrollment Application</h3><p>Your application was completed and signed on paper.</p></div>
+          <div class="tx"><div class="st">Step 2 · Completed on paper</div><h3>Enrollment Application</h3><p>Your application was completed and signed on paper.</p></div>
           <div class="acts"><span class="done-pill">✓ Completed on paper</span></div>
         </div>
 
         <div class="card lock">
           <div class="num">3</div>
           <div class="tx"><div class="st mute">Step 3</div><h3>Review Proposal and Sign</h3><p>Review your Kai-Zen policy offer and sign.</p>
-            <div class="wait">🔒 Available once the carrier returns your proposal. We'll email you. <span class="call">4</span></div></div>
+            <div class="wait">🔒 Available once the carrier returns your proposal. We'll email you.</div></div>
           <div class="acts"><span class="btn dis">Review and Sign</span></div>
         </div>
 
@@ -153,16 +157,16 @@
 
     <div class="rules">
       <h3>Rules for devs (T-7), paper-app clients only</h3>
-      <ol>
+      <ul>
         <li><b>Info banner</b> at the top with the wording shown. It matches the client creation email.</li>
         <li><b>Step 2</b> shows a green check and <b>"Completed on paper"</b>. No "Start Application" button, no enrollment validation. <i>(Clients see "Completed on paper"; admin/agent screens show "N/A – Paper App", per T-6.)</i></li>
         <li><b>Progress circle</b> counts Step 2 as done for paper clients, so it doesn't look stuck.</li>
         <li><b>Step 3 stays locked</b> until the proposal reaches the client (after agent approval), with the line "Available once the carrier returns your proposal. We'll email you."</li>
         <li><b>"Estimate My Benefits" is hidden</b> from the menu for paper clients (no estimator illustrations).</li>
-        <li><b>Step 1 stays open:</b> the client can edit their details and upload documents at any time. They are never locked out.</li>
+        <li><b>Step 1 stays open</b>, with <b>two clearly labelled buttons side by side</b> (not stacked): <b>"Review my details"</b> (opens their profile/enrollment details) and <b>"Upload documents"</b> (opens Document Upload). This replaces the vague "Edit" + "Upload More Documents" link. The client is never locked out.</li>
         <li><b>No "Confirm my details" button.</b> The admin's required fields + Application Kit decide when the case moves on.</li>
         <li><b>Step 4</b> is unchanged.</li>
-      </ol>
+      </ul>
     </div>
   </main>
 </div>
