@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mark Sent to Carrier · Flow 1.2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@700&display=swap">
+<style>
+  :root{
+    --bg:#f4f6fa;--surface:#fff;--surface-2:#f7f9fc;--head:#e9eef8;--border:#dfe4ec;--border-strong:#c3cad6;
+    --ink:#202427;--muted:#5d6672;--faint:#8c95a2;
+    --accent:#3971EC;--accent-soft:#eaf1fe;--ok:#1b9e63;--ok-soft:#e5f5ed;--warn:#b7791f;--warn-soft:#fbf3e3;
+    --note:#d43f3a;--note-soft:#fdeceb;--scrim:rgba(20,26,36,.38);
+    --ff:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--head:#1b2432;--border:#2a3340;--border-strong:#3c4757;
+    --ink:#e7ecf2;--muted:#9da8b6;--faint:#6f7a88;--accent:#6b97f5;--accent-soft:#1a2740;
+    --ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;--scrim:rgba(0,0,0,.55);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--head:#1b2432;--border:#2a3340;--border-strong:#3c4757;
+    --ink:#e7ecf2;--muted:#9da8b6;--faint:#6f7a88;--accent:#6b97f5;--accent-soft:#1a2740;
+    --ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;--scrim:rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.45}
+  .banner{background:var(--note-soft);color:var(--note);border-bottom:1px solid var(--note);padding:8px 16px;font-size:12.5px;font-weight:500}
+  .steps{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .restart{margin-right:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:14px;padding:3px 12px;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+  .step{font-size:11.5px;font-weight:500;color:var(--faint);background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:3px 11px}
+  .step.cur{color:#fff;background:var(--accent);border-color:var(--accent)}
+  .step.done{color:var(--ok);border-color:var(--ok)}
+  .shell{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 80px)}
+  @media (max-width:900px){.shell{grid-template-columns:1fr}.side{display:none}}
+  .side{background:var(--surface);border-right:1px solid var(--border);padding:18px 0}
+  .logo{padding:0 20px 18px;font-weight:700;font-size:22px}
+  .logo small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--accent);margin-top:2px}
+  .nav a{display:block;padding:9px 20px;color:var(--muted);text-decoration:none;font-size:13.5px}
+  .nav a.on{color:var(--accent);background:var(--accent-soft);font-weight:500}
+  .main{padding:20px 26px 60px;min-width:0}
+  @media (max-width:600px){.main{padding:16px}}
+  h1{font-family:'Playfair Display',Georgia,serif;font-size:32px;margin:4px 0 14px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+  @media (max-width:1200px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px}
+  .tabs{display:flex;border-bottom:1px solid var(--border);padding:0 14px}
+  .tabs button{border:0;background:none;font:inherit;font-size:12.5px;font-weight:500;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);padding:14px 12px;cursor:pointer;border-bottom:2px solid transparent}
+  .tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+  .tablewrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:720px}
+  th{background:var(--head);text-align:left;font-weight:500;font-size:13.5px;padding:11px 14px}
+  td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+  td a{color:var(--accent);text-decoration:none}
+  tr.hl td{background:var(--accent-soft)}
+  tr.hl td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+  .chip{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:1px;white-space:nowrap}
+  .chip.paper{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+  .chip.next{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+  .btn{background:var(--accent);color:#fff;border:0;border-radius:20px;height:36px;padding:0 18px;font:inherit;font-weight:500;cursor:pointer;white-space:nowrap}
+  .btn.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .notes{padding:18px 20px;position:sticky;top:16px}
+  .notes h3{margin:0 0 10px;font-size:14px;color:var(--note)}
+  .notes ol{margin:0;padding-left:18px;font-size:12.8px}
+  .notes li{margin-bottom:8px}
+  .notes .tag{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--note);margin-top:12px;display:block}
+  .notes .demo{font-size:12.3px;color:var(--muted);margin-top:6px}
+
+  .scrim{position:fixed;inset:0;background:var(--scrim);z-index:10}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(520px,94vw);max-height:90vh;overflow:auto;background:var(--surface);z-index:11;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+  .mh{display:flex;justify-content:space-between;align-items:flex-start;padding:16px 20px;border-bottom:1px solid var(--border)}
+  .mh h3{margin:0;font-size:18px}
+  .mh p{margin:3px 0 0;font-size:13px;color:var(--muted)}
+  .x{border:0;background:none;font-size:22px;color:var(--muted);cursor:pointer}
+  .mb{padding:16px 20px}
+  .sum{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13.5px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:16px}
+  .sum dt{color:var(--muted)}
+  .sum dd{margin:0;font-weight:500}
+  .field{position:relative;margin-bottom:16px}
+  .field label{position:absolute;top:-8px;left:10px;background:var(--surface);padding:0 4px;font-size:11.5px;color:var(--muted)}
+  .field label .r{color:var(--note)}
+  .field input{width:100%;height:44px;border:1px solid var(--border-strong);border-radius:4px;padding:0 12px;font:inherit;color:var(--ink);background:var(--surface);cursor:pointer}
+  .field input.filled{border-color:var(--ok)}
+  .attach{display:flex;align-items:center;gap:10px;border:1px dashed var(--border-strong);border-radius:6px;padding:12px 14px;cursor:pointer;font-size:13.5px;color:var(--accent)}
+  .attach.done{border-style:solid;border-color:var(--ok);color:var(--ink);cursor:default}
+  .attach small{color:var(--muted)}
+  .hintline{font-size:12.3px;color:var(--muted);margin:-8px 0 14px}
+  .mf{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border)}
+  .after{margin-top:20px}
+  .after h3{font-size:15px;margin:0 0 10px}
+  .effects{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:900px){.effects{grid-template-columns:1fr}}
+  .eff{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px}
+  .eff h4{margin:0 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .srow{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:6px 8px;border-radius:4px}
+  .srow.new{background:var(--ok-soft)}
+  .srow .d{color:var(--ok)}
+  .srow .inc{color:var(--muted)}
+  .srow .na{color:var(--muted);font-style:italic}
+  .cban{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:12px 14px;font-size:13.5px}
+  .cban .i{flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:12px}
+  .cban b{display:block}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:11px 18px;border-radius:6px;font-size:13.5px;z-index:20;max-width:92vw}
+</style>
+</head>
+<body>
+<div class="banner">MOCK for devs · Paper App Flow 1.2 · T-8 "Mark Application Sent to Carrier". Not live. All names and data are sample data.</div>
+<div class="steps">
+  <button class="restart" type="button" onclick="location.reload()">↺ Start over (reset the mock)</button>
+  <span class="step cur" data-s="1">1 · Action item</span>
+  <span class="step" data-s="2">2 · Mark sent pop-up</span>
+  <span class="step" data-s="3">3 · What changes</span>
+</div>
+<div class="shell">
+  <aside class="side">
+    <div class="logo">ilia<small>ADMIN</small></div>
+    <nav class="nav">
+      <a href="#">Account Management</a>
+      <a href="#">Tranche Management</a>
+      <a href="#" class="on">NIW Action Items</a>
+    </nav>
+  </aside>
+  <main class="main">
+    <h1>Action Items</h1>
+    <div class="layout">
+      <div>
+        <div class="card">
+          <div class="tabs">
+            <button class="on" id="tabPending" type="button">Pending action items</button>
+            <button id="tabDone" type="button">Completed action items</button>
+          </div>
+          <div class="tablewrap">
+            <table>
+              <thead><tr><th>Client Name</th><th>Action Item</th><th>Date Added</th><th>Product</th><th>Current Tranche</th><th style="text-align:right">Action Needed</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="after" id="after" hidden>
+          <h3>What changed after "Confirm"</h3>
+          <div class="effects">
+            <div class="eff">
+              <h4>Client's Participant Status (admin + agent)</h4>
+              <div class="srow"><span>Paper application received (signed on paper)</span><span class="d">10-14-2026</span></div>
+              <div class="srow"><span>Paper App Details Completed</span><span class="d">10-16-2026</span></div>
+              <div class="srow new"><span><b>Application Submitted to Carrier</b></span><span class="d" id="effDate">10-17-2026</span></div>
+              <div class="srow"><span>Application Received By Carrier</span><span class="na">N/A – Paper App</span></div>
+              <div class="srow"><span>Submitted to Agent</span><span class="inc">Incomplete</span></div>
+            </div>
+            <div class="eff">
+              <h4>Client's Enrollment Home banner</h4>
+              <div class="cban"><span class="i">i</span><div><b>Your application was submitted to the carrier on <span id="effDate2">10-17-2026</span>.</b>We'll email you when your proposal is ready to review and sign.</div></div>
+              <p style="font-size:12.3px;color:var(--muted);margin:10px 0 0">Replaces "Your paper application is in…" once the application is sent.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card notes">
+        <h3>Dev notes · T-8</h3>
+        <ol>
+          <li>The <b>"Mark Application Sent to Carrier"</b> action item appears once "Complete Paper App Details" auto-completes (T-3/T-4).</li>
+          <li>The admin sends the application to the carrier <b>outside ILIA</b>. <b>ILIA sends nothing to the carrier.</b></li>
+          <li><b>"Mark Sent"</b> opens a pop-up: <b>Date sent</b> (required, defaults to today), <b>Note</b> (optional), <b>Confirmation</b> attachment (optional).</li>
+          <li><b>Confirm</b> completes the item, sets <b>"Application Submitted to Carrier"</b> with that date, and saves the note and attachment to the client's record.</li>
+          <li>The next item, <b>"Upload &amp; Send Proposal"</b> (T-9), is created <b>right away</b> and waits for the carrier's proposal.</li>
+          <li>The client's Enrollment Home banner changes to the "submitted on {date}" wording.</li>
+          <li><b>No emails</b> at this step.</li>
+        </ol>
+        <span class="tag">Try it</span>
+        <div class="demo">Click <b>Mark Sent</b>. Click each field to fill it with sample data, then <b>Confirm</b>.</div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="modal" id="modal" hidden role="dialog" aria-labelledby="mTitle">
+  <div class="mh">
+    <div><h3 id="mTitle">Mark application sent to carrier</h3><p>Record that you've sent this paper application to the carrier.</p></div>
+    <button class="x" id="mClose" type="button" aria-label="Close">×</button>
+  </div>
+  <div class="mb">
+    <dl class="sum">
+      <dt>Client</dt><dd>Sam Rivera <span class="chip paper">PAPER</span></dd>
+      <dt>Carrier</dt><dd>Securian</dd>
+      <dt>Agent</dt><dd>Jordan Ellis</dd>
+      <dt>Product</dt><dd>Kai-Zen Paper Workflow</dd>
+    </dl>
+    <div class="field"><label>Date sent <span class="r">*</span></label><input id="fDate" readonly placeholder="Click to fill"></div>
+    <div class="field"><label>Note (optional)</label><input id="fNote" readonly placeholder="Click to fill, e.g. how it was sent"></div>
+    <div class="attach" id="fAttach">📎 <span id="fAttachTx">Attach carrier confirmation (optional): click to attach a sample file</span></div>
+    <p class="hintline" style="margin-top:10px">ILIA does not send anything to the carrier. This only records that you did.</p>
+  </div>
+  <div class="mf">
+    <button class="btn ghost" id="mCancel" type="button">Cancel</button>
+    <button class="btn" id="mConfirm" type="button" disabled>Confirm sent</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var pending = [
+    {id:"sent", client:"Sam Rivera", paper:true, item:"Mark Application Sent to Carrier", date:"10-16-2026", product:"Kai-Zen", tranche:"79", btn:"Mark Sent"},
+    {client:"Zhen Li", item:"Send Proposal to Agent", date:"10-13-2026", product:"Kai-Zen", tranche:"78", btn:"Upload & Send Proposal"},
+    {client:"Jing Xu", item:"Approve Client Application / Agent Report", date:"10-13-2026", product:"Kai-Zen", tranche:"78", btn:"Approve Documents"}
+  ];
+  var completed = [{client:"Sam Rivera", paper:true, item:"Complete Paper App Details", date:"10-14-2026", product:"Kai-Zen", tranche:"79"}];
+  var tab = "pending";
+  function esc(s){ var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+  function step(n){ Array.prototype.forEach.call(document.querySelectorAll(".step"), function(el){ var s = +el.getAttribute("data-s"); el.className = "step" + (s < n ? " done" : s === n ? " cur" : ""); }); }
+  function render(){
+    var list = tab === "pending" ? pending : completed, h = "";
+    list.forEach(function(r){
+      var chips = (r.paper ? '<span class="chip paper">PAPER</span>' : "") + (r.next ? '<span class="chip next">NEXT · T-9</span>' : "");
+      var cls = r.id && tab === "pending" ? ' class="hl"' : "";
+      var act = tab === "pending" ? '<button class="btn" type="button" data-id="' + (r.id || "") + '">' + esc(r.btn) + '</button>' : '<span style="color:var(--ok);font-weight:500">Completed ✓</span>';
+      h += "<tr" + cls + "><td><a href='#' onclick='return false'>" + esc(r.client) + "</a>" + chips + "</td><td>" + esc(r.item) + "</td><td>" + r.date + "</td><td>" + r.product + "</td><td>" + r.tranche + "</td><td style='text-align:right'>" + act + "</td></tr>";
+    });
+    $("rows").innerHTML = h;
+    var b = document.querySelector("#rows button[data-id='sent']"); if(b) b.onclick = openModal;
+    var n = document.querySelector("#rows button[data-id='prop']"); if(n) n.onclick = function(){ toast("Upload & Send Proposal for paper apps is the next task (T-9)."); };
+    Array.prototype.forEach.call(document.querySelectorAll("#rows button[data-id='']"), function(x){ x.onclick = function(){ toast("Existing action item, unchanged"); }; });
+  }
+  function setTab(t){ tab = t; $("tabPending").classList.toggle("on", t === "pending"); $("tabDone").classList.toggle("on", t === "done"); render(); }
+  function openModal(){ $("scrim").hidden = false; $("modal").hidden = false; step(2); }
+  function closeModal(){ $("scrim").hidden = true; $("modal").hidden = true; }
+  function sync(){ $("mConfirm").disabled = !$("fDate").value; }
+  $("fDate").onclick = function(){ if(!this.value){ this.value = "10-17-2026"; this.classList.add("filled"); sync(); } };
+  $("fNote").onclick = function(){ if(!this.value){ this.value = "Sent through the Securian agent portal"; this.classList.add("filled"); } };
+  $("fAttach").onclick = function(){ if(this.classList.contains("done")) return; this.classList.add("done"); $("fAttachTx").innerHTML = "securian-submission-confirmation.pdf <small>· attached</small>"; };
+  $("mConfirm").onclick = function(){
+    var d = $("fDate").value;
+    pending.shift();
+    completed.unshift({client:"Sam Rivera", paper:true, item:"Mark Application Sent to Carrier", date:"10-16-2026", product:"Kai-Zen", tranche:"79"});
+    pending.unshift({id:"prop", client:"Sam Rivera", paper:true, next:true, item:"Upload & Send Proposal", date:d, product:"Kai-Zen", tranche:"79", btn:"Upload & Send Proposal"});
+    $("effDate").textContent = d; $("effDate2").textContent = d;
+    closeModal(); render(); $("after").hidden = false; step(3);
+    toast("Recorded: application sent to Securian on " + d + ". Next: Upload & Send Proposal.");
+    $("after").scrollIntoView({behavior:"smooth", block:"start"});
+  };
+  $("mClose").onclick = closeModal; $("mCancel").onclick = closeModal; $("scrim").onclick = closeModal;
+  $("tabPending").onclick = function(){ setTab("pending"); };
+  $("tabDone").onclick = function(){ setTab("done"); };
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape" && !$("modal").hidden) closeModal(); });
+  var tt; function toast(m){ var t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function(){ t.hidden = true; }, 3400); }
+  render();
+})();
+</script>
+</body>
+</html>
