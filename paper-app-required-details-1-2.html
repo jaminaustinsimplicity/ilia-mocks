@@ -67,6 +67,10 @@
   .field input{width:100%;height:42px;border:1px solid var(--border-strong);border-radius:4px;padding:0 12px;font:inherit;color:var(--ink);background:var(--surface);cursor:pointer}
   .field input.filled{border-color:var(--ok)}
   .field input.flash{box-shadow:0 0 0 3px var(--ok-soft)}
+  .need{display:block;font-size:11.5px;color:var(--note);margin:3px 0 0 2px;font-weight:500}
+  .need.nj{color:var(--accent)}
+  .field input.filled + .need{display:none}
+  .field input.empty-req{border-color:var(--note)}
   .rf{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--border)}
   .btn{background:var(--accent);color:#fff;border:0;border-radius:20px;height:34px;padding:0 16px;font:inherit;font-weight:500;cursor:pointer;white-space:nowrap}
   .btn.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
@@ -201,7 +205,7 @@
     groups.forEach(function(g){
       var tier = REQ.filter(function(f){return f.g===g;})[0].tier; html += "<div class='grp grp-" + tier + "'><h4>" + esc(g) + " <a href='#' data-jump='" + REQ.filter(function(f){return f.g===g;})[0].sec + "'>Show in full form ↓</a></h4><div class='g3'>";
       REQ.filter(function(f){ return f.g === g; }).forEach(function(f){
-        html += "<div class='field'><label>" + esc(f.l) + (f.tier === 'judy' ? " <span class='jd'>pending Judy</span>" : " <span class='r'>*</span>") + "</label><input readonly data-top='" + f.id + "' placeholder='Click to fill'></div>";
+        html += "<div class='field'><label>" + esc(f.l) + (f.tier === 'judy' ? " <span class='jd'>pending Judy</span>" : " <span class='r'>*</span>") + "</label><input readonly data-top='" + f.id + "' placeholder='Click to fill'><small class='need" + (f.tier === 'judy' ? " nj" : "") + "'>" + (f.tier === 'judy' ? "Pending Judy" : "Required") + "</small></div>";
       });
       html += "</div></div>";
     });
@@ -241,6 +245,9 @@
     $("pcount").textContent = n + " of " + t;
     $("pfill").style.width = (100 * n / t) + "%";
     $("save").disabled = n === 0 || saved;
+    var allFilled = REQ.every(function(x){ return vals[x.id]; });
+    $("fillAll").textContent = allFilled ? "✕ Clear all" : "⚡ Fill all";
+    Array.prototype.forEach.call(document.querySelectorAll("[data-top]"), function(el){ var id = el.getAttribute("data-top"); var f = REQ.filter(function(x){ return x.id === id; })[0]; el.classList.toggle("empty-req", !vals[id] && f.tier !== "judy"); });
   }
   function complete(){
     var COUNTED = REQ.filter(function(x){ return x.tier !== "judy"; }); var all = COUNTED.every(function(x){ return vals[x.id]; });
@@ -261,9 +268,18 @@
     if(el.matches && el.matches("[data-top],[data-long]")) setVal(el.getAttribute("data-top") || el.getAttribute("data-long"));
     if(el.matches && el.matches("[data-jump]")){ e.preventDefault(); var s = $("sec-" + el.getAttribute("data-jump")); if(s) s.scrollIntoView({behavior:"smooth", block:"center"}); }
   });
-  $("fillAll").onclick = function(){ REQ.forEach(function(f){ setVal(f.id); }); };
+  var T0 = $("rTitle").innerHTML, S0 = $("rSub").textContent;
+  function clearAll(){
+    vals = {}; saved = false;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-top],[data-long]"), function(el){ el.value = ""; el.classList.remove("filled"); });
+    $("reqbox").classList.remove("done"); $("rTitle").innerHTML = T0; $("rSub").textContent = S0;
+    $("rb").hidden = false; $("rf").hidden = false;
+    $("tabChip").className = "chip req"; $("tabChip").textContent = "ACTION REQUIRED";
+    sync(); toast("Cleared. Showing the empty state.");
+  }
+  $("fillAll").onclick = function(){ if(REQ.every(function(f){ return vals[f.id]; })) clearAll(); else REQ.forEach(function(f){ setVal(f.id); }); };
   $("save").onclick = function(){ saved = true; sync(); complete(); };
-  $("rh").onclick = function(){ if(!$("reqbox").classList.contains("done")) return; $("rb").hidden = !$("rb").hidden; };
+  $("rh").onclick = function(){ if(!$("reqbox").classList.contains("done")) return; var show = $("rb").hidden; $("rb").hidden = !show; $("rf").hidden = !show; };
 })();
 </script>
 </body>
