@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Required Paper App Details · Flow 1.2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#f4f6fa;--surface:#fff;--surface-2:#f7f9fc;--border:#dfe4ec;--border-strong:#c3cad6;
+    --ink:#202427;--muted:#5d6672;--faint:#8c95a2;
+    --accent:#3971EC;--accent-soft:#eaf1fe;--ok:#1b9e63;--ok-soft:#e5f5ed;--warn:#b7791f;--warn-soft:#fbf3e3;
+    --note:#d43f3a;--note-soft:#fdeceb;--ff:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--border:#2a3340;--border-strong:#3c4757;
+    --ink:#e7ecf2;--muted:#9da8b6;--faint:#6f7a88;--accent:#6b97f5;--accent-soft:#1a2740;
+    --ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0e131b;--surface:#161d27;--surface-2:#121922;--border:#2a3340;--border-strong:#3c4757;
+    --ink:#e7ecf2;--muted:#9da8b6;--faint:#6f7a88;--accent:#6b97f5;--accent-soft:#1a2740;
+    --ok:#3ccf8e;--ok-soft:#13291f;--warn:#e3a849;--warn-soft:#2b2312;--note:#f07a74;--note-soft:#2e1716;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.45}
+  .banner{background:var(--note-soft);color:var(--note);border-bottom:1px solid var(--note);padding:8px 16px;font-size:12.5px;font-weight:500}
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .restart{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:14px;padding:3px 12px;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+  .bar .hint{font-size:12.5px;color:var(--muted)}
+  .wrap{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px;padding:18px 24px 60px;align-items:start;max-width:1400px}
+  @media (max-width:1150px){.wrap{grid-template-columns:1fr}}
+  @media (max-width:600px){.wrap{padding:14px}}
+  .tabs{display:flex;overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:16px}
+  .tabs span{font-size:12px;font-weight:500;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);padding:14px;white-space:nowrap}
+  .tabs span.on{color:var(--accent);border-bottom:2px solid var(--accent)}
+  .chip{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:1px;white-space:nowrap}
+  .chip.req{background:var(--note-soft);color:var(--note);border:1px solid var(--note)}
+  .chip.ok{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+  .chip.paper{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+
+  /* NEW required section */
+  .reqbox{background:var(--surface);border:2px solid var(--warn);border-radius:8px;margin-bottom:18px;overflow:hidden}
+  .reqbox.done{border-color:var(--ok)}
+  .rh{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;background:var(--warn-soft);cursor:pointer}
+  .reqbox.done .rh{background:var(--ok-soft)}
+  .rh h2{margin:0;font-size:17px}
+  .rh p{margin:2px 0 0;font-size:12.8px;color:var(--muted)}
+  .prog{display:flex;align-items:center;gap:10px;min-width:220px}
+  .pbar{flex:1;height:8px;background:var(--border);border-radius:6px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:var(--warn);transition:width .2s}
+  .reqbox.done .pbar i{background:var(--ok)}
+  .pcount{font-size:13px;font-weight:700;white-space:nowrap}
+  .rb{padding:16px 18px}
+  .draft{font-size:12.3px;background:var(--accent-soft);border:1px dashed var(--accent);border-radius:6px;padding:8px 12px;margin:0 0 14px}
+  .grp{margin-bottom:14px}
+  .grp h4{margin:0 0 10px;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;display:flex;justify-content:space-between}
+  .grp h4 a{color:var(--accent);text-decoration:none;text-transform:none;letter-spacing:0;font-weight:500}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media (max-width:820px){.g3{grid-template-columns:1fr 1fr}}
+  @media (max-width:520px){.g3{grid-template-columns:1fr}}
+  .field{position:relative}
+  .field label{position:absolute;top:-8px;left:10px;background:var(--surface);padding:0 4px;font-size:11.5px;color:var(--muted);max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .field label .r{color:var(--note)}
+  .field input{width:100%;height:42px;border:1px solid var(--border-strong);border-radius:4px;padding:0 12px;font:inherit;color:var(--ink);background:var(--surface);cursor:pointer}
+  .field input.filled{border-color:var(--ok)}
+  .field input.flash{box-shadow:0 0 0 3px var(--ok-soft)}
+  .rf{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--border)}
+  .btn{background:var(--accent);color:#fff;border:0;border-radius:20px;height:34px;padding:0 16px;font:inherit;font-weight:500;cursor:pointer;white-space:nowrap}
+  .btn.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+
+  /* existing long form */
+  .sec{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:14px}
+  .sh{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)}
+  .sh b{font-size:16px;font-weight:500}
+  .sb{padding:16px 18px}
+  .sb h5{margin:0 0 12px;font-size:14px}
+  .sub{font-size:12px;color:var(--muted);margin:-6px 0 14px}
+  .mark{font-size:10px;font-weight:700;color:var(--warn);margin-left:4px}
+  .other input{cursor:default;background:var(--surface-2)}
+  .jd{font-size:10px;font-weight:700;color:var(--accent)}
+  .grp-judy{background:var(--accent-soft);border:1px dashed var(--accent);border-radius:6px;padding:10px 12px}
+  .grp-judy .field label{background:var(--accent-soft)}
+  .snap{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px 18px;position:sticky;top:14px}
+  .snap h3{margin:0 0 12px;font-size:15px}
+  .snap dl{display:grid;grid-template-columns:auto 1fr;gap:7px 12px;margin:0;font-size:13px}
+  .snap dt{color:var(--muted)}
+  .snap dd{margin:0;text-align:right}
+  .notes{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:12.5px}
+  .notes b{color:var(--note)}
+  .notes ol{margin:6px 0 0;padding-left:18px}
+  .notes li{margin-bottom:6px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:11px 18px;border-radius:6px;font-size:13.5px;z-index:20;max-width:92vw}
+</style>
+</head>
+<body>
+<div class="banner">MOCK for devs · Paper App Flow 1.2 · T-4 "Required Paper App Details" section on Enrollment Details. Not live. Sample data. Field list is a DRAFT pending Judy.</div>
+<div class="bar">
+  <button class="restart" type="button" onclick="location.reload()">↺ Start over (reset the mock)</button>
+  <span class="hint">Click any field to fill it with sample data, or use "⚡ Fill all". Watch the matching field in the full form below fill at the same time.</span>
+</div>
+
+<div class="wrap">
+  <div>
+    <div class="tabs"><span>Client Profile</span><span>Participant Status</span><span class="on">Enrollment Details <i class="chip req" id="tabChip" style="font-style:normal">ACTION REQUIRED</i></span><span>My Action Items</span><span>Illustrations</span><span>Documents</span><span>Notes</span></div>
+
+    <!-- NEW SECTION -->
+    <section class="reqbox" id="reqbox">
+      <div class="rh" id="rh">
+        <div>
+          <h2 id="rTitle">Required Paper App Details <span class="chip paper">PAPER APP</span></h2>
+          <p id="rSub">Fill these from the client's paper application. Everything else on this page is optional.</p>
+        </div>
+        <div class="prog"><div class="pbar"><i id="pfill"></i></div><span class="pcount" id="pcount">0 of 0</span></div>
+      </div>
+      <div class="rb" id="rb">
+        <div class="draft"><b>Draft field list, pending Judy's approval.</b> Based on a code check of what ILIA uses later. <b>Must have</b> + <b>Recommended</b> count toward completion. The blue <b>Judy decides</b> group is shown for review and is not counted yet. <i>Form rule: if Marital Status = Married, ILIA also requires spouse name + household income (3 years).</i></div>
+        <div id="reqGroups"></div>
+      </div>
+      <div class="rf" id="rf">
+        <span style="font-size:12.5px;color:var(--muted)">Saved fields update the full form below. They are the same fields, not copies.</span>
+        <span style="display:flex;gap:8px"><button class="btn ghost" id="fillAll" type="button">⚡ Fill all</button><button class="btn" id="save" type="button" disabled>Save</button></span>
+      </div>
+    </section>
+
+    <!-- EXISTING FORM (pushed down) -->
+    <div id="longform"></div>
+  </div>
+
+  <aside class="snap">
+    <h3>Client Snapshot</h3>
+    <dl>
+      <dt>Current Status</dt><dd style="color:var(--accent)">Created Account</dd>
+      <dt>Agent</dt><dd>Jordan Ellis</dd>
+      <dt>Carrier</dt><dd>Securian</dd>
+      <dt>Product Type</dt><dd>Kai-Zen Paper Workflow</dd>
+      <dt>Tranche</dt><dd>79</dd>
+    </dl>
+    <div class="notes">
+      <b>Dev notes</b>
+      <ol>
+        <li>Paper-app clients only: a <b>"Required Paper App Details"</b> section at the <b>top</b> of Enrollment Details. Everything else stays the same, pushed down.</li>
+        <li>The section shows <b>only the required fields</b>, grouped, with a progress bar ("x of y").</li>
+        <li>Each field is <b>the same field</b> as in the full form (two views of one value, never a copy). Editing either place updates both.</li>
+        <li>When all required fields are saved: section turns green ✓, collapses, and the tab tag shows COMPLETE. Together with the Application Kit, this completes "Complete Paper App Details" (T-3/T-4).</li>
+        <li>Fields marked <span style="color:var(--warn);font-weight:700">● REQUIRED</span> in the full form are the same ones.</li>
+        <li>Field list = draft, pending Judy. ⚠️ Today ILIA silently defaults an empty <b>DOB to today</b> and an empty <b>gender to Female</b> in the illustration, which is why both are Must have.</li>
+      </ol>
+    </div>
+  </aside>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var REQ = [
+    {g:"Must have · ILIA needs these", tier:"must", id:"fname", l:"First Name", v:"Sam", sec:"id"},
+    {g:"Must have · ILIA needs these", tier:"must", id:"lname", l:"Last Name", v:"Rivera", sec:"id"},
+    {g:"Must have · ILIA needs these", tier:"must", id:"email", l:"Email", v:"sam.rivera@example.com", sec:"id"},
+    {g:"Must have · ILIA needs these", tier:"must", id:"cell", l:"Cell Phone", v:"(555) 010-0100", sec:"id"},
+    {g:"Must have · ILIA needs these", tier:"must", id:"dob", l:"Date of Birth (age 25–65)", v:"04/12/1979", sec:"id"},
+    {g:"Must have · ILIA needs these", tier:"must", id:"gender", l:"Gender", v:"Male", sec:"id"},
+    {g:"Recommended · identity & address", tier:"rec", id:"ssn", l:"SSN (9 digits)", v:"***-**-4821", sec:"id"},
+    {g:"Recommended · identity & address", tier:"rec", id:"citizen", l:"U.S. Citizen", v:"Yes", sec:"id"},
+    {g:"Recommended · identity & address", tier:"rec", id:"marital", l:"Marital Status", v:"Single", sec:"inc"},
+    {g:"Recommended · identity & address", tier:"rec", id:"street", l:"Street", v:"100 Sample Ave", sec:"addr"},
+    {g:"Recommended · identity & address", tier:"rec", id:"city", l:"City", v:"Dallas", sec:"addr"},
+    {g:"Recommended · identity & address", tier:"rec", id:"state", l:"State", v:"TX", sec:"addr"},
+    {g:"Recommended · identity & address", tier:"rec", id:"zip", l:"ZIP (5 digits)", v:"75201", sec:"addr"},
+    {g:"Recommended · primary beneficiary (full record)", tier:"rec", id:"bname", l:"Beneficiary First & Last Name", v:"Alex Rivera", sec:"ben"},
+    {g:"Recommended · primary beneficiary (full record)", tier:"rec", id:"brel", l:"Relationship", v:"Spouse", sec:"ben"},
+    {g:"Recommended · primary beneficiary (full record)", tier:"rec", id:"bpct", l:"Percentage", v:"100%", sec:"ben"},
+    {g:"Recommended · primary beneficiary (full record)", tier:"rec", id:"bssn", l:"Beneficiary SSN", v:"***-**-1199", sec:"ben"},
+    {g:"Recommended · primary beneficiary (full record)", tier:"rec", id:"baddr", l:"Beneficiary Address", v:"100 Sample Ave, Dallas TX 75201", sec:"ben"},
+    {g:"Recommended · primary beneficiary (full record)", tier:"rec", id:"bphone", l:"Beneficiary Phone", v:"(555) 010-0101", sec:"ben"},
+    {g:"Judy decides · may be required", tier:"judy", id:"employer", l:"Employer", v:"Sample Co.", sec:"inc"},
+    {g:"Judy decides · may be required", tier:"judy", id:"occ", l:"Occupation", v:"Engineer", sec:"inc"},
+    {g:"Judy decides · may be required", tier:"judy", id:"income", l:"Annual Earned Income", v:"$185,000", sec:"inc"},
+    {g:"Judy decides · may be required", tier:"judy", id:"networth", l:"Net Worth", v:"$1,200,000", sec:"inc"},
+    {g:"Judy decides · may be required", tier:"judy", id:"contrib", l:"Contribution Amount", v:"$25,000", sec:"con"},
+    {g:"Judy decides · may be required", tier:"judy", id:"dl", l:"Driver's License Number", v:"TX 12345678", sec:"id"},
+    {g:"Judy decides · may be required", tier:"judy", id:"pob", l:"Place of Birth (state/country)", v:"TX, USA", sec:"id"}
+  ];
+  var SECTIONS = [
+    {id:"id", t:"Identity Verification, Address and Contributions", h:"Personal & citizenship details", extra:["Middle Name","Home Phone","DL Expiry","DL State"]},
+    {id:"addr", t:null, h:"Home Address", extra:["Is this the address on your ID?"]},
+    {id:"inc", t:null, h:"Basic Income Details", extra:["Length of Employment","Industry","Unearned Income","Household Income","Politically exposed person?"]},
+    {id:"con", t:null, h:"Contribution Amount", extra:[]},
+    {id:"ben", t:"Beneficiaries", h:"Primary Beneficiaries", extra:["Contingent Beneficiary"]}
+  ];
+  var vals = {}, saved = false;
+  function esc(s){ var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+  function buildTop(){
+    var groups = [], html = "";
+    REQ.forEach(function(f){ if(groups.indexOf(f.g) < 0) groups.push(f.g); });
+    groups.forEach(function(g){
+      var tier = REQ.filter(function(f){return f.g===g;})[0].tier; html += "<div class='grp grp-" + tier + "'><h4>" + esc(g) + " <a href='#' data-jump='" + REQ.filter(function(f){return f.g===g;})[0].sec + "'>Show in full form ↓</a></h4><div class='g3'>";
+      REQ.filter(function(f){ return f.g === g; }).forEach(function(f){
+        html += "<div class='field'><label>" + esc(f.l) + (f.tier === 'judy' ? " <span class='jd'>pending Judy</span>" : " <span class='r'>*</span>") + "</label><input readonly data-top='" + f.id + "' placeholder='Click to fill'></div>";
+      });
+      html += "</div></div>";
+    });
+    $("reqGroups").innerHTML = html;
+  }
+  function buildLong(){
+    var html = "", open = false;
+    SECTIONS.forEach(function(s){
+      if(s.t){ if(open) html += "</div></div>"; html += "<div class='sec'><div class='sh'><b>" + esc(s.t) + "</b><span style='color:var(--muted)'>⌃</span></div><div class='sb'>"; open = true; }
+      html += "<h5 id='sec-" + s.id + "'>" + esc(s.h) + "</h5><div class='g3' style='margin-bottom:18px'>";
+      REQ.filter(function(f){ return f.sec === s.id; }).forEach(function(f){
+        html += "<div class='field'><label>" + esc(f.l) + (f.tier === 'judy' ? " <span class='jd'>● PENDING JUDY</span>" : " <span class='mark'>● REQUIRED</span>") + "</label><input readonly data-long='" + f.id + "' placeholder='Click to fill'></div>";
+      });
+      s.extra.forEach(function(x){ html += "<div class='field other'><label>" + esc(x) + "</label><input readonly placeholder='Optional for paper apps'></div>"; });
+      html += "</div>";
+    });
+    html += "</div></div>";
+    html += "<div class='sec'><div class='sh'><b>Identity and Income Verification Documents</b><span style='color:var(--muted)'>⌄</span></div></div>";
+    html += "<div class='sec'><div class='sh'><b>Carrier Application Questions</b><span style='color:var(--muted)'>⌄</span></div></div>";
+    html += "<div class='sec'><div class='sh'><b>Physician and Medical Details</b><span style='color:var(--muted)'>⌄</span></div></div>";
+    html += "<div class='sec'><div class='sh'><b>Financial and Liabilities</b><span style='color:var(--muted)'>⌄</span></div></div>";
+    $("longform").innerHTML = html;
+  }
+  function setVal(id){
+    if(vals[id]) return;
+    var f = REQ.filter(function(x){ return x.id === id; })[0];
+    vals[id] = f.v; saved = false;
+    ["top","long"].forEach(function(k){
+      var el = document.querySelector("[data-" + k + "='" + id + "']");
+      el.value = f.v; el.classList.add("filled","flash");
+      setTimeout(function(){ el.classList.remove("flash"); }, 600);
+    });
+    sync();
+  }
+  function sync(){
+    var COUNTED = REQ.filter(function(x){ return x.tier !== "judy"; }); var n = COUNTED.filter(function(x){ return vals[x.id]; }).length, t = COUNTED.length;
+    $("pcount").textContent = n + " of " + t;
+    $("pfill").style.width = (100 * n / t) + "%";
+    $("save").disabled = n === 0 || saved;
+  }
+  function complete(){
+    var COUNTED = REQ.filter(function(x){ return x.tier !== "judy"; }); var all = COUNTED.every(function(x){ return vals[x.id]; });
+    if(!all){ toast("Saved. " + COUNTED.filter(function(x){ return !vals[x.id]; }).length + " required fields still to go."); return; }
+    $("reqbox").classList.add("done");
+    $("rTitle").innerHTML = "✓ All required paper app details complete <span class='chip ok'>COMPLETE</span>";
+    $("rSub").textContent = "Click to expand. With the Application Kit uploaded, this completes the \"Complete Paper App Details\" action item.";
+    $("rb").hidden = true; $("rf").hidden = true;
+    $("tabChip").className = "chip ok"; $("tabChip").textContent = "COMPLETE";
+    toast("All required paper app details saved ✓");
+  }
+
+  var tt; function toast(m){ var t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function(){ t.hidden = true; }, 3200); }
+
+  buildTop(); buildLong(); sync();
+  document.addEventListener("click", function(e){
+    var el = e.target;
+    if(el.matches && el.matches("[data-top],[data-long]")) setVal(el.getAttribute("data-top") || el.getAttribute("data-long"));
+    if(el.matches && el.matches("[data-jump]")){ e.preventDefault(); var s = $("sec-" + el.getAttribute("data-jump")); if(s) s.scrollIntoView({behavior:"smooth", block:"center"}); }
+  });
+  $("fillAll").onclick = function(){ REQ.forEach(function(f){ setVal(f.id); }); };
+  $("save").onclick = function(){ saved = true; sync(); complete(); };
+  $("rh").onclick = function(){ if(!$("reqbox").classList.contains("done")) return; $("rb").hidden = !$("rb").hidden; };
+})();
+</script>
+</body>
+</html>
