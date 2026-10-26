@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ILIA Agent Broker Dealer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400&display=swap">
+<style>
+/* Layout: ILIA admin Agent Details page (MUI v4 look) — mock toolbar, tab bar, profile card with the new Broker Dealer section, then an alert preview */
+:root {
+  --bg: #f4f6f8; --surface: #ffffff; --fg: #1f2933; --muted: #5f6b7a; --line: #c4cbd3; --soft: #e9edf1;
+  --disabled: #d5d9de; --accent: #2f6fe4; --accent-soft: #e5eefc; --new: #1f7a4d; --new-soft: #e3f4ea;
+  --warn: #9a5b00; --warn-soft: #fff4e0; --danger: #d32f2f;
+  --font-body: "Roboto", "Segoe UI", Arial, sans-serif; --font-mono: "Roboto Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12161b; --surface: #1b2128; --fg: #e6eaef; --muted: #9aa6b4; --line: #3a444f; --soft: #242c35;
+  --disabled: #2c343d; --accent: #7aa7f5; --accent-soft: #1e2c47; --new: #6fd3a0; --new-soft: #183327;
+  --warn: #f0b860; --warn-soft: #3a2d14; --danger: #ef7070; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #12161b; --surface: #1b2128; --fg: #e6eaef; --muted: #9aa6b4; --line: #3a444f; --soft: #242c35;
+  --disabled: #2c343d; --accent: #7aa7f5; --accent-soft: #1e2c47; --new: #6fd3a0; --new-soft: #183327;
+  --warn: #f0b860; --warn-soft: #3a2d14; --danger: #ef7070; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.45 }
+.wrap { max-width: 1060px; margin: 0 auto; padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 16px }
+
+.mockbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px;
+  border: 1px dashed var(--line); border-radius: 6px; background: var(--surface) }
+.mockbar .tag { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-left: auto }
+.btn { font: 500 13px var(--font-body); letter-spacing: .03em; border-radius: 4px; padding: 8px 14px; cursor: pointer;
+  border: 1px solid var(--accent); background: transparent; color: var(--accent) }
+.btn.solid { background: var(--accent); color: var(--surface) }
+.btn.pill { border-radius: 20px; padding: 9px 20px }
+.btn:disabled { background: var(--disabled); border-color: var(--disabled); color: var(--muted); cursor: default }
+.btn:focus-visible, input:focus-visible, select:focus-visible, .seg button:focus-visible, .tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+
+.tabs { display: flex; overflow-x: auto; background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,.12); border-radius: 6px 6px 0 0 }
+.tabs button { flex: 0 0 auto; font: 500 13px var(--font-body); letter-spacing: .04em; text-transform: uppercase; padding: 14px 22px;
+  border: 0; background: none; color: var(--muted); border-bottom: 2px solid transparent; cursor: default }
+.tabs button.on { color: var(--accent); border-bottom-color: var(--accent) }
+
+.card { background: var(--surface); border-radius: 0 0 6px 6px; box-shadow: 0 1px 3px rgba(0,0,0,.12); padding: 20px 24px 24px;
+  display: flex; flex-direction: column; gap: 28px }
+h2 { margin: 0; font-size: 17px; font-weight: 700 }
+.sec { display: flex; flex-direction: column; gap: 16px }
+.sec-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px }
+.sec-head p { margin: 0; font-size: 12.5px; color: var(--muted); flex-basis: 100% }
+.new { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--new); background: var(--new-soft); padding: 2px 7px; border-radius: 3px }
+
+.personal { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px }
+.avatar { border: 1px solid var(--soft); border-radius: 4px; display: grid; place-items: center; aspect-ratio: 1; max-width: 100% }
+.avatar svg { width: 70%; height: auto }
+.stack { display: flex; flex-direction: column; gap: 18px }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 24px }
+@media (max-width: 700px) { .personal, .grid2 { grid-template-columns: minmax(0, 1fr) } .avatar { max-width: 160px } }
+
+.field { position: relative; min-width: 0 }
+.field label { position: absolute; top: -8px; left: 10px; padding: 0 4px; font-size: 12px; color: var(--muted); background: var(--surface);
+  white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis }
+.field label .req { color: var(--danger) }
+.field input, .field select { width: 100%; height: 52px; padding: 14px 14px 10px; font: 400 15px var(--font-body); color: var(--fg);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 4px }
+.field input:hover, .field select:hover { border-color: var(--fg) }
+.field select:disabled { background: var(--soft); color: var(--muted); cursor: not-allowed }
+.field.ro input { background: var(--disabled); border-color: var(--disabled) }
+.field.ro label { background: transparent }
+.hint { font-size: 11.5px; color: var(--muted); margin: 4px 2px 0 }
+
+.bd { border: 1px solid var(--new); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 18px; background: var(--surface) }
+.q { display: flex; flex-direction: column; gap: 8px; min-width: 0 }
+.qlabel { font-size: 13px }
+.seg { display: inline-flex; border: 1px solid var(--accent); border-radius: 4px; overflow: hidden; width: fit-content }
+.seg button { font: 500 13px var(--font-body); padding: 8px 18px; border: 0; background: transparent; color: var(--accent); cursor: pointer }
+.seg button + button { border-left: 1px solid var(--accent) }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--surface) }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; padding: 4px 10px; border-radius: 12px; width: fit-content }
+.status.ok { background: var(--new-soft); color: var(--new) }
+.status.todo { background: var(--warn-soft); color: var(--warn) }
+.note { padding: 10px 12px; border-radius: 4px; font-size: 12.5px; background: var(--soft) }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px }
+.tbl { overflow-x: auto }
+th { text-align: left; font-weight: 500; background: var(--accent-soft); padding: 14px 16px }
+td { padding: 14px 16px; border-bottom: 1px solid var(--soft) }
+td a { color: var(--accent) }
+
+.alerts { background: var(--surface); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.12); padding: 20px 24px; display: flex; flex-direction: column; gap: 14px }
+.alerts code { font-family: var(--font-mono); font-size: 13px; background: var(--soft); padding: 2px 6px; border-radius: 3px; word-break: break-all }
+.events { display: flex; flex-wrap: wrap; gap: 10px }
+.email { border: 1px solid var(--line); border-radius: 6px; overflow: hidden }
+.email .meta { padding: 12px 16px; background: var(--soft); font-size: 13px; display: grid; grid-template-columns: 70px minmax(0,1fr); gap: 4px 10px }
+.email .meta b { font-weight: 500; color: var(--muted) }
+.email .body { padding: 14px 16px; font-size: 13.5px; display: flex; flex-direction: column; gap: 8px; max-width: 70ch }
+.email .body p { margin: 0 }
+details.notes { background: var(--surface); border-radius: 6px; padding: 14px 18px; border: 1px solid var(--soft) }
+details.notes summary { cursor: pointer; font-weight: 500 }
+details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; max-width: 75ch }
+@media (prefers-reduced-motion: no-preference) { .flash { animation: flash .6s ease-out } @keyframes flash { from { background: var(--accent-soft) } } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mockbar">
+    <button class="btn solid" id="startOver" type="button">Start over</button>
+    <button class="btn" id="fillAll" type="button">Fill sample data</button>
+    <span class="tag">Mock · admin view · click any empty field to fill it</span>
+  </div>
+
+  <nav class="tabs" aria-label="Agent tabs">
+    <button class="on" type="button">Agent Profile</button><button type="button">Agent Clients</button><button type="button">Agent Action Items</button>
+    <button type="button">Agent Groups</button><button type="button">Agent Quick View</button><button type="button">Agent Links</button>
+  </nav>
+
+  <section class="card">
+    <div class="sec">
+      <h2>Personal Details</h2>
+      <div class="personal">
+        <div class="avatar" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--accent)" stroke-width="5"/><circle cx="50" cy="38" r="16" fill="var(--accent)"/><path d="M20 80c4-16 16-24 30-24s26 8 30 24" fill="var(--accent)"/></svg></div>
+        <div class="stack">
+          <div class="field"><label>First Name <span class="req">*</span></label><input value="Taylor"></div>
+          <div class="field"><label>Last Name <span class="req">*</span></label><input value="Sample"></div>
+          <div class="field"><label>Cell Number <span class="req">*</span></label><input value="(555) 010-0123"></div>
+          <div class="field ro"><label>Email Address <span class="req">*</span></label><input value="taylor.sample@example.com" readonly></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Your Company / Agency Information</h2>
+      <div class="grid2">
+        <div class="field"><label>Company Name <span class="req">*</span></label><input value="Sample Wealth Partners"></div>
+        <div class="field"><label>Company Address 1 <span class="req">*</span></label><input value="100 Example St"></div>
+        <div class="field"><label>City <span class="req">*</span></label><input value="Austin"></div>
+        <div class="field"><label>Zip <span class="req">*</span></label><input value="78701"></div>
+      </div>
+    </div>
+
+    <!-- NEW: Broker Dealer -->
+    <div class="sec">
+      <div class="sec-head">
+        <h2>Broker Dealer</h2><span class="new">New</span>
+        <p>Admin only. Pick the agent's broker dealer, then its division. Only LPL Financial is available now. Other broker dealers come later.</p>
+      </div>
+      <div class="bd">
+        <div class="grid2">
+          <div class="field"><label for="bd">Broker Dealer</label>
+            <select id="bd" data-sample="LPL Financial">
+              <option value="">None (not with a broker dealer)</option>
+              <option>LPL Financial</option>
+              <option disabled>Other broker dealers (coming later)</option>
+            </select></div>
+          <div class="field" id="divWrap"><label for="div">LPL division</label>
+            <select id="div" data-sample="LPL Enterprise">
+              <option value="">Select division</option>
+              <option value="LPL Enterprise">LPL Enterprise (excluding Equitable Advisors &amp; Commonwealth)</option>
+              <option value="Financial Institutions Division">Financial Institutions Division</option>
+              <option value="Linsco">Linsco (W2 Distribution)</option>
+            </select>
+            <p class="hint" id="divHint">Choose LPL Financial first.</p></div>
+        </div>
+
+        <div class="grid2" id="bdFields">
+          <div class="q">
+            <div class="field"><label for="kz">BD Kai-Zen training completion date</label>
+              <input id="kz" type="date" data-sample="2026-10-20"></div>
+            <span class="status todo" id="kzStatus">Training not complete</span>
+          </div>
+          <div class="q">
+            <span class="qlabel">Nevada licensed?</span>
+            <div class="seg" role="group" aria-label="Nevada licensed" id="nv">
+              <button type="button" data-v="Yes" aria-pressed="false">Yes</button>
+              <button type="button" data-v="No" aria-pressed="false">No</button>
+            </div>
+            <span class="hint" style="margin:0">Saved on the agent profile.</span>
+          </div>
+        </div>
+        <div class="note" id="bdNote">Alerts for this agent's cases will go to the Leveraged Life new business inbox (see below).</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h2>IMO's, Carriers, and Agent Numbers</h2><button class="btn solid pill" type="button" style="margin-left:auto">+ Add/Edit IMO(s) &amp; Carrier(s)</button></div>
+      <div class="tbl"><table>
+        <thead><tr><th>IMO</th><th>Carriers</th><th>Agent Number</th><th>Actions</th></tr></thead>
+        <tbody><tr><td><a href="#" onclick="return false">QA IMO</a></td><td>Securian, Symetra, Allianz Life, National Life (LSW)</td><td>N/A, N/A, N/A, N/A</td><td>✎ 🗑</td></tr></tbody>
+      </table></div>
+    </div>
+
+    <div><button class="btn solid pill" id="update" type="button" disabled>Update Profile</button> <span class="hint" id="savedMsg"></span></div>
+  </section>
+
+  <section class="alerts" aria-labelledby="al-title">
+    <div class="sec-head"><h2 id="al-title">Broker dealer alerts</h2><span class="new">New</span>
+      <p>When an LPL agent's case hits one of these steps, ILIA emails Natalie's team at <code>NB.LeveragedLife@SimplicityGroup.com</code>. Click an event to preview the email.</p></div>
+    <div class="events">
+      <button class="btn" type="button" data-ev="app">Application released to the carrier</button>
+      <button class="btn" type="button" data-ev="trust">Trust paperwork sent to the carrier (change of ownership)</button>
+    </div>
+    <div class="email" id="email" hidden>
+      <div class="meta"><b>To</b><span>NB.LeveragedLife@SimplicityGroup.com</span><b>Subject</b><span id="emSubj"></span></div>
+      <div class="body" id="emBody"></div>
+    </div>
+    <div class="note" id="noAlerts" hidden>This agent has no broker dealer, so no broker dealer alerts are sent.</div>
+  </section>
+
+  <details class="notes">
+    <summary>Notes for review</summary>
+    <ul>
+      <li>The broker dealer list starts with LPL Financial only. The division list only shows after LPL is picked.</li>
+      <li>Kai-Zen training date and Nevada licensed are new admin fields shown with the broker dealer. Nevada licensed is stored on the agent profile.</li>
+      <li>To confirm: should alerts go for every LPL agent's case, or only some divisions? Are there more alert events than these two?</li>
+      <li>To confirm: does a missing training date or "No" for Nevada block anything (for example, submitting a case), or is it for information only?</li>
+      <li>All names and numbers are made-up samples.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const DIV_LABEL = { "LPL Enterprise": "LPL Enterprise", "Financial Institutions Division": "Financial Institutions Division", "Linsco": "Linsco (W2 Distribution)" };
+let dirty = false;
+let lastEv = null;
+
+function nvVal() { const b = document.querySelector('#nv button[aria-pressed="true"]'); return b ? b.dataset.v : ""; }
+function setNv(v) { document.querySelectorAll("#nv button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === v))); }
+
+function sync() {
+  const lpl = $("bd").value === "LPL Financial";
+  $("div").disabled = !lpl;
+  if (!lpl) $("div").value = "";
+  $("divHint").hidden = lpl;
+  $("bdFields").hidden = !lpl;
+  $("bdNote").hidden = !lpl;
+  const done = !!$("kz").value;
+  $("kzStatus").className = "status " + (done ? "ok" : "todo");
+  $("kzStatus").textContent = done ? "Training complete" : "Training not complete";
+  $("update").disabled = !dirty;
+  document.querySelector(".events").hidden = !lpl;
+  $("noAlerts").hidden = lpl;
+  if (!lpl) $("email").hidden = true; else if (lastEv) showEmail(lastEv);
+}
+function touch() { dirty = true; $("savedMsg").textContent = ""; sync(); }
+
+function showEmail(ev) {
+  lastEv = ev;
+  const div = DIV_LABEL[$("div").value] || "division not set";
+  const subj = ev === "app"
+    ? "LPL case: application released to carrier — Case #10482"
+    : "LPL case: trust ownership paperwork sent to carrier — Case #10482";
+  const what = ev === "app"
+    ? "The application for this case has been released to the carrier."
+    : "The change of ownership trust paperwork for this case has been sent to the carrier.";
+  $("emSubj").textContent = subj;
+  $("emBody").innerHTML = `<p>${what}</p>
+    <p><b>Agent:</b> Taylor Sample · LPL Financial, ${div}</p>
+    <p><b>Client:</b> Sample Client · <b>Carrier:</b> Symetra</p>
+    <p><b>Kai-Zen training:</b> ${$("kz").value ? "completed " + $("kz").value : "not complete"} · <b>Nevada licensed:</b> ${nvVal() || "not set"}</p>
+    <p>Open the case in ILIA to review.</p>`;
+  $("email").hidden = false;
+}
+
+$("bd").addEventListener("change", touch);
+$("div").addEventListener("change", touch);
+$("kz").addEventListener("input", touch);
+$("kz").addEventListener("change", touch);
+$("nv").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { setNv(b.dataset.v); touch(); } });
+document.querySelector(".events").addEventListener("click", e => { const b = e.target.closest("[data-ev]"); if (b) showEmail(b.dataset.ev); });
+
+// click-to-fill: clicking an empty field drops in its sample value
+document.addEventListener("click", e => {
+  const el = e.target.closest("input[data-sample], select[data-sample]");
+  if (!el || el.value || el.disabled) return;
+  el.value = el.dataset.sample;
+  el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 650);
+  touch();
+});
+$("update").addEventListener("click", () => {
+  dirty = false;
+  $("savedMsg").textContent = "Profile updated.";
+  sync();
+});
+$("startOver").addEventListener("click", () => {
+  $("bd").value = ""; $("div").value = ""; $("kz").value = ""; setNv("");
+  dirty = false; lastEv = null; $("email").hidden = true; $("savedMsg").textContent = "";
+  sync();
+});
+$("fillAll").addEventListener("click", () => {
+  $("bd").value = "LPL Financial"; sync();
+  $("div").value = "LPL Enterprise"; $("kz").value = "2026-10-20"; setNv("Yes");
+  touch(); showEmail("app");
+});
+
+$("fillAll").click();
+dirty = false; sync();
+</script>
+</body>
+</html>
