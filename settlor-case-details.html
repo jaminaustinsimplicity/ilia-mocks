@@ -112,7 +112,6 @@ button:focus-visible,.fld:focus-visible,.opt:focus-visible{outline:2px solid var
 .p-active{color:var(--ok);background:var(--ok-soft)}
 .p-restricted{color:var(--bad);background:var(--bad-soft)}
 .confirm{grid-column:1 / -1;background:var(--bad-soft);border:1px solid color-mix(in srgb,var(--bad) 35%,transparent);border-radius:8px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:13px}
-.rule{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px}
 .tbc{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);border:1px solid var(--warn);border-radius:20px;padding:1px 7px}
 
 /* Signer access rows */
@@ -179,8 +178,6 @@ ul.activity{margin:0;padding:0}
 .picker button:last-child{border-bottom:0}
 .picker button:hover{background:var(--surface-2)}
 .picker small{color:var(--muted)}
-.dsigner{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
-.dsigner-hd{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:500}
 
 /* Review rail */
 .notes{background:var(--surface);border-left:1px solid var(--line);padding-block:18px;padding-left:16px;padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -284,13 +281,13 @@ function thisPolicy(){return {first:POLICY.first,last:POLICY.last,policy:POLICY.
 POLICY_POOL.forEach(function(p){p.insAccess=false;p.insInvite="none";});
 
 var scenarios = {
-  insured: function(){return {type:"insured", ind:null, ent:null, signers:[], rule:"any", policies:[thisPolicy()], activity:[{who:"System",what:"Settlor set to the insured from the enrollment application",when:"Jan 8, 2026"}]};},
-  individual: function(){var s=clone(SAMPLE.ind);var p=thisPolicy();return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor",email:s.email,phone:s.phone,access:true,invite:"accepted",on:"Oct 24",isSettlor:true}], rule:"any", policies:[p], activity:[{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"},{who:"Maria Reyes",what:"Accepted settlor portal invite",when:"Oct 2, 2026"}]};},
+  insured: function(){return {type:"insured", ind:null, ent:null, signers:[], policies:[thisPolicy()], activity:[{who:"System",what:"Settlor set to the insured from the enrollment application",when:"Jan 8, 2026"}]};},
+  individual: function(){var s=clone(SAMPLE.ind);var p=thisPolicy();return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor",email:s.email,phone:s.phone,access:true,invite:"accepted",on:"Oct 24",isSettlor:true}], policies:[p], activity:[{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"},{who:"Maria Reyes",what:"Accepted settlor portal invite",when:"Oct 2, 2026"}]};},
   entity: function(){var sg=[clone(SAMPLE.signers[1])];
     sg[0].access=true;sg[0].invite="accepted";sg[0].on="Oct 22";
     var p1=clone(POLICY_POOL[0]);p1.insAccess=true;p1.insInvite="accepted";p1.on="Oct 18";
     var p2=clone(POLICY_POOL[1]);
-    return {type:"entity", ind:null, ent:clone(SAMPLE.ent), signers:sg, rule:"any", policies:[thisPolicy(),p1,p2], activity:[{who:"Laura Chen",what:"Accepted settlor portal invite",when:"Oct 21, 2026"},{who:"Jamin A.",what:"Gave Sofia Reyes portal access to policy KZ-104890",when:"Oct 18, 2026"},{who:"Jamin A.",what:"Linked policy to existing settlor Reyes Family Holdings LLC",when:"Sep 12, 2026"}]};}
+    return {type:"entity", ind:null, ent:clone(SAMPLE.ent), signers:sg, policies:[thisPolicy(),p1,p2], activity:[{who:"Laura Chen",what:"Accepted settlor portal invite",when:"Oct 21, 2026"},{who:"Jamin A.",what:"Gave Sofia Reyes portal access to policy KZ-104890",when:"Oct 18, 2026"},{who:"Jamin A.",what:"Linked policy to existing settlor Reyes Family Holdings LLC",when:"Sep 12, 2026"}]};}
 };
 
 var st = scenarios.insured();
@@ -405,7 +402,6 @@ document.getElementById("view").addEventListener("click",function(ev){
   }
   else if(a==="sOffYes"){s.access=false;confirmKey="";log("Turned off portal access for "+nm(s));toast("Access turned off");}
   else if(a==="invite"){s.invite="sent";s.on="Oct 26";log("Sent settlor portal invite to "+nm(s));toast("Invite sent to "+s.email);}
-  else if(a==="inviteAll"){var c=0;st.signers.forEach(function(x){if(x.access&&x.invite==="none"){x.invite="sent";x.on="Oct 26";c++;}});log("Sent settlor portal invites to "+c+" signer"+(c===1?"":"s"));toast(c+" invite"+(c===1?"":"s")+" sent");}
   else if(a==="resend"){s.on="Oct 26";log("Resent settlor portal invite to "+nm(s));toast("Invite resent");}
   else if(a==="pToggle"){ if(pp.insAccess){pp.insAccess=false;log("Turned off "+nm(pp)+"’s portal access to "+pp.policy);toast("Access turned off");} else confirmKey="p"+i; }
   else if(a==="pOnYes"){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.on="Oct 26";}confirmKey="";log("Gave "+nm(pp)+" portal access to "+pp.policy+" and sent an invite");toast("Access on. Invite emailed to "+pp.first+".");}
@@ -429,7 +425,7 @@ var ENT_FIELDS=[["name","Entity name",1],["ein","EIN / Tax ID",1],["street","Str
 var SIG_FIELDS=[["first","First name",1],["last","Last name",1],["title","Title / role",1],["email","Email",1],["phone","Phone",1]];
 
 function openDrawer(){
-  d={type:st.type, ind:st.ind?clone(st.ind):{relation:""}, ent:st.ent?clone(st.ent):{etype:""}, signers:st.type==="entity"?clone(st.signers):[], rule:st.rule};
+  d={type:st.type, ind:st.ind?clone(st.ind):{relation:""}, ent:st.ent?clone(st.ent):{etype:""}, signers:st.type==="entity"?clone(st.signers):[]};
   tried=false; showExisting=false; renderDrawer();
 }
 function closeDrawer(){d=null;document.getElementById("drawerRoot").innerHTML="";}
@@ -496,9 +492,6 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
     showExisting=false;d.picked=x.label;toast("Linked to existing settlor: "+x.label);}
   if(a==="rel"){d.ind.relation=t.dataset.v;}
   if(a==="etype"){d.ent.etype=t.dataset.v;}
-  if(a==="rule"){d.rule=t.dataset.v;}
-  if(a==="addSigner"){d.signers.push({});}
-  if(a==="rmSigner"){d.signers.splice(+t.dataset.i,1);}
   if(a==="fillall"){
     if(allFilled()){ if(d.type==="individual") d.ind={relation:""}; else {d.ent={etype:""};d.signers=[{}];} tried=true; }
     else if(d.type==="individual"){d.ind=clone(SAMPLE.ind);}
@@ -507,7 +500,7 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
   if(a==="save"){
     if(!allFilled()){tried=true;renderDrawer();return;}
     var prev=st.type, label={insured:"the insured",individual:"a separate individual",entity:"a separate entity"};
-    st.type=d.type; st.rule=d.rule;
+    st.type=d.type;
     if(d.type==="insured"){st.ind=null;st.ent=null;st.signers=[];st.policies=[thisPolicy()];}
     if(d.type==="individual"){
       var old=st.signers[0]; st.ind=clone(d.ind); st.ent=null;
