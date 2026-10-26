@@ -115,6 +115,23 @@ button:focus-visible,.fld:focus-visible,.opt:focus-visible{outline:2px solid var
 .rule{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px}
 .tbc{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);border:1px solid var(--warn);border-radius:20px;padding:1px 7px}
 
+/* Signer access rows */
+.accsum{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.accsum b{color:var(--ink)}
+.accsum .btn{margin-left:auto}
+.arow{display:grid;grid-template-columns:minmax(0,1.6fr) auto minmax(0,1.2fr) auto;gap:10px 16px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+@media (max-width:760px){.arow{grid-template-columns:minmax(0,1fr) auto}.arow .stat{grid-column:1}.arow .act{justify-self:end}}
+.arow .nm{font-weight:500}
+.arow .meta{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.acc{display:flex;align-items:center;gap:8px}
+.acc-l{font-size:12px;color:var(--muted)}
+.stat{min-width:0}
+.sw{position:relative;width:40px;height:22px;border-radius:22px;border:0;background:var(--line-strong);padding:0;flex:none;transition:background .15s}
+.sw span{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.sw[aria-checked="true"]{background:var(--ok)}
+.sw[aria-checked="true"] span{left:21px}
+.p-ready{color:var(--accent);background:var(--accent-soft)}
+
 /* Linked policies table */
 .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
 table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
@@ -212,10 +229,18 @@ ul.activity{margin:0;padding:0}
       <li><b>Every policy answers three questions:</b> is the insured the settlor, if not is it an individual or an entity, and what type of entity.</li>
       <li><b>The authorized signer is always stated</b>, even when it's simply the client.</li>
       <li><b>One settlor record can be linked to many policies</b> ("Policies linked to this settlor"), so an entity is entered once.</li>
-      <li><b>Portal access sits on the signer</b>, not on a "master settlor" account: invite, resend, restrict, restore.</li>
+      <li><b>Portal access sits on each signer</b> (an on/off switch plus invite status), not on a "master settlor" account.</li>
+    </ol>
+    <h4>How portal access works</h4>
+    <ol>
+      <li><b>Signers:</b> admin turns portal access on for whichever signers should log in, then sends invites (one at a time or all at once). Access covers every linked policy. Status shows not invited, invite sent, active (last login) or turned off.</li>
+      <li><b>Insureds who are not the settlor:</b> no access by default. Admin can turn it on for a single policy, which emails that insured an invite. They see that policy only.</li>
+      <li><b>Turning access off</b> is silent and can be undone. Turning it back on sends the access-restored email.</li>
+      <li><b>Already partly built:</b> the unmerged settlor code has a per-policy switch for insured access, off by default and emailing the insured when turned on, plus invite, first-login and restricted dates per user. Dev to confirm.</li>
     </ol>
     <h4>Open for the Chris / Judy call</h4>
     <ul>
+      <li>When an insured gets access to their own policy, can they only view it, or also sign?</li>
       <li>Entity with several signers: does <b>any one</b> sign, or <b>all</b>?</li>
       <li>Which entity types do we need (list is a starting point)?</li>
       <li>Should a separate individual settlor ever have a different signer (e.g. power of attorney)?</li>
@@ -236,7 +261,9 @@ var SAMPLE = {
   signers: [
     {first:"Daniel", last:"Reyes", title:"Managing Member", email:"d.reyes@reyesholdings.example", phone:"(214) 555-0190"},
     {first:"Laura", last:"Chen", title:"Chief Financial Officer", email:"l.chen@reyesholdings.example", phone:"(214) 555-0177"},
-    {first:"Omar", last:"Patel", title:"Operations Director", email:"o.patel@reyesholdings.example", phone:"(214) 555-0163"}
+    {first:"Omar", last:"Patel", title:"Operations Director", email:"o.patel@reyesholdings.example", phone:"(214) 555-0163"},
+    {first:"Grace", last:"Kim", title:"General Counsel", email:"g.kim@reyesholdings.example", phone:"(214) 555-0121"},
+    {first:"Ben", last:"Walsh", title:"Controller", email:"b.walsh@reyesholdings.example", phone:"(214) 555-0109"}
   ]
 };
 var EXISTING = [
@@ -253,20 +280,26 @@ var POLICY_POOL = [
 var REL = ["Spouse","Parent","Child","Sibling","Business partner","Other"];
 
 function clone(o){return JSON.parse(JSON.stringify(o));}
-function thisPolicy(){return {first:POLICY.first,last:POLICY.last,policy:POLICY.policy,tranche:POLICY.tranche,self:true};}
+function thisPolicy(){return {first:POLICY.first,last:POLICY.last,policy:POLICY.policy,tranche:POLICY.tranche,self:true,insAccess:false,insInvite:"none"};}
+POLICY_POOL.forEach(function(p){p.insAccess=false;p.insInvite="none";});
 
 var scenarios = {
   insured: function(){return {type:"insured", ind:null, ent:null, signers:[], rule:"any", policies:[thisPolicy()], activity:[{who:"System",what:"Settlor set to the insured from the enrollment application",when:"Jan 8, 2026"}]};},
-  individual: function(){var s=clone(SAMPLE.ind);return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor",email:s.email,phone:s.phone,status:"active",isSettlor:true}], rule:"any", policies:[thisPolicy()], activity:[{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"},{who:"Maria Reyes",what:"Accepted portal invite",when:"Oct 2, 2026"}]};},
-  entity: function(){var sg=clone(SAMPLE.signers).slice(0,2);sg[0].status="active";sg[1].status="sent";return {type:"entity", ind:null, ent:clone(SAMPLE.ent), signers:sg, rule:"any", policies:[thisPolicy(),clone(POLICY_POOL[0]),clone(POLICY_POOL[1])], activity:[{who:"Jamin A.",what:"Linked policy to existing settlor Reyes Family Holdings LLC",when:"Sep 12, 2026"},{who:"Jamin A.",what:"Invited Laura Chen as authorized signer",when:"Oct 20, 2026"}]};}
+  individual: function(){var s=clone(SAMPLE.ind);var p=thisPolicy();return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor",email:s.email,phone:s.phone,access:true,invite:"accepted",on:"Oct 24",isSettlor:true}], rule:"any", policies:[p], activity:[{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"},{who:"Maria Reyes",what:"Accepted settlor portal invite",when:"Oct 2, 2026"}]};},
+  entity: function(){var sg=clone(SAMPLE.signers).slice(0,3);
+    sg[0].access=true;sg[0].invite="accepted";sg[0].on="Oct 22";
+    sg[1].access=true;sg[1].invite="sent";sg[1].on="Oct 20";
+    sg[2].access=false;sg[2].invite="none";
+    var p1=clone(POLICY_POOL[0]);p1.insAccess=true;p1.insInvite="accepted";p1.on="Oct 18";
+    var p2=clone(POLICY_POOL[1]);
+    return {type:"entity", ind:null, ent:clone(SAMPLE.ent), signers:sg, rule:"any", policies:[thisPolicy(),p1,p2], activity:[{who:"Jamin A.",what:"Sent settlor portal invite to Laura Chen",when:"Oct 20, 2026"},{who:"Jamin A.",what:"Gave Sofia Reyes portal access to policy KZ-104890",when:"Oct 18, 2026"},{who:"Jamin A.",what:"Linked policy to existing settlor Reyes Family Holdings LLC",when:"Sep 12, 2026"}]};}
 };
 
 var st = scenarios.insured();
-var ssnShown = false, confirmIdx = -1, pickPolicy = false;
+var ssnShown = false, confirmKey = "", pickPolicy = false;
 
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
 function mask(v,keep){if(!v)return "—";return v.replace(/\d(?=[\d-]{0,})/g,"•").slice(0,v.length-keep)+v.slice(-keep);}
-function pill(s){var m={none:["p-none","Not invited"],sent:["p-sent","Invite sent"],active:["p-active","Active"],restricted:["p-restricted","Restricted"]};var x=m[s]||m.none;return '<span class="pill '+x[0]+'">'+x[1]+'</span>';}
 function today(){return "Oct 26, 2026";}
 function log(what){st.activity.unshift({who:"Jamin A.",what:what,when:today()});}
 function toast(msg){var r=document.getElementById("toastRoot");r.innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>';clearTimeout(window.__t);window.__t=setTimeout(function(){r.innerHTML="";},2400);}
@@ -286,23 +319,51 @@ function setupHTML(){
   '<div class="signer-banner"><div class="ic" aria-hidden="true">✍</div><div><b>Authorized signer: '+esc(signerTxt)+'</b></div></div>';
 }
 
-function signerRow(s,i){
-  var acts="";
-  if(s.status==="none") acts='<button class="btn sm primary" data-act="invite" data-i="'+i+'">Send portal invite</button>';
-  else if(s.status==="sent") acts='<button class="btn sm" data-act="resend" data-i="'+i+'">Resend invite</button><button class="btn sm danger" data-act="askRestrict" data-i="'+i+'">Restrict</button>';
-  else if(s.status==="active") acts='<button class="btn sm danger" data-act="askRestrict" data-i="'+i+'">Restrict access</button>';
-  else acts='<button class="btn sm" data-act="restore" data-i="'+i+'">Restore access</button>';
-  var conf = confirmIdx===i ? '<div class="confirm"><span>Restrict <b>'+esc(s.first)+'</b>? They will not be able to sign or see documents until access is restored. No email is sent.</span><button class="btn sm danger" data-act="restrict" data-i="'+i+'">Restrict</button><button class="btn sm" data-act="cancelRestrict">Cancel</button></div>' : "";
-  return '<div class="signer"><div><div class="nm">'+esc(s.first+" "+s.last)+' <span class="note">· '+esc(s.title)+'</span></div><div class="meta">'+esc(s.email)+' · '+esc(s.phone)+'</div></div><div class="acts">'+pill(s.status)+acts+'</div>'+conf+'</div>';
+function sw(on,act,i,label){return '<button class="sw" role="switch" aria-checked="'+on+'" aria-label="'+esc(label)+'" data-act="'+act+'" data-i="'+i+'"><span></span></button>';}
+function signerStatus(s){
+  if(!s.access) return s.invite==="none" ? '<span class="pill p-none">No portal access</span>' : '<span class="pill p-restricted">Access turned off</span>';
+  if(s.invite==="none") return '<span class="pill p-ready">Access on · not invited yet</span>';
+  if(s.invite==="sent") return '<span class="pill p-sent">Invite sent '+esc(s.on||"")+'</span>';
+  return '<span class="pill p-active">Active · last login '+esc(s.on||"")+'</span>';
 }
-
+function signerRow(s,i){
+  var act = s.access&&s.invite==="none" ? '<button class="btn sm primary" data-act="invite" data-i="'+i+'">Send invite</button>' : s.access&&s.invite==="sent" ? '<button class="btn sm" data-act="resend" data-i="'+i+'">Resend</button>' : '';
+  var conf = confirmKey==="s"+i ? '<div class="confirm"><span>Turn off portal access for <b>'+esc(s.first+" "+s.last)+'</b>? They will no longer see or sign documents for any linked policy. No email is sent. You can turn it back on later.</span><button class="btn sm danger" data-act="sOffYes" data-i="'+i+'">Turn off access</button><button class="btn sm" data-act="cancel">Cancel</button></div>' : "";
+  return '<div class="arow"><div class="who"><div class="nm">'+esc(s.first+" "+s.last)+' <span class="note">· '+esc(s.title)+'</span></div><div class="meta">'+esc(s.email)+' · '+esc(s.phone)+'</div></div>'+
+    '<div class="acc"><span class="acc-l">Portal access</span>'+sw(!!s.access,"sToggle",i,"Portal access for "+s.first+" "+s.last)+'</div>'+
+    '<div class="stat">'+signerStatus(s)+'</div><div class="act">'+act+'</div>'+conf+'</div>';
+}
+function signersHTML(title){
+  var n=st.signers.length, withAcc=st.signers.filter(function(s){return s.access;}).length,
+      active=st.signers.filter(function(s){return s.access&&s.invite==="accepted";}).length,
+      pending=st.signers.filter(function(s){return s.access&&s.invite==="none";}).length;
+  var rule = st.type==="entity" ? '<span class="rule">Signing rule: <b>'+(st.rule==="any"?"Any one signer":"All signers")+'</b> <span class="tbc">to confirm</span></span>' : '';
+  var summary = '<div class="accsum"><span><b>'+withAcc+' of '+n+'</b> '+(n===1?"signer has":"signers have")+' settlor portal access</span><span>· <b>'+active+'</b> active</span>'+
+    (pending?'<button class="btn sm primary" data-act="inviteAll">Send invites to all with access ('+pending+')</button>':'')+'</div>';
+  return '<div><div class="sec-t"><span>'+title+'</span>'+rule+'</div>'+summary+
+    '<div class="signers">'+(n?st.signers.map(signerRow).join(""):'<p class="note">No signers yet. Use Edit settlor to add one.</p>')+'</div>'+
+    '<p class="note" style="margin:8px 0 0">Portal access covers every policy linked to this settlor. Turn it on only for the signers who should log in. A signer without access can still be sent documents to sign.</p></div>';
+}
+function insStatus(p){
+  if(!p.insAccess) return p.insInvite==="none" ? '<span class="pill p-none">No access</span>' : '<span class="pill p-restricted">Access turned off</span>';
+  if(p.insInvite==="sent") return '<span class="pill p-sent">Invite sent '+esc(p.on||"")+'</span>';
+  return '<span class="pill p-active">Active</span>';
+}
+function isSigner(p){return st.signers.some(function(s){return s.access&&s.first===p.first&&s.last===p.last;});}
 function policiesHTML(){
-  var rows = st.policies.map(function(p,i){return '<tr><td>'+esc(p.first)+'</td><td>'+esc(p.last)+'</td><td class="mono">'+esc(p.policy)+(p.self?'<span class="this">this policy</span>':'')+'</td><td>'+p.tranche+'</td><td>'+(p.self?'<span class="note">—</span>':'<button class="btn link sm" data-act="unlink" data-i="'+i+'">Unlink</button>')+'</td></tr>';}).join("");
+  var rows = st.policies.map(function(p,i){
+    var accCell, statCell, actCell="";
+    if(isSigner(p)){accCell='<span class="note">Has access as a signer</span>';statCell='<span class="pill p-active">Active</span>';}
+    else {accCell=sw(!!p.insAccess,"pToggle",i,"Portal access for "+p.first+" "+p.last);statCell=insStatus(p);if(p.insAccess&&p.insInvite==="sent")actCell='<button class="btn link sm" data-act="pResend" data-i="'+i+'">Resend</button>';}
+    var unlink = p.self?'':'<button class="btn link sm" data-act="unlink" data-i="'+i+'">Unlink</button>';
+    var conf = confirmKey==="p"+i ? '<tr><td colspan="6"><div class="confirm" style="background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)"><span>Give <b>'+esc(p.first+" "+p.last)+'</b> portal access to policy <span class="mono">'+esc(p.policy)+'</span>? We will email them an invite. They will see this policy only.</span><button class="btn sm primary" data-act="pOnYes" data-i="'+i+'">Give access &amp; send invite</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>' : '';
+    return '<tr><td>'+esc(p.first+" "+p.last)+'</td><td class="mono">'+esc(p.policy)+(p.self?'<span class="this">this policy</span>':'')+'</td><td>'+p.tranche+'</td><td>'+accCell+'</td><td>'+statCell+' '+actCell+'</td><td>'+unlink+'</td></tr>'+conf;
+  }).join("");
   var avail = POLICY_POOL.filter(function(p){return !st.policies.some(function(x){return x.policy===p.policy;});});
   var picker = pickPolicy ? (avail.length?'<div class="picker" style="margin-top:8px">'+avail.map(function(p){return '<button data-act="link" data-p="'+p.policy+'"><span>'+esc(p.first+" "+p.last)+' · <span class="mono">'+p.policy+'</span></span><small>Tranche '+p.tranche+'</small></button>';}).join("")+'</div>':'<p class="note">No other sample policies to link.</p>') : "";
   return '<div><div class="sec-t"><span>Policies linked to this settlor</span><button class="btn sm" data-act="togglePick">'+(pickPolicy?"Close":"+ Link a policy")+'</button></div>'+
-    '<div class="tblwrap"><table><thead><tr><th>Insured first name</th><th>Insured last name</th><th>Policy number</th><th>Tranche</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+picker+
-    '<p class="note" style="margin:8px 0 0">One settlor record covers every policy it is linked to. Signers see all of these in their servicing portal.</p></div>';
+    '<p class="note" style="margin:0 0 10px">The insured on each policy has <b>no portal access by default</b> when they are not the settlor. Turn it on per policy if they need to see their own policy.</p>'+
+    '<div class="tblwrap"><table><thead><tr><th>Insured</th><th>Policy number</th><th>Tranche</th><th>Insured’s portal access</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+picker+'</div>';
 }
 
 function render(){
@@ -324,7 +385,7 @@ function render(){
       '<div><dt>SSN</dt><dd class="mono">'+(ssnShown?esc(s.ssn):mask(s.ssn,4))+'<button class="reveal" data-act="ssn">'+(ssnShown?"Hide":"Show")+'</button></dd></div>'+
       '<div style="grid-column:1/-1"><dt>Address</dt><dd>'+esc(s.street+", "+s.city+", "+s.state+" "+s.zip)+'</dd></div>'+
       '</dl></div><hr class="divider">'+
-      '<div><div class="sec-t"><span>Authorized signer</span></div><div class="signers">'+st.signers.map(signerRow).join("")+'</div></div><hr class="divider">'+policiesHTML();
+      signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   } else {
     var e=st.ent;
     h+='<div><div class="sec-t"><span>Settlor details · entity</span></div><dl class="kv">'+
@@ -333,8 +394,7 @@ function render(){
       '<div><dt>EIN / Tax ID</dt><dd class="mono">'+(ssnShown?esc(e.ein):mask(e.ein,4))+'<button class="reveal" data-act="ssn">'+(ssnShown?"Hide":"Show")+'</button></dd></div>'+
       '<div style="grid-column:1/-1"><dt>Address</dt><dd>'+esc(e.street+", "+e.city+", "+e.state+" "+e.zip)+'</dd></div>'+
       '</dl></div><hr class="divider">'+
-      '<div><div class="sec-t"><span>Authorized signers</span><span class="rule">Signing rule: <b>'+(st.rule==="any"?"Any one signer":"All signers")+'</b> <span class="tbc">to confirm</span></span></div><div class="signers">'+
-      (st.signers.length?st.signers.map(signerRow).join(""):'<p class="note">No signers yet. Use Edit settlor to add one.</p>')+'</div></div><hr class="divider">'+policiesHTML();
+      signersHTML("Authorized signers &amp; portal access")+'<hr class="divider">'+policiesHTML();
   }
   h+='<hr class="divider"><div><div class="sec-t"><span>Recent changes</span></div><ul class="activity">'+st.activity.slice(0,4).map(function(a){return '<li><b>'+esc(a.who)+'</b> · '+esc(a.what)+' · '+esc(a.when)+'</li>';}).join("")+'</ul></div>';
   v.innerHTML=h;
@@ -343,23 +403,30 @@ function render(){
 document.getElementById("view").addEventListener("click",function(ev){
   var b=ev.target.closest("[data-act]"); if(!b)return;
   var a=b.dataset.act, i=+b.dataset.i;
+  var s=st.signers[i], pp=st.policies[i], nm=function(o){return o.first+" "+o.last;};
   if(a==="ssn"){ssnShown=!ssnShown;}
-  else if(a==="invite"){st.signers[i].status="sent";log("Sent portal invite to "+st.signers[i].first+" "+st.signers[i].last);toast("Invite sent to "+st.signers[i].email);}
-  else if(a==="resend"){log("Resent portal invite to "+st.signers[i].first+" "+st.signers[i].last);toast("Invite resent");}
-  else if(a==="askRestrict"){confirmIdx=i;}
-  else if(a==="cancelRestrict"){confirmIdx=-1;}
-  else if(a==="restrict"){st.signers[i].status="restricted";confirmIdx=-1;log("Restricted portal access for "+st.signers[i].first+" "+st.signers[i].last);toast("Access restricted");}
-  else if(a==="restore"){st.signers[i].status="active";log("Restored portal access for "+st.signers[i].first+" "+st.signers[i].last);toast("Access restored");}
+  else if(a==="cancel"){confirmKey="";}
+  else if(a==="sToggle"){
+    if(s.access){ if(s.invite==="none"){s.access=false;log("Turned off portal access for "+nm(s));toast("Access turned off");} else confirmKey="s"+i; }
+    else { s.access=true; if(s.invite!=="none"){log("Restored portal access for "+nm(s));toast("Access restored. "+s.first+" gets an access-restored email.");} else {log("Turned on portal access for "+nm(s));toast("Access on. Send the invite when ready.");} }
+  }
+  else if(a==="sOffYes"){s.access=false;confirmKey="";log("Turned off portal access for "+nm(s));toast("Access turned off");}
+  else if(a==="invite"){s.invite="sent";s.on="Oct 26";log("Sent settlor portal invite to "+nm(s));toast("Invite sent to "+s.email);}
+  else if(a==="inviteAll"){var c=0;st.signers.forEach(function(x){if(x.access&&x.invite==="none"){x.invite="sent";x.on="Oct 26";c++;}});log("Sent settlor portal invites to "+c+" signer"+(c===1?"":"s"));toast(c+" invite"+(c===1?"":"s")+" sent");}
+  else if(a==="resend"){s.on="Oct 26";log("Resent settlor portal invite to "+nm(s));toast("Invite resent");}
+  else if(a==="pToggle"){ if(pp.insAccess){pp.insAccess=false;log("Turned off "+nm(pp)+"’s portal access to "+pp.policy);toast("Access turned off");} else confirmKey="p"+i; }
+  else if(a==="pOnYes"){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.on="Oct 26";}confirmKey="";log("Gave "+nm(pp)+" portal access to "+pp.policy+" and sent an invite");toast("Access on. Invite emailed to "+pp.first+".");}
+  else if(a==="pResend"){pp.on="Oct 26";log("Resent portal invite to "+nm(pp));toast("Invite resent");}
   else if(a==="togglePick"){pickPolicy=!pickPolicy;}
-  else if(a==="link"){var p=POLICY_POOL.filter(function(x){return x.policy===b.dataset.p;})[0];st.policies.push(clone(p));pickPolicy=false;log("Linked policy "+p.policy+" to this settlor");toast("Policy linked");}
-  else if(a==="unlink"){var p2=st.policies[i];st.policies.splice(i,1);log("Unlinked policy "+p2.policy);toast("Policy unlinked");}
+  else if(a==="link"){var p=POLICY_POOL.filter(function(x){return x.policy===b.dataset.p;})[0];st.policies.push(clone(p));pickPolicy=false;log("Linked policy "+p.policy+" to this settlor (insured access off by default)");toast("Policy linked");}
+  else if(a==="unlink"){st.policies.splice(i,1);confirmKey="";log("Unlinked policy "+pp.policy);toast("Policy unlinked");}
   render();
 });
 
 document.getElementById("scen").addEventListener("click",function(ev){
   var b=ev.target.closest("button"); if(!b)return;
   [].forEach.call(this.children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
-  st=scenarios[b.dataset.s](); ssnShown=false; confirmIdx=-1; pickPolicy=false; closeDrawer(); render();
+  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; pickPolicy=false; closeDrawer(); render();
 });
 
 /* ---------- Edit drawer ---------- */
@@ -452,17 +519,17 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
     if(d.type==="insured"){st.ind=null;st.ent=null;st.signers=[];st.policies=[thisPolicy()];}
     if(d.type==="individual"){
       var old=st.signers[0]; st.ind=clone(d.ind); st.ent=null;
-      st.signers=[{first:d.ind.first,last:d.ind.last,title:"Settlor",email:d.ind.email,phone:d.ind.phone,status:(old&&old.email===d.ind.email)?old.status:"none",isSettlor:true}];
+      st.signers=[{first:d.ind.first,last:d.ind.last,title:"Settlor",email:d.ind.email,phone:d.ind.phone,access:old&&old.email===d.ind.email?old.access:false,invite:old&&old.email===d.ind.email?old.invite:"none",on:old?old.on:"",isSettlor:true}];
       if(prev!=="individual") st.policies=[thisPolicy()];
     }
     if(d.type==="entity"){
       st.ent=clone(d.ent); st.ind=null;
-      st.signers=d.signers.map(function(s){var o=(st.signers||[]).filter(function(x){return x.email===s.email;})[0];var c=clone(s);c.status=o?o.status:"none";return c;});
+      st.signers=d.signers.map(function(s){var o=(st.signers||[]).filter(function(x){return x.email===s.email;})[0];var c=clone(s);c.access=o?o.access:false;c.invite=o?o.invite:"none";c.on=o?o.on:"";return c;});
       if(prev!=="entity") st.policies=[thisPolicy()];
       if(d.picked) st.policies=[thisPolicy(),clone(POLICY_POOL[0]),clone(POLICY_POOL[1])];
     }
     log(prev!==d.type?"Settlor changed from "+label[prev]+" to "+label[d.type]:"Updated settlor details");
-    closeDrawer(); ssnShown=false; confirmIdx=-1; render(); toast("Settlor saved"); return;
+    closeDrawer(); ssnShown=false; confirmKey=""; render(); toast("Settlor saved"); return;
   }
   renderDrawer();
   var body=document.getElementById("drBody"); if(body) body.scrollTop=keepScroll;
