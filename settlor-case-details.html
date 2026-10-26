@@ -229,11 +229,12 @@ ul.activity{margin:0;padding:0}
       <li><b>Every policy answers three questions:</b> is the insured the settlor, if not is it an individual or an entity, and what type of entity.</li>
       <li><b>The authorized signer is always stated</b>, even when it's simply the client.</li>
       <li><b>One settlor record can be linked to many policies</b> ("Policies linked to this settlor"), so an entity is entered once.</li>
-      <li><b>Portal access sits on each signer</b> (an on/off switch plus invite status), not on a "master settlor" account.</li>
+      <li><b>Portal access sits on the one authorized signer</b> (an on/off switch plus invite status), not on a "master settlor" account.</li>
     </ol>
     <h4>How portal access works</h4>
     <ol>
-      <li><b>Signers:</b> admin turns portal access on for whichever signers should log in, then sends invites (one at a time or all at once). Access covers every linked policy. Status shows not invited, invite sent, active (last login) or turned off.</li>
+      <li><b>One authorized signer per settlor</b> (confirmed 10/26, including entities). All forms and documents go to that one person.</li>
+      <li><b>Signer access:</b> admin turns portal access on and sends the invite. Access covers every linked policy. Status shows not invited, invite sent, active (last login) or turned off.</li>
       <li><b>Insureds who are not the settlor:</b> no access by default. Admin can turn it on for a single policy, which emails that insured an invite. They see that policy only.</li>
       <li><b>Turning access off</b> is silent and can be undone. Turning it back on sends the access-restored email.</li>
       <li><b>Already partly built:</b> the unmerged settlor code has a per-policy switch for insured access, off by default and emailing the insured when turned on, plus invite, first-login and restricted dates per user. Dev to confirm.</li>
@@ -241,7 +242,6 @@ ul.activity{margin:0;padding:0}
     <h4>Open for the Chris / Judy call</h4>
     <ul>
       <li>When an insured gets access to their own policy, can they only view it, or also sign?</li>
-      <li>Entity with several signers: does <b>any one</b> sign, or <b>all</b>?</li>
       <li>Which entity types do we need (list is a starting point)?</li>
       <li>Should a separate individual settlor ever have a different signer (e.g. power of attorney)?</li>
       <li>Where Trust Protector fits (likely another signer type, W-ILIT).</li>
@@ -286,13 +286,11 @@ POLICY_POOL.forEach(function(p){p.insAccess=false;p.insInvite="none";});
 var scenarios = {
   insured: function(){return {type:"insured", ind:null, ent:null, signers:[], rule:"any", policies:[thisPolicy()], activity:[{who:"System",what:"Settlor set to the insured from the enrollment application",when:"Jan 8, 2026"}]};},
   individual: function(){var s=clone(SAMPLE.ind);var p=thisPolicy();return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor",email:s.email,phone:s.phone,access:true,invite:"accepted",on:"Oct 24",isSettlor:true}], rule:"any", policies:[p], activity:[{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"},{who:"Maria Reyes",what:"Accepted settlor portal invite",when:"Oct 2, 2026"}]};},
-  entity: function(){var sg=clone(SAMPLE.signers).slice(0,3);
+  entity: function(){var sg=[clone(SAMPLE.signers[1])];
     sg[0].access=true;sg[0].invite="accepted";sg[0].on="Oct 22";
-    sg[1].access=true;sg[1].invite="sent";sg[1].on="Oct 20";
-    sg[2].access=false;sg[2].invite="none";
     var p1=clone(POLICY_POOL[0]);p1.insAccess=true;p1.insInvite="accepted";p1.on="Oct 18";
     var p2=clone(POLICY_POOL[1]);
-    return {type:"entity", ind:null, ent:clone(SAMPLE.ent), signers:sg, rule:"any", policies:[thisPolicy(),p1,p2], activity:[{who:"Jamin A.",what:"Sent settlor portal invite to Laura Chen",when:"Oct 20, 2026"},{who:"Jamin A.",what:"Gave Sofia Reyes portal access to policy KZ-104890",when:"Oct 18, 2026"},{who:"Jamin A.",what:"Linked policy to existing settlor Reyes Family Holdings LLC",when:"Sep 12, 2026"}]};}
+    return {type:"entity", ind:null, ent:clone(SAMPLE.ent), signers:sg, rule:"any", policies:[thisPolicy(),p1,p2], activity:[{who:"Laura Chen",what:"Accepted settlor portal invite",when:"Oct 21, 2026"},{who:"Jamin A.",what:"Gave Sofia Reyes portal access to policy KZ-104890",when:"Oct 18, 2026"},{who:"Jamin A.",what:"Linked policy to existing settlor Reyes Family Holdings LLC",when:"Sep 12, 2026"}]};}
 };
 
 var st = scenarios.insured();
@@ -310,11 +308,11 @@ function setupHTML(){
   var signerTxt, signerSub;
   if(st.type==="insured"){signerTxt="The client ("+POLICY.first+" "+POLICY.last+")";signerSub="Signs in the client portal they already use. No separate invite.";}
   else if(st.type==="individual"){signerTxt="The settlor ("+st.ind.first+" "+st.ind.last+")";signerSub="Gets settlor servicing portal access for linked policies.";}
-  else {var n=st.signers.length;signerTxt=n+" authorized signer"+(n===1?"":"s")+" for "+st.ent.name;signerSub=n?(st.rule==="any"?"Any one signer can sign.":"All signers must sign."):"Add at least one signer.";}
+  else {var g=st.signers[0];signerTxt=g?(g.first+" "+g.last+", "+g.title+" at "+st.ent.name):"Not set yet";}
   return '<div class="setup">'+
     '<div class="q"><div class="ql">Is the insured the settlor?</div><div class="qa">'+q1[0]+'</div><div class="qs">'+q1[1]+'</div></div>'+
     '<div class="q"><div class="ql">Settlor type</div><div class="qa">'+esc(q2[0])+'</div><div class="qs">'+esc(q2[1])+'</div></div>'+
-    '<div class="q"><div class="ql">Authorized signer</div><div class="qa">'+(st.type==="entity"?st.signers.length+" signer"+(st.signers.length===1?"":"s"):"1 signer")+'</div><div class="qs">'+(st.type==="insured"?"The client":st.type==="individual"?"The settlor":(st.rule==="any"?"Any one signs":"All must sign"))+'</div></div>'+
+    '<div class="q"><div class="ql">Authorized signer</div><div class="qa">'+(st.type==="insured"?"The client":st.type==="individual"?"The settlor":(st.signers[0]?esc(st.signers[0].first+" "+st.signers[0].last):"Not set"))+'</div><div class="qs">'+(st.type==="entity"&&st.signers[0]?esc(st.signers[0].title):"Always one signer")+'</div></div>'+
   '</div>'+
   '<div class="signer-banner"><div class="ic" aria-hidden="true">✍</div><div><b>Authorized signer: '+esc(signerTxt)+'</b></div></div>';
 }
@@ -334,15 +332,10 @@ function signerRow(s,i){
     '<div class="stat">'+signerStatus(s)+'</div><div class="act">'+act+'</div>'+conf+'</div>';
 }
 function signersHTML(title){
-  var n=st.signers.length, withAcc=st.signers.filter(function(s){return s.access;}).length,
-      active=st.signers.filter(function(s){return s.access&&s.invite==="accepted";}).length,
-      pending=st.signers.filter(function(s){return s.access&&s.invite==="none";}).length;
-  var rule = st.type==="entity" ? '<span class="rule">Signing rule: <b>'+(st.rule==="any"?"Any one signer":"All signers")+'</b> <span class="tbc">to confirm</span></span>' : '';
-  var summary = '<div class="accsum"><span><b>'+withAcc+' of '+n+'</b> '+(n===1?"signer has":"signers have")+' settlor portal access</span><span>· <b>'+active+'</b> active</span>'+
-    (pending?'<button class="btn sm primary" data-act="inviteAll">Send invites to all with access ('+pending+')</button>':'')+'</div>';
-  return '<div><div class="sec-t"><span>'+title+'</span>'+rule+'</div>'+summary+
-    '<div class="signers">'+(n?st.signers.map(signerRow).join(""):'<p class="note">No signers yet. Use Edit settlor to add one.</p>')+'</div>'+
-    '<p class="note" style="margin:8px 0 0">Portal access covers every policy linked to this settlor. Turn it on only for the signers who should log in. A signer without access can still be sent documents to sign.</p></div>';
+  var n=st.signers.length;
+  return '<div><div class="sec-t"><span>'+title+'</span><span class="note">One authorized signer per settlor</span></div>'+
+    '<div class="signers">'+(n?signerRow(st.signers[0],0):'<p class="note">No signer yet. Use Edit settlor to add one.</p>')+'</div>'+
+    '<p class="note" style="margin:8px 0 0">All forms and documents for every policy linked to this settlor go to this one signer. Portal access covers all of those policies.</p></div>';
 }
 function insStatus(p){
   if(!p.insAccess) return p.insInvite==="none" ? '<span class="pill p-none">No access</span>' : '<span class="pill p-restricted">Access turned off</span>';
@@ -394,7 +387,7 @@ function render(){
       '<div><dt>EIN / Tax ID</dt><dd class="mono">'+(ssnShown?esc(e.ein):mask(e.ein,4))+'<button class="reveal" data-act="ssn">'+(ssnShown?"Hide":"Show")+'</button></dd></div>'+
       '<div style="grid-column:1/-1"><dt>Address</dt><dd>'+esc(e.street+", "+e.city+", "+e.state+" "+e.zip)+'</dd></div>'+
       '</dl></div><hr class="divider">'+
-      signersHTML("Authorized signers &amp; portal access")+'<hr class="divider">'+policiesHTML();
+      signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   }
   h+='<hr class="divider"><div><div class="sec-t"><span>Recent changes</span></div><ul class="activity">'+st.activity.slice(0,4).map(function(a){return '<li><b>'+esc(a.who)+'</b> · '+esc(a.what)+' · '+esc(a.when)+'</li>';}).join("")+'</ul></div>';
   v.innerHTML=h;
@@ -469,14 +462,13 @@ function renderDrawer(){
       '<div class="step"><div class="step-t"><span class="step-n">STEP 4</span>Authorized signer</div><div class="info">The settlor is the authorized signer. After saving, send them a settlor portal invite from this section.</div></div>';
   }
   if(d.type==="entity"){
+    if(!d.signers.length) d.signers=[{}];
     b+='<div class="step"><div class="step-t"><span class="step-n">STEP 3</span>Entity details</div>'+
       '<div class="f"><label>Entity type <i>*</i></label><div class="chips">'+ENTITY_TYPES.map(function(t){return '<button data-d="etype" data-v="'+t+'" aria-pressed="'+(d.ent.etype===t)+'">'+t+'</button>';}).join("")+'</div>'+(tried&&!d.ent.etype?'<span class="req">Required</span>':'')+'</div>'+
       '<div class="fields">'+ENT_FIELDS.map(function(f){return fieldHTML("ent",0,f,d.ent);}).join("")+'</div></div>'+
-      '<div class="step"><div class="step-t"><span class="step-n">STEP 4</span>Authorized signers</div>'+
-      d.signers.map(function(s,i){return '<div class="dsigner"><div class="dsigner-hd"><span>Signer '+(i+1)+'</span><button class="btn link sm" data-d="rmSigner" data-i="'+i+'">Remove</button></div><div class="fields">'+SIG_FIELDS.map(function(f){return fieldHTML("sig",i,f,s);}).join("")+'</div></div>';}).join("")+
-      (tried&&!d.signers.length?'<span class="req">Add at least one signer</span>':'')+
-      '<button class="btn sm" data-d="addSigner" style="align-self:flex-start">+ Add signer</button>'+
-      '<div class="f"><label>Signing rule <span class="tbc">to confirm</span></label><div class="chips"><button data-d="rule" data-v="any" aria-pressed="'+(d.rule==="any")+'">Any one signer can sign</button><button data-d="rule" data-v="all" aria-pressed="'+(d.rule==="all")+'">All signers must sign</button></div></div></div>';
+      '<div class="step"><div class="step-t"><span class="step-n">STEP 4</span>Authorized signer</div>'+
+      '<p class="note" style="margin:0">An entity has exactly one authorized signer. All forms and documents go to this person.</p>'+
+      '<div class="fields">'+SIG_FIELDS.map(function(f){return fieldHTML("sig",0,f,d.signers[0]);}).join("")+'</div></div>';
   }
   if(d.type==="insured"){
     b+='<div class="step"><div class="step-t"><span class="step-n">STEP 2</span>Authorized signer</div><div class="info">The client ('+esc(POLICY.first+" "+POLICY.last)+') is the settlor and the authorized signer. Their details come from the client profile, and they sign in the client portal they already have.</div></div>';
@@ -487,7 +479,7 @@ function renderDrawer(){
 function sampleFor(group,idx,k){
   if(group==="ind") return SAMPLE.ind[k];
   if(group==="ent") return SAMPLE.ent[k];
-  var base = SAMPLE.signers[idx % SAMPLE.signers.length]; return base[k];
+  return SAMPLE.signers[1][k];
 }
 document.getElementById("drawerRoot").addEventListener("click",function(ev){
   var t=ev.target.closest("[data-d],[data-fill]"); if(!t||!d)return;
@@ -499,7 +491,7 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
   if(a==="sep"){if(d.type==="insured")d.type="individual";tried=false;}
   if(a==="existing"){showExisting=!showExisting;}
   if(a==="pick"){var x=EXISTING[+t.dataset.i];
-    if(x.kind==="entity"){d.type="entity";d.ent=clone(SAMPLE.ent);d.ent.name=x.label;if(x.label!=="Reyes Family Holdings LLC")d.ent.etype="Corporation";d.signers=clone(SAMPLE.signers).slice(0,2);}
+    if(x.kind==="entity"){d.type="entity";d.ent=clone(SAMPLE.ent);d.ent.name=x.label;if(x.label!=="Reyes Family Holdings LLC")d.ent.etype="Corporation";d.signers=[clone(SAMPLE.signers[1])];}
     else {d.type="individual";d.ind=clone(SAMPLE.ind);var nm=x.label.split(" ");d.ind.first=nm[0];d.ind.last=nm[1];}
     showExisting=false;d.picked=x.label;toast("Linked to existing settlor: "+x.label);}
   if(a==="rel"){d.ind.relation=t.dataset.v;}
@@ -510,7 +502,7 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
   if(a==="fillall"){
     if(allFilled()){ if(d.type==="individual") d.ind={relation:""}; else {d.ent={etype:""};d.signers=[{}];} tried=true; }
     else if(d.type==="individual"){d.ind=clone(SAMPLE.ind);}
-    else {d.ent=clone(SAMPLE.ent);if(!d.signers.length)d.signers=[{}];d.signers=d.signers.map(function(s,i){return clone(SAMPLE.signers[i%SAMPLE.signers.length]);});tried=false;}
+    else {d.ent=clone(SAMPLE.ent);d.signers=[clone(SAMPLE.signers[1])];tried=false;}
   }
   if(a==="save"){
     if(!allFilled()){tried=true;renderDrawer();return;}
