@@ -183,6 +183,8 @@ ul.activity{margin:0;padding:0}
 .fld.empty{color:var(--faint)}
 .fld.miss{border-color:var(--bad)}
 .req{font-size:11px;color:var(--bad)}
+.hint{font-size:11px;color:var(--faint)}
+select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 .info{background:var(--accent-soft);border-radius:10px;padding:11px 13px;font-size:13px}
 .picker{border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .picker button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 12px;font-size:13px}
@@ -285,7 +287,9 @@ var POLICY_POOL = [
   {first:"Marco", last:"Diaz", policy:"KZ-105112", tranche:82},
   {first:"Ana", last:"Lopez", policy:"KZ-105407", tranche:83}
 ];
-var REL = ["Spouse","Parent","Child","Sibling","Business partner","Other"];
+/* Same options as ILIA's SettlorDetails.tsx enum (Self / Spouse / Other). Self is Step 1 here. */
+var REL = ["Spouse","Other"];
+function relText(o){return o.relation==="Other" ? "Other: "+(o.otherRelation||"—") : o.relation;}
 
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function thisPolicy(){return {first:POLICY.first,last:POLICY.last,policy:POLICY.policy,tranche:POLICY.tranche,self:true,insAccess:false,insInvite:"none"};}
@@ -312,7 +316,7 @@ function toast(msg){var r=document.getElementById("toastRoot");r.innerHTML='<div
 
 function setupHTML(){
   var q1 = st.type==="insured" ? ["Yes","The insured is the settlor"] : ["No","Settlor is separate from the insured"];
-  var q2 = st.type==="insured" ? ["—","Not needed"] : st.type==="individual" ? ["Individual", st.ind.relation+" of the insured"] : ["Entity", st.ent.etype];
+  var q2 = st.type==="insured" ? ["—","Not needed"] : st.type==="individual" ? ["Individual", st.ind.relation==="Other" ? "Other relation: "+(st.ind.otherRelation||"") : st.ind.relation+" of the insured"] : ["Entity", st.ent.etype];
   var signerTxt, signerSub;
   if(st.type==="insured"){signerTxt="The client ("+POLICY.first+" "+POLICY.last+")";signerSub="Signs in the client portal they already use. No separate invite.";}
   else if(st.type==="individual"){signerTxt="The settlor ("+st.ind.first+" "+st.ind.last+")";signerSub="Gets settlor servicing portal access for linked policies.";}
@@ -390,7 +394,7 @@ function render(){
     var s=st.ind;
     h+='<div><div class="sec-t"><span>Settlor details · individual</span></div><dl class="kv">'+
       '<div><dt>Name</dt><dd>'+esc(s.first+" "+s.last)+'</dd></div>'+
-      '<div><dt>Relationship to insured</dt><dd>'+esc(s.relation)+'</dd></div>'+
+      '<div><dt>Settlor relation to insured</dt><dd>'+esc(relText(s))+'</dd></div>'+
       '<div><dt>Date of birth</dt><dd>'+esc(s.dob)+'</dd></div>'+
       '<div><dt>Email</dt><dd>'+esc(s.email)+'</dd></div>'+
       '<div><dt>Phone</dt><dd>'+esc(s.phone)+'</dd></div>'+
@@ -459,7 +463,7 @@ function fieldHTML(group,idx,f,obj){
   return '<div class="f"><label>'+f[1]+(f[2]?' <i>*</i>':'')+'</label><button type="button" id="f-'+group+idx+'-'+f[0]+'" class="fld'+(val?'':' empty')+(miss?' miss':'')+'" data-fill="'+group+'" data-idx="'+idx+'" data-k="'+f[0]+'">'+(val?esc(val):'Click to fill sample')+'</button>'+(miss?'<span class="req">Required</span>':'')+'</div>';
 }
 function allFilled(){
-  if(d.type==="individual") return IND_FIELDS.every(function(f){return d.ind[f[0]];})&&d.ind.relation;
+  if(d.type==="individual") return IND_FIELDS.every(function(f){return d.ind[f[0]];})&&d.ind.relation&&(d.ind.relation!=="Other"||d.ind.otherRelation);
   if(d.type==="entity") return ENT_FIELDS.every(function(f){return d.ent[f[0]];})&&d.ent.etype&&d.signers.length&&d.signers.every(function(s){return SIG_FIELDS.every(function(f){return s[f[0]];});});
   return true;
 }
@@ -470,7 +474,7 @@ function renderDrawer(){
     '<button class="opt" data-d="sep" aria-pressed="'+(d.type!=="insured")+'"><b>No, the settlor is separate</b><span>An individual or an entity</span></button></div></div>';
   if(d.type!=="insured"){
     b+='<div class="step"><div class="step-t"><span class="step-n">STEP 2</span>Who is the settlor?</div><div class="opts">'+
-      '<button class="opt" data-d="type" data-v="individual" aria-pressed="'+(d.type==="individual")+'"><b>An individual</b><span>e.g. spouse, parent</span></button>'+
+      '<button class="opt" data-d="type" data-v="individual" aria-pressed="'+(d.type==="individual")+'"><b>An individual</b><span>e.g. spouse, or another person</span></button>'+
       '<button class="opt" data-d="type" data-v="entity" aria-pressed="'+(d.type==="entity")+'"><b>An entity</b><span>e.g. trust, LLC, business, key person</span></button></div>'+
       '<button class="btn link sm" data-d="existing" style="align-self:flex-start">'+(showExisting?"Hide existing settlors":"⌕ Use an existing settlor record instead")+'</button>'+
       (showExisting?'<div class="picker">'+EXISTING.map(function(x,i){return '<button data-d="pick" data-i="'+i+'"><span>'+esc(x.label)+'</span><small>'+esc(x.sub)+'</small></button>';}).join("")+'</div><p class="note" style="margin:0">Picking an existing settlor links this policy to it. Nothing is entered twice.</p>':'')+
@@ -478,7 +482,8 @@ function renderDrawer(){
   }
   if(d.type==="individual"){
     b+='<div class="step"><div class="step-t"><span class="step-n">STEP 3</span>Settlor details</div>'+
-      '<div class="f"><label>Relationship to insured <i>*</i></label><div class="chips">'+REL.map(function(r){return '<button data-d="rel" data-v="'+r+'" aria-pressed="'+(d.ind.relation===r)+'">'+r+'</button>';}).join("")+'</div>'+(tried&&!d.ind.relation?'<span class="req">Required</span>':'')+'</div>'+
+      '<div class="fields"><div class="f"><label for="relSel">Settlor relation to insured <i>*</i></label><select id="relSel" class="fld sel'+(tried&&!d.ind.relation?' miss':'')+'"><option value="">Select</option>'+REL.map(function(r){return '<option'+(d.ind.relation===r?' selected':'')+'>'+r+'</option>';}).join("")+'</select>'+(tried&&!d.ind.relation?'<span class="req">Required</span>':'<span class="hint">“Self” is Step 1 (the insured is the settlor).</span>')+'</div>'+
+      (d.ind.relation==="Other"?fieldHTML("ind",0,["otherRelation","Other relation (describe)",1],d.ind):'<div></div>')+'</div>'+
       '<div class="fields">'+IND_FIELDS.map(function(f){return fieldHTML("ind",0,f,d.ind);}).join("")+'</div></div>'+
       '<div class="step"><div class="step-t"><span class="step-n">STEP 4</span>Authorized signer</div><div class="info">The settlor is the authorized signer. After saving, send them a settlor portal invite from this section.</div></div>';
   }
@@ -498,7 +503,7 @@ function renderDrawer(){
   document.getElementById("drawerRoot").innerHTML='<div class="scrim" data-d="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="drH"><div class="dr-hd"><h3 id="drH">Edit settlor</h3><div style="display:flex;gap:6px">'+fillBtn+'<button class="btn sm" data-d="close" aria-label="Close">✕</button></div></div><div class="dr-bd" id="drBody">'+b+'</div><div class="dr-ft">'+(tried&&!allFilled()?'<span class="err">Fill the required fields to save.</span>':'')+'<button class="btn" data-d="close">Cancel</button><button class="btn primary" data-d="save">Save settlor</button></div></div>';
 }
 function sampleFor(group,idx,k){
-  if(group==="ind") return SAMPLE.ind[k];
+  if(group==="ind") return k==="otherRelation" ? "Business partner" : SAMPLE.ind[k];
   if(group==="ent") return SAMPLE.ent[k];
   return SAMPLE.signers[d.sIdx][k];
 }
@@ -515,7 +520,6 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
     if(x.kind==="entity"){d.type="entity";d.ent=clone(SAMPLE.ent);d.ent.name=x.label;if(x.label!=="Reyes Family Holdings LLC")d.ent.etype="Corporation";d.signers=[clone(SAMPLE.signers[1])];}
     else {d.type="individual";d.ind=clone(SAMPLE.ind);var nm=x.label.split(" ");d.ind.first=nm[0];d.ind.last=nm[1];}
     showExisting=false;d.picked=x.label;toast("Linked to existing settlor: "+x.label);}
-  if(a==="rel"){d.ind.relation=t.dataset.v;}
   if(a==="etype"){d.ent.etype=t.dataset.v;}
   if(a==="fillall"){
     if(allFilled()){ if(d.type==="individual") d.ind={relation:""}; else {d.ent={etype:""};d.signers=[{}];} tried=true; }
@@ -543,6 +547,13 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
   }
   renderDrawer();
   var body=document.getElementById("drBody"); if(body) body.scrollTop=keepScroll;
+});
+document.getElementById("drawerRoot").addEventListener("change",function(ev){
+  if(ev.target.id!=="relSel"||!d)return;
+  var keep=(document.getElementById("drBody")||{}).scrollTop||0;
+  d.ind.relation=ev.target.value; if(d.ind.relation!=="Other") d.ind.otherRelation="";
+  renderDrawer(); var body=document.getElementById("drBody"); if(body) body.scrollTop=keep;
+  var sel=document.getElementById("relSel"); if(sel) sel.focus();
 });
 document.getElementById("editBtn").addEventListener("click",openDrawer);
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&d)closeDrawer();});
