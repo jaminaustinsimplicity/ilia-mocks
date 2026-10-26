@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ILIA Trust Details Redesign</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: ILIA admin page (MUI v4 look) — mock toolbar, then one Trust Details card split into labelled groups on a 3-column field grid */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --fg: #1f2933;
+  --muted: #5f6b7a;
+  --line: #c4cbd3;
+  --soft: #e9edf1;
+  --disabled: #d5d9de;
+  --accent: #1f6fb2;
+  --accent-soft: #e3effa;
+  --carrier: #7a4fd1;
+  --carrier-soft: #f0eafc;
+  --warn: #9a5b00;
+  --warn-soft: #fff4e0;
+  --ok: #1f7a4d;
+  --font-body: "Roboto", "Segoe UI", Arial, sans-serif;
+  --font-mono: "Roboto Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12161b; --surface: #1b2128; --fg: #e6eaef; --muted: #9aa6b4; --line: #3a444f; --soft: #242c35;
+  --disabled: #2c343d; --accent: #6cb0ec; --accent-soft: #1d3247; --carrier: #b79af0; --carrier-soft: #2c2440;
+  --warn: #f0b860; --warn-soft: #3a2d14; --ok: #6fd3a0; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #12161b; --surface: #1b2128; --fg: #e6eaef; --muted: #9aa6b4; --line: #3a444f; --soft: #242c35;
+  --disabled: #2c343d; --accent: #6cb0ec; --accent-soft: #1d3247; --carrier: #b79af0; --carrier-soft: #2c2440;
+  --warn: #f0b860; --warn-soft: #3a2d14; --ok: #6fd3a0; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.45 }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 16px }
+
+.mockbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px;
+  border: 1px dashed var(--line); border-radius: 6px; background: var(--surface) }
+.mockbar .tag { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-left: auto }
+.btn { font: 500 13px var(--font-body); letter-spacing: .03em; text-transform: uppercase; border-radius: 4px;
+  padding: 8px 14px; cursor: pointer; border: 1px solid var(--accent); background: transparent; color: var(--accent) }
+.btn.solid { background: var(--accent); color: var(--surface) }
+.btn.ghost { border-color: transparent }
+.btn:focus-visible, input:focus-visible, select:focus-visible, .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); cursor: pointer }
+
+.crumbs { font-size: 13px; color: var(--muted) }
+.crumbs b { color: var(--fg); font-weight: 500 }
+
+.card { background: var(--surface); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.12); padding: 20px 24px 24px;
+  display: flex; flex-direction: column; gap: 24px }
+.card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px }
+.card-head h2 { margin: 0; font-size: 20px; font-weight: 700 }
+.chip { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 12px; background: var(--accent-soft); color: var(--accent) }
+.chip.irr { background: var(--warn-soft); color: var(--warn) }
+.card-head .spacer { flex: 1 }
+.saved { font-size: 12px; color: var(--muted) }
+
+.group { display: flex; flex-direction: column; gap: 14px; padding-top: 18px; border-top: 1px solid var(--soft) }
+.group-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px }
+.group-head h3 { margin: 0; font-size: 15px; font-weight: 500 }
+.group-head p { margin: 0; font-size: 12.5px; color: var(--muted) }
+.new { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ok) }
+.proposed { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--warn) }
+
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 24px }
+.span2 { grid-column: span 2 } .span3 { grid-column: 1 / -1 }
+@media (max-width: 760px) { .grid { grid-template-columns: minmax(0,1fr) } .span2, .span3 { grid-column: auto } }
+
+/* MUI-style outlined field */
+.field { position: relative; min-width: 0 }
+.field label { position: absolute; top: -8px; left: 10px; padding: 0 4px; font-size: 12px; color: var(--muted);
+  background: var(--surface); display: inline-flex; gap: 6px; align-items: center; max-width: calc(100% - 20px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.field input, .field select { width: 100%; height: 52px; padding: 14px 14px 10px; font: 400 15px var(--font-body); color: var(--fg);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 4px }
+.field input::placeholder { color: var(--muted); opacity: .7 }
+.field input:hover, .field select:hover { border-color: var(--fg) }
+.field.ro input { background: var(--disabled); border-color: var(--disabled); color: var(--muted) }
+.field.ro label { background: transparent }
+.field .money { position: absolute; left: 14px; top: 17px; color: var(--muted) }
+.field.ro input { padding-left: 30px }
+.field .hint { font-size: 11.5px; color: var(--muted); margin: 4px 2px 0 }
+.mono { font-family: var(--font-mono) }
+
+.ds { font-size: 9.5px; font-weight: 700; letter-spacing: .06em; padding: 1px 5px; border-radius: 3px; background: var(--carrier-soft); color: var(--carrier) }
+body.hl .carrier input, body.hl .carrier select, body.hl .carrier .seg, body.hl .carrier .radios { box-shadow: 0 0 0 2px var(--carrier) }
+body:not(.showds) .ds { display: none }
+
+.q { display: flex; flex-direction: column; gap: 8px; min-width: 0 }
+.q .qlabel { font-size: 13px; color: var(--fg); display: flex; gap: 6px; align-items: center; flex-wrap: wrap }
+.seg { display: inline-flex; border: 1px solid var(--accent); border-radius: 4px; overflow: hidden; width: fit-content; max-width: 100% }
+.seg button { font: 500 13px var(--font-body); padding: 8px 16px; border: 0; background: transparent; color: var(--accent); cursor: pointer }
+.seg button + button { border-left: 1px solid var(--accent) }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--surface) }
+.radios { display: flex; flex-direction: column; gap: 6px; padding: 4px 6px; border-radius: 4px; width: fit-content; max-width: 100% }
+.radios label { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; font-size: 13.5px }
+.radios input { margin-top: 3px; accent-color: var(--accent) }
+.check { display: flex; gap: 8px; align-items: center; font-size: 13px; cursor: pointer }
+.check input { accent-color: var(--accent); width: 16px; height: 16px }
+
+.note { display: flex; gap: 10px; padding: 10px 12px; border-radius: 4px; font-size: 12.5px; background: var(--soft); color: var(--fg) }
+.note.warn { background: var(--warn-soft); color: var(--warn) }
+.note.carrier { background: var(--carrier-soft); color: var(--carrier) }
+
+.trustees { display: flex; flex-direction: column; gap: 14px }
+.trustee { border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 16px }
+.trustee-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px }
+.trustee-head h4 { margin: 0; font-size: 14px; font-weight: 500 }
+.trustee-head .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--soft); color: var(--muted) }
+.trustee-head .right { margin-left: auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap }
+.corr { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; cursor: pointer }
+.corr input { accent-color: var(--accent) }
+.linkbtn { font: 500 12.5px var(--font-body); color: var(--accent); background: none; border: 0; cursor: pointer; padding: 0 }
+.add-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap }
+.count { font-size: 12px; color: var(--muted) }
+
+details.notes { background: var(--surface); border-radius: 6px; padding: 14px 18px; border: 1px solid var(--soft) }
+details.notes summary { cursor: pointer; font-weight: 500 }
+details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; max-width: 75ch }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); align-items: center }
+@media (prefers-reduced-motion: no-preference) { .flash { animation: flash .6s ease-out } @keyframes flash { from { background: var(--accent-soft) } } }
+</style>
+
+<style>:root{color-scheme:light}body{margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mockbar">
+    <button class="btn solid" id="startOver" type="button">Start over</button>
+    <button class="btn" id="fillAll" type="button">Fill sample data</button>
+    <label class="toggle"><input type="checkbox" id="showDs" checked> Show fields sent to the carrier trust form</label>
+    <label class="toggle"><input type="checkbox" id="hlDs"> Highlight them</label>
+    <span class="tag">Mock · click any empty field to fill it</span>
+  </div>
+
+  <div class="crumbs">Clients › Test Tester › <b>Case Details</b></div>
+
+  <section class="card" aria-labelledby="td-title">
+    <div class="card-head">
+      <h2 id="td-title">Trust Details</h2>
+      <span class="chip" id="typeChip">Revocable</span>
+      <span class="spacer"></span>
+      <span class="saved" id="saved">Not saved yet</span>
+      <button class="btn solid" id="save" type="button">Save trust details</button>
+    </div>
+
+    <div class="legend">
+      <span><span class="new">New</span> = not in ILIA today</span>
+      <span><span class="proposed">Proposed</span> = waiting on requirements</span>
+      <span><span class="ds">DOCUSIGN</span> = sent to the carrier trust certification form</span>
+    </div>
+
+    <!-- 1. Trust information -->
+    <div class="group">
+      <div class="group-head"><h3>Trust information</h3></div>
+      <div class="grid">
+        <div class="field carrier"><label for="t-name">Full name of trust <span class="ds">DOCUSIGN</span></label>
+          <input id="t-name" data-sample="The Test Tester Insurance Trust" placeholder="The Insurance Trust"></div>
+        <div class="field carrier"><label for="t-ein">EIN / trust tax ID <span class="ds">DOCUSIGN</span></label>
+          <input id="t-ein" class="mono" data-sample="01-2345678" placeholder="XX-XXXXXXX">
+          <p class="hint">Stored as text so a leading zero is kept.</p></div>
+        <div class="field"><label for="t-prov">Provident account no.</label>
+          <input id="t-prov" class="mono" data-sample="PTG-0012345" placeholder="Provident account no."></div>
+        <div class="field carrier"><label for="t-date">Date of trust <span class="ds">DOCUSIGN</span></label>
+          <input id="t-date" type="date" data-sample="2026-10-15"></div>
+        <div class="field carrier"><label for="t-state">State where trust was created <span class="new">New</span> <span class="ds">DOCUSIGN</span></label>
+          <select id="t-state" data-sample="Nevada"><option value="">Select state</option></select></div>
+        <div class="field"><label for="t-amend">Trust amendment number</label>
+          <input id="t-amend" inputmode="numeric" data-sample="0" placeholder="0"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="t-combine"> Combined trust (one trust holds more than one policy)</label>
+    </div>
+
+    <!-- 2. Trust type & terms -->
+    <div class="group">
+      <div class="group-head"><h3>Trust type and terms</h3><p>Today this is a free-text dropdown that nothing else uses. Here it drives what the page asks for.</p></div>
+      <div class="grid">
+        <div class="q carrier">
+          <span class="qlabel">Type of trust <span class="ds">DOCUSIGN</span></span>
+          <div class="seg" role="group" aria-label="Type of trust" id="t-type">
+            <button type="button" data-v="Revocable" aria-pressed="true">Revocable</button>
+            <button type="button" data-v="Irrevocable" aria-pressed="false">Irrevocable</button>
+          </div>
+        </div>
+        <div class="field carrier span2" id="revokeWrap"><label for="t-revoke">Person(s) with power to revoke <span class="new">New</span> <span class="ds">DOCUSIGN</span></label>
+          <input id="t-revoke" data-sample="Test Tester (grantor)" placeholder="Required when the trust is revocable"></div>
+        <div class="q carrier">
+          <span class="qlabel">Will the trust pay the premiums? <span class="new">New</span> <span class="ds">DOCUSIGN</span></span>
+          <div class="seg" role="group" aria-label="Trust pays premiums" id="t-prem">
+            <button type="button" data-v="Yes" aria-pressed="true">Yes</button>
+            <button type="button" data-v="No" aria-pressed="false">No</button>
+          </div>
+        </div>
+        <div class="q carrier span2">
+          <span class="qlabel">Is the owner a qualified plan? <span class="new">New</span> <span class="ds">DOCUSIGN</span></span>
+          <div class="seg" role="group" aria-label="Qualified plan" id="t-qual">
+            <button type="button" data-v="No" aria-pressed="true">Not a qualified plan</button>
+            <button type="button" data-v="Yes" aria-pressed="false">Qualified plan</button>
+          </div>
+          <div class="note warn" id="qualWarn" hidden>Some carriers (Symetra) don't allow a policy inside a qualified plan. This case needs review before signing.</div>
+        </div>
+        <div class="field carrier"><label for="t-relben">Grantor/insured relationship to beneficiaries <span class="new">New</span> <span class="ds">DOCUSIGN</span></label>
+          <select id="t-relben" data-sample="Parent"><option value="">Select</option><option>Self</option><option>Spouse</option><option>Parent</option><option>Grandparent</option><option>Business</option><option>Other</option></select></div>
+        <div class="field carrier"><label for="t-reltr">Grantor/insured relationship to trustee(s) <span class="new">New</span> <span class="ds">DOCUSIGN</span></label>
+          <select id="t-reltr" data-sample="Client to Trust Company"><option value="">Select</option><option>Client to Trust Company</option><option>Self</option><option>Spouse</option><option>Family member</option><option>Attorney</option><option>Other</option></select></div>
+      </div>
+    </div>
+
+    <!-- 3. Trustees -->
+    <div class="group">
+      <div class="group-head"><h3>Trustees <span class="new">New</span></h3><p>Up to 4. Admin edits here and the carrier form fills from it.</p></div>
+      <div class="trustees" id="trustees"></div>
+      <div class="add-row">
+        <button class="btn" id="addTrustee" type="button">+ Add trustee</button>
+        <span class="count" id="tCount"></span>
+      </div>
+      <div class="note carrier" id="entityNote" hidden>An entity trustee (bank, trust company, law firm) needs the carrier's Entity Certification form (Symetra LU-999) naming who can sign for it.</div>
+
+      <div class="q carrier" id="actRule" hidden>
+        <span class="qlabel">If there's more than one trustee, how do they act? <span class="ds">DOCUSIGN</span></span>
+        <div class="radios" role="radiogroup" aria-label="How trustees act">
+          <label><input type="radio" name="act" value="unanimous"> Trustees must act unanimously (all agree, sign and act together)</label>
+          <label><input type="radio" name="act" value="majority"> A majority of trustees must act</label>
+          <label><input type="radio" name="act" value="any" checked> Any one trustee may act alone</label>
+          <label><input type="radio" name="act" value="other"> Other</label>
+        </div>
+        <div class="field" id="actOtherWrap" hidden style="max-width:520px"><label for="t-actother">Describe how trustees act</label>
+          <input id="t-actother" data-sample="Trustee 1 and any one other trustee together" placeholder="Please specify"></div>
+        <p class="hint" style="font-size:12px;color:var(--muted);margin:0">If this is left blank, the carrier accepts instructions from any single trustee.</p>
+      </div>
+    </div>
+
+    <!-- 4. Irrevocable only -->
+    <div class="group" id="irrGroup" hidden>
+      <div class="group-head"><h3>Irrevocable trust contacts</h3><span class="proposed">Proposed</span><p>Shows only for irrevocable trusts. These are records, not signers or logins.</p></div>
+      <div class="grid">
+        <div class="field"><label for="tp-name">Trust Protector name</label><input id="tp-name" data-sample="Alex Example" placeholder="Name"></div>
+        <div class="field"><label for="tp-email">Trust Protector email</label><input id="tp-email" data-sample="alex.example@example.com" placeholder="Email"></div>
+        <div class="field"><label for="tp-phone">Trust Protector phone</label><input id="tp-phone" data-sample="(702) 555-0188" placeholder="Phone"></div>
+      </div>
+      <div class="note">The Trust Protector never signs (Judy, 10/21). It's kept here so admins know who can change the trustee.</div>
+      <div class="grid">
+        <div class="field"><label for="at-name">Estate / tax attorney</label><input id="at-name" data-sample="Morgan Sample, Esq." placeholder="Name"></div>
+        <div class="field"><label for="at-firm">Firm</label><input id="at-firm" data-sample="Sample &amp; Partners LLP" placeholder="Firm"></div>
+        <div class="field"><label for="at-email">Attorney email</label><input id="at-email" data-sample="msample@example.com" placeholder="Email"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="at-send" checked> Send policy statements to this attorney for tax filing</label>
+    </div>
+
+    <!-- 5. Fees -->
+    <div class="group">
+      <div class="group-head"><h3>Trust fees</h3><p>Read-only, same as today.</p></div>
+      <div class="grid">
+        <div class="field ro"><label>Trust first year fee</label><span class="money">$</span><input value="0.00" readonly tabindex="-1"></div>
+        <div class="field ro"><label>Trust annual fee</label><span class="money">$</span><input value="0.00" readonly tabindex="-1"></div>
+        <div class="field ro"><label>Annual trust fee amount</label><span class="money">$</span><input value="0.00" readonly tabindex="-1"></div>
+      </div>
+    </div>
+  </section>
+
+  <details class="notes">
+    <summary>Notes for review</summary>
+    <ul>
+      <li>Every field marked DOCUSIGN maps to the Symetra trust certification form (LU-0980): trust info, trust type, trustees 1–4, the correspondence trustee, both relationships and the "how trustees act" choice.</li>
+      <li>Trustee 1 starts as Provident Trust Group LLC, as on today's forms. Admins can change it or add individual trustees.</li>
+      <li>"How trustees act" only appears with 2+ trustees, because the form only asks it then.</li>
+      <li>The irrevocable contacts section is proposed. It waits on the irrevocable trust (W-ILIT) requirements call and the Trust Protector boundary decision with W-SETTLOR.</li>
+      <li>Developers to confirm: field names against TrustDetails, whether other carriers' trust forms (Allianz, National Life) need the same fields, and moving EIN from a number to text.</li>
+      <li>All names, numbers and emails here are made-up samples.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+const STATES = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"];
+const stSel = document.getElementById("t-state");
+STATES.forEach(s => stSel.add(new Option(s, s)));
+
+const SAMPLE_TRUSTEES = [
+  { kind: "Entity", name: "Provident Trust Group LLC", phone: "(888) 555-0100", email: "trustee@example.com", address: "7450 Arroyo Crossing Pkwy, Suite 230, Las Vegas, NV 89113" },
+  { kind: "Individual", name: "Jordan Tester", phone: "(702) 555-0142", email: "jordan.tester@example.com", address: "100 Sample Ave, Henderson, NV 89052" },
+  { kind: "Individual", name: "Casey Tester", phone: "(702) 555-0167", email: "casey.tester@example.com", address: "22 Example Rd, Reno, NV 89501" },
+  { kind: "Entity", name: "Example Bank & Trust", phone: "(800) 555-0110", email: "trust@example.com", address: "1 Main St, Boise, ID 83702" }
+];
+let trustees = [];
+let corr = 0;
+
+function trusteeHTML(t, i) {
+  const f = (key, label, ph, span) => `<div class="field carrier${span ? " " + span : ""}"><label for="tr${i}-${key}">${label} <span class="ds">DOCUSIGN</span></label>
+    <input id="tr${i}-${key}" data-i="${i}" data-k="${key}" data-sample="${SAMPLE_TRUSTEES[i][key]}" value="${t[key] || ""}" placeholder="${ph}"></div>`;
+  return `<div class="trustee">
+    <div class="trustee-head">
+      <h4>Trustee ${i + 1}</h4>
+      <span class="badge">${t.kind === "Entity" ? "Entity trustee" : "Individual trustee"}</span>
+      <div class="right">
+        <label class="corr"><input type="radio" name="corr" value="${i}" ${corr === i ? "checked" : ""}> Receives policy correspondence</label>
+        ${i > 0 ? `<button class="linkbtn" type="button" data-remove="${i}">Remove</button>` : ""}
+      </div>
+    </div>
+    <div class="grid">
+      <div class="q"><span class="qlabel">Trustee type</span>
+        <div class="seg" role="group" aria-label="Trustee ${i + 1} type">
+          <button type="button" data-kind="Individual" data-i="${i}" aria-pressed="${t.kind !== "Entity"}">Individual</button>
+          <button type="button" data-kind="Entity" data-i="${i}" aria-pressed="${t.kind === "Entity"}">Entity</button>
+        </div></div>
+      ${f("name", "Trustee name", t.kind === "Entity" ? "Company name" : "First, middle, last", "span2")}
+      ${f("phone", "Phone", "(000) 000-0000")}
+      ${f("email", "Email", "name@company.com")}
+      ${f("address", "Address", "Street, city, state, ZIP")}
+    </div>
+  </div>`;
+}
+
+function renderTrustees() {
+  const box = document.getElementById("trustees");
+  box.innerHTML = trustees.map(trusteeHTML).join("");
+  document.getElementById("addTrustee").hidden = trustees.length >= 4;
+  document.getElementById("tCount").textContent = `${trustees.length} of 4 trustees`;
+  document.getElementById("actRule").hidden = trustees.length < 2;
+  document.getElementById("entityNote").hidden = !trustees.some(t => t.kind === "Entity");
+}
+
+document.getElementById("trustees").addEventListener("click", e => {
+  const k = e.target.closest("[data-kind]");
+  if (k) { trustees[+k.dataset.i].kind = k.dataset.kind; renderTrustees(); return; }
+  const r = e.target.closest("[data-remove]");
+  if (r) { const i = +r.dataset.remove; trustees.splice(i, 1); if (corr >= trustees.length || corr === i) corr = 0; renderTrustees(); }
+});
+document.getElementById("trustees").addEventListener("input", e => {
+  if (e.target.dataset.k) trustees[+e.target.dataset.i][e.target.dataset.k] = e.target.value;
+});
+document.getElementById("trustees").addEventListener("change", e => {
+  if (e.target.name === "corr") corr = +e.target.value;
+});
+document.getElementById("addTrustee").addEventListener("click", () => {
+  if (trustees.length < 4) { trustees.push({ kind: "Individual" }); renderTrustees(); }
+});
+
+// segmented controls
+function setSeg(id, v) {
+  document.querySelectorAll(`#${id} button`).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+  syncType();
+}
+["t-type", "t-prem", "t-qual"].forEach(id =>
+  document.getElementById(id).addEventListener("click", e => { const b = e.target.closest("button"); if (b) setSeg(id, b.dataset.v); }));
+function segVal(id) { return document.querySelector(`#${id} button[aria-pressed="true"]`).dataset.v; }
+
+function syncType() {
+  const irr = segVal("t-type") === "Irrevocable";
+  const chip = document.getElementById("typeChip");
+  chip.textContent = irr ? "Irrevocable" : "Revocable";
+  chip.classList.toggle("irr", irr);
+  document.getElementById("revokeWrap").hidden = irr;
+  document.getElementById("irrGroup").hidden = !irr;
+  document.getElementById("qualWarn").hidden = segVal("t-qual") !== "Yes";
+}
+
+document.querySelectorAll('input[name="act"]').forEach(r => r.addEventListener("change", () => {
+  document.getElementById("actOtherWrap").hidden = document.querySelector('input[name="act"]:checked').value !== "other";
+}));
+
+// click-to-fill: clicking an empty field drops in its sample value
+document.addEventListener("click", e => {
+  const el = e.target.closest("input[data-sample], select[data-sample]");
+  if (!el || el.value) return;
+  el.value = el.dataset.sample;
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+  el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 650);
+});
+
+function fillAll() {
+  document.querySelectorAll(".card input[data-sample]:not([data-k]), .card select[data-sample]").forEach(el => el.value = el.dataset.sample);
+  trustees = [{ ...SAMPLE_TRUSTEES[0] }, { ...SAMPLE_TRUSTEES[1] }];
+  corr = 0;
+  document.getElementById("t-combine").checked = false;
+  renderTrustees(); syncType();
+}
+function startOver() {
+  document.querySelectorAll(".card input:not([readonly]):not([type=radio]):not([type=checkbox]), .card select").forEach(el => el.value = "");
+  document.getElementById("t-amend").value = "0";
+  document.getElementById("t-combine").checked = false;
+  document.getElementById("at-send").checked = true;
+  document.querySelector('input[name="act"][value="any"]').checked = true;
+  document.getElementById("actOtherWrap").hidden = true;
+  setSeg("t-type", "Revocable"); setSeg("t-prem", "Yes"); setSeg("t-qual", "No");
+  trustees = [{ ...SAMPLE_TRUSTEES[0] }];
+  corr = 0;
+  document.getElementById("saved").textContent = "Not saved yet";
+  renderTrustees(); syncType();
+}
+document.getElementById("startOver").addEventListener("click", startOver);
+document.getElementById("fillAll").addEventListener("click", fillAll);
+document.getElementById("save").addEventListener("click", () => {
+  const t = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  document.getElementById("saved").textContent = `Saved at ${t} · carrier form will use these values`;
+});
+document.getElementById("showDs").addEventListener("change", e => document.body.classList.toggle("showds", e.target.checked));
+document.getElementById("hlDs").addEventListener("change", e => document.body.classList.toggle("hl", e.target.checked));
+document.body.classList.add("showds");
+
+fillAll();
+</script>
+</body>
+</html>
