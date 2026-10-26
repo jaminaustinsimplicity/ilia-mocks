@@ -328,7 +328,7 @@ function signerRow(s,i){
   var act = s.access&&s.invite==="none" ? '<button class="btn sm primary" data-act="invite" data-i="'+i+'">Send invite</button>' : s.access&&s.invite==="sent" ? '<button class="btn sm" data-act="resend" data-i="'+i+'">Resend</button>' : '';
   var conf = confirmKey==="s"+i ? '<div class="confirm"><span>Turn off portal access for <b>'+esc(s.first+" "+s.last)+'</b>? They will no longer see or sign documents for any linked policy. No email is sent. You can turn it back on later.</span><button class="btn sm danger" data-act="sOffYes" data-i="'+i+'">Turn off access</button><button class="btn sm" data-act="cancel">Cancel</button></div>' : "";
   return '<div class="arow"><div class="who"><div class="nm">'+esc(s.first+" "+s.last)+' <span class="note">· '+esc(s.title)+'</span></div><div class="meta">'+esc(s.email)+' · '+esc(s.phone)+'</div></div>'+
-    '<div class="acc"><span class="acc-l">Portal access</span>'+sw(!!s.access,"sToggle",i,"Portal access for "+s.first+" "+s.last)+'</div>'+
+    '<div class="acc"><span class="acc-l">Settlor Servicing Portal Access</span>'+sw(!!s.access,"sToggle",i,"Settlor Servicing Portal Access for "+s.first+" "+s.last)+'</div>'+
     '<div class="stat">'+signerStatus(s)+'</div><div class="act">'+act+'</div>'+conf+'</div>';
 }
 function signersHTML(title){
@@ -347,7 +347,7 @@ function policiesHTML(){
   var rows = st.policies.map(function(p,i){
     var accCell, statCell, actCell="";
     if(isSigner(p)){accCell='<span class="note">Has access as a signer</span>';statCell='<span class="pill p-active">Active</span>';}
-    else {accCell=sw(!!p.insAccess,"pToggle",i,"Portal access for "+p.first+" "+p.last);statCell=insStatus(p);if(p.insAccess&&p.insInvite==="sent")actCell='<button class="btn link sm" data-act="pResend" data-i="'+i+'">Resend</button>';}
+    else {accCell=sw(!!p.insAccess,"pToggle",i,"Servicing Portal Access for "+p.first+" "+p.last);statCell=insStatus(p);if(p.insAccess&&p.insInvite==="sent")actCell='<button class="btn link sm" data-act="pResend" data-i="'+i+'">Resend</button>';}
     var unlink = p.self?'':'<button class="btn link sm" data-act="unlink" data-i="'+i+'">Unlink</button>';
     var conf = confirmKey==="p"+i ? '<tr><td colspan="6"><div class="confirm" style="background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)"><span>Give <b>'+esc(p.first+" "+p.last)+'</b> portal access to policy <span class="mono">'+esc(p.policy)+'</span>? We will email them an invite. They will see this policy only.</span><button class="btn sm primary" data-act="pOnYes" data-i="'+i+'">Give access &amp; send invite</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>' : '';
     return '<tr><td>'+esc(p.first+" "+p.last)+'</td><td class="mono">'+esc(p.policy)+(p.self?'<span class="this">this policy</span>':'')+'</td><td>'+p.tranche+'</td><td>'+accCell+'</td><td>'+statCell+' '+actCell+'</td><td>'+unlink+'</td></tr>'+conf;
@@ -356,7 +356,7 @@ function policiesHTML(){
   var picker = pickPolicy ? (avail.length?'<div class="picker" style="margin-top:8px">'+avail.map(function(p){return '<button data-act="link" data-p="'+p.policy+'"><span>'+esc(p.first+" "+p.last)+' · <span class="mono">'+p.policy+'</span></span><small>Tranche '+p.tranche+'</small></button>';}).join("")+'</div>':'<p class="note">No other sample policies to link.</p>') : "";
   return '<div><div class="sec-t"><span>Policies linked to this settlor</span><button class="btn sm" data-act="togglePick">'+(pickPolicy?"Close":"+ Link a policy")+'</button></div>'+
     '<p class="note" style="margin:0 0 10px">The insured on each policy has <b>no portal access by default</b> when they are not the settlor. Turn it on per policy if they need to see their own policy.</p>'+
-    '<div class="tblwrap"><table><thead><tr><th>Insured</th><th>Policy number</th><th>Tranche</th><th>Insured’s portal access</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+picker+'</div>';
+    '<div class="tblwrap"><table><thead><tr><th>Insured</th><th>Policy number</th><th>Tranche</th><th>Servicing Portal Access</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+picker+'</div>';
 }
 
 function render(){
