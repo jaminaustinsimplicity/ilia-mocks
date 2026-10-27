@@ -144,11 +144,11 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
     <div class="sec">
       <div class="sec-head">
         <h2>Broker Dealer</h2><span class="new">New</span>
-        <p>Admin only. Pick the agent's broker dealer. LPL Financial is the only option for now. Admins enter and control every field in this section; agents can't edit them.</p>
+        <p>Admin only. Pick the agent's broker dealer (BD name). It tracks LPL reps and feeds registration and data reports. LPL Financial is the only option for now; it can grow to other Simplicity National accounts later. Admins enter and control every field in this section; agents can't edit them.</p>
       </div>
       <div class="bd">
         <div class="grid2">
-          <div class="field"><label for="bd">Broker Dealer</label>
+          <div class="field"><label for="bd">BD name</label>
             <select id="bd" data-sample="LPL Financial">
               <option value="">None (not with a broker dealer)</option>
               <option>LPL Financial</option>
@@ -157,7 +157,7 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
 
         <div class="grid2" id="bdFields">
           <div class="q">
-            <div class="field"><label for="kz">BD Kai-Zen training completion date</label>
+            <div class="field"><label for="kz">LPL Kai-Zen training completion date</label>
               <input id="kz" type="date" data-sample="2026-10-20"></div>
             <span class="status todo" id="kzStatus">Training not complete</span>
             <span class="hint" style="margin:0">Admin entered.</span>
@@ -169,6 +169,30 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
               <button type="button" data-v="No" aria-pressed="false">No</button>
             </div>
             <span class="hint" style="margin:0">Saved on the agent profile. Admin entered.</span>
+          </div>
+        </div>
+        <div class="q" id="nvDetails" hidden>
+          <span class="qlabel">Nevada license details <span class="new">New</span></span>
+          <div class="grid2">
+            <div class="field"><label for="nvNum">NV license number</label>
+              <input id="nvNum" data-sample="3456789" placeholder="License number"></div>
+            <div class="field"><label for="nvStart">License effective date</label>
+              <input id="nvStart" type="date" data-sample="2025-01-15"></div>
+            <div class="field"><label for="nvEnd">License end date</label>
+              <input id="nvEnd" type="date" data-sample="2027-01-31"></div>
+            <div style="align-self:center"><span class="status todo" id="nvStatus">Add license dates</span></div>
+          </div>
+        </div>
+
+        <div class="q">
+          <span class="qlabel">Carrier training <span class="new">New</span></span>
+          <div class="grid2">
+            <div class="q">
+              <div class="field"><label for="az">Allianz premium financing training completion date</label>
+                <input id="az" type="date" data-sample="2026-09-12"></div>
+              <span class="status todo" id="azStatus">Training not complete</span>
+              <span class="hint" style="margin:0">Required for every agent writing Allianz, with or without a broker dealer. Admin entered.</span>
+            </div>
           </div>
         </div>
         <div class="note" id="bdNote">Alerts for this agent's cases will go to the Leveraged Life new business inbox (see below).</div>
@@ -204,7 +228,11 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
     <summary>Notes for review</summary>
     <ul>
       <li>The broker dealer list has one option for now: LPL Financial. No LPL sub-groups.</li>
-      <li>Kai-Zen training date and Nevada licensed show once LPL Financial is picked. For now, admins enter and control both; agents can't see or edit them. Nevada licensed is stored on the agent profile.</li>
+      <li>BD name tracks LPL reps and feeds registration and data reports. Later it may cover other Simplicity National accounts.</li>
+      <li>LPL Kai-Zen training date and Nevada licensed show once LPL Financial is picked. When Nevada licensed is Yes, admins also enter the license number, effective date and end date. A badge shows "In good standing", "Expires in N days" (within 60 days) or "License expired".</li>
+      <li>The Allianz premium financing training date shows for every agent, because it's required for anyone writing Allianz, with or without a broker dealer.</li>
+      <li>For now, admins enter and control every field here; agents can't see or edit them.</li>
+      <li>To confirm: should Nevada licensing show for all agents, not only LPL? Should the Allianz date show only for agents appointed with Allianz?</li>
       <li>To confirm: are there more alert events than these two?</li>
       <li>To confirm: does a missing training date or "No" for Nevada block anything (for example, submitting a case), or is it for information only?</li>
       <li>All names and numbers are made-up samples.</li>
@@ -227,6 +255,20 @@ function sync() {
   const done = !!$("kz").value;
   $("kzStatus").className = "status " + (done ? "ok" : "todo");
   $("kzStatus").textContent = done ? "Training complete" : "Training not complete";
+  const azDone = !!$("az").value;
+  $("azStatus").className = "status " + (azDone ? "ok" : "todo");
+  $("azStatus").textContent = azDone ? "Training complete" : "Training not complete";
+  $("nvDetails").hidden = !lpl || nvVal() !== "Yes";
+  const end = $("nvEnd").value;
+  let nvText = "Add license dates", nvOk = false;
+  if (end) {
+    const days = (new Date(end + "T00:00") - new Date()) / 864e5;
+    if (days < 0) nvText = "License expired";
+    else if (days <= 60) nvText = "Expires in " + Math.ceil(days) + " days";
+    else { nvText = "In good standing"; nvOk = true; }
+  }
+  $("nvStatus").className = "status " + (nvOk ? "ok" : "todo");
+  $("nvStatus").textContent = nvText;
   $("update").disabled = !dirty;
   document.querySelector(".events").hidden = !lpl;
   $("noAlerts").hidden = lpl;
@@ -254,6 +296,7 @@ function showEmail(ev) {
 $("bd").addEventListener("change", touch);
 $("kz").addEventListener("input", touch);
 $("kz").addEventListener("change", touch);
+["az", "nvNum", "nvStart", "nvEnd"].forEach(id => { $(id).addEventListener("input", touch); $(id).addEventListener("change", touch); });
 $("nv").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { setNv(b.dataset.v); touch(); } });
 document.querySelector(".events").addEventListener("click", e => { const b = e.target.closest("[data-ev]"); if (b) showEmail(b.dataset.ev); });
 
@@ -271,13 +314,14 @@ $("update").addEventListener("click", () => {
   sync();
 });
 $("startOver").addEventListener("click", () => {
-  $("bd").value = ""; $("kz").value = ""; setNv("");
+  ["bd", "kz", "az", "nvNum", "nvStart", "nvEnd"].forEach(id => $(id).value = ""); setNv("");
   dirty = false; lastEv = null; $("email").hidden = true; $("savedMsg").textContent = "";
   sync();
 });
 $("fillAll").addEventListener("click", () => {
   $("bd").value = "LPL Financial"; sync();
   $("kz").value = "2026-10-20"; setNv("Yes");
+  $("az").value = "2026-09-12"; $("nvNum").value = "3456789"; $("nvStart").value = "2025-01-15"; $("nvEnd").value = "2027-01-31";
   touch(); showEmail("app");
 });
 
