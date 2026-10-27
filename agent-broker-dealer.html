@@ -144,7 +144,7 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
     <div class="sec">
       <div class="sec-head">
         <h2>Broker Dealer</h2><span class="new">New</span>
-        <p>Admin only. Pick the agent's broker dealer, then its division. Only LPL Financial is available now. Other broker dealers come later.</p>
+        <p>Admin only. Pick the agent's broker dealer. LPL Financial is the only option for now. Admins enter and control every field in this section; agents can't edit them.</p>
       </div>
       <div class="bd">
         <div class="grid2">
@@ -152,16 +152,7 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
             <select id="bd" data-sample="LPL Financial">
               <option value="">None (not with a broker dealer)</option>
               <option>LPL Financial</option>
-              <option disabled>Other broker dealers (coming later)</option>
             </select></div>
-          <div class="field" id="divWrap"><label for="div">LPL division</label>
-            <select id="div" data-sample="LPL Enterprise">
-              <option value="">Select division</option>
-              <option value="LPL Enterprise">LPL Enterprise (excluding Equitable Advisors &amp; Commonwealth)</option>
-              <option value="Financial Institutions Division">Financial Institutions Division</option>
-              <option value="Linsco">Linsco (W2 Distribution)</option>
-            </select>
-            <p class="hint" id="divHint">Choose LPL Financial first.</p></div>
         </div>
 
         <div class="grid2" id="bdFields">
@@ -169,6 +160,7 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
             <div class="field"><label for="kz">BD Kai-Zen training completion date</label>
               <input id="kz" type="date" data-sample="2026-10-20"></div>
             <span class="status todo" id="kzStatus">Training not complete</span>
+            <span class="hint" style="margin:0">Admin entered.</span>
           </div>
           <div class="q">
             <span class="qlabel">Nevada licensed?</span>
@@ -176,7 +168,7 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
               <button type="button" data-v="Yes" aria-pressed="false">Yes</button>
               <button type="button" data-v="No" aria-pressed="false">No</button>
             </div>
-            <span class="hint" style="margin:0">Saved on the agent profile.</span>
+            <span class="hint" style="margin:0">Saved on the agent profile. Admin entered.</span>
           </div>
         </div>
         <div class="note" id="bdNote">Alerts for this agent's cases will go to the Leveraged Life new business inbox (see below).</div>
@@ -211,9 +203,9 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
   <details class="notes">
     <summary>Notes for review</summary>
     <ul>
-      <li>The broker dealer list starts with LPL Financial only. The division list only shows after LPL is picked.</li>
-      <li>Kai-Zen training date and Nevada licensed are new admin fields shown with the broker dealer. Nevada licensed is stored on the agent profile.</li>
-      <li>To confirm: should alerts go for every LPL agent's case, or only some divisions? Are there more alert events than these two?</li>
+      <li>The broker dealer list has one option for now: LPL Financial. No LPL sub-groups.</li>
+      <li>Kai-Zen training date and Nevada licensed show once LPL Financial is picked. For now, admins enter and control both; agents can't see or edit them. Nevada licensed is stored on the agent profile.</li>
+      <li>To confirm: are there more alert events than these two?</li>
       <li>To confirm: does a missing training date or "No" for Nevada block anything (for example, submitting a case), or is it for information only?</li>
       <li>All names and numbers are made-up samples.</li>
     </ul>
@@ -222,7 +214,6 @@ details.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-dir
 
 <script>
 const $ = id => document.getElementById(id);
-const DIV_LABEL = { "LPL Enterprise": "LPL Enterprise", "Financial Institutions Division": "Financial Institutions Division", "Linsco": "Linsco (W2 Distribution)" };
 let dirty = false;
 let lastEv = null;
 
@@ -231,9 +222,6 @@ function setNv(v) { document.querySelectorAll("#nv button").forEach(b => b.setAt
 
 function sync() {
   const lpl = $("bd").value === "LPL Financial";
-  $("div").disabled = !lpl;
-  if (!lpl) $("div").value = "";
-  $("divHint").hidden = lpl;
   $("bdFields").hidden = !lpl;
   $("bdNote").hidden = !lpl;
   const done = !!$("kz").value;
@@ -248,7 +236,6 @@ function touch() { dirty = true; $("savedMsg").textContent = ""; sync(); }
 
 function showEmail(ev) {
   lastEv = ev;
-  const div = DIV_LABEL[$("div").value] || "division not set";
   const subj = ev === "app"
     ? "LPL case: application released to carrier — Case #10482"
     : "LPL case: trust ownership paperwork sent to carrier — Case #10482";
@@ -257,7 +244,7 @@ function showEmail(ev) {
     : "The change of ownership trust paperwork for this case has been sent to the carrier.";
   $("emSubj").textContent = subj;
   $("emBody").innerHTML = `<p>${what}</p>
-    <p><b>Agent:</b> Taylor Sample · LPL Financial, ${div}</p>
+    <p><b>Agent:</b> Taylor Sample · LPL Financial</p>
     <p><b>Client:</b> Sample Client · <b>Carrier:</b> Symetra</p>
     <p><b>Kai-Zen training:</b> ${$("kz").value ? "completed " + $("kz").value : "not complete"} · <b>Nevada licensed:</b> ${nvVal() || "not set"}</p>
     <p>Open the case in ILIA to review.</p>`;
@@ -265,7 +252,6 @@ function showEmail(ev) {
 }
 
 $("bd").addEventListener("change", touch);
-$("div").addEventListener("change", touch);
 $("kz").addEventListener("input", touch);
 $("kz").addEventListener("change", touch);
 $("nv").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { setNv(b.dataset.v); touch(); } });
@@ -285,13 +271,13 @@ $("update").addEventListener("click", () => {
   sync();
 });
 $("startOver").addEventListener("click", () => {
-  $("bd").value = ""; $("div").value = ""; $("kz").value = ""; setNv("");
+  $("bd").value = ""; $("kz").value = ""; setNv("");
   dirty = false; lastEv = null; $("email").hidden = true; $("savedMsg").textContent = "";
   sync();
 });
 $("fillAll").addEventListener("click", () => {
   $("bd").value = "LPL Financial"; sync();
-  $("div").value = "LPL Enterprise"; $("kz").value = "2026-10-20"; setNv("Yes");
+  $("kz").value = "2026-10-20"; setNv("Yes");
   touch(); showEmail("app");
 });
 
