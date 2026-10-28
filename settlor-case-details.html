@@ -184,6 +184,29 @@ ul.activity{margin:0;padding:0}
 .fld.miss{border-color:var(--bad)}
 .req{font-size:11px;color:var(--bad)}
 .hint{font-size:11px;color:var(--faint)}
+/* Link a policy modal */
+.fld.search{font-size:13.5px}
+.lres{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.lrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);padding:11px 12px;font-size:13px}
+.lrow:last-child{border-bottom:0}
+.lrow:hover:not(.off){background:var(--surface-2)}
+.lrow.on{background:var(--accent-soft)}
+.lrow.off{cursor:not-allowed;color:var(--muted)}
+.lrow.off .cbx{opacity:.35}
+.lmain{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lmain small{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.cbx{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--line-strong);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--accent-ink);flex:none}
+.lrow.on .cbx{background:var(--accent);border-color:var(--accent)}
+@media (max-width:560px){.lrow{grid-template-columns:auto minmax(0,1fr)}.lrow .pill{grid-column:2;justify-self:start}}
+.rcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.rhd{font-size:13.5px}
+.chg{display:grid;grid-template-columns:130px minmax(0,1fr) minmax(0,1.2fr);gap:8px;font-size:13px;align-items:baseline}
+.chg span{color:var(--muted);font-size:12px}
+.chg s{color:var(--faint)}
+@media (max-width:560px){.chg{grid-template-columns:1fr}}
+.keep{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;background:var(--warn-soft);border-radius:8px;padding:9px 11px;font-size:12.5px}
+.keep span:first-child{flex:1 1 260px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
 select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 .info{background:var(--accent-soft);border-radius:10px;padding:11px 13px;font-size:13px}
 .picker{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -249,6 +272,22 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
       <li><b>Turning access off</b> is silent and can be undone. Turning it back on sends the access-restored email.</li>
       <li><b>Already partly built:</b> the unmerged settlor code has a per-policy switch for insured access, off by default and emailing the insured when turned on, plus invite-sent, first-login and restricted dates per user. <b>"Invite opened" is likely new</b> (needs email-open tracking from the email service). Dev to confirm.</li>
     </ol>
+    <h4>Linking a policy (rules)</h4>
+    <ol>
+      <li><b>A policy has exactly one settlor.</b> Linking it here makes this settlor its settlor and this signer its authorized signer. It is the same change as using Edit settlor on that policy.</li>
+      <li><b>Can link:</b> in-force policies whose settlor today is the insured. The review step shows exactly what changes.</li>
+      <li><b>Can't link (shown with the reason):</b>
+        <ul style="margin:6px 0 0">
+          <li>Already linked to this settlor.</li>
+          <li>Linked to a different settlor. Unlink it there first; ILIA never moves a policy silently.</li>
+          <li>Surrendered or deceased.</li>
+          <li>Has documents out for signature.</li>
+        </ul>
+      </li>
+      <li><b>Insured access:</b> if the insured used the portal as the settlor, admin chooses to keep view access or turn it off. Otherwise it is off by default.</li>
+      <li><b>Unlink:</b> the policy goes back to "the insured is the settlor". To pick someone else, use Edit settlor on that policy.</li>
+      <li><b>Every link and unlink</b> is logged in Recent changes.</li>
+    </ol>
     <h4>Open for the Chris / Judy call</h4>
     <ul>
       <li>When an insured gets access to their own policy, can they only view it, or also sign?</li>
@@ -260,6 +299,7 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 </div>
 
 <div id="drawerRoot"></div>
+<div id="linkRoot"></div>
 <div id="toastRoot"></div>
 
 <script>
@@ -306,7 +346,7 @@ var scenarios = {
 };
 
 var st = scenarios.insured();
-var ssnShown = false, confirmKey = "", pickPolicy = false;
+var ssnShown = false, confirmKey = "";
 
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
 function mask(v,keep){if(!v)return "—";return v.replace(/\d(?=[\d-]{0,})/g,"•").slice(0,v.length-keep)+v.slice(-keep);}
@@ -372,14 +412,13 @@ function policiesHTML(){
     if(isSigner(p)){accCell='<span class="note">Has access as a signer</span>';statCell='<span class="pill p-active">Active</span>';}
     else {accCell=sw(!!p.insAccess,"pToggle",i,"Servicing Portal Access for "+p.first+" "+p.last);statCell=insStatus(p);if(p.insAccess&&(p.insInvite==="sent"||p.insInvite==="opened"))actCell='<button class="btn link sm" data-act="pResend" data-i="'+i+'">Resend</button>';if(p.insAccess&&NEXT[p.insInvite])actCell+='<button class="btn link sm mocklink" data-act="pAdv" data-i="'+i+'" title="Mock only: simulate what the insured does next">Mock: next ›</button>';}
     var unlink = p.self?'':'<button class="btn link sm" data-act="unlink" data-i="'+i+'">Unlink</button>';
-    var conf = confirmKey==="p"+i ? '<tr><td colspan="6"><div class="confirm" style="background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)"><span>Give <b>'+esc(p.first+" "+p.last)+'</b> portal access to policy <span class="mono">'+esc(p.policy)+'</span>? We will email them an invite. They will see this policy only.</span><button class="btn sm primary" data-act="pOnYes" data-i="'+i+'">Give access &amp; send invite</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>' : '';
+    var conf = confirmKey==="p"+i ? '<tr><td colspan="6"><div class="confirm" style="background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)"><span>Give <b>'+esc(p.first+" "+p.last)+'</b> portal access to policy <span class="mono">'+esc(p.policy)+'</span>? We will email them an invite. They will see this policy only.</span><button class="btn sm primary" data-act="pOnYes" data-i="'+i+'">Give access &amp; send invite</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>'
+      : confirmKey==="u"+i ? '<tr><td colspan="6"><div class="confirm"><span>Unlink <span class="mono">'+esc(p.policy)+'</span> from this settlor? The policy goes back to <b>“the insured is the settlor”</b>, so <b>'+esc(p.first+" "+p.last)+'</b> becomes its authorized signer. If the settlor should be someone else, open that policy’s Case Details and use Edit settlor instead.</span><button class="btn sm danger" data-act="unlinkYes" data-i="'+i+'">Unlink</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>' : '';
     return '<tr><td>'+esc(p.first+" "+p.last)+'</td><td class="mono">'+esc(p.policy)+(p.self?'<span class="this">this policy</span>':'')+'</td><td>'+p.tranche+'</td><td>'+accCell+'</td><td>'+statCell+' '+actCell+'</td><td>'+unlink+'</td></tr>'+conf;
   }).join("");
-  var avail = POLICY_POOL.filter(function(p){return !st.policies.some(function(x){return x.policy===p.policy;});});
-  var picker = pickPolicy ? (avail.length?'<div class="picker" style="margin-top:8px">'+avail.map(function(p){return '<button data-act="link" data-p="'+p.policy+'"><span>'+esc(p.first+" "+p.last)+' · <span class="mono">'+p.policy+'</span></span><small>Tranche '+p.tranche+'</small></button>';}).join("")+'</div>':'<p class="note">No other sample policies to link.</p>') : "";
-  return '<div><div class="sec-t"><span>Policies linked to this settlor</span><button class="btn sm" data-act="togglePick">'+(pickPolicy?"Close":"+ Link a policy")+'</button></div>'+
+  return '<div><div class="sec-t"><span>Policies linked to this settlor</span><button class="btn sm" data-act="openLink">+ Link a policy</button></div>'+
     '<p class="note" style="margin:0 0 10px">The insured on each policy has <b>no portal access by default</b> when they are not the settlor. Turn it on per policy if they need to see their own policy.</p>'+
-    '<div class="tblwrap"><table><thead><tr><th>Insured</th><th>Policy number</th><th>Tranche</th><th>Servicing Portal Access</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+picker+'</div>';
+    '<div class="tblwrap"><table><thead><tr><th>Insured</th><th>Policy number</th><th>Tranche</th><th>Servicing Portal Access</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 
 function render(){
@@ -434,16 +473,16 @@ document.getElementById("view").addEventListener("click",function(ev){
   else if(a==="pToggle"){ if(pp.insAccess){pp.insAccess=false;log("Turned off "+nm(pp)+"’s portal access to "+pp.policy);toast("Access turned off");} else confirmKey="p"+i; }
   else if(a==="pOnYes"){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 26"};}confirmKey="";log("Gave "+nm(pp)+" portal access to "+pp.policy+" and sent an invite");toast("Access on. Invite emailed to "+pp.first+".");}
   else if(a==="pResend"){pp.insInvite="sent";pp.d={sent:"Oct 26"};log("Resent portal invite to "+nm(pp));toast("Invite resent");}
-  else if(a==="togglePick"){pickPolicy=!pickPolicy;}
-  else if(a==="link"){var p=POLICY_POOL.filter(function(x){return x.policy===b.dataset.p;})[0];st.policies.push(clone(p));pickPolicy=false;log("Linked policy "+p.policy+" to this settlor (insured access off by default)");toast("Policy linked");}
-  else if(a==="unlink"){st.policies.splice(i,1);confirmKey="";log("Unlinked policy "+pp.policy);toast("Policy unlinked");}
+  else if(a==="openLink"){openLink();return;}
+  else if(a==="unlink"){confirmKey="u"+i;}
+  else if(a==="unlinkYes"){st.policies.splice(i,1);confirmKey="";log("Unlinked policy "+pp.policy+"; settlor set back to the insured ("+nm(pp)+")");toast("Policy unlinked");}
   render();
 });
 
 document.getElementById("scen").addEventListener("click",function(ev){
   var b=ev.target.closest("button"); if(!b)return;
   [].forEach.call(this.children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
-  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; pickPolicy=false; closeDrawer(); render();
+  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; closeDrawer(); if(lk)closeLink(); render();
 });
 
 /* ---------- Edit drawer ---------- */
@@ -548,6 +587,81 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
   renderDrawer();
   var body=document.getElementById("drBody"); if(body) body.scrollTop=keepScroll;
 });
+/* ---------- Link a policy (search → review → link) ---------- */
+/* Sample search results. cur = who the policy's settlor is today. */
+var LINK_POOL = [
+  {first:"Ana", last:"Lopez", policy:"KZ-105407", tranche:83, cur:"insured", hadAccess:true},
+  {first:"Olivia", last:"Grant", policy:"KZ-106390", tranche:86, cur:"insured", hadAccess:false},
+  {first:"Sofia", last:"Reyes", policy:"KZ-104890", tranche:81, cur:"insured"},
+  {first:"Marco", last:"Diaz", policy:"KZ-105112", tranche:82, cur:"insured"},
+  {first:"Ryan", last:"Patel", policy:"KZ-106020", tranche:84, cur:"other", otherName:"Northgate Dental Group PC"},
+  {first:"James", last:"Wu", policy:"KZ-106233", tranche:85, cur:"insured", signing:2},
+  {first:"Helen", last:"Ortiz", policy:"KZ-103911", tranche:70, cur:"insured", pstatus:"Surrendered"}
+];
+var lk=null;
+function settlorName(){return st.type==="entity"?st.ent.name:(st.ind.first+" "+st.ind.last);}
+function signerName(){var s=st.signers[0];return s?s.first+" "+s.last:"the authorized signer";}
+function linkState(p){
+  if(st.policies.some(function(x){return x.policy===p.policy;})) return {ok:false,tag:"Already linked",why:"Already linked to this settlor."};
+  if(p.pstatus) return {ok:false,tag:p.pstatus,why:"Policy is "+p.pstatus.toLowerCase()+". Only in-force policies can be linked."};
+  if(p.cur==="other") return {ok:false,tag:"Has another settlor",why:"Settlor is "+p.otherName+". Unlink it there first. A policy can only have one settlor, so ILIA never moves it silently."};
+  if(p.signing) return {ok:false,tag:"Out for signature",why:p.signing+" documents are out for signature with the current signer. Finish or void them first so nothing goes to the wrong person."};
+  return {ok:true,tag:"Settlor: the insured",why:"Can link. Its settlor will change from the insured to "+settlorName()+"."};
+}
+function openLink(){lk={step:"find",searched:false,onlyOk:false,sel:{},keep:{}};renderLink();}
+function closeLink(){lk=null;document.getElementById("linkRoot").innerHTML="";}
+function renderLink(){
+  var body="", foot="", selKeys=Object.keys(lk.sel).filter(function(k){return lk.sel[k];});
+  if(lk.step==="find"){
+    var list=LINK_POOL.filter(function(p){return !lk.onlyOk||linkState(p).ok;});
+    body='<p class="note" style="margin:0">Find the policy to link to <b>'+esc(settlorName())+'</b>. Linking makes this settlor the policy’s settlor and <b>'+esc(signerName())+'</b> its authorized signer.</p>'+
+      '<button class="fld search'+(lk.searched?'':' empty')+'" id="lkSearch" data-l="search">⌕ '+(lk.searched?'KZ-10':'Search by insured name or policy number (click to search sample)')+'</button>'+
+      (lk.searched?'<div class="chips"><button data-l="flt" data-v="all" aria-pressed="'+!lk.onlyOk+'">All results ('+LINK_POOL.length+')</button><button data-l="flt" data-v="ok" aria-pressed="'+lk.onlyOk+'">Can be linked ('+LINK_POOL.filter(function(p){return linkState(p).ok;}).length+')</button></div>'+
+        '<div class="lres">'+list.map(function(p){var s=linkState(p),on=!!lk.sel[p.policy];
+          return '<button class="lrow'+(s.ok?'':' off')+(on?' on':'')+'" '+(s.ok?'data-l="pick" data-p="'+p.policy+'"':'disabled aria-disabled="true"')+'>'+
+            '<span class="cbx" aria-hidden="true">'+(on?'✓':'')+'</span>'+
+            '<span class="lmain"><span><b>'+esc(p.first+" "+p.last)+'</b> <span class="mono">'+p.policy+'</span> <span class="note">· Tranche '+p.tranche+'</span></span><small>'+esc(s.why)+'</small></span>'+
+            '<span class="pill '+(s.ok?'p-ready':'p-none')+'">'+esc(s.tag)+'</span></button>';}).join("")+'</div>'
+        :'<p class="note" style="margin:0">Results show every policy that matches, with the reason any of them can’t be linked.</p>');
+    foot='<button class="btn" data-l="close">Cancel</button><button class="btn primary" data-l="review"'+(selKeys.length?'':' disabled')+'>Review '+(selKeys.length?'('+selKeys.length+')':'')+'</button>';
+  } else {
+    body='<p class="note" style="margin:0">Check what will change before linking. Nothing changes until you click Link.</p>'+
+      selKeys.map(function(k){var p=LINK_POOL.filter(function(x){return x.policy===k;})[0];
+        var keepRow = p.hadAccess
+          ? '<div class="keep"><span><b>'+esc(p.first)+'</b> uses the Servicing Portal today as the settlor. Keep their access to view this policy?</span>'+sw(lk.keep[k]!==false,"","","Keep access for "+p.first).replace('data-act=""','data-l="keep" data-p="'+k+'"')+'<span class="note">'+(lk.keep[k]!==false?'Keep (view only)':'Turn off')+'</span></div>'
+          : '<div class="note">'+esc(p.first)+'’s Servicing Portal Access: <b>off</b> (default). You can turn it on later in the table.</div>';
+        return '<div class="rcard"><div class="rhd"><b>'+esc(p.first+" "+p.last)+'</b> <span class="mono">'+p.policy+'</span> <span class="note">· Tranche '+p.tranche+'</span></div>'+
+          '<div class="chg"><span>Settlor</span><s>The insured ('+esc(p.first+" "+p.last)+')</s><b>→ '+esc(settlorName())+'</b></div>'+
+          '<div class="chg"><span>Authorized signer</span><s>'+esc(p.first+" "+p.last)+'</s><b>→ '+esc(signerName())+'</b></div>'+
+          '<div class="note">From now on, forms and documents for this policy go to '+esc(signerName())+'.</div>'+keepRow+'</div>';}).join("");
+    foot='<button class="btn" data-l="back">Back</button><button class="btn primary" data-l="confirm">Link '+selKeys.length+' polic'+(selKeys.length===1?'y':'ies')+'</button>';
+  }
+  document.getElementById("linkRoot").innerHTML='<div class="scrim" data-l="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="lkH"><div class="dr-hd"><h3 id="lkH">'+(lk.step==="find"?"Link a policy":"Review and link")+'</h3><div style="display:flex;gap:6px"><span class="note">Step '+(lk.step==="find"?1:2)+' of 2</span><button class="btn sm" data-l="close" aria-label="Close">✕</button></div></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+foot+'</div></div>';
+}
+document.getElementById("linkRoot").addEventListener("click",function(ev){
+  var t=ev.target.closest("[data-l]"); if(!t||!lk)return; var a=t.dataset.l;
+  if(a==="close"){closeLink();return;}
+  if(a==="search"){lk.searched=true;}
+  if(a==="flt"){lk.onlyOk=t.dataset.v==="ok";}
+  if(a==="pick"){lk.sel[t.dataset.p]=!lk.sel[t.dataset.p];}
+  if(a==="review"){lk.step="review";}
+  if(a==="back"){lk.step="find";}
+  if(a==="keep"){lk.keep[t.dataset.p]=lk.keep[t.dataset.p]===false;}
+  if(a==="confirm"){
+    var n=0;
+    Object.keys(lk.sel).filter(function(k){return lk.sel[k];}).forEach(function(k){
+      var p=clone(LINK_POOL.filter(function(x){return x.policy===k;})[0]);
+      var keep=p.hadAccess&&lk.keep[k]!==false;
+      st.policies.push({first:p.first,last:p.last,policy:p.policy,tranche:p.tranche,insAccess:keep,insInvite:keep?"active":"none",d:keep?{sent:"Sep 3",opened:"Sep 3",created:"Sep 4",login:"Oct 19"}:{}});
+      log("Linked "+p.policy+" ("+p.first+" "+p.last+") to this settlor. Settlor changed from the insured; signer is now "+signerName()+(p.hadAccess?(keep?"; insured kept view access":"; insured access turned off"):""));
+      n++;
+    });
+    closeLink(); render(); toast(n+" polic"+(n===1?"y":"ies")+" linked"); return;
+  }
+  renderLink();
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&lk)closeLink();});
+
 document.getElementById("drawerRoot").addEventListener("change",function(ev){
   if(ev.target.id!=="relSel"||!d)return;
   var keep=(document.getElementById("drBody")||{}).scrollTop||0;
