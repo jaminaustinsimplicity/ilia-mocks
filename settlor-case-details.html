@@ -74,6 +74,21 @@ button:focus-visible,.fld:focus-visible,.opt:focus-visible{outline:2px solid var
 .btn.danger{color:var(--bad);border-color:var(--bad)}
 .btn.sm{padding:5px 10px;font-size:12px}
 .card-bd{padding:18px 20px;display:flex;flex-direction:column;gap:18px}
+/* ILIA's current Settlor Details look (insured example) */
+.card.ilia{background:#f7f7f7;border:0;box-shadow:none;border-radius:0}
+.card.ilia .card-hd{display:none}
+.ilia-sd{padding:4px 0 8px}
+.ilia-h{display:flex;align-items:center;gap:10px;margin:0 0 18px;font-size:18px;font-weight:700;color:#1b1b1b}
+.isins{font-size:12px;font-weight:500;color:#1b5e20;background:#e3f2e5;border:1px solid #a5d6a7;border-radius:14px;padding:2px 10px}
+.ilia-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 20px;max-width:980px}
+@media (max-width:720px){.ilia-grid{grid-template-columns:1fr}}
+.mf{position:relative;border:1px solid #c4c4c4;border-radius:4px;background:#fff;min-height:50px;display:flex;align-items:center;padding:0 12px;font-family:Roboto,sans-serif}
+.mf-l{font-size:14px;color:#3a3a3a}
+.mf.has .mf-l{position:absolute;top:-9px;left:8px;padding:0 4px;font-size:11.5px;color:#666;background:linear-gradient(#f7f7f7 50%,#fff 50%)}
+.mf-v{font-size:14.5px;color:#1b1b1b}
+.mf-s{width:100%;border:0;background:transparent;font:inherit;font-size:14.5px;color:#1b1b1b;padding:14px 0;cursor:pointer}
+.mf-s:focus{outline:none}
+.mf:focus-within{border-color:#1976d2;box-shadow:0 0 0 1px #1976d2}
 
 /* Setup summary: the three questions */
 .setup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -472,9 +487,19 @@ function policiesHTML(){
     '<div class="tblwrap"><table><thead><tr><th>Insured</th><th>Policy number</th><th>Tranche</th><th>Policy status</th><th>Servicing Portal Access</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 
+function iliaFld(label,val){return '<div class="mf'+(val?' has':'')+'"><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(val)+'</span></div>';}
 function render(){
   var v=document.getElementById("view"), h=setupHTML();
+  document.querySelector(".card").classList.toggle("ilia",st.type==="insured");
   if(st.type==="insured"){
+    v.innerHTML='<div class="ilia-sd"><h3 class="ilia-h">Settlor Details <span class="isins">Is insured</span></h3><div class="ilia-grid">'+
+      iliaFld("Settlor First Name",POLICY.first)+iliaFld("Middle Name","")+iliaFld("Last Name",POLICY.last)+
+      iliaFld("Settlor Email Address","daniel.reyes@example.com")+iliaFld("Settlor Phone Number","(214) 555-0132")+iliaFld("Settlor Social","•••-••-4417")+
+      '<div class="mf has sel"><span class="mf-l">Settlor Relation to Insured</span><select id="iliaRel" class="mf-s" aria-label="Settlor Relation to Insured"><option selected>Self</option><option>Spouse</option><option>Other</option></select></div>'+
+      '</div></div>';
+    return;
+  }
+  if(false){
     h+='<div><div class="sec-t"><span>Settlor details</span></div><dl class="kv">'+
       '<div><dt>Settlor</dt><dd>'+esc(POLICY.first+" "+POLICY.last)+' (the insured)</dd></div>'+
       '<div><dt>Relationship to insured</dt><dd>Self</dd></div>'+
@@ -851,6 +876,10 @@ document.getElementById("drawerRoot").addEventListener("change",function(ev){
   var sel=document.getElementById("relSel"); if(sel) sel.focus();
 });
 document.getElementById("editBtn").addEventListener("click",openDrawer);
+document.getElementById("view").addEventListener("change",function(ev){
+  if(ev.target.id!=="iliaRel"||ev.target.value==="Self") return;
+  var rel=ev.target.value; ev.target.value="Self"; openDrawer(); d.type="individual"; d.ind.relation=rel; renderDrawer();
+});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&d)closeDrawer();});
 render();
 </script>
