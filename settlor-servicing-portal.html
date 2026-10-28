@@ -215,7 +215,7 @@ var PEOPLE = {
 var OPTS = ["Yes","View only","No","Ask Judy"];
 var DECISIONS = [
   {g:"Portal level", items:[
-    {k:"home",   screen:"home",  q:"New home screen: list of policies they sign for (no money figures until a policy is picked)", rec:"Yes", why:"The settlor may sign for several policies, so they choose one first. One policy: open it straight away."},
+    {k:"home",   screen:"home",  q:"New home screen: list of policies they sign for (no money figures until a policy is picked)", rec:"Yes", why:"Always land here, even with one policy: the settlor sees the policy card and clicks it to open the details."},
     {k:"sign",   screen:"sign",  q:"“Waiting for my signature” list across all their policies (DocuSign)", rec:"Yes", why:"This is the main reason the authorized signer is in ILIA."},
     {k:"profile",screen:"profile",q:"Update their own contact details (email, phone, address)", rec:"Yes", why:"Their own record, not the insured’s. Changing the email may need NIW approval since invites go there."}
   ]},
@@ -273,7 +273,7 @@ function renderNav(){
     ni("sign","Waiting for my signature", n?'<span class="tag t-cnt">'+n+'</span>':'')+
     ni("profile","My Profile","");
   if(pol){
-    h+='<div class="navsec">This policy</div><div class="polctx">Viewing<b>'+esc(pol.insured)+' (insured)</b>Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+(p.policies.length>1?'<br><button data-nav="home">⇄ Switch policy</button>':'')+'</div>'+
+    h+='<div class="navsec">This policy</div><div class="polctx">Viewing<b>'+esc(pol.insured)+' (insured)</b>Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+'<br><button data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button>'+'</div>'+
       ni("dash","Policy Dashboard",screenTag("dash"))+ni("pay","Payments",screenTag("pay"))+ni("docs","Documents",screenTag("docs"))+ni("ar","Annual Review",screenTag("ar"))+
       ni("perf","Current Performance",screenTag("perf"))+ni("ins","Insured Details",screenTag("ins"))+ni("claims","Claims & Distributions",screenTag("claims"));
   } else {
@@ -489,7 +489,7 @@ document.addEventListener("click",function(ev){
   var t=ev.target.closest("[data-nav],[data-pick],[data-act],[data-dk],[data-w],[data-tab]"); if(!t) return;
   if(t.dataset.tab){ tabState[t.dataset.tab]=+t.dataset.ti; render(); return; }
   if(t.dataset.w){ who=t.dataset.w; [].forEach.call(document.querySelectorAll("#who button"),function(b){b.setAttribute("aria-pressed",b===t?"true":"false");});
-    pol=null; view="home"; var pp=P().policies; if(pp.length===1&&pp[0].inforce){pol=pp[0];view="dash";} render(); return; }
+    pol=null; view="home"; render(); return; }
   if(t.dataset.nav){ var v=t.dataset.nav; if(v==="home"){pol=null;} view=v; render(); window.scrollTo(0,0); return; }
   if(t.dataset.pick){ pol=P().policies.filter(function(x){return x.id===t.dataset.pick;})[0]; view="dash"; render(); window.scrollTo(0,0); return; }
   if(t.dataset.dk){ choice[t.dataset.dk]=t.dataset.dv; var keep=document.getElementById("rail").scrollTop; render(); document.getElementById("rail").scrollTop=keep; return; }
