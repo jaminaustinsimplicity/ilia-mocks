@@ -1,0 +1,342 @@
+<title>Settlor Servicing Portal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: ILIA servicing-portal shell (left nav · main) + a decisions rail for what the settlor can do per screen */
+:root{
+  --bg:#f3f5f9; --surface:#ffffff; --surface-2:#f6f8fb; --line:#dde2ea; --line-strong:#c4ccd8;
+  --ink:#1b2230; --muted:#5d6878; --faint:#8a94a4;
+  --accent:#2c66e6; --accent-ink:#ffffff; --accent-soft:#e8effd;
+  --hero1:#16345f; --hero2:#2b7be6;
+  --ok:#11845b; --ok-soft:#e3f3ec; --warn:#b06a07; --warn-soft:#fcf1df; --bad:#c22f3c; --bad-soft:#fbe7e9;
+  --shadow:0 1px 2px rgba(20,30,50,.06),0 8px 24px rgba(20,30,50,.06);
+  --ff:'Roboto',-apple-system,'Segoe UI',Arial,sans-serif; --fd:'Roboto Slab',Georgia,serif; --fm:'Roboto Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --surface:#161d28; --surface-2:#121923; --line:#28323f; --line-strong:#3a4656;
+  --ink:#e6ebf2; --muted:#9ba7b7; --faint:#6e7a8a;
+  --accent:#6b97f5; --accent-ink:#0b1220; --accent-soft:#18253d; --hero1:#0f2546; --hero2:#1f5fbf;
+  --ok:#3cc68f; --ok-soft:#12291f; --warn:#e2a443; --warn-soft:#2b2211; --bad:#ef6b76; --bad-soft:#2d1619;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --surface:#161d28; --surface-2:#121923; --line:#28323f; --line-strong:#3a4656;
+  --ink:#e6ebf2; --muted:#9ba7b7; --faint:#6e7a8a;
+  --accent:#6b97f5; --accent-ink:#0b1220; --accent-soft:#18253d; --hero1:#0f2546; --hero2:#1f5fbf;
+  --ok:#3cc68f; --ok-soft:#12291f; --warn:#e2a443; --warn-soft:#2b2211; --bad:#ef6b76; --bad-soft:#2d1619;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.mockbar{background:var(--surface);border-bottom:1px solid var(--line);padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.reset{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:9px 14px;font-weight:700;font-size:13px}
+.mocklabel{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:20px;padding:6px 12px;font-size:12.5px}
+.chips button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+.mocktag{margin-left:auto;font-size:11.5px;color:var(--muted)}
+
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr) 340px;min-height:calc(100vh - 56px)}
+@media (max-width:1240px){.shell{grid-template-columns:230px minmax(0,1fr)}.rail{grid-column:1 / -1;border-left:0;border-top:1px solid var(--line)}}
+@media (max-width:820px){.shell{grid-template-columns:minmax(0,1fr)}.nav{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* Left nav */
+.nav{background:var(--surface);border-right:1px solid var(--line);padding:18px 10px;display:flex;flex-direction:column;gap:4px}
+.logo{display:flex;align-items:baseline;gap:6px;padding:0 10px 14px}
+.logo b{font-size:30px;letter-spacing:-.02em}
+.logo span{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--faint)}
+.who{margin:0 6px 10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2)}
+.who b{display:block;font-size:13.5px}
+.who small{display:block;font-size:11.5px;color:var(--muted)}
+.rb{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:700;letter-spacing:.03em;border-radius:20px;padding:2px 8px;background:var(--ok-soft);color:var(--ok)}
+.rb.s{background:var(--accent-soft);color:var(--accent)}
+.navsec{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:12px 12px 4px}
+.nav button.ni{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:9px 12px;border-radius:8px;font-size:13.5px}
+.nav button.ni:hover{background:var(--surface-2)}
+.nav button.ni[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:500}
+.nav button.ni[disabled]{color:var(--faint);cursor:not-allowed}
+.tag{font-size:10px;font-weight:700;border-radius:20px;padding:1px 7px;white-space:nowrap}
+.t-view{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.t-act{background:var(--ok-soft);color:var(--ok)}
+.t-no{background:var(--bad-soft);color:var(--bad)}
+.t-ask{background:var(--warn-soft);color:var(--warn)}
+.t-cnt{background:var(--bad);color:#fff}
+.polctx{margin:6px 6px 2px;padding:10px 12px;border-radius:10px;border:1px solid var(--accent);background:var(--accent-soft);font-size:12.5px}
+.polctx b{display:block;font-size:13px;color:var(--ink)}
+.polctx button{border:0;background:none;color:var(--accent);padding:4px 0 0;font-size:12px;font-weight:500}
+
+/* Main */
+.main{padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-width:0;display:flex;flex-direction:column;gap:18px}
+.hero{border-radius:12px;padding:26px 28px;color:#fff;background:linear-gradient(110deg,var(--hero1),var(--hero2));position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;bottom:-80px;width:420px;height:260px;background:rgba(255,255,255,.08);transform:rotate(-18deg);border-radius:40px}
+.hero .bar{width:64px;height:4px;border-radius:4px;background:linear-gradient(90deg,#e94b6a,#f2b33d,#3cc68f,#5aa0ff);margin-bottom:14px}
+.hero h1{font-family:var(--fd);font-size:28px;margin:0 0 8px;letter-spacing:-.01em;position:relative}
+.hero p{margin:0;max-width:70ch;font-size:15px;line-height:1.55;color:rgba(255,255,255,.92);position:relative}
+.sumrow{display:flex;flex-wrap:wrap;gap:10px}
+.sum{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13px;display:flex;gap:8px;align-items:center}
+.sum b{font-size:18px}
+.h2{font-size:16px;font-weight:700;margin:0;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:10px;text-align:left;color:var(--ink)}
+.pcard:hover:not([disabled]){border-color:var(--accent)}
+.pcard[disabled]{opacity:.75;cursor:not-allowed}
+.pcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.pcard .nm{font-size:16px;font-weight:700}
+.pcard .sub{font-size:12.5px;color:var(--muted)}
+.pcard .meta{display:flex;flex-wrap:wrap;gap:6px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 9px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-ok{color:var(--ok);background:var(--ok-soft)} .p-warn{color:var(--warn);background:var(--warn-soft)} .p-neu{color:var(--muted);background:var(--surface-2);border:1px solid var(--line)} .p-bad{color:var(--bad);background:var(--bad-soft)}
+.pcard .go{align-self:flex-start;border:1px solid var(--accent);color:var(--accent);background:none;border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:500}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px}
+.sig{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.sig:last-child{border-bottom:0}
+.sig b{font-size:14px}
+.sig small{display:block;color:var(--muted);font-size:12.5px}
+.btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:8px;padding:8px 13px;font-size:13px;font-weight:500}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.note{font-size:12.5px;color:var(--muted)}
+.ctxline{font-size:13.5px}
+.ctxline b{font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px}
+.kpi small{display:block;color:var(--muted);font-size:12.5px}
+.kpi b{display:block;font-size:20px;margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi.paid{background:linear-gradient(135deg,#1e9bd6,#3cc68f);color:#fff;border:0}
+.kpi.paid small{color:rgba(255,255,255,.9)}
+.spec{border:1px dashed var(--line-strong);border-radius:12px;padding:14px 16px;background:var(--surface-2)}
+.spec h3{margin:0 0 6px;font-size:15px}
+.spec table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.spec td,.spec th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.spec th{font-weight:500;color:var(--muted);font-size:12px}
+.tblwrap{overflow-x:auto}
+
+/* Decisions rail */
+.rail{background:var(--surface);border-left:1px solid var(--line);padding-block:18px;padding-left:16px;padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rail h4{margin:0 0 4px;font-size:14px}
+.rail .intro{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.dgrp{margin-bottom:14px}
+.dgrp h5{margin:0 0 6px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint)}
+.drow{border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:8px}
+.drow.cur{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.drow .q{font-size:12.5px;margin-bottom:6px}
+.drow .why{font-size:11.5px;color:var(--muted);margin-top:6px}
+.opts{display:flex;flex-wrap:wrap;gap:4px}
+.opts button{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:20px;padding:3px 9px;font-size:11.5px}
+.opts button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:700}
+.opts button .rec{font-size:9.5px;font-weight:700;color:var(--ok);margin-left:3px}
+.copyrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0 14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:13px;z-index:30}
+</style>
+
+<div class="mockbar">
+  <button class="reset" onclick="location.reload()">↺ Start over (reset the mock)</button>
+  <span class="mocklabel">Logged in as</span>
+  <div class="chips" id="who">
+    <button data-w="entity" aria-pressed="true">Entity signer · 3 policies</button>
+    <button data-w="individual" aria-pressed="false">Individual settlor · 1 policy</button>
+  </div>
+  <span class="mocktag">Settlor Servicing Portal · first draft · sample data only · W-SETTLOR</span>
+</div>
+
+<div class="shell">
+  <nav class="nav" id="nav" aria-label="Settlor Servicing Portal"></nav>
+  <main class="main" id="main"></main>
+  <aside class="rail" id="rail" aria-label="What can the settlor do"></aside>
+</div>
+<div id="toastRoot"></div>
+
+<script>
+/* ---------- Sample data (fake) ---------- */
+var PEOPLE = {
+  entity: {first:"Laura", last:"Chen", title:"Chief Financial Officer", settlor:"Reyes Family Holdings LLC", kind:"entity", email:"l.chen@reyesholdings.example",
+    policies:[
+      {id:"KZ-104233", insured:"Daniel Reyes", product:"Kai-Zen · National Life (LSW)", tranche:79, inforce:true, year:3, paid:true, growth:"5.25%", ndb:"$1,584,955.77", cv:"$96,760.82", anniv:"11/03/2026",
+        sign:[{what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]},
+      {id:"KZ-104890", insured:"Sofia Reyes", product:"Kai-Zen · Allianz", tranche:81, inforce:true, year:2, paid:false, growth:"4.80%", ndb:"$1,120,400.00", cv:"$41,205.10", anniv:"02/14/2027", contrib:"Contribution due Feb 14, 2027",
+        sign:[{what:"Beneficiary change confirmation", due:"Nov 20, 2026"}]},
+      {id:"KZ-105112", insured:"Marco Diaz", product:"Kai-Zen · National Life (LSW)", tranche:82, inforce:false, sign:[]}
+    ]},
+  individual: {first:"Maria", last:"Reyes", title:"Settlor", settlor:"Maria Reyes", kind:"individual", rel:"Spouse of the insured", email:"maria.reyes@example.com",
+    policies:[
+      {id:"KZ-104233", insured:"Daniel Reyes", product:"Kai-Zen · National Life (LSW)", tranche:79, inforce:true, year:3, paid:true, growth:"5.25%", ndb:"$1,584,955.77", cv:"$96,760.82", anniv:"11/03/2026",
+        sign:[{what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]}
+    ]}
+};
+
+/* ---------- Screens + proposed settlor permissions (Jamin decides) ----------
+   Each question: options, recommended option, and why. */
+var OPTS = ["Yes","View only","No","Ask Judy"];
+var DECISIONS = [
+  {g:"Portal level", items:[
+    {k:"home",   screen:"home",  q:"New home screen: list of policies they sign for (no money figures until a policy is picked)", rec:"Yes", why:"The settlor may sign for several policies, so they choose one first. One policy: open it straight away."},
+    {k:"sign",   screen:"sign",  q:"“Waiting for my signature” list across all their policies (DocuSign)", rec:"Yes", why:"This is the main reason the authorized signer is in ILIA."},
+    {k:"profile",screen:"profile",q:"Update their own contact details (email, phone, address)", rec:"Yes", why:"Their own record, not the insured’s. Changing the email may need NIW approval since invites go there."}
+  ]},
+  {g:"Per policy (after picking one)", items:[
+    {k:"dash",  screen:"dash",  q:"Policy dashboard: values (paid status, growth rate, net death benefit, cash value, anniversary)", rec:"View only", why:"Same cards the insured sees today."},
+    {k:"payV",  screen:"pay",   q:"Payments: see contribution history and what’s due", rec:"View only", why:"Helps them know a contribution is coming."},
+    {k:"payA",  screen:"pay",   q:"Payments: make a contribution payment", rec:"Ask Judy", why:"ILIA’s Kai-Zen FAQ says contributions can come from the insured’s or the settlor’s personal account, so this may be a Yes. Needs a business call."},
+    {k:"payB",  screen:"pay",   q:"Payments: see the insured’s saved bank accounts", rec:"No", why:"The insured’s financial details."},
+    {k:"docsP", screen:"docs",  q:"Documents: enrollment and servicing documents (view / download)", rec:"Yes", why:"Plan documents for the policy they sign for."},
+    {k:"docsI", screen:"docs",  q:"Documents: the insured’s personal documents (ID, medical, etc.)", rec:"No", why:"The insured’s private documents."},
+    {k:"docsU", screen:"docs",  q:"Documents: upload documents (to a settlor folder)", rec:"Yes", why:"e.g. trust or entity paperwork NIW asks them for."},
+    {k:"ar",    screen:"ar",    q:"Annual Review", rec:"View only", why:"Policy health and illustrated vs actual."},
+    {k:"perfV", screen:"perf",  q:"Current Performance: view index performance and allocation", rec:"View only", why:""},
+    {k:"perfA", screen:"perf",  q:"Current Performance: request an allocation change (signed by them)", rec:"Ask Judy", why:"A policy-level decision. If the trust decides, the authorized signer should sign it, not the insured."},
+    {k:"insV",  screen:"ins",   q:"Insured details: see the insured’s basic details (name, masked DOB)", rec:"View only", why:"Enough to know whose policy it is, without SSN or full DOB."},
+    {k:"insE",  screen:"ins",   q:"Insured details: change the insured’s personal details (name, address)", rec:"No", why:"Only the insured can change their own personal details."},
+    {k:"benA",  screen:"ins",   q:"Beneficiaries: request / sign a beneficiary change", rec:"Ask Judy", why:"A trust-level decision in Kai-Zen. Today the insured signs it."},
+    {k:"clV",   screen:"claims",q:"Claims & Distributions: see request status", rec:"View only", why:""},
+    {k:"clA",   screen:"claims",q:"Claims & Distributions: start a claim, loan or distribution", rec:"Ask Judy", why:"Money movement. On surrender, funds go to the insured / settlor per the FAQ."}
+  ]},
+  {g:"Same as today", items:[
+    {k:"faq",   screen:"faq",   q:"FAQs and Guides (settlor version)", rec:"Yes", why:"Questions settlors actually ask (what am I signing, why)."},
+    {k:"cont",  screen:"contact",q:"Contact Us and Feedback", rec:"Yes", why:""}
+  ]}
+];
+var choice = {}; DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=d.rec;});});
+function dec(k){for(var i=0;i<DECISIONS.length;i++)for(var j=0;j<DECISIONS[i].items.length;j++)if(DECISIONS[i].items[j].k===k)return DECISIONS[i].items[j];}
+
+/* Screen -> menu tag derived from the decisions */
+var SCREEN_KEYS = {dash:["dash"],pay:["payV","payA"],docs:["docsP","docsU"],ar:["ar"],perf:["perfV","perfA"],ins:["insV","insE","benA"],claims:["clV","clA"]};
+function screenTag(s){
+  var ks=SCREEN_KEYS[s]||[], vals=ks.map(function(k){return choice[k];});
+  if(vals.every(function(v){return v==="No";})) return '<span class="tag t-no">Hidden</span>';
+  if(vals.some(function(v){return v==="Yes";})) return '<span class="tag t-act">Can act</span>';
+  if(vals.some(function(v){return v==="Ask Judy";})) return '<span class="tag t-ask">To decide</span>';
+  return '<span class="tag t-view">View only</span>';
+}
+
+/* ---------- State ---------- */
+var who="entity", view="home", pol=null;
+function P(){return PEOPLE[who];}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function last4(id){return id.replace(/\D/g,"").slice(-4);}
+function toast(m){var r=document.getElementById("toastRoot");r.innerHTML='<div class="toast" role="status">'+esc(m)+'</div>';clearTimeout(window.__t);window.__t=setTimeout(function(){r.innerHTML="";},2200);}
+function allSign(){var out=[];P().policies.forEach(function(p){(p.sign||[]).forEach(function(s){out.push({p:p,s:s});});});return out;}
+
+/* ---------- Nav ---------- */
+function renderNav(){
+  var p=P(), ent=p.kind==="entity", n=allSign().length;
+  var h='<div class="logo"><b>ilia</b><span>SERVICING</span></div>'+
+    '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+(ent?esc(p.title)+' · '+esc(p.settlor):esc(p.rel))+'</small>'+
+      (ent?'':'<span class="rb s">Settlor</span> ')+'<span class="rb">Authorized Signer</span></div>'+
+    '<div class="navsec">My account</div>'+
+    ni("home","My Policies", p.policies.length>1?'<span class="tag t-view">'+p.policies.length+'</span>':'')+
+    ni("sign","Waiting for my signature", n?'<span class="tag t-cnt">'+n+'</span>':'')+
+    ni("profile","My Profile","");
+  if(pol){
+    h+='<div class="navsec">This policy</div><div class="polctx">Viewing<b>'+esc(pol.insured)+' (insured)</b>Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+(p.policies.length>1?'<br><button data-nav="home">⇄ Switch policy</button>':'')+'</div>'+
+      ni("dash","Policy Dashboard",screenTag("dash"))+ni("pay","Payments",screenTag("pay"))+ni("docs","Documents",screenTag("docs"))+ni("ar","Annual Review",screenTag("ar"))+
+      ni("perf","Current Performance",screenTag("perf"))+ni("ins","Insured Details",screenTag("ins"))+ni("claims","Claims & Distributions",screenTag("claims"));
+  } else {
+    h+='<div class="navsec">Policy pages</div><p class="note" style="margin:0 12px 6px">Pick a policy on My Policies to see its pages.</p>';
+  }
+  h+='<div class="navsec">Help</div>'+ni("faq","FAQs and Guides","")+ni("contact","Contact Us","");
+  document.getElementById("nav").innerHTML=h;
+}
+function ni(id,label,tag){return '<button class="ni" data-nav="'+id+'"'+(view===id?' aria-current="page"':'')+'><span>'+label+'</span>'+tag+'</button>';}
+
+/* ---------- Main views ---------- */
+function hero(title,text){return '<section class="hero"><div class="bar"></div><h1>'+title+'</h1><p>'+text+'</p></section>';}
+function policyCard(p){
+  var s=(p.sign||[]).length;
+  return '<button class="pcard" '+(p.inforce?'data-pick="'+p.id+'"':'disabled')+'>'+
+    '<div class="top"><div><div class="nm">'+esc(p.insured)+'</div><div class="sub">Insured · '+esc(p.product)+'</div></div>'+(p.inforce?'<span class="pill p-ok">In force</span>':'<span class="pill p-neu">Not yet in force</span>')+'</div>'+
+    '<div class="meta"><span class="pill p-neu">Policy ending '+last4(p.id)+'</span><span class="pill p-neu">Tranche '+p.tranche+'</span>'+(s?'<span class="pill p-bad">'+s+' to sign</span>':'')+'</div>'+
+    (p.inforce?'<span class="go">View policy →</span>':'<span class="note">Available here once the policy is in force.</span>')+'</button>';
+}
+function sigList(items,showPolicy){
+  if(!items.length) return '<p class="note" style="margin:0">Nothing is waiting for your signature.</p>';
+  return items.map(function(x){return '<div class="sig"><div><b>'+esc(x.s.what)+'</b><small>'+(showPolicy?esc(x.p.insured)+' · policy ending '+last4(x.p.id)+' · ':'')+'Due '+esc(x.s.due)+'</small></div><button class="btn sm primary" data-act="signdoc">Review &amp; sign</button></div>';}).join("");
+}
+function specPanel(screen,title,today){
+  var rows=[]; DECISIONS.forEach(function(g){g.items.forEach(function(d){if(d.screen===screen)rows.push(d);});});
+  return '<div class="spec"><h3>'+title+': what can the settlor do here?</h3>'+
+    (today?'<div class="note"><b>Today (insured):</b> '+today+'</div>':'')+
+    '<div class="tblwrap"><table><thead><tr><th>Action</th><th>Your decision</th></tr></thead><tbody>'+
+    rows.map(function(d){var c=choice[d.k];var cls=c==="Yes"?"t-act":c==="No"?"t-no":c==="Ask Judy"?"t-ask":"t-view";return '<tr><td>'+esc(d.q)+'</td><td><span class="tag '+cls+'">'+esc(c)+'</span></td></tr>';}).join("")+
+    '</tbody></table></div><p class="note" style="margin:8px 0 0">Change these in the right-hand panel. The menu tags update to match.</p></div>';
+}
+function render(){
+  var p=P(), ent=p.kind==="entity", m="";
+  if(view==="home"){
+    var sigs=allSign(), live=p.policies.filter(function(x){return x.inforce;}).length;
+    m+=hero("Welcome, "+esc(p.first),
+      (ent?"You’re the authorized signer for <b>"+esc(p.settlor)+"</b>. ":"You’re the settlor and authorized signer for these policies. ")+
+      "Choose a policy to see its details and documents. Anything that needs your signature is listed below.");
+    m+='<div class="sumrow"><div class="sum"><b>'+p.policies.length+'</b> polic'+(p.policies.length===1?'y':'ies')+' you sign for</div><div class="sum"><b>'+sigs.length+'</b> waiting for your signature</div>'+(p.policies.length-live?'<div class="sum"><b>'+(p.policies.length-live)+'</b> not yet in force</div>':'')+'</div>';
+    m+='<h2 class="h2">Your policies</h2><div class="cards">'+p.policies.map(policyCard).join("")+'</div>';
+    m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature <button class="btn sm" data-nav="sign">See all</button></h2>'+sigList(sigs,true)+'</div>';
+    m+=specPanel("home","My Policies home","Lands on one policy’s dashboard with its values and a policy dropdown.");
+  }
+  else if(view==="sign"){
+    m+=hero("Waiting for your signature","Forms and documents NIW has sent to you as the authorized signer, across all your policies. Each opens in DocuSign.");
+    m+='<div class="panel">'+sigList(allSign(),true)+'</div>'+specPanel("sign","Waiting for my signature","No such list. The insured signs only inside specific change requests.");
+  }
+  else if(view==="profile"){
+    m+=hero("My Profile","Your own contact details. NIW uses these to send you forms to sign.");
+    m+='<div class="panel"><div class="kpis"><div><small class="note">Name</small><div>'+esc(p.first+" "+p.last)+'</div></div><div><small class="note">Email (username)</small><div>'+esc(p.email)+'</div></div><div><small class="note">'+(ent?'Signs for':'Role')+'</small><div>'+(ent?esc(p.settlor):'Settlor · '+esc(p.rel))+'</div></div></div><p style="margin:12px 0 0"><button class="btn sm" data-act="mock">Edit my details</button></p></div>'+specPanel("profile","My Profile","");
+  }
+  else if(view==="faq"){ m+=hero("FAQs and Guides","Answers written for settlors: what you’re signing, why, and what happens next."); m+=specPanel("faq","FAQs and Guides","Kai-Zen FAQs written for the insured."); }
+  else if(view==="contact"){ m+=hero("Contact Us","niw.info@simplicitygroup.com · 800-294-9940 ext. 807"); m+=specPanel("contact","Contact Us and Feedback","Same."); }
+  else if(pol){
+    var ctx='<div class="ctxline"><b>'+esc(pol.insured)+'</b> (insured) · Policy ending '+last4(pol.id)+' · '+esc(pol.product)+' · Policy year '+pol.year+' · You are the authorized signer</div>';
+    if(view==="dash"){
+      m+=hero(esc(pol.insured)+"’s policy","You’re viewing this policy as the "+(ent?"authorized signer for "+esc(p.settlor):"settlor and authorized signer")+". The insured is "+esc(pol.insured)+".");
+      m+=ctx+'<div class="kpis">'+
+        (pol.paid?'<div class="kpi paid"><small>Contribution</small><b>Paid in full</b></div>':'<div class="kpi"><small>Contribution</small><b style="font-size:15px">'+esc(pol.contrib)+'</b></div>')+
+        '<div class="kpi"><small>Last year’s policy growth rate</small><b>'+pol.growth+'</b></div><div class="kpi"><small>Estimated net death benefit</small><b>'+pol.ndb+'</b></div><div class="kpi"><small>Estimated net cash value</small><b>'+pol.cv+'</b></div><div class="kpi"><small>Policy anniversary date</small><b>'+pol.anniv+'</b></div></div>';
+      var ps=(pol.sign||[]).map(function(s){return {p:pol,s:s};});
+      m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature on this policy</h2>'+sigList(ps,false)+'</div>'+specPanel("dash","Policy Dashboard","The same cards and quick links, for the insured’s own policy.");
+    } else {
+      var titles={pay:["Payments","View contributions and payment history, manage bank accounts, make a yearly contribution."],docs:["Documents","3 tabs: Enrollment, Personal (upload), Servicing documents."],ar:["Annual Review","Illustrated vs current policy, policy health, charts."],perf:["Current Performance","Index performance and allocation changes (DocuSign)."],ins:["Insured Details","The insured edits their own personal details and beneficiaries (DocuSign)."],claims:["Claims & Distributions","Start claim and distribution requests."]};
+      var t=titles[view];
+      m+=hero(t[0],"For "+esc(pol.insured)+"’s policy (ending "+last4(pol.id)+").")+ctx+specPanel(view,t[0],t[1]);
+    }
+  }
+  document.getElementById("main").innerHTML=m;
+  renderNav(); renderRail();
+}
+
+/* ---------- Decisions rail ---------- */
+function renderRail(){
+  var cur=view==="pay"?"pay":view;
+  var h='<h4>What can the settlor do?</h4><p class="intro">My recommendation is pre-selected (<span style="color:var(--ok);font-weight:700">rec</span>). Click to change. The menu tags and each page’s table update. Copy your decisions when done.</p>'+
+    '<div class="copyrow"><button class="btn sm primary" data-act="copy">Copy my decisions</button><button class="btn sm" data-act="resetdec">Back to recommendations</button></div>';
+  DECISIONS.forEach(function(g){
+    h+='<div class="dgrp"><h5>'+g.g+'</h5>'+g.items.map(function(d){
+      return '<div class="drow'+(d.screen===cur?' cur':'')+'"><div class="q">'+esc(d.q)+'</div><div class="opts">'+OPTS.map(function(o){return '<button data-dk="'+d.k+'" data-dv="'+o+'" aria-pressed="'+(choice[d.k]===o)+'">'+o+(o===d.rec?'<span class="rec">rec</span>':'')+'</button>';}).join("")+'</div>'+(d.why?'<div class="why">'+esc(d.why)+'</div>':'')+'</div>';
+    }).join("")+'</div>';
+  });
+  document.getElementById("rail").innerHTML=h;
+}
+function decisionsText(){
+  var out=["Settlor Servicing Portal — what the authorized signer can do (draft decisions)",""];
+  DECISIONS.forEach(function(g){out.push(g.g.toUpperCase());g.items.forEach(function(d){out.push("• "+d.q+": "+choice[d.k]+(choice[d.k]!==d.rec?"  (changed from recommended: "+d.rec+")":""));});out.push("");});
+  return out.join("\n");
+}
+
+/* ---------- Events ---------- */
+document.addEventListener("click",function(ev){
+  var t=ev.target.closest("[data-nav],[data-pick],[data-act],[data-dk],[data-w]"); if(!t) return;
+  if(t.dataset.w){ who=t.dataset.w; [].forEach.call(document.querySelectorAll("#who button"),function(b){b.setAttribute("aria-pressed",b===t?"true":"false");});
+    pol=null; view="home"; var pp=P().policies; if(pp.length===1&&pp[0].inforce){pol=pp[0];view="dash";} render(); return; }
+  if(t.dataset.nav){ var v=t.dataset.nav; if(v==="home"){pol=null;} view=v; render(); window.scrollTo(0,0); return; }
+  if(t.dataset.pick){ pol=P().policies.filter(function(x){return x.id===t.dataset.pick;})[0]; view="dash"; render(); window.scrollTo(0,0); return; }
+  if(t.dataset.dk){ choice[t.dataset.dk]=t.dataset.dv; var keep=document.getElementById("rail").scrollTop; render(); document.getElementById("rail").scrollTop=keep; return; }
+  var a=t.dataset.act;
+  if(a==="signdoc") toast("Mock: opens the document in DocuSign");
+  if(a==="mock") toast("Mock: opens an edit form");
+  if(a==="resetdec"){ DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=d.rec;});}); render(); toast("Back to recommendations"); }
+  if(a==="copy"){ var txt=decisionsText();
+    try{ navigator.clipboard.writeText(txt).then(function(){toast("Decisions copied");},function(){toast("Copy blocked. Select the text in the panel instead.");}); }catch(e){ toast("Copy blocked."); } }
+});
+render();
+</script>
