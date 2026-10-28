@@ -235,6 +235,27 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
 .dtop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
 .dtop small{display:block;color:var(--muted);font-size:12.5px}
 
+.topbar{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin:-6px 0 -4px}
+.tb-welcome{font-size:14px}
+.acct{position:relative}
+.acct-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center}
+.acct-menu{position:absolute;right:0;top:42px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);min-width:170px;z-index:20;padding:6px}
+.acct-menu button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:9px 12px;border-radius:6px;font-size:13.5px}
+.acct-menu button:hover{background:var(--surface-2)}
+.pwgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.f2{display:flex;flex-direction:column;gap:3px}
+.f2 label{font-size:12px;color:var(--muted)}
+.pwf{text-align:left;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);border-radius:6px;padding:9px 11px;font-size:14px;letter-spacing:.12em}
+.pwf.empty{color:var(--faint);letter-spacing:0;font-size:13px}
+.rules{list-style:none;margin:10px 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted)}
+.rules li{display:flex;align-items:center;gap:6px}
+.rules li.ok{color:var(--ok)}
+.rules i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;font-style:normal;font-size:10px}
+.rules li.ok i{background:var(--ok);border-color:var(--ok);color:#fff}
+.loggedout{min-height:60vh;display:grid;place-items:center}
+.lo-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:28px 32px;text-align:center;max-width:380px}
+.lo-card .logo{justify-content:center}
+.lo-card h2{margin:6px 0 6px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:13px;z-index:30}
 </style>
 
@@ -344,10 +365,9 @@ function renderNav(){
   var h='<div class="logo"><b>ilia</b><span>SERVICING</span></div>'+
     '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+(ent?esc(p.title)+' · '+esc(p.settlor):esc(p.rel))+'</small>'+
       (ent?'':'<span class="rb s">Settlor</span> ')+'<span class="rb">Authorized Signer</span></div>'+
-    '<div class="navsec">My account</div>'+
+    '<div class="navsec">My work</div>'+
     ni("home","My Policies", p.policies.length>1?'<span class="tag t-view">'+p.policies.length+'</span>':'')+
-    ni("sign","Waiting for my signature", n?'<span class="tag t-cnt">'+n+'</span>':'')+
-    ni("profile","My Profile","");
+    ni("sign","Waiting for my signature", n?'<span class="tag t-cnt">'+n+'</span>':'');
   if(pol){
     h+='<div class="navsec">This policy</div><div class="polctx">Viewing<b>'+esc(pol.insured)+' (insured)</b>Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+'<br><button data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button>'+'</div>'+
       ni("dash","Policy Dashboard",screenTag("dash"))+ni("pay","Payments",screenTag("pay"))+ni("docs","Documents",screenTag("docs"))+ni("ar","Annual Review",screenTag("ar"))+
@@ -397,9 +417,13 @@ function render(){
     m+=hero("Waiting for your signature","Forms and documents NIW has sent to you as the authorized signer, across all your policies. Each opens in DocuSign.");
     m+='<div class="panel">'+sigList(allSign(),true)+'</div>'+doneList(allDone())+openQ("sign")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("sign","Waiting for my signature","No such list. The insured signs only inside specific change requests.")+'</details>';
   }
+  else if(view==="loggedout"){
+    document.getElementById("main").innerHTML='<div class="loggedout"><div class="lo-card"><div class="logo"><b>ilia</b><span>SERVICING</span></div><h2>You\u2019re logged out</h2><p class="note">For your security, close this window if you\u2019re on a shared computer.</p><button class="btn primary" data-act="relogin">Log in again</button></div></div>';
+    document.getElementById("nav").innerHTML=""; renderRail(); return;
+  }
   else if(view==="profile"){
-    m+=hero("My Profile","Your own contact details. NIW uses these to send you forms to sign.");
-    m+='<div class="panel"><div class="kpis"><div><small class="note">Name</small><div>'+esc(p.first+" "+p.last)+'</div></div><div><small class="note">Email (username)</small><div>'+esc(p.email)+'</div></div><div><small class="note">'+(ent?'Signs for':'Role')+'</small><div>'+(ent?esc(p.settlor):'Settlor · '+esc(p.rel))+'</div></div></div><p style="margin:12px 0 0"><button class="btn sm" data-act="mock">Edit my details</button></p></div>'+specPanel("profile","My Profile","");
+    m+=hero("My Account","Your own contact details and password. NIW uses these to send you forms to sign.");
+    m+='<div class="panel"><div class="kpis"><div><small class="note">Name</small><div>'+esc(p.first+" "+p.last)+'</div></div><div><small class="note">Email (username)</small><div>'+esc(p.email)+'</div></div><div><small class="note">'+(ent?'Signs for':'Role')+'</small><div>'+(ent?esc(p.settlor):'Settlor · '+esc(p.rel))+'</div></div></div><p style="margin:12px 0 0"><button class="btn sm" data-act="mock">Edit my details</button></p></div>'+pwPanel()+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("profile","My Account","")+'</details>';
   }
   else if(view==="faq"){ m+=hero("FAQs and Guides","Answers written for settlors: what you’re signing, why, and what happens next."); m+=specPanel("faq","FAQs and Guides","Kai-Zen FAQs written for the insured."); }
   else if(view==="contact"){ m+=hero("Contact Us","niw.info@simplicitygroup.com · 800-294-9940 ext. 807"); m+=specPanel("contact","Contact Us and Feedback","Same."); }
@@ -418,7 +442,7 @@ function render(){
       m+=hero(S.title,S.sub(pol,ent,p))+ctx+S.body(pol,ent,p)+openQ(view)+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel(view,S.title,S.today)+'</details>';
     }
   }
-  document.getElementById("main").innerHTML=m;
+  document.getElementById("main").innerHTML=topbar()+m;
   renderNav(); renderRail();
 }
 
@@ -542,6 +566,22 @@ var OPENQ={
   claims:["Who can request a distribution on a trust-owned policy: the signer, the insured, or both? (Per the FAQ, surrender funds go to the insured or settlor.)","Death claims usually come from the trustee and beneficiaries. Should the authorized signer portal offer “Claim Request” at all?","Today a request is a free-text box with no signature. Should a settlor’s request require their DocuSign signature?","Who is notified and approves: the trustee (Provident) or NIW operations?"]
 };
 function openQ(s){var q=OPENQ[s]; if(!q) return ""; return '<div class="oq"><h3>Open questions for this screen</h3><ol>'+q.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol></div>';}
+
+/* ---------- Top bar: Welcome + profile menu (matches ILIA today) ---------- */
+var acctOpen=false, pw={cur:"",nw:"",cf:""};
+function topbar(){
+  return '<div class="topbar"><span class="tb-welcome">Welcome! <b>'+esc(P().first)+'</b></span>'+
+    '<div class="acct"><button class="acct-btn" data-act="acct" aria-haspopup="menu" aria-expanded="'+acctOpen+'" aria-label="Account menu"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="currentColor"/></svg></button>'+
+    (acctOpen?'<div class="acct-menu" role="menu"><button role="menuitem" data-act="myacct">My Account</button><button role="menuitem" data-act="logout">Log out</button></div>':'')+'</div></div>';
+}
+function pwPanel(){
+  var rules=[["8 or more characters",pw.nw.length>=8],["At least one number",/\d/.test(pw.nw)],["At least one symbol",/[^A-Za-z0-9]/.test(pw.nw)],["New passwords match",pw.nw&&pw.nw===pw.cf]];
+  var ok=pw.cur&&rules.every(function(r){return r[1];});
+  function fld(k,label){return '<div class="f2"><label>'+label+'</label><button class="pwf'+(pw[k]?'':' empty')+'" id="pw-'+k+'" data-act="pwfill" data-k="'+k+'">'+(pw[k]?'\u2022'.repeat(pw[k].length):'Click to fill sample')+'</button></div>';}
+  return '<div class="panel"><h2 class="h2" style="margin-bottom:8px">Change password</h2><div class="pwgrid">'+fld("cur","Current password")+fld("nw","New password")+fld("cf","Confirm new password")+'</div>'+
+    '<ul class="rules">'+rules.map(function(r){return '<li class="'+(r[1]?'ok':'')+'"><i>'+(r[1]?'\u2713':'')+'</i>'+r[0]+'</li>';}).join("")+'</ul>'+
+    '<div class="row2"><button class="btn primary" data-act="pwsave"'+(ok?'':' disabled')+'>Update password</button><span class="note">Forgot your current password? Log out and use \u201cForgot password\u201d on the login page.</span></div></div>';
+}
 
 /* ---------- Signing (DocuSign-style mock) ----------
    Review & sign opens the document; the signer adopts a signature, fills the required fields, Finishes;
@@ -704,6 +744,7 @@ document.addEventListener("input",function(ev){ var t=ev.target; if(t.dataset &&
 
 /* ---------- Events ---------- */
 document.addEventListener("click",function(ev){
+  if(acctOpen && !ev.target.closest(".acct")){ acctOpen=false; render(); }
   var t=ev.target.closest("[data-nav],[data-pick],[data-act],[data-dk],[data-w],[data-tab],[data-lk]"); if(!t) return;
   if(t.dataset.lk){ if(saved.locked) return; var k=t.dataset.lk; rowLock[k]=!rowLock[k]; var keep=document.getElementById("rail").scrollTop; persist(false, rowLock[k]?"Question locked and saved":"Question unlocked"); setTimeout(function(){document.getElementById("rail").scrollTop=keep;},0); return; }
   if(t.dataset.tab){ tabState[t.dataset.tab]=+t.dataset.ti; render(); return; }
@@ -717,6 +758,12 @@ document.addEventListener("click",function(ev){
   if(a==="viewcopy"){ toast("Mock: opens the signed PDF"); }
   if(a==="adv"){ advance(t.dataset.pid,t.dataset.sid); return; }
   if(a==="mock") toast("Mock: opens an edit form");
+  if(a==="acct"){ acctOpen=!acctOpen; render(); return; }
+  if(a==="myacct"){ acctOpen=false; pol=null; view="profile"; render(); window.scrollTo(0,0); return; }
+  if(a==="logout"){ acctOpen=false; pol=null; view="loggedout"; render(); return; }
+  if(a==="relogin"){ view="home"; render(); return; }
+  if(a==="pwfill"){ var smp={cur:"OldPass#2025",nw:"Settlor#2026",cf:"Settlor#2026"}; pw[t.dataset.k]=smp[t.dataset.k]; render(); return; }
+  if(a==="pwsave"){ pw={cur:"",nw:"",cf:""}; render(); toast("Password updated. We emailed you a confirmation."); return; }
   if(a==="save"){ persist(true); }
   if(a==="unlock"){ persist(false); }
   if(a==="resetdec"&&!saved.locked){ DECISIONS.forEach(function(g){g.items.forEach(function(d){if(!rowLock[d.k]) choice[d.k]=d.rec;});}); render(); toast("Unlocked questions reset to suggestions"); }
