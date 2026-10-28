@@ -543,7 +543,7 @@ function render(){
       '<p class="note" style="margin:8px 0 0">This is the standard client Servicing Portal, not the Settlor Servicing Portal. The Settlor Servicing Portal is only for a separate settlor’s authorized signer.</p></div>';
   } else if(st.type==="individual"){
     var s=st.ind;
-    h+='<div><div class="sec-t"><span>Settlor details · individual</span></div><div class="ilia-grid">'+
+    h+='<div><div class="sec-t"><span>Settlor details · individual (Authorized Signer)</span></div><div class="ilia-grid">'+
       iliaFld("Settlor First Name",s.first)+iliaFld("Middle Name","")+iliaFld("Last Name",s.last)+
       iliaFld("Settlor Email Address",s.email)+iliaFld("Settlor Phone Number",s.phone)+secretFld("Settlor Social",s.ssn)+
       iliaFld("Settlor Relation to Insured",relText(s))+iliaFld("Date of Birth",s.dob)+
