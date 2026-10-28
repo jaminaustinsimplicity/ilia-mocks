@@ -358,7 +358,7 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
       </li>
       <li><b>Insured access:</b> if the insured used the portal as the settlor, admin chooses to keep view access or turn it off. Otherwise it is off by default.</li>
       <li><b>Unlink:</b> the policy goes back to "the insured is the settlor". To pick someone else, use Edit settlor on that policy.</li>
-      <li><b>Every link and unlink</b> is logged in Recent changes.</li>
+      <li><b>Every link and unlink</b> is logged in the client's activity history.</li>
     </ol>
     <h4>Open for the Chris / Judy call</h4>
     <ul>
@@ -560,7 +560,6 @@ function render(){
       '</div>'+entSignerHTML()+'</div><hr class="divider">'+
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   }
-  h+='<hr class="divider"><div><div class="sec-t"><span>Recent changes</span></div><ul class="activity">'+st.activity.slice(0,4).map(function(a){return '<li><b>'+esc(a.who)+'</b> · '+esc(a.what)+' · '+esc(a.when)+'</li>';}).join("")+'</ul></div>';
   v.innerHTML=clientHTML()+'<section class="sa-card" aria-labelledby="saH"><div class="card-hd"><h2 id="saH">Settlor / Authorized Signer</h2><button class="btn primary" data-act="editSettlor">✎ Edit settlor</button></div><div class="card-bd">'+h+'</div></section>';
 }
 
@@ -762,7 +761,7 @@ function devCopy(){
 "• {{createPasswordUrl}} is a one-time link tied to this signer. Resend invite issues a new link and the old one stops working.",
 "• Link expiry: current settlor decision is that the invite link does not expire (confirm).",
 "• After the password is set, the signer lands in the Settlor Servicing Portal. ILIA records firstLoginDate and notifies the inviting admin (existing branch behavior).",
-"• Log 'Invite sent' with date in Case Details > Recent changes."
+"• Log 'Invite sent' with date in the client's activity history."
   ].join("\n");
 }
 function renderInviteSent(s,ent){
