@@ -376,10 +376,10 @@ var scenarios = {
   insured: function(){return {type:"insured", ind:null, ent:null, signers:[], policies:[thisPolicy()], activity:[{who:"System",what:"Settlor set to the insured from the enrollment application",when:"Jan 8, 2026"}]};},
   individual: function(){var s=clone(SAMPLE.ind);var p=thisPolicy();return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor & Authorized Signer",email:s.email,phone:s.phone,access:false,invite:"none",d:{},isSettlor:true}], policies:[p], activity:[{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"}]};},
   entity: function(){var sg=[clone(SAMPLE.signers[1])];
-    sg[0].access=true;sg[0].invite="active";sg[0].d={sent:"Oct 20",opened:"Oct 20",created:"Oct 21",login:"Oct 22"};
+    sg[0].access=false;sg[0].invite="none";sg[0].d={};
     var p1=clone(POLICY_POOL[0]);p1.insAccess=true;p1.insInvite="active";p1.d={sent:"Oct 15",opened:"Oct 16",created:"Oct 16",login:"Oct 18"};
     var p2=clone(POLICY_POOL[1]);
-    return {type:"entity", ind:null, ent:clone(SAMPLE.ent), signers:sg, policies:[thisPolicy(),p1,p2], activity:[{who:"Laura Chen",what:"Created settlor portal account",when:"Oct 21, 2026"},{who:"Jamin A.",what:"Gave Sofia Reyes portal access to policy KZ-104890",when:"Oct 18, 2026"},{who:"Jamin A.",what:"Linked policy to existing settlor Reyes Family Holdings LLC",when:"Sep 12, 2026"}]};}
+    return {type:"entity", ind:null, ent:clone(SAMPLE.ent), signers:sg, policies:[thisPolicy(),p1,p2], activity:[{who:"Jamin A.",what:"Set Laura Chen (CFO) as the authorized signer for Reyes Family Holdings LLC",when:"Oct 21, 2026"},{who:"Jamin A.",what:"Gave Sofia Reyes portal access to policy KZ-104890",when:"Oct 18, 2026"},{who:"Jamin A.",what:"Linked policy to existing settlor Reyes Family Holdings LLC",when:"Sep 12, 2026"}]};}
 };
 
 var st = scenarios.insured();
