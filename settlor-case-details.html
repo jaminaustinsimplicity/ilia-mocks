@@ -658,7 +658,7 @@ function renderInvite(){
     '<div>Hi '+esc(s.first)+',</div><div style="margin-top:6px">You’ve been set up as '+forWhom+' on '+nPol+'. Create your ILIA account to view and manage '+(st.policies.length===1?'it':'them')+', see documents, and sign forms online.</div>'+
     '<span class="cta">Create my account</span><div class="note" style="margin-top:8px">Questions? niw.info@simplicitygroup.com · 800-294-9940 ext. 807</div></div>';
   var body='<div class="isec"><h4>1. Confirm the person you’re inviting</h4>'+who+'<p class="note" style="margin:0">Wrong person or email? Cancel and use <b>Edit settlor</b> to fix it first.</p></div>'+
-    '<div class="isec"><h4>2. When each policy shows in their portal</h4>'+pol+
+    '<div class="isec"><h4>2. When each policy will show in the Settlor Servicing Portal</h4>'+pol+
       (later?'<p class="note" style="margin:0">'+later+' polic'+(later===1?'y is':'ies are')+' not in force yet. It will appear in their portal automatically once in force, the same rule ILIA uses for the client Servicing Portal.</p>':'')+'</div>'+
     '<div class="isec"><h4>3. What they can do there</h4><ul class="can"><li>View each policy and its documents</li><li>Sign forms and documents sent to them (for example DBR election, Hold Harmless)</li><li>Keep their own contact details up to date</li></ul><p class="note" style="margin:0">Full feature list to be defined in the Settlor Servicing Portal design.</p></div>'+
     '<div class="isec"><h4>4. What happens when you send</h4><ol class="steps3"><li>ILIA emails <b>'+esc(s.email)+'</b> a secure link.</li><li>They open it, create their ILIA account and set a password.</li><li>They log in and land in their Settlor Servicing Portal.</li></ol>'+
