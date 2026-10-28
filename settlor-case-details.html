@@ -220,6 +220,14 @@ ul.activity{margin:0;padding:0}
 .who-card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
 @media (max-width:520px){.who-card{grid-template-columns:1fr}}
 .who-card dt{font-size:11.5px;color:var(--faint);margin:0}
+.whohead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;padding:12px 14px;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:var(--surface-2)}
+.whohead + .who-card{border-radius:0 0 10px 10px;margin:0}
+.whoname{font-size:16px;font-weight:700}
+.roles{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.rbadge{font-size:11.5px;font-weight:700;letter-spacing:.02em;border-radius:20px;padding:3px 10px}
+.rbadge.set{background:var(--accent-soft);color:var(--accent)}
+.rbadge.sig{background:var(--ok-soft);color:var(--ok)}
+.signsfor{margin:2px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
 .who-card dd{margin:0;font-size:13.5px;overflow-wrap:anywhere}
 .plist{border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .plist div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px}
@@ -366,7 +374,7 @@ POLICY_POOL.forEach(function(p){p.insAccess=false;p.insInvite="none";});
 
 var scenarios = {
   insured: function(){return {type:"insured", ind:null, ent:null, signers:[], policies:[thisPolicy()], activity:[{who:"System",what:"Settlor set to the insured from the enrollment application",when:"Jan 8, 2026"}]};},
-  individual: function(){var s=clone(SAMPLE.ind);var p=thisPolicy();return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor",email:s.email,phone:s.phone,access:false,invite:"none",d:{},isSettlor:true}], policies:[p], activity:[{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"}]};},
+  individual: function(){var s=clone(SAMPLE.ind);var p=thisPolicy();return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor & Authorized Signer",email:s.email,phone:s.phone,access:false,invite:"none",d:{},isSettlor:true}], policies:[p], activity:[{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"}]};},
   entity: function(){var sg=[clone(SAMPLE.signers[1])];
     sg[0].access=true;sg[0].invite="active";sg[0].d={sent:"Oct 20",opened:"Oct 20",created:"Oct 21",login:"Oct 22"};
     var p1=clone(POLICY_POOL[0]);p1.insAccess=true;p1.insInvite="active";p1.d={sent:"Oct 15",opened:"Oct 16",created:"Oct 16",login:"Oct 18"};
@@ -613,7 +621,7 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
     if(d.type==="insured"){st.ind=null;st.ent=null;st.signers=[];st.policies=[thisPolicy()];}
     if(d.type==="individual"){
       var old=st.signers[0]; st.ind=clone(d.ind); st.ent=null;
-      st.signers=[{first:d.ind.first,last:d.ind.last,title:"Settlor",email:d.ind.email,phone:d.ind.phone,access:old&&old.email===d.ind.email?old.access:false,invite:old&&old.email===d.ind.email?old.invite:"none",d:old&&old.email===d.ind.email?old.d:{},isSettlor:true}];
+      st.signers=[{first:d.ind.first,last:d.ind.last,title:"Settlor & Authorized Signer",email:d.ind.email,phone:d.ind.phone,access:old&&old.email===d.ind.email?old.access:false,invite:old&&old.email===d.ind.email?old.invite:"none",d:old&&old.email===d.ind.email?old.d:{},isSettlor:true}];
       if(prev!=="individual") st.policies=[thisPolicy()];
     }
     if(d.type==="entity"){
@@ -634,12 +642,14 @@ function openInvite(i){iv={i:i,ok:false,showEmail:false};renderInvite();}
 function closeInvite(){iv=null;document.getElementById("inviteRoot").innerHTML="";}
 function renderInvite(){
   var s=st.signers[iv.i], ent=st.type==="entity";
-  var who='<dl class="who-card">'+
-    '<div><dt>Name</dt><dd><b>'+esc(s.first+" "+s.last)+'</b></dd></div>'+
-    '<div><dt>'+(ent?'Title':'Role')+'</dt><dd>'+esc(ent?s.title:"Settlor (individual)")+'</dd></div>'+
+  var roleBadges = ent
+    ? '<span class="rbadge sig">Authorized Signer</span><span class="note">for the settlor <b>'+esc(settlorName())+'</b> ('+esc(st.ent.etype)+')</span>'
+    : '<span class="rbadge set">Settlor</span><span class="rbadge sig">Authorized Signer</span><span class="note">'+esc(relText(st.ind))+' of the insured</span>';
+  var who='<div class="whohead"><div class="whoname">'+esc(s.first+" "+s.last)+(ent?' <span class="note">· '+esc(s.title)+'</span>':'')+'</div><div class="roles">'+roleBadges+'</div></div>'+
+    '<dl class="who-card">'+
     '<div><dt>Invite goes to</dt><dd>'+esc(s.email)+'</dd></div>'+
     '<div><dt>Phone</dt><dd>'+esc(s.phone)+'</dd></div>'+
-    '<div style="grid-column:1/-1"><dt>Authorized signer for</dt><dd>'+(ent?esc(settlorName())+' · Entity · '+esc(st.ent.etype):'Themselves · individual settlor ('+esc(relText(st.ind))+' of the insured)')+'</dd></div></dl>';
+    '<div style="grid-column:1/-1"><dt>Authorized signer for these policies ('+st.policies.length+')</dt><dd><ul class="signsfor">'+st.policies.map(function(p){return '<li><b>'+esc(p.first+" "+p.last)+'</b> <span class="note">(insured)</span> · <span class="mono">'+esc(p.policy)+'</span></li>';}).join("")+'</ul></dd></div></dl>';
   var forWhom = ent ? 'the authorized signer for <b>'+esc(settlorName())+'</b>' : 'the settlor and authorized signer';
   var nPol = st.policies.length+' polic'+(st.policies.length===1?'y':'ies');
   var now=st.policies.filter(function(p){return p.inforce;}).length, later=st.policies.length-now;
@@ -648,13 +658,13 @@ function renderInvite(){
     '<div>Hi '+esc(s.first)+',</div><div style="margin-top:6px">You’ve been set up as '+forWhom+' on '+nPol+'. Create your ILIA account to view and manage '+(st.policies.length===1?'it':'them')+', see documents, and sign forms online.</div>'+
     '<span class="cta">Create my account</span><div class="note" style="margin-top:8px">Questions? niw.info@simplicitygroup.com · 800-294-9940 ext. 807</div></div>';
   var body='<div class="isec"><h4>1. Confirm the person you’re inviting</h4>'+who+'<p class="note" style="margin:0">Wrong person or email? Cancel and use <b>Edit settlor</b> to fix it first.</p></div>'+
-    '<div class="isec"><h4>2. Policies in their Settlor Servicing Portal ('+st.policies.length+')</h4>'+pol+
+    '<div class="isec"><h4>2. When each policy shows in their portal</h4>'+pol+
       (later?'<p class="note" style="margin:0">'+later+' polic'+(later===1?'y is':'ies are')+' not in force yet. It will appear in their portal automatically once in force, the same rule ILIA uses for the client Servicing Portal.</p>':'')+'</div>'+
     '<div class="isec"><h4>3. What they can do there</h4><ul class="can"><li>View each policy and its documents</li><li>Sign forms and documents sent to them (for example DBR election, Hold Harmless)</li><li>Keep their own contact details up to date</li></ul><p class="note" style="margin:0">Full feature list to be defined in the Settlor Servicing Portal design.</p></div>'+
     '<div class="isec"><h4>4. What happens when you send</h4><ol class="steps3"><li>ILIA emails <b>'+esc(s.email)+'</b> a secure link.</li><li>They open it, create their ILIA account and set a password.</li><li>They log in and land in their Settlor Servicing Portal.</li></ol>'+
       '<button class="btn link sm" data-iv="email" style="align-self:flex-start">'+(iv.showEmail?'Hide':'Preview')+' the invite email</button>'+(iv.showEmail?email:'')+'</div>'+
     '<button class="confirmchk" role="checkbox" aria-checked="'+iv.ok+'" data-iv="ok"><span class="cbx" aria-hidden="true">'+(iv.ok?'✓':'')+'</span><span>I confirmed <b>'+esc(s.first+" "+s.last)+'</b> is '+(ent?'the authorized signer for '+esc(settlorName()):'the settlor and authorized signer')+' and <b>'+esc(s.email)+'</b> is the right email.</span></button>';
-  document.getElementById("inviteRoot").innerHTML='<div class="scrim" data-iv="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="ivH"><div class="dr-hd"><h3 id="ivH">Invite authorized signer to the Settlor Servicing Portal</h3><button class="btn sm" data-iv="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+(iv.ok?'':'<span class="note" style="margin-right:auto">Tick the confirmation to send.</span>')+'<button class="btn" data-iv="close">Cancel</button><button class="btn primary" data-iv="send"'+(iv.ok?'':' disabled')+'>Send invite</button></div></div>';
+  document.getElementById("inviteRoot").innerHTML='<div class="scrim" data-iv="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="ivH"><div class="dr-hd"><h3 id="ivH">Invite '+esc(s.first+" "+s.last)+' to the Settlor Servicing Portal</h3><button class="btn sm" data-iv="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+(iv.ok?'':'<span class="note" style="margin-right:auto">Tick the confirmation to send.</span>')+'<button class="btn" data-iv="close">Cancel</button><button class="btn primary" data-iv="send"'+(iv.ok?'':' disabled')+'>Send invite</button></div></div>';
 }
 document.getElementById("inviteRoot").addEventListener("click",function(ev){
   var t=ev.target.closest("[data-iv]"); if(!t||!iv)return; var a=t.dataset.iv;
