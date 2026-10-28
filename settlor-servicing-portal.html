@@ -1,7 +1,7 @@
 <title>Settlor Servicing Portal</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@600;700&family=Roboto+Mono:wght@400;500&family=Dancing+Script:wght@600&display=swap">
 <style>
 /* Layout: ILIA servicing-portal shell (left nav · main) + a decisions rail for what the settlor can do per screen */
 :root{
@@ -182,6 +182,59 @@ table.dt.kv2 td:last-child{text-align:right;font-weight:500}
 .oq ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
 .dtab summary{cursor:pointer;color:var(--accent);font-size:13px;font-weight:500;padding:4px 0}
 .dtab[open] summary{margin-bottom:8px}
+/* Signing modal (DocuSign-style mock) */
+.scrim{position:fixed;inset:0;background:rgba(10,15,25,.5);z-index:40}
+.dsmodal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(820px,calc(100% - 24px));max-height:calc(100% - 32px);display:flex;flex-direction:column;background:var(--surface);border-radius:12px;overflow:hidden;z-index:41;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.dsbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;background:#1e1e2d;color:#fff;padding:12px 16px;font-size:13px}
+.dsbar b{font-size:14px;color:#fff}
+.dsbar .mk{font-size:10.5px;font-weight:700;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 8px;margin-left:4px}
+.dsbar .prog{margin-left:auto;background:rgba(255,255,255,.12);border-radius:20px;padding:3px 10px;font-size:12px}
+.dsbody{flex:1;overflow-y:auto;padding:16px;background:#e9ebef;position:relative}
+.dsbody.done{background:var(--surface);text-align:left}
+.dsft{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface)}
+.page{background:#fff;color:#1b2230;border:1px solid #d5d9e0;border-radius:4px;padding:22px 26px;margin:0 auto 14px;max-width:680px;font-family:Georgia,serif;font-size:14px;line-height:1.55;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.page p{margin:0 0 10px}
+.page .sm{font-size:12.5px;color:#4a5260}
+.dochd{font-family:var(--ff);font-weight:700;font-size:15px;border-bottom:2px solid #1b2230;padding-bottom:6px;margin-bottom:12px}
+.optlist{display:flex;flex-direction:column;gap:8px;margin:8px 0 12px}
+.dopt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid #c9ced8;background:#fff;color:#1b2230;border-radius:6px;padding:10px 12px;font-family:var(--ff);font-size:13.5px}
+.dopt small{display:block;color:#5d6878;font-size:12px}
+.dopt.need{background:#fff6cf;border-color:#e6c200}
+.dopt.on{border-color:#2c66e6;background:#eef3fd}
+.radio{width:18px;height:18px;border-radius:50%;border:2px solid #5d6878;display:grid;place-items:center;font-size:10px;color:#2c66e6;flex:none;margin-top:1px}
+.dchk{display:flex;gap:10px;align-items:center;border:1px solid #c9ced8;background:#fff;color:#1b2230;border-radius:6px;padding:9px 12px;font-family:var(--ff);font-size:13.5px;margin:10px 0}
+.dchk.need{background:#fff6cf;border-color:#e6c200}
+.dchk .box{width:18px;height:18px;border:2px solid #5d6878;border-radius:3px;display:grid;place-items:center;font-size:12px;color:#2c66e6}
+table.mini{width:100%;border-collapse:collapse;font-family:var(--ff);font-size:13px;margin:6px 0}
+table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:left}
+.sline{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 14px;border-top:1px dashed #c9ced8;padding-top:10px;margin-top:12px;font-family:var(--ff);font-size:12.5px;color:#4a5260}
+.stab{border:2px solid #e6c200;background:#ffd84d;color:#1b2230;border-radius:4px;padding:8px 18px;font-weight:700;font-family:var(--ff);font-size:13px;min-width:120px}
+.stab.done{background:#fff;border:0;border-bottom:1px solid #1b2230;border-radius:0;padding:0 4px 2px;display:inline-flex;flex-direction:column;align-items:flex-start;min-width:180px}
+.stab.done small{font-size:10.5px;color:#5d6878;font-weight:400}
+.sigfont{font-family:'Dancing Script',cursive;font-size:24px;font-weight:600;color:#1a3a8a;line-height:1.1}
+.sigfont.big{font-size:32px}
+.adopt{position:sticky;bottom:0;background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);border-radius:10px;padding:14px 16px;box-shadow:0 -6px 24px rgba(0,0,0,.15);max-width:680px;margin:0 auto}
+.adopt h4{margin:0 0 4px}
+.adoptrow{display:flex;gap:24px;margin:8px 0}
+.adoptrow small{display:block;font-size:11px;color:var(--muted)}
+.preview{display:flex;align-items:baseline;gap:30px;background:#fff;border:1px dashed var(--line-strong);border-radius:8px;padding:10px 14px;margin:6px 0}
+.doneic{width:52px;height:52px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:26px;font-weight:700}
+.dsbody.done h3{margin:12px 0 6px;font-size:20px}
+.dsbody.done h4{margin:16px 0 6px}
+.route{list-style:none;margin:6px 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 4px;align-items:center}
+.route li{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--faint);padding-right:12px;position:relative}
+.route li:not(:last-child)::after{content:"\203a";position:absolute;right:0;color:var(--line-strong)}
+.route i{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;font-style:normal;font-size:10.5px;font-weight:700}
+.route li.done{color:var(--ink)}
+.route li.done i{background:var(--ok);border-color:var(--ok);color:#fff}
+.route li.now{color:var(--warn);font-weight:500}
+.route li.now i{border-color:var(--warn);color:var(--warn)}
+.route em{font-style:normal;font-size:11px}
+.donerow{padding:12px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.donerow:last-child{border-bottom:0}
+.dtop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.dtop small{display:block;color:var(--muted);font-size:12.5px}
+
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:13px;z-index:30}
 </style>
 
@@ -201,6 +254,7 @@ table.dt.kv2 td:last-child{text-align:right;font-weight:500}
   <main class="main" id="main"></main>
   <aside class="rail" id="rail" aria-label="What can the settlor do"></aside>
 </div>
+<div id="signRoot"></div>
 <div id="toastRoot"></div>
 
 <script>
@@ -209,21 +263,21 @@ var PEOPLE = {
   entity: {first:"Laura", last:"Chen", title:"Chief Financial Officer", settlor:"Reyes Family Holdings LLC", kind:"entity", email:"l.chen@reyesholdings.example",
     policies:[
       {id:"KZ-104233", insured:"Daniel Reyes", product:"Kai-Zen · National Life (LSW)", tranche:79, inforce:true, year:3, paid:true, growth:"5.25%", ndb:"$1,584,955.77", cv:"$96,760.82", anniv:"11/03/2026",
-        sign:[{what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]},
+        sign:[{id:"s1",type:"dbr",what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]},
       {id:"KZ-104890", insured:"Sofia Reyes", product:"Kai-Zen · Allianz", tranche:81, inforce:true, year:2, paid:false, growth:"4.80%", ndb:"$1,120,400.00", cv:"$41,205.10", anniv:"02/14/2027", contrib:"Contribution due Feb 14, 2027",
-        sign:[{what:"Beneficiary change confirmation", due:"Nov 20, 2026"}]},
+        sign:[{id:"s2",type:"ben",what:"Beneficiary change confirmation", due:"Nov 20, 2026"}]},
       {id:"KZ-105112", insured:"Marco Diaz", product:"Kai-Zen · National Life (LSW)", tranche:82, inforce:false, sign:[]}
     ]},
   family: {first:"Robert", last:"Alvarez", title:"Settlor", settlor:"Robert Alvarez", kind:"individual", rel:"Parent of the insureds", email:"r.alvarez@example.com",
     policies:[
-      {id:"KZ-106410", insured:"Ethan Alvarez", product:"Kai-Zen · National Life (LSW)", tranche:84, inforce:true, year:2, paid:true, growth:"5.10%", ndb:"$1,250,000.00", cv:"$38,412.60", anniv:"03/01/2027", sign:[{what:"Hold Harmless renewal", due:"Dec 1, 2026"}]},
+      {id:"KZ-106410", insured:"Ethan Alvarez", product:"Kai-Zen · National Life (LSW)", tranche:84, inforce:true, year:2, paid:true, growth:"5.10%", ndb:"$1,250,000.00", cv:"$38,412.60", anniv:"03/01/2027", sign:[{id:"s3",type:"hh",what:"Hold Harmless renewal", due:"Dec 1, 2026"}]},
       {id:"KZ-106411", insured:"Olivia Alvarez", product:"Kai-Zen · National Life (LSW)", tranche:84, inforce:true, year:2, paid:false, growth:"5.10%", ndb:"$1,250,000.00", cv:"$37,980.15", anniv:"03/01/2027", contrib:"Contribution due Mar 1, 2027", sign:[]},
       {id:"KZ-106972", insured:"Noah Alvarez", product:"Kai-Zen · Allianz", tranche:86, inforce:false, sign:[]}
     ]},
   individual: {first:"Maria", last:"Reyes", title:"Settlor", settlor:"Maria Reyes", kind:"individual", rel:"Spouse of the insured", email:"maria.reyes@example.com",
     policies:[
       {id:"KZ-104233", insured:"Daniel Reyes", product:"Kai-Zen · National Life (LSW)", tranche:79, inforce:true, year:3, paid:true, growth:"5.25%", ndb:"$1,584,955.77", cv:"$96,760.82", anniv:"11/03/2026",
-        sign:[{what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]}
+        sign:[{id:"s4",type:"dbr",what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]}
     ]}
 };
 
@@ -280,7 +334,9 @@ function P(){return PEOPLE[who];}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
 function last4(id){return id.replace(/\D/g,"").slice(-4);}
 function toast(m){var r=document.getElementById("toastRoot");r.innerHTML='<div class="toast" role="status">'+esc(m)+'</div>';clearTimeout(window.__t);window.__t=setTimeout(function(){r.innerHTML="";},2200);}
-function allSign(){var out=[];P().policies.forEach(function(p){(p.sign||[]).forEach(function(s){out.push({p:p,s:s});});});return out;}
+function pending(p){return (p.sign||[]).filter(function(s){return s.status!=="signed";});}
+function allSign(){var out=[];P().policies.forEach(function(p){pending(p).forEach(function(s){out.push({p:p,s:s});});});return out;}
+function allDone(){var out=[];P().policies.forEach(function(p){(p.sign||[]).forEach(function(s){if(s.status==="signed")out.push({p:p,s:s});});});return out;}
 
 /* ---------- Nav ---------- */
 function renderNav(){
@@ -307,7 +363,7 @@ function ni(id,label,tag){return '<button class="ni" data-nav="'+id+'"'+(view===
 /* ---------- Main views ---------- */
 function hero(title,text){return '<section class="hero"><div class="bar"></div><h1>'+title+'</h1><p>'+text+'</p></section>';}
 function policyCard(p){
-  var s=(p.sign||[]).length;
+  var s=pending(p).length;
   return '<button class="pcard" '+(p.inforce?'data-pick="'+p.id+'"':'disabled')+'>'+
     '<div class="top"><div><div class="nm">'+esc(p.insured)+'</div><div class="sub">Insured · '+esc(p.product)+'</div></div>'+(p.inforce?'<span class="pill p-ok">In force</span>':'<span class="pill p-neu">Not yet in force</span>')+'</div>'+
     '<div class="meta"><span class="pill p-neu">Policy ending '+last4(p.id)+'</span><span class="pill p-neu">Tranche '+p.tranche+'</span>'+(s?'<span class="pill p-bad">'+s+' to sign</span>':'')+'</div>'+
@@ -315,7 +371,7 @@ function policyCard(p){
 }
 function sigList(items,showPolicy){
   if(!items.length) return '<p class="note" style="margin:0">Nothing is waiting for your signature.</p>';
-  return items.map(function(x){return '<div class="sig"><div><b>'+esc(x.s.what)+'</b><small>'+(showPolicy?esc(x.p.insured)+' · policy ending '+last4(x.p.id)+' · ':'')+'Due '+esc(x.s.due)+'</small></div><button class="btn sm primary" data-act="signdoc">Review &amp; sign</button></div>';}).join("");
+  return items.map(function(x){return '<div class="sig"><div><b>'+esc(x.s.what)+'</b><small>'+(showPolicy?esc(x.p.insured)+' · policy ending '+last4(x.p.id)+' · ':'')+'Due '+esc(x.s.due)+'</small></div><button class="btn sm primary" data-act="signdoc" data-pid="'+x.p.id+'" data-sid="'+x.s.id+'">Review &amp; sign</button></div>';}).join("");
 }
 function specPanel(screen,title,today){
   var rows=[]; DECISIONS.forEach(function(g){g.items.forEach(function(d){if(d.screen===screen)rows.push(d);});});
@@ -334,12 +390,12 @@ function render(){
       "Choose a policy to see its details and documents. Anything that needs your signature is listed below.");
     m+='<div class="sumrow"><div class="sum"><b>'+p.policies.length+'</b> polic'+(p.policies.length===1?'y':'ies')+' you sign for</div><div class="sum"><b>'+sigs.length+'</b> waiting for your signature</div>'+(p.policies.length-live?'<div class="sum"><b>'+(p.policies.length-live)+'</b> not yet in force</div>':'')+'</div>';
     m+='<h2 class="h2">Your policies</h2><div class="cards">'+p.policies.map(policyCard).join("")+'</div>';
-    m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature <button class="btn sm" data-nav="sign">See all</button></h2>'+sigList(sigs,true)+'</div>';
+    m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature <button class="btn sm" data-nav="sign">See all</button></h2>'+sigList(sigs,true)+'</div>'+doneList(allDone());
     m+=openQ("home")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("home","My Policies home","Lands on one policy’s dashboard with its values and a policy dropdown.")+'</details>';
   }
   else if(view==="sign"){
     m+=hero("Waiting for your signature","Forms and documents NIW has sent to you as the authorized signer, across all your policies. Each opens in DocuSign.");
-    m+='<div class="panel">'+sigList(allSign(),true)+'</div>'+specPanel("sign","Waiting for my signature","No such list. The insured signs only inside specific change requests.");
+    m+='<div class="panel">'+sigList(allSign(),true)+'</div>'+doneList(allDone())+openQ("sign")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("sign","Waiting for my signature","No such list. The insured signs only inside specific change requests.")+'</details>';
   }
   else if(view==="profile"){
     m+=hero("My Profile","Your own contact details. NIW uses these to send you forms to sign.");
@@ -354,8 +410,8 @@ function render(){
       m+=ctx+'<div class="kpis">'+
         (pol.paid?'<div class="kpi paid"><small>Contribution</small><b>Paid in full</b></div>':'<div class="kpi"><small>Contribution</small><b style="font-size:15px">'+esc(pol.contrib)+'</b></div>')+
         '<div class="kpi"><small>Last year’s policy growth rate</small><b>'+pol.growth+'</b></div><div class="kpi"><small>Estimated net death benefit</small><b>'+pol.ndb+'</b></div><div class="kpi"><small>Estimated net cash value</small><b>'+pol.cv+'</b></div><div class="kpi"><small>Policy anniversary date</small><b>'+pol.anniv+'</b></div></div>';
-      var ps=(pol.sign||[]).map(function(s){return {p:pol,s:s};});
-      m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature on this policy</h2>'+sigList(ps,false)+'</div>';
+      var ps=pending(pol).map(function(s){return {p:pol,s:s};});
+      m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature on this policy</h2>'+sigList(ps,false)+'</div>'+doneList((pol.sign||[]).filter(function(s){return s.status==="signed";}).map(function(s){return {p:pol,s:s};}));
       m+=openQ("dash")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("dash","Policy Dashboard","The same cards and quick links, for the insured’s own policy.")+'</details>';
     } else {
       var S=SCREENS[view];
@@ -426,7 +482,7 @@ var SCREENS={
       if(t===1){ rows=[["Operating agreement","PDF","10/02/2026",act],["Signer ID (Laura Chen)","Image","10/02/2026",act]]; if(!ent) rows=[["Signer ID (Maria Reyes)","Image","10/02/2026",act]];
         extra=(can("docsU")?'<button class="btn" data-act="mock">Upload</button> ':'')+'<span class="note">Replaces “Personal Documents”. The insured’s ID, utility bills and residence documents are <b>not</b> shown to the settlor.</span>'; }
       if(t===2){ rows=sees("docsP")?[["Beneficiary change request","PDF","09/14/2026",act],["Carrier annual statement (2025)","PDF","11/20/2025",act]]:[]; extra='<p class="note">Same as today, minus the insured’s ID front/back rows. Carrier statements included.</p>'; }
-      if(t===3){ rows=[["DBR election + Hold Harmless","PDF","Waiting for signature",'<span class="lnk">Review &amp; sign</span>']]; extra='<p class="note">New tab: everything this signer has signed, or needs to sign, for this policy.</p>'; }
+      if(t===3){ rows=(pol.sign||[]).map(function(x){return x.status==="signed"?[esc(x.what),"PDF","Signed "+esc(x.signedOn),'<span class="lnk" data-act="viewcopy">View signed copy</span>']:[esc(x.what),"PDF","Waiting for your signature",'<button class="btn sm primary" data-act="signdoc" data-pid="'+pol.id+'" data-sid="'+x.id+'">Review &amp; sign</button>'];}); if(!rows.length) rows=[["Nothing signed yet","","",""]]; extra='<p class="note">New tab: everything this signer has signed, or needs to sign, for this policy.</p>'; }
       return '<div class="card2 wide">'+tabs("docs",labels)+(t<2?'<div class="search">⌕ Search Documents</div>':'')+
         (rows.length?table(["Name","Type","Date modified","Actions"],rows):lockedNote("Hidden for settlors."))+extra+'</div>';
     }},
@@ -475,6 +531,7 @@ function spark(){return '<svg viewBox="0 0 300 90" class="spark" role="img" aria
 
 /* Open questions under each screen */
 var OPENQ={
+  sign:["Who signs next after the authorized signer: always the trustee (Provident), then NIW review, then the carrier? Does the bank countersign DBR changes?","Does the insured get a copy of what the authorized signer signed, or a notice that it was signed?","Reminders: how often should ILIA remind the signer before the due date, and who is told if it passes?","If the signer declines to sign (for example a DBR election), what happens? A decline still needs a record.","Should the signer be able to download every signed copy here, or only see its status?"],
   home:["One person can be the authorized signer on several policies, for example a parent for each child’s policy. Is the relationship to the insured recorded per policy (Parent / Spouse / Other) or once per settlor?","If an authorized signer has many policies (10 or more), should the home add search, or group the policies by family?","Should a policy that isn’t in force yet show on the home (greyed out), or stay hidden until it’s in force?"],
   dash:["Should the authorized signer see every value card (net death benefit and cash value), or fewer?","Should the dashboard keep the quick-link tiles (Plan Documents, Annual Review, Insured Details, Claims…), filtered to what the authorized signer can use?","When a policy isn’t in force yet, should the authorized signer see a “coming soon” card for it, or nothing?"],
   pay:["Can the authorized signer make contribution payments from the portal? ILIA’s Kai-Zen FAQ and wire instructions already allow funds from the insured’s <b>or the settlor’s</b> personal account.","Entity settlors: today’s rule says personal accounts only, not business or trust accounts. Can an LLC or other entity pay, or must it always be a person?","If the authorized signer pays by ePay, do they save their own bank account in ILIA, kept separate from the insured’s?","Should the authorized signer see Bank Leverage (bank loan amounts) in the history?","Who gets contribution-due reminders and payment receipts: the insured, the signer, or both?","Monthly recurring ePay: if the insured set it up, can the signer see or change it?"],
@@ -485,6 +542,106 @@ var OPENQ={
   claims:["Who can request a distribution on a trust-owned policy: the signer, the insured, or both? (Per the FAQ, surrender funds go to the insured or settlor.)","Death claims usually come from the trustee and beneficiaries. Should the authorized signer portal offer “Claim Request” at all?","Today a request is a free-text box with no signature. Should a settlor’s request require their DocuSign signature?","Who is notified and approves: the trustee (Provident) or NIW operations?"]
 };
 function openQ(s){var q=OPENQ[s]; if(!q) return ""; return '<div class="oq"><h3>Open questions for this screen</h3><ol>'+q.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol></div>';}
+
+/* ---------- Signing (DocuSign-style mock) ----------
+   Review & sign opens the document; the signer adopts a signature, fills the required fields, Finishes;
+   then the portal shows where the document goes next. Sample documents only. */
+var ROUTES={
+  dbr:["Signed by you","Trustee (Provident Trust Group) signs","NIW review","Sent to carrier","Carrier confirmed"],
+  ben:["Signed by you","Trustee (Provident Trust Group) signs","NIW review","Carrier updated"],
+  hh: ["Signed by you","NIW review","Filed with the trust"]
+};
+var REQ={dbr:["opt","sig1","ini1","sig2"], ben:["chk","sig1"], hh:["sig1","ini1"]};
+var sg=null;
+function findSign(pid,sid){var pol=P().policies.filter(function(x){return x.id===pid;})[0]; return {pol:pol, it:(pol.sign||[]).filter(function(x){return x.id===sid;})[0]};}
+function signerFull(){var p=P();return p.first+" "+p.last;}
+function initials(){var p=P();return p.first[0]+p.last[0];}
+function openSign(pid,sid){var r=findSign(pid,sid); sg={pid:pid,sid:sid,type:r.it.type,f:{},adopted:!!window.__adopted,adoptFor:null,done:false}; renderSign();}
+function closeSign(){sg=null;document.getElementById("signRoot").innerHTML="";}
+function tab(key,kind){
+  var v=sg.f[key];
+  if(v) return '<span class="stab done">'+(kind==="ini"?'<span class="sigfont">'+esc(initials())+'</span>':'<span class="sigfont">'+esc(signerFull())+'</span><small>'+esc(signerFull())+' · Oct 28, 2026</small>')+'</span>';
+  return '<button class="stab" data-sg="tab" data-k="'+key+'" data-kind="'+kind+'">'+(kind==="ini"?'Initial':'Sign')+' ▼</button>';
+}
+function docBody(type,pol){
+  var p=P(), ent=p.kind==="entity";
+  var who = ent ? esc(signerFull())+', '+esc(p.title)+', authorized signer for '+esc(p.settlor) : esc(signerFull())+', settlor';
+  if(type==="dbr"){
+    var opts=[["full","Full reduction","Reduce the death benefit by $500,000 (term rider first)"],["half","Half reduction","Reduce the death benefit by $250,000 (term rider first)"],["none","No reduction","Keep the current death benefit. Choose this if the insured’s health has changed."]];
+    return '<div class="page"><div class="dochd">Kai-Zen · Death Benefit Reduction Election</div>'+
+      '<p>Policy ending '+last4(pol.id)+' · Insured: <b>'+esc(pol.insured)+'</b> · Policy year '+(pol.year||"")+'</p>'+
+      '<p>Choose one option. The three in-force illustrations were sent with this notice.</p>'+
+      '<div class="optlist">'+opts.map(function(o){var on=sg.f.opt===o[0];return '<button class="dopt'+(on?' on':'')+(!sg.f.opt?' need':'')+'" data-sg="opt" data-v="'+o[0]+'"><span class="radio">'+(on?'●':'')+'</span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div>'+
+      '<p class="sm">Questions? Call a specialist at (972) 755-1582.</p>'+
+      '<div class="sline"><span>Signed by '+who+'</span>'+tab("sig1","sig")+'</div></div>'+
+      '<div class="page"><div class="dochd">Hold Harmless &amp; Indemnification · Provident Trust Group</div>'+
+      '<p>Trust name: <b>'+esc(pol.insured.split(" ")[1])+' Family Trust</b> · Settlor: <b>'+esc(p.settlor)+'</b></p>'+
+      '<p class="sm">The undersigned directs the trustee to carry out the election above and agrees to hold harmless and indemnify Provident Trust Group for acting on this direction. (Sample text for the mock.)</p>'+
+      '<div class="sline"><span>Initial here</span>'+tab("ini1","ini")+'</div>'+
+      '<div class="sline"><span>Signed by '+who+'</span>'+tab("sig2","sig")+'</div></div>';
+  }
+  if(type==="ben"){
+    var on=!!sg.f.chk;
+    return '<div class="page"><div class="dochd">Beneficiary Change Confirmation</div>'+
+      '<p>Policy ending '+last4(pol.id)+' · Insured: <b>'+esc(pol.insured)+'</b></p>'+
+      '<table class="mini"><thead><tr><th>Beneficiary</th><th>Type</th><th>Share</th></tr></thead><tbody><tr><td>Reyes Family Trust</td><td>Primary</td><td>100%</td></tr><tr><td>Lucas Reyes</td><td>Contingent</td><td>100%</td></tr></tbody></table>'+
+      '<button class="dchk'+(on?' on':'')+(!on?' need':'')+'" data-sg="chk"><span class="box">'+(on?'✓':'')+'</span>I confirm these beneficiaries are correct.</button>'+
+      '<div class="sline"><span>Signed by '+who+'</span>'+tab("sig1","sig")+'</div></div>';
+  }
+  return '<div class="page"><div class="dochd">Hold Harmless Renewal · Provident Trust Group</div>'+
+    '<p>Policy ending '+last4(pol.id)+' · Insured: <b>'+esc(pol.insured)+'</b> · Settlor: <b>'+esc(p.settlor)+'</b></p>'+
+    '<p class="sm">Annual renewal of the hold harmless agreement with the trustee. (Sample text for the mock.)</p>'+
+    '<div class="sline"><span>Initial here</span>'+tab("ini1","ini")+'</div><div class="sline"><span>Signed by '+who+'</span>'+tab("sig1","sig")+'</div></div>';
+}
+function routeHTML(type,step){
+  return '<ol class="route">'+ROUTES[type].map(function(r,i){var st=i<step?"done":i===step?"now":"todo";return '<li class="'+st+'"><i>'+(st==="done"?'✓':i+1)+'</i><span>'+r+(st==="now"?' <em>in progress</em>':'')+'</span></li>';}).join("")+'</ol>';
+}
+function renderSign(){
+  var r=findSign(sg.pid,sg.sid), pol=r.pol, it=r.it, req=REQ[sg.type], n=req.filter(function(k){return sg.f[k];}).length;
+  var h;
+  if(sg.done){
+    h='<div class="dsbar"><b>Signing in DocuSign <span class="mk">mock screen</span></b><span>Signing complete</span></div><div class="dsbody done"><div class="doneic">✓</div><h3>You’re done signing</h3>'+
+      '<p>'+esc(it.what)+' · '+esc(pol.insured)+' · policy ending '+last4(pol.id)+(it.choiceLabel?'<br>Your election: <b>'+esc(it.choiceLabel)+'</b>':'')+'</p>'+
+      '<p class="note">A signed copy has been emailed to '+esc(P().email)+' and saved under Documents → Signed by me.</p>'+
+      '<h4>What happens next</h4>'+routeHTML(sg.type,1)+'<p class="note">You’ll see each step in your portal. You don’t need to do anything else.</p></div>'+
+      '<div class="dsft"><button class="btn primary" data-sg="close">Back to my portal</button></div>';
+  } else {
+    var adopt = sg.adoptFor ? '<div class="adopt"><h4>Adopt your signature</h4><p class="note">Confirm your name and initials. This signature is used on every field in this document.</p>'+
+      '<div class="adoptrow"><div><small>Full name</small><b>'+esc(signerFull())+'</b></div><div><small>Initials</small><b>'+esc(initials())+'</b></div></div>'+
+      '<div class="preview"><span class="sigfont big">'+esc(signerFull())+'</span><span class="sigfont">'+esc(initials())+'</span></div>'+
+      '<p class="sm">By selecting Adopt and Sign, I agree this is the electronic representation of my signature. (Mock.)</p><div class="row2"><button class="btn primary" data-sg="adopt">Adopt and Sign</button><button class="btn" data-sg="noadopt">Cancel</button></div></div>' : '';
+    h='<div class="dsbar"><b>Signing in DocuSign <span class="mk">mock screen</span></b><span>'+esc(it.what)+'</span><span class="prog">'+n+' of '+req.length+' required fields</span></div>'+
+      '<div class="dsbody"><p class="note" style="margin:0 0 10px">Please review the document. Fields marked in yellow need your action.</p>'+docBody(sg.type,pol)+adopt+'</div>'+
+      '<div class="dsft"><button class="btn" data-sg="close">Finish later</button><button class="btn primary" data-sg="finish"'+(n<req.length?' disabled':'')+'>Finish</button></div>';
+  }
+  document.getElementById("signRoot").innerHTML='<div class="scrim" data-sg="close"></div><div class="dsmodal" role="dialog" aria-modal="true" aria-label="Sign document">'+h+'</div>';
+}
+function advance(pid,sid){var r=findSign(pid,sid),it=r.it,last=ROUTES[it.type].length-1; if(it.step<last){it.step++;} render(); toast(ROUTES[it.type][it.step]+(it.step===last?' ✓ complete':''));}
+function doneList(items){
+  if(!items.length) return "";
+  return '<div class="panel"><h2 class="h2" style="margin-bottom:6px">Recently signed</h2>'+items.map(function(x){
+    var steps=ROUTES[x.s.type], last=steps.length-1, complete=x.s.step>=last;
+    return '<div class="donerow"><div class="dtop"><div><b>'+esc(x.s.what)+'</b><small>'+esc(x.p.insured)+' · policy ending '+last4(x.p.id)+' · Signed '+esc(x.s.signedOn)+(x.s.choiceLabel?' · Elected: '+esc(x.s.choiceLabel):'')+'</small></div>'+
+      (complete?'<span class="pill p-ok">Completed</span>':'<span class="pill p-warn">'+esc(steps[x.s.step])+'</span>')+'</div>'+
+      routeHTML(x.s.type,complete?last+1:x.s.step)+
+      '<div class="row2"><button class="btn sm" data-act="viewcopy">View signed copy</button>'+(complete?'':'<button class="btn sm mockadv" data-act="adv" data-pid="'+x.p.id+'" data-sid="'+x.s.id+'" title="Mock only">Mock: next step ›</button>')+'</div></div>';
+  }).join("")+'</div>';
+}
+document.getElementById("signRoot").addEventListener("click",function(ev){
+  var t=ev.target.closest("[data-sg]"); if(!t||!sg) return; var a=t.dataset.sg;
+  if(a==="close"){ var wasDone=sg.done; closeSign(); if(wasDone){ render(); toast("Signed. It’s now with the trustee."); } return; }
+  if(a==="opt"){ sg.f.opt=t.dataset.v; }
+  if(a==="chk"){ sg.f.chk=!sg.f.chk; }
+  if(a==="tab"){ if(!sg.adopted){ sg.adoptFor={k:t.dataset.k}; } else { sg.f[t.dataset.k]=true; } }
+  if(a==="adopt"){ sg.adopted=true; window.__adopted=true; if(sg.adoptFor) sg.f[sg.adoptFor.k]=true; sg.adoptFor=null; }
+  if(a==="noadopt"){ sg.adoptFor=null; }
+  if(a==="finish"){ var r=findSign(sg.pid,sg.sid); r.it.status="signed"; r.it.step=1; r.it.signedOn="Oct 28, 2026";
+    if(sg.type==="dbr"){ r.it.choiceLabel={full:"Full reduction",half:"Half reduction",none:"No reduction"}[sg.f.opt]; }
+    sg.done=true; }
+  var keep=(document.querySelector("#signRoot .dsbody")||{}).scrollTop||0; renderSign();
+  var bd=document.querySelector("#signRoot .dsbody"); if(bd && !sg.done) bd.scrollTop=keep;
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&sg&&!sg.done)closeSign();});
 
 /* ---------- Decisions rail: answer, note, save & lock ---------- */
 /* Storage: the Claude Artifact page saves to its shared database (Claude can read it back to log it).
@@ -556,7 +713,9 @@ document.addEventListener("click",function(ev){
   if(t.dataset.pick){ pol=P().policies.filter(function(x){return x.id===t.dataset.pick;})[0]; view="dash"; render(); window.scrollTo(0,0); return; }
   if(t.dataset.dk){ choice[t.dataset.dk]=t.dataset.dv; var keep=document.getElementById("rail").scrollTop; render(); document.getElementById("rail").scrollTop=keep; return; }
   var a=t.dataset.act;
-  if(a==="signdoc") toast("Mock: opens the document in DocuSign");
+  if(a==="signdoc"){ openSign(t.dataset.pid,t.dataset.sid); return; }
+  if(a==="viewcopy"){ toast("Mock: opens the signed PDF"); }
+  if(a==="adv"){ advance(t.dataset.pid,t.dataset.sid); return; }
   if(a==="mock") toast("Mock: opens an edit form");
   if(a==="save"){ persist(true); }
   if(a==="unlock"){ persist(false); }
