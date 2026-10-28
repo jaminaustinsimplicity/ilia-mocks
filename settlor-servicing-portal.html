@@ -131,6 +131,40 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .opts button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:700}
 .opts button .rec{font-size:9.5px;font-weight:700;color:var(--ok);margin-left:3px}
 .copyrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0 14px}
+/* Policy screens */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card2{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.card2.wide{grid-column:1 / -1}
+.card2 h3{margin:0;font-size:15px}
+.card2 .note{margin:0}
+.duev{font-size:22px;font-weight:700}
+.duev.ok{color:var(--ok)}
+.row2{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sel{border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;background:var(--surface);color:var(--ink);font-family:inherit;font-size:13.5px;min-width:180px}
+.callout{background:var(--warn-soft);border-radius:8px;padding:9px 11px;font-size:12.5px}
+.lockn{border:1px dashed var(--line-strong);border-radius:10px;padding:12px 14px;color:var(--muted);font-size:13px;background:var(--surface-2)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;background:none;padding:9px 12px;font-size:12.5px;font-weight:500;color:var(--muted);white-space:nowrap;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.03em}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+table.dt{width:100%;border-collapse:collapse;font-size:13px;min-width:460px}
+table.dt th{text-align:left;font-weight:500;color:var(--muted);background:var(--surface-2);padding:9px 10px;border-bottom:1px solid var(--line)}
+table.dt td{padding:9px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+table.dt.kv2{min-width:0}
+table.dt.kv2 thead{display:none}
+table.dt.kv2 td:last-child{text-align:right;font-weight:500}
+.search{border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--faint);font-size:13px;max-width:320px}
+.lnk{color:var(--accent);font-weight:500}
+.minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.minis div{background:var(--surface-2);border-radius:8px;padding:8px}
+.minis small{display:block;font-size:11.5px;color:var(--muted)}
+.minis b{font-size:14px}
+.spark{width:100%;max-width:100%;height:auto;background:var(--surface-2);border-radius:8px}
+.ul{margin:0;padding-left:18px;font-size:13px}
+.oq{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:12px;padding:14px 18px}
+.oq h3{margin:0 0 6px;font-size:15px}
+.oq ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.dtab summary{cursor:pointer;color:var(--accent);font-size:13px;font-weight:500;padding:4px 0}
+.dtab[open] summary{margin-bottom:8px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:13px;z-index:30}
 </style>
 
@@ -139,6 +173,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <span class="mocklabel">Logged in as</span>
   <div class="chips" id="who">
     <button data-w="entity" aria-pressed="true">Entity signer · 3 policies</button>
+    <button data-w="family" aria-pressed="false">Individual settlor · 3 family policies</button>
     <button data-w="individual" aria-pressed="false">Individual settlor · 1 policy</button>
   </div>
   <span class="mocktag">Settlor Servicing Portal · first draft · sample data only · W-SETTLOR</span>
@@ -161,6 +196,12 @@ var PEOPLE = {
       {id:"KZ-104890", insured:"Sofia Reyes", product:"Kai-Zen · Allianz", tranche:81, inforce:true, year:2, paid:false, growth:"4.80%", ndb:"$1,120,400.00", cv:"$41,205.10", anniv:"02/14/2027", contrib:"Contribution due Feb 14, 2027",
         sign:[{what:"Beneficiary change confirmation", due:"Nov 20, 2026"}]},
       {id:"KZ-105112", insured:"Marco Diaz", product:"Kai-Zen · National Life (LSW)", tranche:82, inforce:false, sign:[]}
+    ]},
+  family: {first:"Robert", last:"Alvarez", title:"Settlor", settlor:"Robert Alvarez", kind:"individual", rel:"Parent of the insureds", email:"r.alvarez@example.com",
+    policies:[
+      {id:"KZ-106410", insured:"Ethan Alvarez", product:"Kai-Zen · National Life (LSW)", tranche:84, inforce:true, year:2, paid:true, growth:"5.10%", ndb:"$1,250,000.00", cv:"$38,412.60", anniv:"03/01/2027", sign:[{what:"Hold Harmless renewal", due:"Dec 1, 2026"}]},
+      {id:"KZ-106411", insured:"Olivia Alvarez", product:"Kai-Zen · National Life (LSW)", tranche:84, inforce:true, year:2, paid:false, growth:"5.10%", ndb:"$1,250,000.00", cv:"$37,980.15", anniv:"03/01/2027", contrib:"Contribution due Mar 1, 2027", sign:[]},
+      {id:"KZ-106972", insured:"Noah Alvarez", product:"Kai-Zen · Allianz", tranche:86, inforce:false, sign:[]}
     ]},
   individual: {first:"Maria", last:"Reyes", title:"Settlor", settlor:"Maria Reyes", kind:"individual", rel:"Spouse of the insured", email:"maria.reyes@example.com",
     policies:[
@@ -274,7 +315,7 @@ function render(){
     m+='<div class="sumrow"><div class="sum"><b>'+p.policies.length+'</b> polic'+(p.policies.length===1?'y':'ies')+' you sign for</div><div class="sum"><b>'+sigs.length+'</b> waiting for your signature</div>'+(p.policies.length-live?'<div class="sum"><b>'+(p.policies.length-live)+'</b> not yet in force</div>':'')+'</div>';
     m+='<h2 class="h2">Your policies</h2><div class="cards">'+p.policies.map(policyCard).join("")+'</div>';
     m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature <button class="btn sm" data-nav="sign">See all</button></h2>'+sigList(sigs,true)+'</div>';
-    m+=specPanel("home","My Policies home","Lands on one policy’s dashboard with its values and a policy dropdown.");
+    m+=openQ("home")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("home","My Policies home","Lands on one policy’s dashboard with its values and a policy dropdown.")+'</details>';
   }
   else if(view==="sign"){
     m+=hero("Waiting for your signature","Forms and documents NIW has sent to you as the authorized signer, across all your policies. Each opens in DocuSign.");
@@ -294,16 +335,136 @@ function render(){
         (pol.paid?'<div class="kpi paid"><small>Contribution</small><b>Paid in full</b></div>':'<div class="kpi"><small>Contribution</small><b style="font-size:15px">'+esc(pol.contrib)+'</b></div>')+
         '<div class="kpi"><small>Last year’s policy growth rate</small><b>'+pol.growth+'</b></div><div class="kpi"><small>Estimated net death benefit</small><b>'+pol.ndb+'</b></div><div class="kpi"><small>Estimated net cash value</small><b>'+pol.cv+'</b></div><div class="kpi"><small>Policy anniversary date</small><b>'+pol.anniv+'</b></div></div>';
       var ps=(pol.sign||[]).map(function(s){return {p:pol,s:s};});
-      m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature on this policy</h2>'+sigList(ps,false)+'</div>'+specPanel("dash","Policy Dashboard","The same cards and quick links, for the insured’s own policy.");
+      m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature on this policy</h2>'+sigList(ps,false)+'</div>';
+      m+=openQ("dash")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("dash","Policy Dashboard","The same cards and quick links, for the insured’s own policy.")+'</details>';
     } else {
-      var titles={pay:["Payments","View contributions and payment history, manage bank accounts, make a yearly contribution."],docs:["Documents","3 tabs: Enrollment, Personal (upload), Servicing documents."],ar:["Annual Review","Illustrated vs current policy, policy health, charts."],perf:["Current Performance","Index performance and allocation changes (DocuSign)."],ins:["Insured Details","The insured edits their own personal details and beneficiaries (DocuSign)."],claims:["Claims & Distributions","Start claim and distribution requests."]};
-      var t=titles[view];
-      m+=hero(t[0],"For "+esc(pol.insured)+"’s policy (ending "+last4(pol.id)+").")+ctx+specPanel(view,t[0],t[1]);
+      var S=SCREENS[view];
+      m+=hero(S.title,S.sub(pol,ent,p))+ctx+S.body(pol,ent,p)+openQ(view)+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel(view,S.title,S.today)+'</details>';
     }
   }
   document.getElementById("main").innerHTML=m;
   renderNav(); renderRail();
 }
+
+/* ---------- Settlor versions of each policy screen ----------
+   Mirrors ILIA's existing client servicing screens (niw-web-admin src/pages/clientServicing/*),
+   reworded for the settlor and gated by the decisions in the right-hand panel. */
+var tabState={pay:0,docs:0};
+function can(k){return choice[k]==="Yes";}
+function sees(k){return choice[k]==="Yes"||choice[k]==="View only";}
+function money(n){return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function tabs(key,labels){return '<div class="tabs" role="tablist">'+labels.map(function(l,i){return '<button role="tab" aria-selected="'+(tabState[key]===i)+'" data-tab="'+key+'" data-ti="'+i+'">'+l+'</button>';}).join("")+'</div>';}
+function table(cols,rows,cls){return '<div class="tblwrap"><table class="dt '+(cls||"")+'"><thead><tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join("")+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join("")+'</tr>';}).join("")+'</tbody></table></div>';}
+function lockedNote(t){return '<div class="lockn">'+t+'</div>';}
+function gateBtn(k,label,act){
+  var c=choice[k];
+  if(c==="Yes") return '<button class="btn primary" data-act="mock">'+label+'</button>';
+  if(c==="Ask Judy") return '<button class="btn" disabled>'+label+'</button> <span class="tag t-ask">To decide</span>';
+  return '';
+}
+function contribRows(pol){
+  var out=[], startY=2022+ (pol.tranche>80?1:0);
+  for(var y=1;y<=8;y++){var owed=y<=5?40000:0, paid=(y<=pol.year-(pol.paid?0:1))?owed:0, lev=y<=5?36300:76800;
+    out.push(["Year "+y+" ("+(startY+y-1)+" - "+(startY+y)+")",money(owed),money(paid),money(owed-paid),money(lev)]);}
+  return out;
+}
+var SCREENS={
+  pay:{title:"Payments",today:"View contributions and payment history; pay by Personal Check, Wire Transfer or Single ePay; manage bank accounts.",
+    sub:function(pol){return "Contributions for "+esc(pol.insured)+"’s policy (ending "+last4(pol.id)+").";},
+    body:function(pol,ent){
+      var due = pol.paid ? '<div class="duev ok">Paid in full</div><div class="note">Next annual contribution: '+esc(pol.anniv)+'</div>'
+                         : '<div class="duev">'+money(40000)+'</div><div class="note">'+esc(pol.contrib)+'</div>';
+      var payCard;
+      if(can("payA")){
+        payCard='<div class="card2"><h3>Make a payment</h3><p class="note">Pay this contribution from your own account.</p>'+
+          '<div class="row2"><select class="sel" aria-label="Payment method"><option>Personal Check</option><option>Wire Transfer</option><option>Single ePay Payment</option></select><button class="btn primary" data-act="mock">Payment Options</button></div>'+
+          '<div class="callout">Funds must come from a personal account owned by the insured and/or the settlor of the trust, not a business or trust account (ILIA’s current wire rule).'+(ent?' <b>This settlor is an entity</b>, so see open question 2.':'')+'</div></div>';
+      } else {
+        payCard='<div class="card2"><h3>Who pays this contribution</h3><p class="note" style="margin:0">'+(choice.payA==="Ask Judy"?'<span class="tag t-ask">To decide</span> Whether you can pay from the portal is still being decided. For now, payments are made by the insured.':'Payments are made by the insured. You’ll see each one here once it’s received.')+'</p><p class="note">Questions? niw.info@simplicitygroup.com · 800-294-9940 ext. 807</p></div>';
+      }
+      var hist;
+      if(!sees("payV")) hist=lockedNote("Payment history is hidden for settlors.");
+      else hist='<div class="card2 wide"><h3>Contributions Payment History</h3><p class="note">Payments made toward this policy, with totals.</p>'+tabs("pay",["Total Premium Payment History","Payment History"])+
+        (tabState.pay===0 ? table(["Years","Contribution owed","Paid","Balance due","Bank leverage"],contribRows(pol))
+          : table(["Cont. type","Date","Amount","Method","Paid by","Details"],[
+              ["Annual","11/01/2025",money(40000),"Single ePay","Insured","View"],
+              ["Annual","10/28/2024",money(40000),"Wire Transfer","Insured","View"],
+              ["Annual","11/02/2023",money(40000),"Personal Check","Insured","View"]]))+
+        '<p class="note">Labels say “Contribution owed / Paid” instead of “Client Owed / Client Paid”. New “Paid by” column. No bank account numbers.</p></div>';
+      var bank = choice.payB==="No"
+        ? lockedNote("The insured’s saved bank accounts are not shown.")+(can("payA")?'<div class="card2"><h3>Your bank accounts</h3><p class="note">Accounts you add for your own payments. The insured can’t see them.</p><button class="btn" data-act="mock">Add New Bank Account</button></div>':'')
+        : '<div class="card2"><h3>Bank Account Details</h3><p class="note">Insured’s accounts: First National ••••6621</p></div>';
+      return '<div class="grid2"><div class="card2"><h3>Next Annual Contribution Due</h3>'+due+'</div>'+payCard+'</div>'+hist+bank;
+    }},
+  docs:{title:"Documents",today:"3 tabs: Enrollment (view/download), Personal (view/download/upload: ID, utility bill, residence, other), Servicing (request docs incl. ID front/back + Carrier Statements).",
+    sub:function(pol){return "Plan documents for "+esc(pol.insured)+"’s policy: policy, illustration, trust and other important documents.";},
+    body:function(pol,ent){
+      var labels=["Enrollment Documents","Settlor Documents","Servicing Documents","Signed by me"];
+      var t=tabState.docs, rows, extra="";
+      var act='<span class="lnk">View</span> · <span class="lnk">Download</span>';
+      if(t===0){ rows= sees("docsP") ? [["Policy contract","PDF","11/12/2023",act],["Final illustration","PDF","10/30/2023",act],["Trust agreement (Provident)","PDF","10/30/2023",act],["Application (redacted)","PDF","10/22/2023",act]] : []; extra='<p class="note">Application shown <b>redacted</b>: no insured medical or financial answers (open question 1).</p>'; }
+      if(t===1){ rows=[["Operating agreement","PDF","10/02/2026",act],["Signer ID (Laura Chen)","Image","10/02/2026",act]]; if(!ent) rows=[["Signer ID (Maria Reyes)","Image","10/02/2026",act]];
+        extra=(can("docsU")?'<button class="btn" data-act="mock">Upload</button> ':'')+'<span class="note">Replaces “Personal Documents”. The insured’s ID, utility bills and residence documents are <b>not</b> shown to the settlor.</span>'; }
+      if(t===2){ rows=sees("docsP")?[["Beneficiary change request","PDF","09/14/2026",act],["Carrier annual statement (2025)","PDF","11/20/2025",act]]:[]; extra='<p class="note">Same as today, minus the insured’s ID front/back rows. Carrier statements included.</p>'; }
+      if(t===3){ rows=[["DBR election + Hold Harmless","PDF","Waiting for signature",'<span class="lnk">Review &amp; sign</span>']]; extra='<p class="note">New tab: everything this signer has signed, or needs to sign, for this policy.</p>'; }
+      return '<div class="card2 wide">'+tabs("docs",labels)+(t<2?'<div class="search">⌕ Search Documents</div>':'')+
+        (rows.length?table(["Name","Type","Date modified","Actions"],rows):lockedNote("Hidden for settlors."))+extra+'</div>';
+    }},
+  ar:{title:"Annual Review",today:"Last year’s values (bank loan, premium, statement value, net-of-loan CSV and death benefit), original illustrated values, 3 comparison charts, carrier statement download. Dashboard tile is admin-only today.",
+    sub:function(pol){return "How "+esc(pol.insured)+"’s policy performed last year, and against the original illustration.";},
+    body:function(pol){
+      if(!sees("ar")) return lockedNote("Annual Review is hidden for settlors.");
+      var rows=[["Year "+pol.year+" bank loaned",money(36300)],["Total amount paid to carrier (premium)",money(76300)],["Ending carrier statement value",money(198420.55)],["Estimated bank loan interest","6.10%"],["Estimated end-of-year cumulative bank loan",money(112400)],["Carrier statement death benefit",money(1697355.77)]];
+      return '<div class="grid2"><div class="card2"><h3>How did the policy perform last year (Year '+(pol.year-1)+')?</h3>'+table(["",""],rows,"kv2")+
+        '<p class="note">Estimated net of loan: cash value '+pol.cv+' · death benefit '+pol.ndb+'</p><button class="btn sm" data-act="mock">Carrier Annual Statement</button></div>'+
+        '<div class="card2"><h3>Original Illustrated Values</h3><div class="minis"><div><small>Your contribution</small><b>'+money(40000)+'</b></div><div><small>Bank loan amount</small><b>'+money(36300)+'</b></div><div><small>Total amount paid</small><b>'+money(76300)+'</b></div></div>'+
+        '<h3 style="margin-top:14px">Illustrated vs actual cash value</h3>'+spark()+'<p class="note">Same 3 comparison charts as today (cash value, loan rate vs growth rate, net death benefit).</p></div></div>'+
+        '<p class="note">“Your contribution” becomes “Contribution” for settlors, since the settlor may not be the payer.</p>';
+    }},
+  perf:{title:"Current Performance",today:"Kai-Zen risks, policy performance status and table, loan-to-value, index allocations (admins only), and “Change My Allocations” = download the carrier PDF and email it to NIW (no DocuSign).",
+    sub:function(pol){return "Performance and allocations for "+esc(pol.insured)+"’s policy.";},
+    body:function(pol){
+      if(!sees("perfV")) return lockedNote("Current Performance is hidden for settlors.");
+      return '<div class="grid2"><div class="card2"><h3>Policy Performance</h3><div class="duev ok">Good</div><p class="note">Growth rate is above the bank interest rate.</p>'+
+        table(["Policy year","Growth rate earned","Bank interest rate","Spread"],[["1","6.20%","5.90%","0.30%"],["2","5.25%","6.10%","-0.85%"],["Total averages","5.73%","6.00%","-0.27%"]])+'<p class="note">Current loan to value: 56%</p></div>'+
+        '<div class="card2"><h3>Kai-Zen Risks &amp; Considerations</h3><ul class="ul"><li>Policy risks</li><li>Leverage risks</li><li>How to protect yourself</li></ul>'+
+        '<h3 style="margin-top:12px">Allocation Changes</h3><p class="note">Today: download the carrier’s allocation change form, fill it out and email it to niw.info@simplicitygroup.com.</p>'+gateBtn("perfA","Change Allocations")+
+        (choice.perfA==="No"||choice.perfA==="View only"?'<p class="note">Allocation changes are made by the insured.</p>':'')+'</div></div>';
+    }},
+  ins:{title:"Insured Details",today:"Legal name, personal details (phones, email, DOB, last 4 SSN, age, net worth, income, employer, addresses) and beneficiaries. The insured edits all of them; most changes need DocuSign.",
+    sub:function(pol){return "Who is insured on this policy, and its beneficiaries.";},
+    body:function(pol){
+      var basic = sees("insV") ? '<div class="card2"><h3>Insured</h3>'+table(["",""],[["Name",esc(pol.insured)],["Date of birth","••/••/1978"],["City, state","Dallas, TX"]],"kv2")+
+          '<p class="note">Only these 3 details are shown. Not shown: phones, email, SSN, net worth, income, employer, full address.</p>'+(choice.insE==="No"?'<p class="note">Only the insured can change their own details.</p>':gateBtn("insE","Edit insured details"))+'</div>'
+        : lockedNote("Insured details are hidden for settlors.");
+      var bens='<div class="card2"><h3>Beneficiary Details</h3>'+table(["Name","Type","Percentage","Relationship"],[["Reyes Family Trust","Trust","100%","Trust"]])+
+        '<p class="note"><b>Contingent:</b> none</p>'+(can("benA")?'<button class="btn primary" data-act="mock">Request beneficiary change</button> <span class="note">Signed by you in DocuSign</span>':choice.benA==="Ask Judy"?gateBtn("benA","Request beneficiary change"):'')+
+        '<div class="callout">ILIA’s Kai-Zen FAQ says the settlor decides who the beneficiaries are. Today, though, the insured edits and signs beneficiary changes (open question 1).</div></div>';
+      return '<div class="grid2">'+basic+bens+'</div>';
+    }},
+  claims:{title:"Claims & Distributions",today:"Two cards: Make a Claim Request and Distribution Request. Each opens a single free-text “Details” box. No types, no steps, no signing. Available once the loan is paid off.",
+    sub:function(pol){return "Claim or distribution requests for "+esc(pol.insured)+"’s policy. Available once the bank loan is paid off.";},
+    body:function(pol){
+      var st=sees("clV")?'<div class="card2 wide"><h3>Your requests</h3>'+table(["Type","Sent","Status"],[["—","—","No requests yet"]])+'</div>':lockedNote("Request status is hidden for settlors.");
+      return '<div class="grid2"><div class="card2"><h3>Make a Claim Request</h3><p class="note">For example a death claim. Usually handled with the trustee and beneficiaries.</p>'+gateBtn("clA","Claim Request")+'</div>'+
+        '<div class="card2"><h3>Distribution Request</h3><p class="note">Policy loans or withdrawals after the bank loan is paid off.</p>'+gateBtn("clA","Make Distributions Request")+'</div></div>'+st+
+        (choice.clA==="No"||choice.clA==="View only"?'<p class="note">Claims and distributions are requested by the insured.</p>':'');
+    }}
+};
+function spark(){return '<svg viewBox="0 0 300 90" class="spark" role="img" aria-label="Illustrated versus actual cash value, years 1 to 8"><polyline fill="none" stroke="var(--faint)" stroke-dasharray="4 4" stroke-width="2" points="10,80 45,70 80,58 115,47 150,36 185,27 220,19 255,12 290,6"/><polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="10,80 45,72 80,61 115,52"/><circle cx="115" cy="52" r="3.5" fill="var(--accent)"/><text x="12" y="12" font-size="10" fill="var(--muted)">— actual   - - illustrated</text></svg>';}
+
+/* Open questions under each screen */
+var OPENQ={
+  home:["One person can be the settlor on several policies, for example a parent for each child’s policy. Is the relationship to the insured recorded per policy (Parent / Spouse / Other) or once per settlor?","If a settlor has many policies (10 or more), should the home add search, or group the policies by family?","Should a policy that isn’t in force yet show on the home (greyed out), or stay hidden until it’s in force?"],
+  dash:["Should the settlor see every value card (net death benefit and cash value), or fewer?","Should the dashboard keep the quick-link tiles (Plan Documents, Annual Review, Insured Details, Claims…), filtered to what the settlor can use?","When a policy isn’t in force yet, should the settlor see a “coming soon” card for it, or nothing?"],
+  pay:["Can the settlor make contribution payments from the portal? ILIA’s Kai-Zen FAQ and wire instructions already allow funds from the insured’s <b>or the settlor’s</b> personal account.","Entity settlors: today’s rule says personal accounts only, not business or trust accounts. Can an LLC or other entity pay, or must it always be a person?","If the settlor pays by ePay, do they save their own bank account in ILIA, kept separate from the insured’s?","Should the settlor see Bank Leverage (bank loan amounts) in the history?","Who gets contribution-due reminders and payment receipts: the insured, the signer, or both?","Monthly recurring ePay: if the insured set it up, can the signer see or change it?"],
+  docs:["Enrollment documents include the application with the insured’s medical and financial answers. Show a redacted version, a filtered set (policy, illustration, trust), or everything?","Replace “Personal Documents” with “Settlor Documents” (their own uploads) and hide the insured’s ID, utility bill and residence documents?","What can a settlor upload (trust, entity or ID documents), and who at NIW reviews it?","Add a “Signed by me” tab so the signer can find everything they’ve signed? Should the insured see those documents too?"],
+  ar:["The Annual Review tile is admin-only today. Is Annual Review live for insureds yet? Should settlors get it at the same time?","It shows bank loan amounts and interest. Is that OK for the settlor? (The trust owns the policy.)","Can the settlor download the carrier annual statement?","If NIW holds annual review calls, is the settlor invited, the insured, or both?"],
+  perf:["Allocation changes today are a carrier PDF the client emails to NIW, with no signing in ILIA. For a separate settlor, should the signer fill out and sign that form instead of the insured?","Index allocation cards only show for admins today. Show them to the settlor?","Allianz “Lock at X%”: can the signer request a lock?","If policy performance moves to “Monitor” or “Check-In”, who is told: insured, signer, or both?"],
+  ins:["ILIA’s FAQ says the settlor decides the beneficiaries, but today the insured edits and signs beneficiary changes. For a separate settlor, who requests and signs: the signer, the insured, or both?","Which insured details can the settlor see? Proposal: name, masked date of birth, city and state only.","Confirm: legal name and personal detail changes stay with the insured (insured signs).","If the insured has no portal access, how do they change their own details? By calling NIW?"],
+  claims:["Who can request a distribution on a trust-owned policy: the signer, the insured, or both? (Per the FAQ, surrender funds go to the insured or settlor.)","Death claims usually come from the trustee and beneficiaries. Should the settlor portal offer “Claim Request” at all?","Today a request is a free-text box with no signature. Should a settlor’s request require their DocuSign signature?","Who is notified and approves: the trustee (Provident) or NIW operations?"]
+};
+function openQ(s){var q=OPENQ[s]; if(!q) return ""; return '<div class="oq"><h3>Open questions for this screen</h3><ol>'+q.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol></div>';}
 
 /* ---------- Decisions rail ---------- */
 function renderRail(){
@@ -325,7 +486,8 @@ function decisionsText(){
 
 /* ---------- Events ---------- */
 document.addEventListener("click",function(ev){
-  var t=ev.target.closest("[data-nav],[data-pick],[data-act],[data-dk],[data-w]"); if(!t) return;
+  var t=ev.target.closest("[data-nav],[data-pick],[data-act],[data-dk],[data-w],[data-tab]"); if(!t) return;
+  if(t.dataset.tab){ tabState[t.dataset.tab]=+t.dataset.ti; render(); return; }
   if(t.dataset.w){ who=t.dataset.w; [].forEach.call(document.querySelectorAll("#who button"),function(b){b.setAttribute("aria-pressed",b===t?"true":"false");});
     pol=null; view="home"; var pp=P().policies; if(pp.length===1&&pp[0].inforce){pol=pp[0];view="dash";} render(); return; }
   if(t.dataset.nav){ var v=t.dataset.nav; if(v==="home"){pol=null;} view=v; render(); window.scrollTo(0,0); return; }
