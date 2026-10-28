@@ -84,6 +84,8 @@ button:focus-visible,.fld:focus-visible,.opt:focus-visible{outline:2px solid var
 .sa-card .mf.has .mf-l{background:var(--surface)}
 .sa-card .ilia-grid{max-width:none;margin-top:14px}
 .mf-r{margin-left:auto}
+.mf-add{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;text-align:left;border-style:dashed;color:#555;font-size:14px;cursor:pointer}
+.mf-add small{font-size:11.5px;color:var(--accent)}
 .isins.not{color:#5d4037;background:#fff3e0;border-color:#ffcc80}
 .sa-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-top:18px}
 .isins{font-size:12px;font-weight:500;color:#1b5e20;background:#e3f2e5;border:1px solid #a5d6a7;border-radius:14px;padding:2px 10px}
@@ -375,10 +377,10 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 
 <script>
 var POLICY = {first:"Daniel", last:"Reyes", policy:"KZ-104233", tranche:79};
-var ENTITY_TYPES = ["Trust – revocable","Trust – irrevocable","LLC","Corporation","Partnership","Estate","Key person / business"];
+var ENTITY_TYPES = ["Trust (Revocable)","Trust (Irrevocable)","Keyman","Limited Liability Company (LLC)","Corporation","Partnership","Non-Profit Organization","Estate","Other"];
 var SAMPLE = {
   ind: {first:"Maria", last:"Reyes", relation:"Spouse", email:"maria.reyes@example.com", phone:"(214) 555-0148", ssn:"512-44-4821", dob:"03/14/1979", street:"4410 Oak Lawn Ave", city:"Dallas", state:"TX", zip:"75219"},
-  ent: {name:"Reyes Family Holdings LLC", etype:"LLC", ein:"84-3196620", street:"2200 Ross Ave, Suite 900", city:"Dallas", state:"TX", zip:"75201"},
+  ent: {name:"Reyes Family Holdings LLC", etype:"Limited Liability Company (LLC)", ein:"84-3196620", street:"2200 Ross Ave, Suite 900", city:"Dallas", state:"TX", zip:"75201"},
   signers: [
     {first:"Daniel", last:"Reyes", title:"Managing Member", email:"d.reyes@reyesholdings.example", phone:"(214) 555-0190"},
     {first:"Laura", last:"Chen", title:"Chief Financial Officer", email:"l.chen@reyesholdings.example", phone:"(214) 555-0177"},
@@ -502,6 +504,13 @@ function clientHTML(){
     iliaFld("Client Email Address","daniel.reyes@example.com")+iliaFld("Client Phone Number","(214) 555-0132")+iliaFld("Client Social","•••-••-4417")+
     relSel(rel)+'</div></div>';
 }
+function entSignerHTML(){
+  var g=st.signers[0];
+  var head='<div class="sec-t" style="margin-top:20px"><span>Entity authorized signer</span>'+(g?'<button class="btn link sm" data-act="editSettlor">Change authorized signer</button>':'')+'</div>';
+  if(!g) return head+'<div class="ilia-grid">'+["Authorized Signer First Name","Last Name","Title","Email Address","Phone Number"].map(function(l){return '<button class="mf mf-add" data-act="addSigner">'+l+'<small>Click to add sample</small></button>';}).join("")+'</div>';
+  return head+'<div class="ilia-grid">'+iliaFld("Authorized Signer First Name",g.first)+iliaFld("Last Name",g.last)+iliaFld("Title",g.title)+
+    iliaFld("Email Address",g.email,true)+iliaFld("Phone Number",g.phone)+'</div>';
+}
 function secretFld(label,v){return '<div class="mf has"><span class="mf-l">'+label+'</span><span class="mf-v">'+(ssnShown?esc(v):mask(v,4))+'</span><button class="reveal mf-r" data-act="ssn">'+(ssnShown?"Hide":"Show")+'</button></div>';}
 function iliaFld(label,val,wide){return '<div class="mf'+(val?' has':'')+(wide?' wide':'')+'"><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(val)+'</span></div>';}
 function render(){
@@ -544,9 +553,11 @@ function render(){
   } else {
     var e=st.ent;
     h+='<div><div class="sec-t"><span>Settlor details · entity</span></div><div class="ilia-grid">'+
-      iliaFld("Entity Name",e.name)+iliaFld("Entity Type",e.etype)+secretFld("EIN / Tax ID",e.ein)+
+      iliaFld("Entity Name",e.name)+
+      '<div class="mf has sel"><span class="mf-l">Entity Type</span><select id="entType" class="mf-s" aria-label="Entity Type">'+ENTITY_TYPES.map(function(o){return '<option'+(o===e.etype?' selected':'')+'>'+esc(o)+'</option>';}).join("")+'</select></div>'+
+      secretFld("EIN / Tax ID",e.ein)+
       iliaFld("Address",e.street+", "+e.city+", "+e.state+" "+e.zip,true)+
-      '</div></div><hr class="divider">'+
+      '</div>'+entSignerHTML()+'</div><hr class="divider">'+
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   }
   h+='<hr class="divider"><div><div class="sec-t"><span>Recent changes</span></div><ul class="activity">'+st.activity.slice(0,4).map(function(a){return '<li><b>'+esc(a.who)+'</b> · '+esc(a.what)+' · '+esc(a.when)+'</li>';}).join("")+'</ul></div>';
@@ -558,6 +569,7 @@ document.getElementById("view").addEventListener("click",function(ev){
   var a=b.dataset.act, i=+b.dataset.i;
   var s=st.signers[i], pp=st.policies[i], nm=function(o){return o.first+" "+o.last;};
   if(a==="ssn"){ssnShown=!ssnShown;}
+  if(a==="addSigner"){var ns=clone(SAMPLE.signers[1]);ns.access=false;ns.invite="none";ns.d={};st.signers=[ns];log("Authorized signer added: "+ns.first+" "+ns.last+", "+ns.title);toast("Authorized signer added");}
   else if(a==="cancel"){confirmKey="";}
   else if(a==="sToggle"){
     if(s.access){ if(s.invite==="none"){s.access=false;log("Turned off portal access for "+nm(s));toast("Access turned off");} else confirmKey="s"+i; }
@@ -888,7 +900,9 @@ document.getElementById("drawerRoot").addEventListener("change",function(ev){
 });
 document.getElementById("editBtn").addEventListener("click",openDrawer);
 document.getElementById("view").addEventListener("change",function(ev){
-  var t=ev.target; if(t.id!=="iliaRel"||t.value===t.dataset.cur) return;
+  var t=ev.target;
+  if(t.id==="entType"){ log("Entity type changed from "+st.ent.etype+" to "+t.value); st.ent.etype=t.value; toast("Entity type updated"); render(); return; }
+  if(t.id!=="iliaRel"||t.value===t.dataset.cur) return;
   var rel=t.value; t.value=t.dataset.cur; openDrawer();
   if(rel==="Self"){ d.type="insured"; } else { d.type="individual"; d.ind.relation=rel; }
   renderDrawer();
