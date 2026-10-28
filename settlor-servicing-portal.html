@@ -140,6 +140,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .drow.locked .opts button[aria-pressed="false"]{opacity:.45}
 .opts button[disabled]{cursor:default}
 .chg{color:var(--warn);font-weight:700}
+.lockbtn{margin-left:auto;border:1px solid var(--line-strong);background:var(--surface);border-radius:20px;width:34px;height:28px;font-size:14px;line-height:1;display:inline-grid;place-items:center}
+.lockbtn.on{background:var(--ok-soft);border-color:var(--ok)}
+.lockbtn[disabled]{opacity:.6;cursor:default}
+.opts{align-items:center}
 .note-in{width:100%;margin-top:6px;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:inherit;font-size:12px;color:var(--ink);background:var(--surface);resize:vertical}
 .notev{margin-top:6px;font-size:12px;background:var(--surface-2);border-radius:6px;padding:6px 8px}
 /* Policy screens */
@@ -254,7 +258,7 @@ var DECISIONS = [
     {k:"cont",  screen:"contact",q:"Can the authorized signer use Contact Us and Feedback?", rec:"Yes", why:""}
   ]}
 ];
-var choice = {}, notes = {}, saved = {locked:false, savedAt:null};
+var choice = {}, notes = {}, rowLock = {}, saved = {locked:false, savedAt:null};
 DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=d.rec; notes[d.k]="";});});
 function dec(k){for(var i=0;i<DECISIONS.length;i++)for(var j=0;j<DECISIONS[i].items.length;j++)if(DECISIONS[i].items[j].k===k)return DECISIONS[i].items[j];}
 
@@ -486,14 +490,14 @@ function openQ(s){var q=OPENQ[s]; if(!q) return ""; return '<div class="oq"><h3>
 var DOC_PATH="portal/decisions", store=null, storeMode="local", saving=false;
 function nowLabel(){var d=new Date();return d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})+" "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});}
 function applyRecord(r){ if(!r) return; if(r.choices) Object.keys(r.choices).forEach(function(k){if(k in choice) choice[k]=r.choices[k];});
-  if(r.notes) Object.keys(r.notes).forEach(function(k){if(k in notes) notes[k]=r.notes[k];}); saved.locked=!!r.locked; saved.savedAt=r.savedAt||null; }
-function record(lock){return {choices:Object.assign({},choice), notes:Object.assign({},notes), locked:lock, savedAt:lock?nowLabel():saved.savedAt, updatedAt:new Date().toISOString(),
-  answers:DECISIONS.reduce(function(a,g){g.items.forEach(function(d){a.push({key:d.k,question:d.q,answer:choice[d.k],suggested:d.rec,note:notes[d.k]||""});});return a;},[])};}
-function persist(lock){
+  if(r.notes) Object.keys(r.notes).forEach(function(k){if(k in notes) notes[k]=r.notes[k];}); rowLock={}; if(r.rowLocks) Object.keys(r.rowLocks).forEach(function(k){rowLock[k]=!!r.rowLocks[k];}); saved.locked=!!r.locked; saved.savedAt=r.savedAt||null; }
+function record(lock){return {choices:Object.assign({},choice), notes:Object.assign({},notes), rowLocks:Object.assign({},rowLock), locked:lock, savedAt:nowLabel(), updatedAt:new Date().toISOString(),
+  answers:DECISIONS.reduce(function(a,g){g.items.forEach(function(d){a.push({key:d.k,question:d.q,answer:choice[d.k],suggested:d.rec,note:notes[d.k]||"",locked:lock||!!rowLock[d.k]});});return a;},[])};}
+function persist(lock,msg){
   var r=record(lock);
-  if(store){ saving=true; renderRail(); return store.doc(DOC_PATH).set(r).then(function(){saving=false;applyRecord(r);render();toast(lock?"Answers saved and locked":"Unlocked for editing");},function(){saving=false;renderRail();toast("Couldn’t save. Try again.");}); }
+  if(store){ saving=true; renderRail(); return store.doc(DOC_PATH).set(r).then(function(){saving=false;applyRecord(r);render();toast(msg||(lock?"Answers saved and locked":"Unlocked for editing"));},function(){saving=false;renderRail();toast("Couldn’t save. Try again.");}); }
   try{ localStorage.setItem("settlorPortalDecisions",JSON.stringify(r)); }catch(e){}
-  applyRecord(r); render(); toast(lock?"Saved and locked (this browser only)":"Unlocked for editing");
+  applyRecord(r); render(); toast(msg||(lock?"Saved and locked (this browser only)":"Unlocked for editing"));
 }
 (function initStore(){
   try{ var raw=localStorage.getItem("settlorPortalDecisions"); if(raw){applyRecord(JSON.parse(raw)); render();} }catch(e){}
@@ -505,8 +509,8 @@ function persist(lock){
   }
 })();
 function renderRail(){
-  var cur=view, L=saved.locked, n=0;
-  var status = L ? '<div class="status locked">🔒 Locked · saved '+esc(saved.savedAt)+'</div>' : '<div class="status draft">'+(saved.savedAt?'Editing · last saved '+esc(saved.savedAt)+'. Save &amp; lock again when done.':'Draft · not saved yet')+'</div>';
+  var cur=view, L=saved.locked, n=0, total=0, nl=0; DECISIONS.forEach(function(g){g.items.forEach(function(d){total++; if(rowLock[d.k]) nl++;});});
+  var status = L ? '<div class="status locked">🔒 Locked · saved '+esc(saved.savedAt)+'</div>' : '<div class="status draft">'+(saved.savedAt?'Editing · '+nl+' of '+total+' questions locked · last saved '+esc(saved.savedAt):'Draft · not saved yet')+'</div>';
   var where = storeMode==="shared" ? 'Saved to this page’s shared record. Claude can read it back to log it.' : 'Saving in <b>this browser only</b> here. To save for the team (and so Claude can log it), use the Claude Artifact link.';
   var h='<h4>What can the authorized signer do?</h4>'+
     '<p class="intro">The <b>authorized signer</b> is the one person who logs in here: the settlor themself, or the person who signs for an entity settlor. My suggestion is pre-selected. Ask each question, pick the answer, add a note, then <b>Save &amp; lock</b>.</p>'+
@@ -514,11 +518,11 @@ function renderRail(){
     '<p class="where">'+where+'</p>';
   DECISIONS.forEach(function(g){
     h+='<div class="dgrp"><h5>'+g.g+'</h5>'+g.items.map(function(d){ n++;
-      var changed=choice[d.k]!==d.rec;
-      return '<div class="drow'+(d.screen===cur?' cur':'')+(L?' locked':'')+'"><div class="q"><span class="qn">'+n+'</span>'+esc(d.q)+'</div>'+
-        '<div class="opts">'+OPTS.map(function(o){return '<button data-dk="'+d.k+'" data-dv="'+o+'" aria-pressed="'+(choice[d.k]===o)+'"'+(L?' disabled':'')+'>'+o+'</button>';}).join("")+'</div>'+
+      var changed=choice[d.k]!==d.rec, RL=L||!!rowLock[d.k];
+      return '<div class="drow'+(d.screen===cur?' cur':'')+(RL?' locked':'')+'"><div class="q"><span class="qn">'+n+'</span>'+esc(d.q)+'</div>'+
+        '<div class="opts">'+OPTS.map(function(o){return '<button data-dk="'+d.k+'" data-dv="'+o+'" aria-pressed="'+(choice[d.k]===o)+'"'+(RL?' disabled':'')+'>'+o+'</button>';}).join("")+'<button class="lockbtn'+(RL?' on':'')+'" data-lk="'+d.k+'" aria-pressed="'+RL+'" title="'+(L?'Everything is locked. Use Unlock to edit.':RL?'Unlock this question':'Lock this question')+'" aria-label="'+(RL?'Unlock':'Lock')+' question '+n+'"'+(L?' disabled':'')+'>'+(RL?'\ud83d\udd12':'\ud83d\udd13')+'</button></div>'+
         '<div class="why"><b>Suggested:</b> '+esc(d.rec)+(changed?' · <span class="chg">changed</span>':'')+(d.why?' — '+esc(d.why):'')+'</div>'+
-        (L ? (notes[d.k]?'<div class="notev">📝 '+esc(notes[d.k])+'</div>':'')
+        (RL ? (notes[d.k]?'<div class="notev">📝 '+esc(notes[d.k])+'</div>':'')
            : '<textarea class="note-in" id="note-'+d.k+'" data-nk="'+d.k+'" rows="1" placeholder="Note from the call (optional)">'+esc(notes[d.k])+'</textarea>')+
       '</div>';
     }).join("")+'</div>';
@@ -534,7 +538,8 @@ document.addEventListener("input",function(ev){ var t=ev.target; if(t.dataset &&
 
 /* ---------- Events ---------- */
 document.addEventListener("click",function(ev){
-  var t=ev.target.closest("[data-nav],[data-pick],[data-act],[data-dk],[data-w],[data-tab]"); if(!t) return;
+  var t=ev.target.closest("[data-nav],[data-pick],[data-act],[data-dk],[data-w],[data-tab],[data-lk]"); if(!t) return;
+  if(t.dataset.lk){ if(saved.locked) return; var k=t.dataset.lk; rowLock[k]=!rowLock[k]; var keep=document.getElementById("rail").scrollTop; persist(false, rowLock[k]?"Question locked and saved":"Question unlocked"); setTimeout(function(){document.getElementById("rail").scrollTop=keep;},0); return; }
   if(t.dataset.tab){ tabState[t.dataset.tab]=+t.dataset.ti; render(); return; }
   if(t.dataset.w){ who=t.dataset.w; [].forEach.call(document.querySelectorAll("#who button"),function(b){b.setAttribute("aria-pressed",b===t?"true":"false");});
     pol=null; view="home"; render(); return; }
@@ -546,7 +551,7 @@ document.addEventListener("click",function(ev){
   if(a==="mock") toast("Mock: opens an edit form");
   if(a==="save"){ persist(true); }
   if(a==="unlock"){ persist(false); }
-  if(a==="resetdec"&&!saved.locked){ DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=d.rec;});}); render(); toast("Back to suggestions"); }
+  if(a==="resetdec"&&!saved.locked){ DECISIONS.forEach(function(g){g.items.forEach(function(d){if(!rowLock[d.k]) choice[d.k]=d.rec;});}); render(); toast("Unlocked questions reset to suggestions"); }
   if(a==="copy"){ var txt=decisionsText();
     try{ navigator.clipboard.writeText(txt).then(function(){toast("Decisions copied");},function(){toast("Copy blocked. Select the text in the panel instead.");}); }catch(e){ toast("Copy blocked."); } }
 });
