@@ -134,6 +134,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .status{font-size:12.5px;font-weight:700;border-radius:8px;padding:7px 10px}
 .status.draft{background:var(--warn-soft);color:var(--warn)}
 .status.locked{background:var(--ok-soft);color:var(--ok)}
+.where .bad{color:var(--bad)}
 .where{font-size:11.5px;color:var(--muted);margin:0 0 12px}
 .qn{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;margin-right:6px}
 .drow .q{font-size:13px;font-weight:500;line-height:1.4}
@@ -687,6 +688,16 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape"&&sg&&!sg.don
 /* Storage: the Claude Artifact page saves to its shared database (Claude can read it back to log it).
    Anywhere else (e.g. GitHub Pages) it saves in this browser only. */
 var DOC_PATH="portal/decisions", store=null, storeMode="local", saving=false;
+/* Team answer sheet (Google Apps Script web app). Personal links carry ?u=<user>&k=<key>; keys are checked by the script. */
+var TEAM_URL="";
+var QS=new URLSearchParams(location.search), TU=QS.get("u"), TK=QS.get("k"), teamName="", teamErr="";
+function teamOn(){ return !!(TEAM_URL && TU && TK); }
+function localKey(){ return teamOn() ? "settlorPortalDecisions:"+TU : "settlorPortalDecisions"; }
+function teamSave(r){
+  try{ localStorage.setItem(localKey(),JSON.stringify(r)); }catch(e){}
+  return fetch(TEAM_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({u:TU,k:TK,record:r})})
+    .then(function(x){return x.json();}).then(function(j){ if(!j.ok) throw new Error(j.error||"save failed"); teamErr=""; return j; });
+}
 function nowLabel(){var d=new Date();return d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})+" "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});}
 function applyRecord(r){ if(!r) return; if(r.choices) Object.keys(r.choices).forEach(function(k){if(k in choice) choice[k]=r.choices[k];});
   if(r.notes) Object.keys(r.notes).forEach(function(k){if(k in notes) notes[k]=r.notes[k];}); rowLock={}; if(r.rowLocks) Object.keys(r.rowLocks).forEach(function(k){rowLock[k]=!!r.rowLocks[k];}); saved.locked=!!r.locked; saved.savedAt=r.savedAt||null; }
@@ -694,11 +705,25 @@ function record(lock){return {choices:Object.assign({},choice), notes:Object.ass
   answers:DECISIONS.reduce(function(a,g){g.items.forEach(function(d){a.push({key:d.k,question:d.q,answer:choice[d.k],suggested:d.rec,note:notes[d.k]||"",locked:lock||!!rowLock[d.k]});});return a;},[])};}
 function persist(lock,msg){
   var r=record(lock);
+  if(teamOn() && storeMode==="team"){ saving=true; renderRail(); return teamSave(r).then(function(){saving=false;applyRecord(r);render();toast(msg||(lock?"Answers saved and locked":"Unlocked for editing"));},function(){saving=false;teamErr="Couldn’t reach the team sheet. Saved in this browser for now.";applyRecord(r);render();toast("Saved in this browser only. Try again in a moment.");}); }
   if(store){ saving=true; renderRail(); return store.doc(DOC_PATH).set(r).then(function(){saving=false;applyRecord(r);render();toast(msg||(lock?"Answers saved and locked":"Unlocked for editing"));},function(){saving=false;renderRail();toast("Couldn’t save. Try again.");}); }
   try{ localStorage.setItem("settlorPortalDecisions",JSON.stringify(r)); }catch(e){}
   applyRecord(r); render(); toast(msg||(lock?"Saved and locked (this browser only)":"Unlocked for editing"));
 }
 (function initStore(){
+  if(teamOn()){
+    var local=null; try{ local=JSON.parse(localStorage.getItem(localKey())||(TU==="jamin"?localStorage.getItem("settlorPortalDecisions"):null)||"null"); }catch(e){}
+    if(local) applyRecord(local);
+    storeMode="team"; render();
+    fetch(TEAM_URL+"?u="+encodeURIComponent(TU)+"&k="+encodeURIComponent(TK)).then(function(x){return x.json();}).then(function(j){
+      if(!j.ok){ storeMode="local"; teamErr="This answer link isn’t valid. Ask Jamin for your link."; render(); return; }
+      teamName=j.name||"";
+      if(j.record){ applyRecord(j.record); render(); }
+      else if(local && local.savedAt){ teamSave(local).then(function(){render();toast("Your earlier answers were added to the team sheet");},function(){render();}); }
+      else render();
+    },function(){ teamErr="Couldn’t reach the team sheet. Answers save in this browser for now."; render(); });
+    return;
+  }
   try{ var raw=localStorage.getItem("settlorPortalDecisions"); if(raw){applyRecord(JSON.parse(raw)); render();} }catch(e){}
   if(window.claude && window.claude.use){
     window.claude.use("db").then(function(db){
@@ -710,7 +735,7 @@ function persist(lock,msg){
 function renderRail(){
   var cur=view, L=saved.locked, n=0, total=0, nl=0; DECISIONS.forEach(function(g){g.items.forEach(function(d){total++; if(rowLock[d.k]) nl++;});});
   var status = L ? '<div class="status locked">🔒 Locked · saved '+esc(saved.savedAt)+'</div>' : '<div class="status draft">'+(saved.savedAt?'Editing · '+nl+' of '+total+' questions locked · last saved '+esc(saved.savedAt):'Draft · not saved yet')+'</div>';
-  var where = storeMode==="shared" ? 'Saved to this page’s shared record. Claude can read it back to log it.' : 'Saving in <b>this browser only</b> here. To save for the team (and so Claude can log it), use the Claude Artifact link.';
+  var where = teamErr ? '<span class="bad">'+esc(teamErr)+'</span>' : storeMode==="team" ? 'Answering as <b>'+esc(teamName||TU)+'</b>. Your answers save to the team answer sheet, and Jamin sees them there.' : storeMode==="shared" ? 'Saved to this page’s shared record. Claude can read it back to log it.' : 'Saving in <b>this browser only</b>. To answer for the team, use the personal link Jamin sent you.';
   var h='<h4>What can the authorized signer do?</h4>'+
     '<p class="intro">The <b>authorized signer</b> is the one person who logs in here: the settlor themself, or the person who signs for an entity settlor. My suggestion is pre-selected. Ask each question, pick the answer, add a note, then <b>Save &amp; lock</b>.</p>'+
     status+'<div class="copyrow">'+(L?'<button class="btn sm" data-act="unlock">Unlock to edit</button>':'<button class="btn sm primary" data-act="save"'+(saving?' disabled':'')+'>'+(saving?'Saving…':'Save &amp; lock answers')+'</button><button class="btn sm" data-act="resetdec">Reset to suggestions</button>')+'<button class="btn sm" data-act="copy">Copy answers</button></div>'+
@@ -737,6 +762,7 @@ var noteTimers={};
 function markNote(k,txt,bad){var el=document.getElementById('ns-'+k); if(el){el.textContent=txt; el.className='nsaved'+(bad?' bad':'');}}
 function saveNoteQuiet(k){
   var r=record(saved.locked); var t=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  if(teamOn() && storeMode==="team"){ saving=true; teamSave(r).then(function(){saving=false; saved.savedAt=r.savedAt; markNote(k,'Saved \u2713 '+t);}, function(){saving=false; markNote(k,'Saved in this browser only. The team sheet didn’t answer.',true);}); return; }
   if(store){ saving=true; store.doc(DOC_PATH).set(r).then(function(){saving=false; saved.savedAt=r.savedAt; markNote(k,'Saved \u2713 '+t);}, function(){saving=false; markNote(k,'Not saved. Check your connection and type again.',true);}); return; }
   try{ localStorage.setItem('settlorPortalDecisions',JSON.stringify(r)); saved.savedAt=r.savedAt; markNote(k,'Saved \u2713 '+t+' (this browser)'); }catch(e){ markNote(k,'Not saved in this browser.',true); }
 }
