@@ -130,7 +130,18 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .opts button{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:20px;padding:3px 9px;font-size:11.5px}
 .opts button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:700}
 .opts button .rec{font-size:9.5px;font-weight:700;color:var(--ok);margin-left:3px}
-.copyrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0 14px}
+.copyrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 6px}
+.status{font-size:12.5px;font-weight:700;border-radius:8px;padding:7px 10px}
+.status.draft{background:var(--warn-soft);color:var(--warn)}
+.status.locked{background:var(--ok-soft);color:var(--ok)}
+.where{font-size:11.5px;color:var(--muted);margin:0 0 12px}
+.qn{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;margin-right:6px}
+.drow .q{font-size:13px;font-weight:500;line-height:1.4}
+.drow.locked .opts button[aria-pressed="false"]{opacity:.45}
+.opts button[disabled]{cursor:default}
+.chg{color:var(--warn);font-weight:700}
+.note-in{width:100%;margin-top:6px;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:inherit;font-size:12px;color:var(--ink);background:var(--surface);resize:vertical}
+.notev{margin-top:6px;font-size:12px;background:var(--surface-2);border-radius:6px;padding:6px 8px}
 /* Policy screens */
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 .card2{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;min-width:0;display:flex;flex-direction:column;gap:8px}
@@ -212,36 +223,39 @@ var PEOPLE = {
 
 /* ---------- Screens + proposed settlor permissions (Jamin decides) ----------
    Each question: options, recommended option, and why. */
-var OPTS = ["Yes","View only","No","Ask Judy"];
+var OPTS = ["Yes","View only","No","Not decided"];
+/* Every question is about the AUTHORIZED SIGNER: the one person who logs in to the Settlor Servicing Portal
+   (the settlor themself, or the person who signs for an entity settlor). */
 var DECISIONS = [
   {g:"Portal level", items:[
-    {k:"home",   screen:"home",  q:"New home screen: list of policies they sign for (no money figures until a policy is picked)", rec:"Yes", why:"Always land here, even with one policy: the settlor sees the policy card and clicks it to open the details."},
-    {k:"sign",   screen:"sign",  q:"“Waiting for my signature” list across all their policies (DocuSign)", rec:"Yes", why:"This is the main reason the authorized signer is in ILIA."},
-    {k:"profile",screen:"profile",q:"Update their own contact details (email, phone, address)", rec:"Yes", why:"Their own record, not the insured’s. Changing the email may need NIW approval since invites go there."}
+    {k:"home",   screen:"home",  q:"When the authorized signer logs in, should they land on a home screen that lists every policy they sign for, and pick one to see its details? (Even if they have only one policy.)", rec:"Yes", why:"No money figures show until they pick a policy."},
+    {k:"sign",   screen:"sign",  q:"Should the authorized signer have one list of everything waiting for their signature, across all their policies, and sign it in DocuSign?", rec:"Yes", why:"This is the main reason the authorized signer is in ILIA."},
+    {k:"profile",screen:"profile",q:"Can the authorized signer update their OWN contact details (email, phone, address)?", rec:"Yes", why:"Their own record, not the insured’s. A new email may need NIW approval, since forms and invites go there."}
   ]},
   {g:"Per policy (after picking one)", items:[
-    {k:"dash",  screen:"dash",  q:"Policy dashboard: values (paid status, growth rate, net death benefit, cash value, anniversary)", rec:"View only", why:"Same cards the insured sees today."},
-    {k:"payV",  screen:"pay",   q:"Payments: see contribution history and what’s due", rec:"View only", why:"Helps them know a contribution is coming."},
-    {k:"payA",  screen:"pay",   q:"Payments: make a contribution payment", rec:"Ask Judy", why:"ILIA’s Kai-Zen FAQ says contributions can come from the insured’s or the settlor’s personal account, so this may be a Yes. Needs a business call."},
-    {k:"payB",  screen:"pay",   q:"Payments: see the insured’s saved bank accounts", rec:"No", why:"The insured’s financial details."},
-    {k:"docsP", screen:"docs",  q:"Documents: enrollment and servicing documents (view / download)", rec:"Yes", why:"Plan documents for the policy they sign for."},
-    {k:"docsI", screen:"docs",  q:"Documents: the insured’s personal documents (ID, medical, etc.)", rec:"No", why:"The insured’s private documents."},
-    {k:"docsU", screen:"docs",  q:"Documents: upload documents (to a settlor folder)", rec:"Yes", why:"e.g. trust or entity paperwork NIW asks them for."},
-    {k:"ar",    screen:"ar",    q:"Annual Review", rec:"View only", why:"Policy health and illustrated vs actual."},
-    {k:"perfV", screen:"perf",  q:"Current Performance: view index performance and allocation", rec:"View only", why:""},
-    {k:"perfA", screen:"perf",  q:"Current Performance: request an allocation change (signed by them)", rec:"Ask Judy", why:"A policy-level decision. If the trust decides, the authorized signer should sign it, not the insured."},
-    {k:"insV",  screen:"ins",   q:"Insured details: see the insured’s basic details (name, masked DOB)", rec:"View only", why:"Enough to know whose policy it is, without SSN or full DOB."},
-    {k:"insE",  screen:"ins",   q:"Insured details: change the insured’s personal details (name, address)", rec:"No", why:"Only the insured can change their own personal details."},
-    {k:"benA",  screen:"ins",   q:"Beneficiaries: request / sign a beneficiary change", rec:"Ask Judy", why:"A trust-level decision in Kai-Zen. Today the insured signs it."},
-    {k:"clV",   screen:"claims",q:"Claims & Distributions: see request status", rec:"View only", why:""},
-    {k:"clA",   screen:"claims",q:"Claims & Distributions: start a claim, loan or distribution", rec:"Ask Judy", why:"Money movement. On surrender, funds go to the insured / settlor per the FAQ."}
+    {k:"dash",  screen:"dash",  q:"Can the authorized signer see the policy’s values: paid status, growth rate, net death benefit, cash value and anniversary date?", rec:"View only", why:"The same cards the insured sees today."},
+    {k:"payV",  screen:"pay",   q:"Can the authorized signer see the policy’s contribution history and what’s due next?", rec:"View only", why:"So they know when a contribution is coming."},
+    {k:"payA",  screen:"pay",   q:"Can the authorized signer MAKE a contribution payment for the policy from the portal?", rec:"Not decided", why:"ILIA’s Kai-Zen FAQ and wire instructions already allow funds from the insured’s or the settlor’s personal account."},
+    {k:"payB",  screen:"pay",   q:"Can the authorized signer see the INSURED’s saved bank accounts?", rec:"No", why:"That’s the insured’s own financial information."},
+    {k:"docsP", screen:"docs",  q:"Can the authorized signer view and download the policy’s enrollment and servicing documents (policy, illustration, trust, statements)?", rec:"Yes", why:"These are the plan documents for the policy they sign for."},
+    {k:"docsI", screen:"docs",  q:"Can the authorized signer see the INSURED’s personal documents (ID, utility bill, medical)?", rec:"No", why:"Those are the insured’s private documents."},
+    {k:"docsU", screen:"docs",  q:"Can the authorized signer upload their own documents (trust or entity paperwork, their ID) to a “Settlor Documents” folder?", rec:"Yes", why:"NIW sometimes needs these from them."},
+    {k:"ar",    screen:"ar",    q:"Can the authorized signer see the policy’s Annual Review (last year’s results vs the original illustration)?", rec:"View only", why:"It’s admin-only in ILIA today, so check whether it’s live for anyone yet."},
+    {k:"perfV", screen:"perf",  q:"Can the authorized signer see the policy’s performance and index allocations?", rec:"View only", why:""},
+    {k:"perfA", screen:"perf",  q:"Should the authorized signer (not the insured) fill out and sign allocation change requests?", rec:"Not decided", why:"Today the client downloads a carrier form and emails it to NIW. There’s no signing in ILIA."},
+    {k:"insV",  screen:"ins",   q:"Can the authorized signer see the insured’s basic details only: name, masked date of birth, and city and state?", rec:"View only", why:"Enough to know whose policy it is. No SSN, phone, email, income or full address."},
+    {k:"insE",  screen:"ins",   q:"Can the authorized signer CHANGE the insured’s personal details (name, address, phone)?", rec:"No", why:"Only the insured changes their own personal details."},
+    {k:"benA",  screen:"ins",   q:"Should the authorized signer (not the insured) request and sign beneficiary changes?", rec:"Not decided", why:"ILIA’s Kai-Zen FAQ says the settlor decides the beneficiaries, but today the insured signs beneficiary changes."},
+    {k:"clV",   screen:"claims",q:"Can the authorized signer see the status of claim and distribution requests on the policy?", rec:"View only", why:""},
+    {k:"clA",   screen:"claims",q:"Can the authorized signer START a claim, loan or distribution request on the policy?", rec:"Not decided", why:"Money movement. Today it’s a free-text request with no signature."}
   ]},
-  {g:"Same as today", items:[
-    {k:"faq",   screen:"faq",   q:"FAQs and Guides (settlor version)", rec:"Yes", why:"Questions settlors actually ask (what am I signing, why)."},
-    {k:"cont",  screen:"contact",q:"Contact Us and Feedback", rec:"Yes", why:""}
+  {g:"Help pages", items:[
+    {k:"faq",   screen:"faq",   q:"Should the authorized signer get their own FAQ (what am I signing, why, what happens next)?", rec:"Yes", why:""},
+    {k:"cont",  screen:"contact",q:"Can the authorized signer use Contact Us and Feedback?", rec:"Yes", why:""}
   ]}
 ];
-var choice = {}; DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=d.rec;});});
+var choice = {}, notes = {}, saved = {locked:false, savedAt:null};
+DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=d.rec; notes[d.k]="";});});
 function dec(k){for(var i=0;i<DECISIONS.length;i++)for(var j=0;j<DECISIONS[i].items.length;j++)if(DECISIONS[i].items[j].k===k)return DECISIONS[i].items[j];}
 
 /* Screen -> menu tag derived from the decisions */
@@ -250,7 +264,7 @@ function screenTag(s){
   var ks=SCREEN_KEYS[s]||[], vals=ks.map(function(k){return choice[k];});
   if(vals.every(function(v){return v==="No";})) return '<span class="tag t-no">Hidden</span>';
   if(vals.some(function(v){return v==="Yes";})) return '<span class="tag t-act">Can act</span>';
-  if(vals.some(function(v){return v==="Ask Judy";})) return '<span class="tag t-ask">To decide</span>';
+  if(vals.some(function(v){return v==="Not decided";})) return '<span class="tag t-ask">To decide</span>';
   return '<span class="tag t-view">View only</span>';
 }
 
@@ -302,7 +316,7 @@ function specPanel(screen,title,today){
   return '<div class="spec"><h3>'+title+': what can the settlor do here?</h3>'+
     (today?'<div class="note"><b>Today (insured):</b> '+today+'</div>':'')+
     '<div class="tblwrap"><table><thead><tr><th>Action</th><th>Your decision</th></tr></thead><tbody>'+
-    rows.map(function(d){var c=choice[d.k];var cls=c==="Yes"?"t-act":c==="No"?"t-no":c==="Ask Judy"?"t-ask":"t-view";return '<tr><td>'+esc(d.q)+'</td><td><span class="tag '+cls+'">'+esc(c)+'</span></td></tr>';}).join("")+
+    rows.map(function(d){var c=choice[d.k];var cls=c==="Yes"?"t-act":c==="No"?"t-no":c==="Not decided"?"t-ask":"t-view";return '<tr><td>'+esc(d.q)+'</td><td><span class="tag '+cls+'">'+esc(c)+'</span></td></tr>';}).join("")+
     '</tbody></table></div><p class="note" style="margin:8px 0 0">Change these in the right-hand panel. The menu tags update to match.</p></div>';
 }
 function render(){
@@ -359,7 +373,7 @@ function lockedNote(t){return '<div class="lockn">'+t+'</div>';}
 function gateBtn(k,label,act){
   var c=choice[k];
   if(c==="Yes") return '<button class="btn primary" data-act="mock">'+label+'</button>';
-  if(c==="Ask Judy") return '<button class="btn" disabled>'+label+'</button> <span class="tag t-ask">To decide</span>';
+  if(c==="Not decided") return '<button class="btn" disabled>'+label+'</button> <span class="tag t-ask">To decide</span>';
   return '';
 }
 function contribRows(pol){
@@ -380,7 +394,7 @@ var SCREENS={
           '<div class="row2"><select class="sel" aria-label="Payment method"><option>Personal Check</option><option>Wire Transfer</option><option>Single ePay Payment</option></select><button class="btn primary" data-act="mock">Payment Options</button></div>'+
           '<div class="callout">Funds must come from a personal account owned by the insured and/or the settlor of the trust, not a business or trust account (ILIA’s current wire rule).'+(ent?' <b>This settlor is an entity</b>, so see open question 2.':'')+'</div></div>';
       } else {
-        payCard='<div class="card2"><h3>Who pays this contribution</h3><p class="note" style="margin:0">'+(choice.payA==="Ask Judy"?'<span class="tag t-ask">To decide</span> Whether you can pay from the portal is still being decided. For now, payments are made by the insured.':'Payments are made by the insured. You’ll see each one here once it’s received.')+'</p><p class="note">Questions? niw.info@simplicitygroup.com · 800-294-9940 ext. 807</p></div>';
+        payCard='<div class="card2"><h3>Who pays this contribution</h3><p class="note" style="margin:0">'+(choice.payA==="Not decided"?'<span class="tag t-ask">To decide</span> Whether you can pay from the portal is still being decided. For now, payments are made by the insured.':'Payments are made by the insured. You’ll see each one here once it’s received.')+'</p><p class="note">Questions? niw.info@simplicitygroup.com · 800-294-9940 ext. 807</p></div>';
       }
       var hist;
       if(!sees("payV")) hist=lockedNote("Payment history is hidden for settlors.");
@@ -438,7 +452,7 @@ var SCREENS={
           '<p class="note">Only these 3 details are shown. Not shown: phones, email, SSN, net worth, income, employer, full address.</p>'+(choice.insE==="No"?'<p class="note">Only the insured can change their own details.</p>':gateBtn("insE","Edit insured details"))+'</div>'
         : lockedNote("Insured details are hidden for settlors.");
       var bens='<div class="card2"><h3>Beneficiary Details</h3>'+table(["Name","Type","Percentage","Relationship"],[["Reyes Family Trust","Trust","100%","Trust"]])+
-        '<p class="note"><b>Contingent:</b> none</p>'+(can("benA")?'<button class="btn primary" data-act="mock">Request beneficiary change</button> <span class="note">Signed by you in DocuSign</span>':choice.benA==="Ask Judy"?gateBtn("benA","Request beneficiary change"):'')+
+        '<p class="note"><b>Contingent:</b> none</p>'+(can("benA")?'<button class="btn primary" data-act="mock">Request beneficiary change</button> <span class="note">Signed by you in DocuSign</span>':choice.benA==="Not decided"?gateBtn("benA","Request beneficiary change"):'')+
         '<div class="callout">ILIA’s Kai-Zen FAQ says the settlor decides who the beneficiaries are. Today, though, the insured edits and signs beneficiary changes (open question 1).</div></div>';
       return '<div class="grid2">'+basic+bens+'</div>';
     }},
@@ -455,34 +469,68 @@ function spark(){return '<svg viewBox="0 0 300 90" class="spark" role="img" aria
 
 /* Open questions under each screen */
 var OPENQ={
-  home:["One person can be the settlor on several policies, for example a parent for each child’s policy. Is the relationship to the insured recorded per policy (Parent / Spouse / Other) or once per settlor?","If a settlor has many policies (10 or more), should the home add search, or group the policies by family?","Should a policy that isn’t in force yet show on the home (greyed out), or stay hidden until it’s in force?"],
-  dash:["Should the settlor see every value card (net death benefit and cash value), or fewer?","Should the dashboard keep the quick-link tiles (Plan Documents, Annual Review, Insured Details, Claims…), filtered to what the settlor can use?","When a policy isn’t in force yet, should the settlor see a “coming soon” card for it, or nothing?"],
-  pay:["Can the settlor make contribution payments from the portal? ILIA’s Kai-Zen FAQ and wire instructions already allow funds from the insured’s <b>or the settlor’s</b> personal account.","Entity settlors: today’s rule says personal accounts only, not business or trust accounts. Can an LLC or other entity pay, or must it always be a person?","If the settlor pays by ePay, do they save their own bank account in ILIA, kept separate from the insured’s?","Should the settlor see Bank Leverage (bank loan amounts) in the history?","Who gets contribution-due reminders and payment receipts: the insured, the signer, or both?","Monthly recurring ePay: if the insured set it up, can the signer see or change it?"],
-  docs:["Enrollment documents include the application with the insured’s medical and financial answers. Show a redacted version, a filtered set (policy, illustration, trust), or everything?","Replace “Personal Documents” with “Settlor Documents” (their own uploads) and hide the insured’s ID, utility bill and residence documents?","What can a settlor upload (trust, entity or ID documents), and who at NIW reviews it?","Add a “Signed by me” tab so the signer can find everything they’ve signed? Should the insured see those documents too?"],
-  ar:["The Annual Review tile is admin-only today. Is Annual Review live for insureds yet? Should settlors get it at the same time?","It shows bank loan amounts and interest. Is that OK for the settlor? (The trust owns the policy.)","Can the settlor download the carrier annual statement?","If NIW holds annual review calls, is the settlor invited, the insured, or both?"],
-  perf:["Allocation changes today are a carrier PDF the client emails to NIW, with no signing in ILIA. For a separate settlor, should the signer fill out and sign that form instead of the insured?","Index allocation cards only show for admins today. Show them to the settlor?","Allianz “Lock at X%”: can the signer request a lock?","If policy performance moves to “Monitor” or “Check-In”, who is told: insured, signer, or both?"],
-  ins:["ILIA’s FAQ says the settlor decides the beneficiaries, but today the insured edits and signs beneficiary changes. For a separate settlor, who requests and signs: the signer, the insured, or both?","Which insured details can the settlor see? Proposal: name, masked date of birth, city and state only.","Confirm: legal name and personal detail changes stay with the insured (insured signs).","If the insured has no portal access, how do they change their own details? By calling NIW?"],
-  claims:["Who can request a distribution on a trust-owned policy: the signer, the insured, or both? (Per the FAQ, surrender funds go to the insured or settlor.)","Death claims usually come from the trustee and beneficiaries. Should the settlor portal offer “Claim Request” at all?","Today a request is a free-text box with no signature. Should a settlor’s request require their DocuSign signature?","Who is notified and approves: the trustee (Provident) or NIW operations?"]
+  home:["One person can be the authorized signer on several policies, for example a parent for each child’s policy. Is the relationship to the insured recorded per policy (Parent / Spouse / Other) or once per settlor?","If an authorized signer has many policies (10 or more), should the home add search, or group the policies by family?","Should a policy that isn’t in force yet show on the home (greyed out), or stay hidden until it’s in force?"],
+  dash:["Should the authorized signer see every value card (net death benefit and cash value), or fewer?","Should the dashboard keep the quick-link tiles (Plan Documents, Annual Review, Insured Details, Claims…), filtered to what the authorized signer can use?","When a policy isn’t in force yet, should the authorized signer see a “coming soon” card for it, or nothing?"],
+  pay:["Can the authorized signer make contribution payments from the portal? ILIA’s Kai-Zen FAQ and wire instructions already allow funds from the insured’s <b>or the settlor’s</b> personal account.","Entity settlors: today’s rule says personal accounts only, not business or trust accounts. Can an LLC or other entity pay, or must it always be a person?","If the authorized signer pays by ePay, do they save their own bank account in ILIA, kept separate from the insured’s?","Should the authorized signer see Bank Leverage (bank loan amounts) in the history?","Who gets contribution-due reminders and payment receipts: the insured, the signer, or both?","Monthly recurring ePay: if the insured set it up, can the signer see or change it?"],
+  docs:["Enrollment documents include the application with the insured’s medical and financial answers. Show a redacted version, a filtered set (policy, illustration, trust), or everything?","Replace “Personal Documents” with “Settlor Documents” (their own uploads) and hide the insured’s ID, utility bill and residence documents?","What can an authorized signer upload (trust, entity or ID documents), and who at NIW reviews it?","Add a “Signed by me” tab so the signer can find everything they’ve signed? Should the insured see those documents too?"],
+  ar:["The Annual Review tile is admin-only today. Is Annual Review live for insureds yet? Should authorized signers get it at the same time?","It shows bank loan amounts and interest. Is that OK for the authorized signer? (The trust owns the policy.)","Can the authorized signer download the carrier annual statement?","If NIW holds annual review calls, is the authorized signer invited, the insured, or both?"],
+  perf:["Allocation changes today are a carrier PDF the client emails to NIW, with no signing in ILIA. For a separate settlor, should the signer fill out and sign that form instead of the insured?","Index allocation cards only show for admins today. Show them to the authorized signer?","Allianz “Lock at X%”: can the signer request a lock?","If policy performance moves to “Monitor” or “Check-In”, who is told: insured, signer, or both?"],
+  ins:["ILIA’s FAQ says the settlor decides the beneficiaries, but today the insured edits and signs beneficiary changes. For a separate settlor, who requests and signs: the signer, the insured, or both?","Which insured details can the authorized signer see? Proposal: name, masked date of birth, city and state only.","Confirm: legal name and personal detail changes stay with the insured (insured signs).","If the insured has no portal access, how do they change their own details? By calling NIW?"],
+  claims:["Who can request a distribution on a trust-owned policy: the signer, the insured, or both? (Per the FAQ, surrender funds go to the insured or settlor.)","Death claims usually come from the trustee and beneficiaries. Should the authorized signer portal offer “Claim Request” at all?","Today a request is a free-text box with no signature. Should a settlor’s request require their DocuSign signature?","Who is notified and approves: the trustee (Provident) or NIW operations?"]
 };
 function openQ(s){var q=OPENQ[s]; if(!q) return ""; return '<div class="oq"><h3>Open questions for this screen</h3><ol>'+q.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol></div>';}
 
-/* ---------- Decisions rail ---------- */
+/* ---------- Decisions rail: answer, note, save & lock ---------- */
+/* Storage: the Claude Artifact page saves to its shared database (Claude can read it back to log it).
+   Anywhere else (e.g. GitHub Pages) it saves in this browser only. */
+var DOC_PATH="portal/decisions", store=null, storeMode="local", saving=false;
+function nowLabel(){var d=new Date();return d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})+" "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});}
+function applyRecord(r){ if(!r) return; if(r.choices) Object.keys(r.choices).forEach(function(k){if(k in choice) choice[k]=r.choices[k];});
+  if(r.notes) Object.keys(r.notes).forEach(function(k){if(k in notes) notes[k]=r.notes[k];}); saved.locked=!!r.locked; saved.savedAt=r.savedAt||null; }
+function record(lock){return {choices:Object.assign({},choice), notes:Object.assign({},notes), locked:lock, savedAt:lock?nowLabel():saved.savedAt, updatedAt:new Date().toISOString(),
+  answers:DECISIONS.reduce(function(a,g){g.items.forEach(function(d){a.push({key:d.k,question:d.q,answer:choice[d.k],suggested:d.rec,note:notes[d.k]||""});});return a;},[])};}
+function persist(lock){
+  var r=record(lock);
+  if(store){ saving=true; renderRail(); return store.doc(DOC_PATH).set(r).then(function(){saving=false;applyRecord(r);render();toast(lock?"Answers saved and locked":"Unlocked for editing");},function(){saving=false;renderRail();toast("Couldn’t save. Try again.");}); }
+  try{ localStorage.setItem("settlorPortalDecisions",JSON.stringify(r)); }catch(e){}
+  applyRecord(r); render(); toast(lock?"Saved and locked (this browser only)":"Unlocked for editing");
+}
+(function initStore(){
+  try{ var raw=localStorage.getItem("settlorPortalDecisions"); if(raw){applyRecord(JSON.parse(raw)); render();} }catch(e){}
+  if(window.claude && window.claude.use){
+    window.claude.use("db").then(function(db){
+      if(!db) return; store=db; storeMode="shared";
+      db.doc(DOC_PATH).onSnapshot(function(s){ if(s.exists && !saving){ applyRecord(s.data()); render(); } else renderRail(); }, function(){ store=null; storeMode="local"; renderRail(); });
+    }, function(){});
+  }
+})();
 function renderRail(){
-  var cur=view==="pay"?"pay":view;
-  var h='<h4>What can the settlor do?</h4><p class="intro">My recommendation is pre-selected (<span style="color:var(--ok);font-weight:700">rec</span>). Click to change. The menu tags and each page’s table update. Copy your decisions when done.</p>'+
-    '<div class="copyrow"><button class="btn sm primary" data-act="copy">Copy my decisions</button><button class="btn sm" data-act="resetdec">Back to recommendations</button></div>';
+  var cur=view, L=saved.locked, n=0;
+  var status = L ? '<div class="status locked">🔒 Locked · saved '+esc(saved.savedAt)+'</div>' : '<div class="status draft">'+(saved.savedAt?'Editing · last saved '+esc(saved.savedAt)+'. Save &amp; lock again when done.':'Draft · not saved yet')+'</div>';
+  var where = storeMode==="shared" ? 'Saved to this page’s shared record. Claude can read it back to log it.' : 'Saving in <b>this browser only</b> here. To save for the team (and so Claude can log it), use the Claude Artifact link.';
+  var h='<h4>What can the authorized signer do?</h4>'+
+    '<p class="intro">The <b>authorized signer</b> is the one person who logs in here: the settlor themself, or the person who signs for an entity settlor. My suggestion is pre-selected. Ask each question, pick the answer, add a note, then <b>Save &amp; lock</b>.</p>'+
+    status+'<div class="copyrow">'+(L?'<button class="btn sm" data-act="unlock">Unlock to edit</button>':'<button class="btn sm primary" data-act="save"'+(saving?' disabled':'')+'>'+(saving?'Saving…':'Save &amp; lock answers')+'</button><button class="btn sm" data-act="resetdec">Reset to suggestions</button>')+'<button class="btn sm" data-act="copy">Copy answers</button></div>'+
+    '<p class="where">'+where+'</p>';
   DECISIONS.forEach(function(g){
-    h+='<div class="dgrp"><h5>'+g.g+'</h5>'+g.items.map(function(d){
-      return '<div class="drow'+(d.screen===cur?' cur':'')+'"><div class="q">'+esc(d.q)+'</div><div class="opts">'+OPTS.map(function(o){return '<button data-dk="'+d.k+'" data-dv="'+o+'" aria-pressed="'+(choice[d.k]===o)+'">'+o+(o===d.rec?'<span class="rec">rec</span>':'')+'</button>';}).join("")+'</div>'+(d.why?'<div class="why">'+esc(d.why)+'</div>':'')+'</div>';
+    h+='<div class="dgrp"><h5>'+g.g+'</h5>'+g.items.map(function(d){ n++;
+      var changed=choice[d.k]!==d.rec;
+      return '<div class="drow'+(d.screen===cur?' cur':'')+(L?' locked':'')+'"><div class="q"><span class="qn">'+n+'</span>'+esc(d.q)+'</div>'+
+        '<div class="opts">'+OPTS.map(function(o){return '<button data-dk="'+d.k+'" data-dv="'+o+'" aria-pressed="'+(choice[d.k]===o)+'"'+(L?' disabled':'')+'>'+o+'</button>';}).join("")+'</div>'+
+        '<div class="why"><b>Suggested:</b> '+esc(d.rec)+(changed?' · <span class="chg">changed</span>':'')+(d.why?' — '+esc(d.why):'')+'</div>'+
+        (L ? (notes[d.k]?'<div class="notev">📝 '+esc(notes[d.k])+'</div>':'')
+           : '<textarea class="note-in" id="note-'+d.k+'" data-nk="'+d.k+'" rows="1" placeholder="Note from the call (optional)">'+esc(notes[d.k])+'</textarea>')+
+      '</div>';
     }).join("")+'</div>';
   });
   document.getElementById("rail").innerHTML=h;
 }
 function decisionsText(){
-  var out=["Settlor Servicing Portal — what the authorized signer can do (draft decisions)",""];
-  DECISIONS.forEach(function(g){out.push(g.g.toUpperCase());g.items.forEach(function(d){out.push("• "+d.q+": "+choice[d.k]+(choice[d.k]!==d.rec?"  (changed from recommended: "+d.rec+")":""));});out.push("");});
+  var out=["Settlor Servicing Portal — what the authorized signer can do",(saved.locked?"Locked · saved "+saved.savedAt:"Draft (not saved)"),""], n=0;
+  DECISIONS.forEach(function(g){out.push(g.g.toUpperCase());g.items.forEach(function(d){n++;out.push(n+". "+d.q);out.push("   Answer: "+choice[d.k]+(choice[d.k]!==d.rec?"  (suggested: "+d.rec+")":""));if(notes[d.k])out.push("   Note: "+notes[d.k]);});out.push("");});
   return out.join("\n");
 }
+document.addEventListener("input",function(ev){ var t=ev.target; if(t.dataset && t.dataset.nk){ notes[t.dataset.nk]=t.value; } });
 
 /* ---------- Events ---------- */
 document.addEventListener("click",function(ev){
@@ -496,7 +544,9 @@ document.addEventListener("click",function(ev){
   var a=t.dataset.act;
   if(a==="signdoc") toast("Mock: opens the document in DocuSign");
   if(a==="mock") toast("Mock: opens an edit form");
-  if(a==="resetdec"){ DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=d.rec;});}); render(); toast("Back to recommendations"); }
+  if(a==="save"){ persist(true); }
+  if(a==="unlock"){ persist(false); }
+  if(a==="resetdec"&&!saved.locked){ DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=d.rec;});}); render(); toast("Back to suggestions"); }
   if(a==="copy"){ var txt=decisionsText();
     try{ navigator.clipboard.writeText(txt).then(function(){toast("Decisions copied");},function(){toast("Copy blocked. Select the text in the panel instead.");}); }catch(e){ toast("Copy blocked."); } }
 });
