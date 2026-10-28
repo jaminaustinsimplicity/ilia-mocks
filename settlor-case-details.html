@@ -207,6 +207,31 @@ ul.activity{margin:0;padding:0}
 .keep{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;background:var(--warn-soft);border-radius:8px;padding:9px 11px;font-size:12.5px}
 .keep span:first-child{flex:1 1 260px}
 .btn[disabled]{opacity:.5;cursor:not-allowed}
+/* Insured: automatic servicing access */
+.autobox{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.checks li{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.checks li.ok{color:var(--ink)}
+.checks i{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;flex:none}
+.checks li.ok i{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+/* Invite authorized signer modal */
+.isec{display:flex;flex-direction:column;gap:8px}
+.isec h4{margin:0;font-size:14px}
+.who-card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
+@media (max-width:520px){.who-card{grid-template-columns:1fr}}
+.who-card dt{font-size:11.5px;color:var(--faint);margin:0}
+.who-card dd{margin:0;font-size:13.5px;overflow-wrap:anywhere}
+.plist{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.plist div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px}
+.plist div:last-child{border-bottom:0}
+.can{margin:0;padding-left:18px;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.steps3{margin:0;padding-left:18px;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.email{border:1px dashed var(--line-strong);border-radius:10px;padding:12px 14px;font-size:13px;background:var(--surface-2)}
+.email .subj{font-weight:700;margin-bottom:6px}
+.email .cta{display:inline-block;margin-top:8px;background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:6px 12px;font-weight:500;font-size:12.5px}
+.confirmchk{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid var(--line-strong);border-radius:10px;padding:10px 12px;background:var(--surface);color:var(--ink);font-size:13px;width:100%}
+.confirmchk[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.confirmchk[aria-checked="true"] .cbx{background:var(--accent);border-color:var(--accent)}
 select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 .info{background:var(--accent-soft);border-radius:10px;padding:11px 13px;font-size:13px}
 .picker{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -267,7 +292,8 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
     <h4>How portal access works</h4>
     <ol>
       <li><b>One authorized signer per settlor</b> (confirmed 10/26, including entities). All forms and documents go to that one person.</li>
-      <li><b>Signer access:</b> admin clicks <b>Send invite</b> (or Resend invite until the account is created). Access covers every linked policy. Invite progress shows each step with its date: <b>invite sent → invite opened → account created → logged in</b>.</li>
+      <li><b>Insured is the settlor:</b> no invite. ILIA opens the standard client Servicing Portal automatically once enrollment is closed, the policy is in force and a tranche is assigned (existing ILIA rule).</li>
+      <li><b>Separate settlor:</b> admin clicks <b>Invite Authorized Signer to Servicing Portal</b>, confirms the person, policies and email, and sends. The signer creates an ILIA account and password, then lands in the Settlor Servicing Portal. Policies not yet in force appear once in force. Resend invite is available until the account is created. Access covers every linked policy. Invite progress shows each step with its date: <b>invite sent → invite opened → account created → logged in</b>.</li>
       <li><b>Insureds who are not the settlor:</b> no access by default. Admin can turn it on for a single policy, which emails that insured an invite. They see that policy only.</li>
       <li><b>Turning access off</b> is silent and can be undone. Turning it back on sends the access-restored email.</li>
       <li><b>Already partly built:</b> the unmerged settlor code has a per-policy switch for insured access, off by default and emailing the insured when turned on, plus invite-sent, first-login and restricted dates per user. <b>"Invite opened" is likely new</b> (needs email-open tracking from the email service). Dev to confirm.</li>
@@ -300,6 +326,7 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 
 <div id="drawerRoot"></div>
 <div id="linkRoot"></div>
+<div id="inviteRoot"></div>
 <div id="toastRoot"></div>
 
 <script>
@@ -323,21 +350,23 @@ var EXISTING = [
   {kind:"individual", label:"Thomas Avery", sub:"Individual · 2 policies"}
 ];
 var POLICY_POOL = [
-  {first:"Sofia", last:"Reyes", policy:"KZ-104890", tranche:81},
-  {first:"Marco", last:"Diaz", policy:"KZ-105112", tranche:82},
-  {first:"Ana", last:"Lopez", policy:"KZ-105407", tranche:83}
+  {first:"Sofia", last:"Reyes", policy:"KZ-104890", tranche:81, inforce:true},
+  {first:"Marco", last:"Diaz", policy:"KZ-105112", tranche:82, inforce:false},
+  {first:"Ana", last:"Lopez", policy:"KZ-105407", tranche:83, inforce:true}
 ];
+var insInforce = true; /* mock control for the "settlor is the insured" example */
 /* Same options as ILIA's SettlorDetails.tsx enum (Self / Spouse / Other). Self is Step 1 here. */
 var REL = ["Spouse","Other"];
 function relText(o){return o.relation==="Other" ? "Other: "+(o.otherRelation||"—") : o.relation;}
 
 function clone(o){return JSON.parse(JSON.stringify(o));}
-function thisPolicy(){return {first:POLICY.first,last:POLICY.last,policy:POLICY.policy,tranche:POLICY.tranche,self:true,insAccess:false,insInvite:"none"};}
+function thisPolicy(){return {first:POLICY.first,last:POLICY.last,policy:POLICY.policy,tranche:POLICY.tranche,self:true,inforce:true,insAccess:false,insInvite:"none"};}
+function pstatusPill(p){return p.inforce?'<span class="pill p-active">In force</span>':'<span class="pill p-sent">Not yet in force</span>';}
 POLICY_POOL.forEach(function(p){p.insAccess=false;p.insInvite="none";});
 
 var scenarios = {
   insured: function(){return {type:"insured", ind:null, ent:null, signers:[], policies:[thisPolicy()], activity:[{who:"System",what:"Settlor set to the insured from the enrollment application",when:"Jan 8, 2026"}]};},
-  individual: function(){var s=clone(SAMPLE.ind);var p=thisPolicy();return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor",email:s.email,phone:s.phone,access:true,invite:"opened",d:{sent:"Oct 24",opened:"Oct 25"},isSettlor:true}], policies:[p], activity:[{who:"Maria Reyes",what:"Opened the settlor portal invite email",when:"Oct 25, 2026"},{who:"Jamin A.",what:"Sent settlor portal invite to Maria Reyes",when:"Oct 24, 2026"},{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"}]};},
+  individual: function(){var s=clone(SAMPLE.ind);var p=thisPolicy();return {type:"individual", ind:s, ent:null, signers:[{first:s.first,last:s.last,title:"Settlor",email:s.email,phone:s.phone,access:false,invite:"none",d:{},isSettlor:true}], policies:[p], activity:[{who:"Jamin A.",what:"Settlor changed to a separate individual (Maria Reyes)",when:"Sep 30, 2026"}]};},
   entity: function(){var sg=[clone(SAMPLE.signers[1])];
     sg[0].access=true;sg[0].invite="active";sg[0].d={sent:"Oct 20",opened:"Oct 20",created:"Oct 21",login:"Oct 22"};
     var p1=clone(POLICY_POOL[0]);p1.insAccess=true;p1.insInvite="active";p1.d={sent:"Oct 15",opened:"Oct 16",created:"Oct 16",login:"Oct 18"};
@@ -350,7 +379,7 @@ var ssnShown = false, confirmKey = "";
 
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
 function mask(v,keep){if(!v)return "—";return v.replace(/\d(?=[\d-]{0,})/g,"•").slice(0,v.length-keep)+v.slice(-keep);}
-function today(){return "Oct 26, 2026";}
+function today(){return "Oct 28, 2026";}
 function log(what){st.activity.unshift({who:"Jamin A.",what:what,when:today()});}
 function toast(msg){var r=document.getElementById("toastRoot");r.innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>';clearTimeout(window.__t);window.__t=setTimeout(function(){r.innerHTML="";},2400);}
 
@@ -391,7 +420,7 @@ function tracker(invite,d,advAct,i){
 }
 function signerStatus(s){return invPill(s.access,s.invite,s.d,"No portal access");}
 function signerRow(s,i){
-  var act = s.invite==="none" ? '<button class="btn sm primary" data-act="invite" data-i="'+i+'">Send invite</button>'
+  var act = s.invite==="none" ? '<button class="btn sm primary" data-act="inviteModal" data-i="'+i+'">Invite Authorized Signer to Servicing Portal</button>'
     : s.access&&(s.invite==="sent"||s.invite==="opened") ? '<button class="btn sm" data-act="resend" data-i="'+i+'">Resend invite</button>' : '';
   var conf = confirmKey==="s"+i ? '<div class="confirm"><span>Turn off portal access for <b>'+esc(s.first+" "+s.last)+'</b>? They will no longer see or sign documents for any linked policy. No email is sent. You can turn it back on later.</span><button class="btn sm danger" data-act="sOffYes" data-i="'+i+'">Turn off access</button><button class="btn sm" data-act="cancel">Cancel</button></div>' : "";
   return '<div class="arow"><div class="who"><div class="nm">'+esc(s.first+" "+s.last)+' <span class="note">· '+esc(s.title)+'</span></div><div class="meta">'+esc(s.email)+' · '+esc(s.phone)+'</div></div>'+
@@ -412,13 +441,13 @@ function policiesHTML(){
     if(isSigner(p)){accCell='<span class="note">Has access as a signer</span>';statCell='<span class="pill p-active">Active</span>';}
     else {accCell=sw(!!p.insAccess,"pToggle",i,"Servicing Portal Access for "+p.first+" "+p.last);statCell=insStatus(p);if(p.insAccess&&(p.insInvite==="sent"||p.insInvite==="opened"))actCell='<button class="btn link sm" data-act="pResend" data-i="'+i+'">Resend</button>';if(p.insAccess&&NEXT[p.insInvite])actCell+='<button class="btn link sm mocklink" data-act="pAdv" data-i="'+i+'" title="Mock only: simulate what the insured does next">Mock: next ›</button>';}
     var unlink = p.self?'':'<button class="btn link sm" data-act="unlink" data-i="'+i+'">Unlink</button>';
-    var conf = confirmKey==="p"+i ? '<tr><td colspan="6"><div class="confirm" style="background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)"><span>Give <b>'+esc(p.first+" "+p.last)+'</b> portal access to policy <span class="mono">'+esc(p.policy)+'</span>? We will email them an invite. They will see this policy only.</span><button class="btn sm primary" data-act="pOnYes" data-i="'+i+'">Give access &amp; send invite</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>'
-      : confirmKey==="u"+i ? '<tr><td colspan="6"><div class="confirm"><span>Unlink <span class="mono">'+esc(p.policy)+'</span> from this settlor? The policy goes back to <b>“the insured is the settlor”</b>, so <b>'+esc(p.first+" "+p.last)+'</b> becomes its authorized signer. If the settlor should be someone else, open that policy’s Case Details and use Edit settlor instead.</span><button class="btn sm danger" data-act="unlinkYes" data-i="'+i+'">Unlink</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>' : '';
-    return '<tr><td>'+esc(p.first+" "+p.last)+'</td><td class="mono">'+esc(p.policy)+(p.self?'<span class="this">this policy</span>':'')+'</td><td>'+p.tranche+'</td><td>'+accCell+'</td><td>'+statCell+' '+actCell+'</td><td>'+unlink+'</td></tr>'+conf;
+    var conf = confirmKey==="p"+i ? '<tr><td colspan="7"><div class="confirm" style="background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)"><span>Give <b>'+esc(p.first+" "+p.last)+'</b> portal access to policy <span class="mono">'+esc(p.policy)+'</span>? We will email them an invite. They will see this policy only.</span><button class="btn sm primary" data-act="pOnYes" data-i="'+i+'">Give access &amp; send invite</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>'
+      : confirmKey==="u"+i ? '<tr><td colspan="7"><div class="confirm"><span>Unlink <span class="mono">'+esc(p.policy)+'</span> from this settlor? The policy goes back to <b>“the insured is the settlor”</b>, so <b>'+esc(p.first+" "+p.last)+'</b> becomes its authorized signer. If the settlor should be someone else, open that policy’s Case Details and use Edit settlor instead.</span><button class="btn sm danger" data-act="unlinkYes" data-i="'+i+'">Unlink</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>' : '';
+    return '<tr><td>'+esc(p.first+" "+p.last)+'</td><td class="mono">'+esc(p.policy)+(p.self?'<span class="this">this policy</span>':'')+'</td><td>'+p.tranche+'</td><td>'+pstatusPill(p)+'</td><td>'+accCell+'</td><td>'+statCell+' '+actCell+'</td><td>'+unlink+'</td></tr>'+conf;
   }).join("");
   return '<div><div class="sec-t"><span>Policies linked to this settlor</span><button class="btn sm" data-act="openLink">+ Link a policy</button></div>'+
     '<p class="note" style="margin:0 0 10px">The insured on each policy has <b>no portal access by default</b> when they are not the settlor. Turn it on per policy if they need to see their own policy.</p>'+
-    '<div class="tblwrap"><table><thead><tr><th>Insured</th><th>Policy number</th><th>Tranche</th><th>Servicing Portal Access</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+    '<div class="tblwrap"><table><thead><tr><th>Insured</th><th>Policy number</th><th>Tranche</th><th>Policy status</th><th>Servicing Portal Access</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 
 function render(){
@@ -427,8 +456,19 @@ function render(){
     h+='<div><div class="sec-t"><span>Settlor details</span></div><dl class="kv">'+
       '<div><dt>Settlor</dt><dd>'+esc(POLICY.first+" "+POLICY.last)+' (the insured)</dd></div>'+
       '<div><dt>Relationship to insured</dt><dd>Self</dd></div>'+
-      '<div><dt>Servicing Portal</dt><dd><span class="pill p-active">Active</span></dd></div>'+
-      '</dl><p class="note" style="margin:10px 0 0">Name, contact details and SSN come from the client profile, so there is nothing to re-enter here. If the settlor changes, use Edit settlor.</p></div>';
+      '<div><dt>Servicing Portal</dt><dd>'+(insInforce?'<span class="pill p-active">Active</span>':'<span class="pill p-sent">Not active yet</span>')+'</dd></div>'+
+      '</dl><p class="note" style="margin:10px 0 0">Name, contact details and SSN come from the client profile, so there is nothing to re-enter here. If the settlor changes, use Edit settlor.</p></div>'+
+      '<hr class="divider"><div><div class="sec-t"><span>Servicing Portal access</span><span class="note">Automatic · no invite needed</span></div>'+
+      '<div class="autobox"><p style="margin:0 0 10px">'+(insInforce
+        ? '<b>'+esc(POLICY.first)+' has access to the standard Servicing Portal.</b> Because the insured is the settlor, ILIA opened it automatically when the policy went in force. They see it the next time they log in.'
+        : '<b>'+esc(POLICY.first)+' does not have Servicing Portal access yet.</b> ILIA opens it automatically once all three items below are done. They will see it the next time they log in. No invite is needed.')+'</p>'+
+      '<ul class="checks">'+
+        '<li class="ok"><i aria-hidden="true">✓</i>Enrollment closed (trustee signed)</li>'+
+        '<li class="'+(insInforce?'ok':'')+'"><i aria-hidden="true">'+(insInforce?'✓':'')+'</i>Policy in force <span class="note">· status: '+(insInforce?'In Force':'Approved, not yet in force')+'</span></li>'+
+        '<li class="ok"><i aria-hidden="true">✓</i>Tranche assigned <span class="note">· Tranche '+POLICY.tranche+'</span></li>'+
+      '</ul>'+
+      '<button class="btn sm mockadv" style="margin-top:10px" data-act="mockInforce" title="Mock only">Mock: set policy to '+(insInforce?'not in force':'in force')+' ›</button></div>'+
+      '<p class="note" style="margin:8px 0 0">This is the standard client Servicing Portal, not the Settlor Servicing Portal. The Settlor Servicing Portal is only for a separate settlor’s authorized signer.</p></div>';
   } else if(st.type==="individual"){
     var s=st.ind;
     h+='<div><div class="sec-t"><span>Settlor details · individual</span></div><dl class="kv">'+
@@ -466,13 +506,14 @@ document.getElementById("view").addEventListener("click",function(ev){
     else { s.access=true; if(s.invite!=="none"){log("Restored portal access for "+nm(s));toast("Access restored. "+s.first+" gets an access-restored email.");} else {log("Turned on portal access for "+nm(s));toast("Access on. Send the invite when ready.");} }
   }
   else if(a==="sOffYes"){s.access=false;confirmKey="";log("Turned off portal access for "+nm(s));toast("Access turned off");}
-  else if(a==="invite"){s.access=true;s.invite="sent";s.d={sent:"Oct 26"};log("Sent settlor portal invite to "+nm(s));toast("Invite sent to "+s.email);}
-  else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 26"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
-  else if(a==="sAdv"||a==="pAdv"){var o=a==="sAdv"?s:pp, key=a==="sAdv"?"invite":"insInvite", nx=NEXT[o[key]]; o[key]=nx; o.d=o.d||{}; o.d[nx==="active"?"login":nx]="Oct 26";
+  else if(a==="inviteModal"){openInvite(i);return;}
+  else if(a==="mockInforce"){insInforce=!insInforce;}
+  else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
+  else if(a==="sAdv"||a==="pAdv"){var o=a==="sAdv"?s:pp, key=a==="sAdv"?"invite":"insInvite", nx=NEXT[o[key]]; o[key]=nx; o.d=o.d||{}; o.d[nx==="active"?"login":nx]="Oct 28";
     var words={opened:"Opened the portal invite email",created:"Created their portal account",active:"Logged in to the portal"}; st.activity.unshift({who:nm(o),what:words[nx],when:today()}); toast(nm(o)+": "+words[nx].toLowerCase());}
   else if(a==="pToggle"){ if(pp.insAccess){pp.insAccess=false;log("Turned off "+nm(pp)+"’s portal access to "+pp.policy);toast("Access turned off");} else confirmKey="p"+i; }
-  else if(a==="pOnYes"){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 26"};}confirmKey="";log("Gave "+nm(pp)+" portal access to "+pp.policy+" and sent an invite");toast("Access on. Invite emailed to "+pp.first+".");}
-  else if(a==="pResend"){pp.insInvite="sent";pp.d={sent:"Oct 26"};log("Resent portal invite to "+nm(pp));toast("Invite resent");}
+  else if(a==="pOnYes"){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 28"};}confirmKey="";log("Gave "+nm(pp)+" portal access to "+pp.policy+" and sent an invite");toast("Access on. Invite emailed to "+pp.first+".");}
+  else if(a==="pResend"){pp.insInvite="sent";pp.d={sent:"Oct 28"};log("Resent portal invite to "+nm(pp));toast("Invite resent");}
   else if(a==="openLink"){openLink();return;}
   else if(a==="unlink"){confirmKey="u"+i;}
   else if(a==="unlinkYes"){st.policies.splice(i,1);confirmKey="";log("Unlinked policy "+pp.policy+"; settlor set back to the insured ("+nm(pp)+")");toast("Policy unlinked");}
@@ -482,7 +523,7 @@ document.getElementById("view").addEventListener("click",function(ev){
 document.getElementById("scen").addEventListener("click",function(ev){
   var b=ev.target.closest("button"); if(!b)return;
   [].forEach.call(this.children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
-  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; closeDrawer(); if(lk)closeLink(); render();
+  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; insInforce=true; closeDrawer(); if(lk)closeLink(); if(iv)closeInvite(); render();
 });
 
 /* ---------- Edit drawer ---------- */
@@ -587,6 +628,47 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
   renderDrawer();
   var body=document.getElementById("drBody"); if(body) body.scrollTop=keepScroll;
 });
+/* ---------- Invite Authorized Signer to Servicing Portal ---------- */
+var iv=null;
+function openInvite(i){iv={i:i,ok:false,showEmail:false};renderInvite();}
+function closeInvite(){iv=null;document.getElementById("inviteRoot").innerHTML="";}
+function renderInvite(){
+  var s=st.signers[iv.i], ent=st.type==="entity";
+  var who='<dl class="who-card">'+
+    '<div><dt>Name</dt><dd><b>'+esc(s.first+" "+s.last)+'</b></dd></div>'+
+    '<div><dt>'+(ent?'Title':'Role')+'</dt><dd>'+esc(ent?s.title:"Settlor (individual)")+'</dd></div>'+
+    '<div><dt>Invite goes to</dt><dd>'+esc(s.email)+'</dd></div>'+
+    '<div><dt>Phone</dt><dd>'+esc(s.phone)+'</dd></div>'+
+    '<div style="grid-column:1/-1"><dt>Authorized signer for</dt><dd>'+(ent?esc(settlorName())+' · Entity · '+esc(st.ent.etype):'Themselves · individual settlor ('+esc(relText(st.ind))+' of the insured)')+'</dd></div></dl>';
+  var forWhom = ent ? 'the authorized signer for <b>'+esc(settlorName())+'</b>' : 'the settlor and authorized signer';
+  var nPol = st.policies.length+' polic'+(st.policies.length===1?'y':'ies');
+  var now=st.policies.filter(function(p){return p.inforce;}).length, later=st.policies.length-now;
+  var pol='<div class="plist">'+st.policies.map(function(p){return '<div><span><b>'+esc(p.first+" "+p.last)+'</b> <span class="mono">'+esc(p.policy)+'</span> <span class="note">· Tranche '+p.tranche+'</span></span>'+(p.inforce?'<span class="pill p-active">Will see it now</span>':'<span class="pill p-sent">Appears once in force</span>')+'</div>';}).join("")+'</div>';
+  var email='<div class="email"><div class="subj">Subject: You’re invited to the ILIA Settlor Servicing Portal</div>'+
+    '<div>Hi '+esc(s.first)+',</div><div style="margin-top:6px">You’ve been set up as '+forWhom+' on '+nPol+'. Create your ILIA account to view and manage '+(st.policies.length===1?'it':'them')+', see documents, and sign forms online.</div>'+
+    '<span class="cta">Create my account</span><div class="note" style="margin-top:8px">Questions? niw.info@simplicitygroup.com · 800-294-9940 ext. 807</div></div>';
+  var body='<div class="isec"><h4>1. Confirm the person you’re inviting</h4>'+who+'<p class="note" style="margin:0">Wrong person or email? Cancel and use <b>Edit settlor</b> to fix it first.</p></div>'+
+    '<div class="isec"><h4>2. Policies in their Settlor Servicing Portal ('+st.policies.length+')</h4>'+pol+
+      (later?'<p class="note" style="margin:0">'+later+' polic'+(later===1?'y is':'ies are')+' not in force yet. It will appear in their portal automatically once in force, the same rule ILIA uses for the client Servicing Portal.</p>':'')+'</div>'+
+    '<div class="isec"><h4>3. What they can do there</h4><ul class="can"><li>View each policy and its documents</li><li>Sign forms and documents sent to them (for example DBR election, Hold Harmless)</li><li>Keep their own contact details up to date</li></ul><p class="note" style="margin:0">Full feature list to be defined in the Settlor Servicing Portal design.</p></div>'+
+    '<div class="isec"><h4>4. What happens when you send</h4><ol class="steps3"><li>ILIA emails <b>'+esc(s.email)+'</b> a secure link.</li><li>They open it, create their ILIA account and set a password.</li><li>They log in and land in their Settlor Servicing Portal.</li></ol>'+
+      '<button class="btn link sm" data-iv="email" style="align-self:flex-start">'+(iv.showEmail?'Hide':'Preview')+' the invite email</button>'+(iv.showEmail?email:'')+'</div>'+
+    '<button class="confirmchk" role="checkbox" aria-checked="'+iv.ok+'" data-iv="ok"><span class="cbx" aria-hidden="true">'+(iv.ok?'✓':'')+'</span><span>I confirmed <b>'+esc(s.first+" "+s.last)+'</b> is '+(ent?'the authorized signer for '+esc(settlorName()):'the settlor and authorized signer')+' and <b>'+esc(s.email)+'</b> is the right email.</span></button>';
+  document.getElementById("inviteRoot").innerHTML='<div class="scrim" data-iv="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="ivH"><div class="dr-hd"><h3 id="ivH">Invite authorized signer to the Settlor Servicing Portal</h3><button class="btn sm" data-iv="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+(iv.ok?'':'<span class="note" style="margin-right:auto">Tick the confirmation to send.</span>')+'<button class="btn" data-iv="close">Cancel</button><button class="btn primary" data-iv="send"'+(iv.ok?'':' disabled')+'>Send invite</button></div></div>';
+}
+document.getElementById("inviteRoot").addEventListener("click",function(ev){
+  var t=ev.target.closest("[data-iv]"); if(!t||!iv)return; var a=t.dataset.iv;
+  if(a==="close"){closeInvite();return;}
+  if(a==="ok"){iv.ok=!iv.ok;}
+  if(a==="email"){iv.showEmail=!iv.showEmail;}
+  if(a==="send"&&iv.ok){var s=st.signers[iv.i];s.access=true;s.invite="sent";s.d={sent:"Oct 28"};
+    log("Invited "+s.first+" "+s.last+" to the Settlor Servicing Portal ("+st.policies.length+" polic"+(st.policies.length===1?"y":"ies")+")");
+    closeInvite();render();toast("Invite sent to "+s.email);return;}
+  var keep=(document.querySelector("#inviteRoot .dr-bd")||{}).scrollTop||0; renderInvite();
+  var bd=document.querySelector("#inviteRoot .dr-bd"); if(bd) bd.scrollTop=keep;
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&iv)closeInvite();});
+
 /* ---------- Link a policy (search → review → link) ---------- */
 /* Sample search results. cur = who the policy's settlor is today. */
 var LINK_POOL = [
@@ -652,7 +734,7 @@ document.getElementById("linkRoot").addEventListener("click",function(ev){
     Object.keys(lk.sel).filter(function(k){return lk.sel[k];}).forEach(function(k){
       var p=clone(LINK_POOL.filter(function(x){return x.policy===k;})[0]);
       var keep=p.hadAccess&&lk.keep[k]!==false;
-      st.policies.push({first:p.first,last:p.last,policy:p.policy,tranche:p.tranche,insAccess:keep,insInvite:keep?"active":"none",d:keep?{sent:"Sep 3",opened:"Sep 3",created:"Sep 4",login:"Oct 19"}:{}});
+      st.policies.push({first:p.first,last:p.last,policy:p.policy,tranche:p.tranche,inforce:true,insAccess:keep,insInvite:keep?"active":"none",d:keep?{sent:"Sep 3",opened:"Sep 3",created:"Sep 4",login:"Oct 19"}:{}});
       log("Linked "+p.policy+" ("+p.first+" "+p.last+") to this settlor. Settlor changed from the insured; signer is now "+signerName()+(p.hadAccess?(keep?"; insured kept view access":"; insured access turned off"):""));
       n++;
     });
