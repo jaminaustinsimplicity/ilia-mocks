@@ -79,6 +79,11 @@ button:focus-visible,.fld:focus-visible,.opt:focus-visible{outline:2px solid var
 .card.ilia > .card-hd{display:none}
 .ilia-sd{padding:4px 0 8px}
 .ilia-h{display:flex;align-items:center;gap:10px;margin:0 0 18px;font-size:18px;font-weight:700;color:#1b1b1b}
+.mf.wide{grid-column:span 2}
+@media (max-width:720px){.mf.wide{grid-column:auto}}
+.sa-card .mf.has .mf-l{background:var(--surface)}
+.sa-card .ilia-grid{max-width:none;margin-top:14px}
+.mf-r{margin-left:auto}
 .isins.not{color:#5d4037;background:#fff3e0;border-color:#ffcc80}
 .sa-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-top:18px}
 .isins{font-size:12px;font-weight:500;color:#1b5e20;background:#e3f2e5;border:1px solid #a5d6a7;border-radius:14px;padding:2px 10px}
@@ -497,7 +502,8 @@ function clientHTML(){
     iliaFld("Client Email Address","daniel.reyes@example.com")+iliaFld("Client Phone Number","(214) 555-0132")+iliaFld("Client Social","•••-••-4417")+
     relSel(rel)+'</div></div>';
 }
-function iliaFld(label,val){return '<div class="mf'+(val?' has':'')+'"><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(val)+'</span></div>';}
+function secretFld(label,v){return '<div class="mf has"><span class="mf-l">'+label+'</span><span class="mf-v">'+(ssnShown?esc(v):mask(v,4))+'</span><button class="reveal mf-r" data-act="ssn">'+(ssnShown?"Hide":"Show")+'</button></div>';}
+function iliaFld(label,val,wide){return '<div class="mf'+(val?' has':'')+(wide?' wide':'')+'"><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(val)+'</span></div>';}
 function render(){
   var v=document.getElementById("view"), h=st.type==="insured"?setupHTML():setupHTML().replace(/^<div class="setup">[\s\S]*?<\/div><div class="signer-banner">/,'<div class="signer-banner">');
   document.querySelector(".card").classList.add("ilia");
@@ -528,24 +534,19 @@ function render(){
       '<p class="note" style="margin:8px 0 0">This is the standard client Servicing Portal, not the Settlor Servicing Portal. The Settlor Servicing Portal is only for a separate settlor’s authorized signer.</p></div>';
   } else if(st.type==="individual"){
     var s=st.ind;
-    h+='<div><div class="sec-t"><span>Settlor details · individual</span></div><dl class="kv">'+
-      '<div><dt>Name</dt><dd>'+esc(s.first+" "+s.last)+'</dd></div>'+
-      '<div><dt>Settlor relation to insured</dt><dd>'+esc(relText(s))+'</dd></div>'+
-      '<div><dt>Date of birth</dt><dd>'+esc(s.dob)+'</dd></div>'+
-      '<div><dt>Email</dt><dd>'+esc(s.email)+'</dd></div>'+
-      '<div><dt>Phone</dt><dd>'+esc(s.phone)+'</dd></div>'+
-      '<div><dt>SSN</dt><dd class="mono">'+(ssnShown?esc(s.ssn):mask(s.ssn,4))+'<button class="reveal" data-act="ssn">'+(ssnShown?"Hide":"Show")+'</button></dd></div>'+
-      '<div style="grid-column:1/-1"><dt>Address</dt><dd>'+esc(s.street+", "+s.city+", "+s.state+" "+s.zip)+'</dd></div>'+
-      '</dl></div><hr class="divider">'+
+    h+='<div><div class="sec-t"><span>Settlor details · individual</span></div><div class="ilia-grid">'+
+      iliaFld("Settlor First Name",s.first)+iliaFld("Middle Name","")+iliaFld("Last Name",s.last)+
+      iliaFld("Settlor Email Address",s.email)+iliaFld("Settlor Phone Number",s.phone)+secretFld("Settlor Social",s.ssn)+
+      iliaFld("Settlor Relation to Insured",relText(s))+iliaFld("Date of Birth",s.dob)+
+      iliaFld("Address",s.street+", "+s.city+", "+s.state+" "+s.zip,true)+
+      '</div></div><hr class="divider">'+
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   } else {
     var e=st.ent;
-    h+='<div><div class="sec-t"><span>Settlor details · entity</span></div><dl class="kv">'+
-      '<div><dt>Entity name</dt><dd>'+esc(e.name)+'</dd></div>'+
-      '<div><dt>Entity type</dt><dd>'+esc(e.etype)+'</dd></div>'+
-      '<div><dt>EIN / Tax ID</dt><dd class="mono">'+(ssnShown?esc(e.ein):mask(e.ein,4))+'<button class="reveal" data-act="ssn">'+(ssnShown?"Hide":"Show")+'</button></dd></div>'+
-      '<div style="grid-column:1/-1"><dt>Address</dt><dd>'+esc(e.street+", "+e.city+", "+e.state+" "+e.zip)+'</dd></div>'+
-      '</dl></div><hr class="divider">'+
+    h+='<div><div class="sec-t"><span>Settlor details · entity</span></div><div class="ilia-grid">'+
+      iliaFld("Entity Name",e.name)+iliaFld("Entity Type",e.etype)+secretFld("EIN / Tax ID",e.ein)+
+      iliaFld("Address",e.street+", "+e.city+", "+e.state+" "+e.zip,true)+
+      '</div></div><hr class="divider">'+
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   }
   h+='<hr class="divider"><div><div class="sec-t"><span>Recent changes</span></div><ul class="activity">'+st.activity.slice(0,4).map(function(a){return '<li><b>'+esc(a.who)+'</b> · '+esc(a.what)+' · '+esc(a.when)+'</li>';}).join("")+'</ul></div>';
