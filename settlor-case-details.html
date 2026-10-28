@@ -237,6 +237,20 @@ ul.activity{margin:0;padding:0}
 .email{border:1px dashed var(--line-strong);border-radius:10px;padding:12px 14px;font-size:13px;background:var(--surface-2)}
 .email .subj{font-weight:700;margin-bottom:6px}
 .email .cta{display:inline-block;margin-top:8px;background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:6px 12px;font-weight:500;font-size:12.5px}
+/* Rendered email + dev copy */
+.mail{border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13.5px}
+.mail-meta{background:var(--surface-2);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-direction:column;gap:3px;font-size:12.5px}
+.mail-meta span{display:inline-block;width:62px;color:var(--faint)}
+.mail-body{padding:16px 20px;background:var(--surface);line-height:1.55}
+.mail-body p{margin:0 0 10px}
+.mail-body ul{margin:0 0 10px;padding-left:20px}
+.mail-brand{font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--accent);margin-bottom:10px}
+.mail-cta{display:inline-block;background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:10px 20px;font-weight:700}
+.mail-small{font-size:12px;color:var(--muted)}
+.sentok{display:flex;gap:12px;align-items:center;background:var(--ok-soft);border-radius:10px;padding:12px 14px}
+.sentic{width:28px;height:28px;border-radius:50%;background:var(--ok);color:var(--surface);display:grid;place-items:center;font-weight:700;flex:none}
+.devhd{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.devcopy{margin:0;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-family:var(--fm);font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;max-height:none}
 .confirmchk{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid var(--line-strong);border-radius:10px;padding:10px 12px;background:var(--surface);color:var(--ink);font-size:13px;width:100%}
 .confirmchk[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft)}
 .confirmchk[aria-checked="true"] .cbx{background:var(--accent);border-color:var(--accent)}
@@ -638,7 +652,78 @@ document.getElementById("drawerRoot").addEventListener("click",function(ev){
 });
 /* ---------- Invite Authorized Signer to Servicing Portal ---------- */
 var iv=null;
-function openInvite(i){iv={i:i,ok:false,showEmail:false};renderInvite();}
+function openInvite(i){iv={i:i,ok:false,showEmail:false,step:"confirm"};renderInvite();}
+var EMAIL_SUBJECT="You’re invited to your ILIA Settlor Servicing Portal";
+function last4(pol){return pol.replace(/\D/g,"").slice(-4);}
+/* The email exactly as the authorized signer sees it */
+function inviteEmailHTML(s,ent){
+  var intro = ent ? '<b>'+esc(settlorName())+'</b> has named you its <b>authorized signer</b> for these life insurance policies:'
+                  : 'You’ve been set up as the <b>settlor and authorized signer</b> for these life insurance policies:';
+  return '<div class="mail"><div class="mail-meta"><div><span>From</span>Kai-Zen Plan Servicing · Simplicity-NIW</div><div><span>To</span>'+esc(s.email)+'</div><div><span>Subject</span><b>'+EMAIL_SUBJECT+'</b></div></div>'+
+    '<div class="mail-body"><div class="mail-brand">ilia</div>'+
+    '<p>Hi '+esc(s.first)+',</p><p>'+intro+'</p>'+
+    '<ul>'+st.policies.map(function(p){return '<li>'+esc(p.first+" "+p.last)+' — policy ending '+last4(p.policy)+'</li>';}).join("")+'</ul>'+
+    '<p>Your Settlor Servicing Portal is where you can:</p><ul><li>View each policy and its documents</li><li>Review and sign forms sent to you</li><li>Keep your contact details up to date</li></ul>'+
+    '<p>To get started, create your password. It only takes a minute.</p>'+
+    '<p style="text-align:center;margin:16px 0"><span class="mail-cta">Create your password</span></p>'+
+    '<p class="mail-small">Your username is your email address: '+esc(s.email)+'<br>This link was created just for you. Please don’t forward this email.</p>'+
+    '<p class="mail-small">Questions? niw.info@simplicitygroup.com · 800-294-9940 ext. 807<br>Kai-Zen Plan Servicing · Simplicity-NIW</p></div></div>';
+}
+/* Plain-text copy with merge fields for developers */
+function devCopy(){
+  return [
+"TEMPLATE: settlor_servicing_portal_invitation",
+"(replaces invitation_master_settlor.html on the NIWD-1372 branch, whose subject still says \"Master Settlor Portal\")",
+"",
+"TRIGGER: Admin clicks Send invite (or Resend invite) in Case Details > Settlor & Authorized Signer, after ticking the confirmation.",
+"TO: {{signer.email}}   (the one authorized signer for the settlor)",
+"FROM (display name): Kai-Zen Plan Servicing · Simplicity-NIW",
+"",
+"SUBJECT: You’re invited to your ILIA Settlor Servicing Portal",
+"PREVIEW TEXT: Create your password to view and sign for the policies you manage.",
+"",
+"BODY:",
+"Hi {{signer.firstName}},",
+"",
+"[IF settlor type = ENTITY]",
+"{{settlor.entityName}} has named you its authorized signer for these life insurance policies:",
+"[IF settlor type = INDIVIDUAL]",
+"You’ve been set up as the settlor and authorized signer for these life insurance policies:",
+"",
+"[FOR EACH linked policy]",
+"• {{policy.insuredFirstName}} {{policy.insuredLastName}} — policy ending {{policy.number | last4}}",
+"",
+"Your Settlor Servicing Portal is where you can:",
+"• View each policy and its documents",
+"• Review and sign forms sent to you",
+"• Keep your contact details up to date",
+"",
+"To get started, create your password. It only takes a minute.",
+"",
+"[BUTTON] Create your password  →  {{createPasswordUrl}}",
+"",
+"Your username is your email address: {{signer.email}}",
+"This link was created just for you. Please don’t forward this email.",
+"",
+"Questions? niw.info@simplicitygroup.com · 800-294-9940 ext. 807",
+"Kai-Zen Plan Servicing · Simplicity-NIW",
+"",
+"RULES:",
+"• List every policy linked to the settlor, including ones not yet in force (they appear in the portal once in force).",
+"• Show only the insured name and the last 4 digits of the policy number. No SSN, EIN, DOB or policy values in email.",
+"• {{createPasswordUrl}} is a one-time link tied to this signer. Resend invite issues a new link and the old one stops working.",
+"• Link expiry: current settlor decision is that the invite link does not expire (confirm).",
+"• After the password is set, the signer lands in the Settlor Servicing Portal. ILIA records firstLoginDate and notifies the inviting admin (existing branch behavior).",
+"• Log 'Invite sent' with date in Case Details > Recent changes."
+  ].join("\n");
+}
+function renderInviteSent(s,ent){
+  var body='<div class="sentok"><span class="sentic" aria-hidden="true">✓</span><div><b>Invite sent to '+esc(s.email)+'</b><div class="note">This is the email '+esc(s.first)+' receives. The status in Case Details is now “Invite sent”.</div></div></div>'+
+    '<div class="isec"><h4>The email '+esc(s.first)+' gets</h4>'+inviteEmailHTML(s,ent)+'</div>'+
+    '<div class="isec"><div class="devhd"><h4>Copy for developers</h4><button class="btn sm" data-iv="copy">Copy text</button></div>'+
+    '<pre class="devcopy" id="devCopy">'+esc(devCopy())+'</pre></div>';
+  document.getElementById("inviteRoot").innerHTML='<div class="scrim" data-iv="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="ivH2"><div class="dr-hd"><h3 id="ivH2">Invite sent</h3><button class="btn sm" data-iv="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft"><button class="btn primary" data-iv="close">Done</button></div></div>';
+}
 function closeInvite(){iv=null;document.getElementById("inviteRoot").innerHTML="";}
 function renderInvite(){
   var s=st.signers[iv.i], ent=st.type==="entity";
@@ -654,9 +739,8 @@ function renderInvite(){
   var nPol = st.policies.length+' polic'+(st.policies.length===1?'y':'ies');
   var now=st.policies.filter(function(p){return p.inforce;}).length, later=st.policies.length-now;
   var pol='<div class="plist">'+st.policies.map(function(p){return '<div><span><b>'+esc(p.first+" "+p.last)+'</b> <span class="mono">'+esc(p.policy)+'</span> <span class="note">· Tranche '+p.tranche+'</span></span>'+(p.inforce?'<span class="pill p-active">Will see it now</span>':'<span class="pill p-sent">Appears once in force</span>')+'</div>';}).join("")+'</div>';
-  var email='<div class="email"><div class="subj">Subject: You’re invited to the ILIA Settlor Servicing Portal</div>'+
-    '<div>Hi '+esc(s.first)+',</div><div style="margin-top:6px">You’ve been set up as '+forWhom+' on '+nPol+'. Create your ILIA account to view and manage '+(st.policies.length===1?'it':'them')+', see documents, and sign forms online.</div>'+
-    '<span class="cta">Create my account</span><div class="note" style="margin-top:8px">Questions? niw.info@simplicitygroup.com · 800-294-9940 ext. 807</div></div>';
+  var email=inviteEmailHTML(s,ent);
+  if(iv.step==="sent"){ renderInviteSent(s,ent); return; }
   var body='<div class="isec"><h4>1. Confirm the person you’re inviting</h4>'+who+'<p class="note" style="margin:0">Wrong person or email? Cancel and use <b>Edit settlor</b> to fix it first.</p></div>'+
     '<div class="isec"><h4>2. When each policy will show in the Settlor Servicing Portal</h4>'+pol+
       (later?'<p class="note" style="margin:0">'+later+' polic'+(later===1?'y is':'ies are')+' not in force yet. It will appear in their portal automatically once in force, the same rule ILIA uses for the client Servicing Portal.</p>':'')+'</div>'+
@@ -673,7 +757,12 @@ document.getElementById("inviteRoot").addEventListener("click",function(ev){
   if(a==="email"){iv.showEmail=!iv.showEmail;}
   if(a==="send"&&iv.ok){var s=st.signers[iv.i];s.access=true;s.invite="sent";s.d={sent:"Oct 28"};
     log("Invited "+s.first+" "+s.last+" to the Settlor Servicing Portal ("+st.policies.length+" polic"+(st.policies.length===1?"y":"ies")+")");
-    closeInvite();render();toast("Invite sent to "+s.email);return;}
+    iv.step="sent";render();renderInvite();return;}
+  if(a==="copy"){var txt=devCopy();
+    var done=function(){toast("Developer copy copied");};
+    var fallback=function(){var el=document.getElementById("devCopy");var r=document.createRange();r.selectNodeContents(el);var sel=getSelection();sel.removeAllRanges();sel.addRange(r);toast("Text selected. Press Ctrl+C to copy.");};
+    try{navigator.clipboard.writeText(txt).then(done,fallback);}catch(e){fallback();}
+    return;}
   var keep=(document.querySelector("#inviteRoot .dr-bd")||{}).scrollTop||0; renderInvite();
   var bd=document.querySelector("#inviteRoot .dr-bd"); if(bd) bd.scrollTop=keep;
 });
