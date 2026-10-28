@@ -265,7 +265,7 @@ var PEOPLE = {
       {id:"KZ-104233", insured:"Daniel Reyes", product:"Kai-Zen · National Life (LSW)", tranche:79, inforce:true, year:3, paid:true, growth:"5.25%", ndb:"$1,584,955.77", cv:"$96,760.82", anniv:"11/03/2026",
         sign:[{id:"s1",type:"dbr",what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]},
       {id:"KZ-104890", insured:"Sofia Reyes", product:"Kai-Zen · Allianz", tranche:81, inforce:true, year:2, paid:false, growth:"4.80%", ndb:"$1,120,400.00", cv:"$41,205.10", anniv:"02/14/2027", contrib:"Contribution due Feb 14, 2027",
-        sign:[{id:"s2",type:"ben",what:"Beneficiary change confirmation", due:"Nov 20, 2026"}]},
+        sign:[{id:"s2",type:"ben",what:"Beneficiary change confirmation", due:"Nov 20, 2026"},{id:"s5",type:"hh",what:"Hold Harmless renewal", due:"Dec 5, 2026"}]},
       {id:"KZ-105112", insured:"Marco Diaz", product:"Kai-Zen · National Life (LSW)", tranche:82, inforce:false, sign:[]}
     ]},
   family: {first:"Robert", last:"Alvarez", title:"Settlor", settlor:"Robert Alvarez", kind:"individual", rel:"Parent of the insureds", email:"r.alvarez@example.com",
@@ -390,7 +390,7 @@ function render(){
       "Choose a policy to see its details and documents. Anything that needs your signature is listed below.");
     m+='<div class="sumrow"><div class="sum"><b>'+p.policies.length+'</b> polic'+(p.policies.length===1?'y':'ies')+' you sign for</div><div class="sum"><b>'+sigs.length+'</b> waiting for your signature</div>'+(p.policies.length-live?'<div class="sum"><b>'+(p.policies.length-live)+'</b> not yet in force</div>':'')+'</div>';
     m+='<h2 class="h2">Your policies</h2><div class="cards">'+p.policies.map(policyCard).join("")+'</div>';
-    m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature <button class="btn sm" data-nav="sign">See all</button></h2>'+sigList(sigs,true)+'</div>'+doneList(allDone());
+    m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature <span class="note">'+sigs.length+' total</span></h2>'+sigList(sigs,true)+'</div>'+doneList(allDone());
     m+=openQ("home")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("home","My Policies home","Lands on one policy’s dashboard with its values and a policy dropdown.")+'</details>';
   }
   else if(view==="sign"){
