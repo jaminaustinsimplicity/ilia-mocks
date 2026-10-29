@@ -280,6 +280,14 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
 <div id="toastRoot"></div>
 
 <script>
+/* Personal answer links for anyone but Jamin are closed: show a notice instead of the mock. */
+(function(){
+  var u=new URLSearchParams(location.search).get("u");
+  if(u && u!=="jamin"){
+    document.body.innerHTML='<div style="max-width:520px;margin:15vh auto;padding:0 16px;font:16px/1.5 system-ui,sans-serif;text-align:center"><h1 style="font-size:22px;margin:0 0 8px">This link is no longer active</h1><p style="margin:0;color:#555">Answers aren’t being collected here. Please check with Jamin.</p></div>';
+    throw new Error("Answer link closed");
+  }
+})();
 /* ---------- Sample data (fake) ---------- */
 var PEOPLE = {
   entity: {first:"Laura", last:"Chen", title:"Chief Financial Officer", settlor:"Reyes Family Holdings LLC", kind:"entity", email:"l.chen@reyesholdings.example",
