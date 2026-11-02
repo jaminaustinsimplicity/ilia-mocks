@@ -250,6 +250,10 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
 .f2{display:flex;flex-direction:column;gap:3px}
 .f2 label{font-size:12px;color:var(--muted)}
 .pwf{text-align:left;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);border-radius:6px;padding:9px 11px;font-size:14px;letter-spacing:.12em}
+.pwf.txt{letter-spacing:0;font-size:14px;cursor:pointer}
+.pwf.txt.on{border-color:var(--accent);background:var(--accent-soft)}
+.chg{font-size:10.5px;font-weight:700;color:var(--accent);margin-left:4px}
+.pendnote{margin:10px 0 0;padding:8px 10px;border-radius:6px;background:var(--accent-soft)}
 .pwf.empty{color:var(--faint);letter-spacing:0;font-size:13px}
 .rules{list-style:none;margin:10px 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted)}
 .rules li{display:flex;align-items:center;gap:6px}
@@ -434,7 +438,7 @@ function render(){
   }
   else if(view==="profile"){
     m+=hero("My Account","Your own contact details and password. NIW uses these to send you forms to sign.");
-    m+='<div class="panel"><div class="kpis"><div><small class="note">Name</small><div>'+esc(p.first+" "+p.last)+'</div></div><div><small class="note">Email (username)</small><div>'+esc(p.email)+'</div></div><div><small class="note">'+(ent?'Signs for':'Role')+'</small><div>'+(ent?esc(p.settlor):'Settlor · '+esc(p.rel))+'</div></div></div><p style="margin:12px 0 0"><button class="btn sm" data-act="mock">Edit my details</button></p></div>'+pwPanel()+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("profile","My Account","")+'</details>';
+    m+=profPanel(p,ent)+pwPanel()+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("profile","My Account","")+'</details>';
   }
   else if(view==="faq"){ m+=hero("FAQs and Guides","Answers written for settlors: what you’re signing, why, and what happens next."); m+=specPanel("faq","FAQs and Guides","Kai-Zen FAQs written for the insured."); }
   else if(view==="contact"){ m+=hero("Contact Us","niw.info@simplicitygroup.com · 800-294-9940 ext. 807"); m+=specPanel("contact","Contact Us and Feedback","Same."); }
@@ -584,6 +588,31 @@ function topbar(){
   return '<div class="topbar"><span class="tb-welcome">Welcome! <b>'+esc(P().first)+'</b></span>'+
     '<div class="acct"><button class="acct-btn" data-act="acct" aria-haspopup="menu" aria-expanded="'+acctOpen+'" aria-label="Account menu"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="currentColor"/></svg></button>'+
     (acctOpen?'<div class="acct-menu" role="menu"><button role="menuitem" data-act="myacct">My Account</button><button role="menuitem" data-act="logout">Log out</button></div>':'')+'</div></div>';
+}
+/* My details: view, then Edit -> click a field to swap in a sample change (no typing) -> Save / Cancel */
+var prof=null, emailPending="";
+var PROF_FIELDS=[["first","First name"],["last","Last name"],["email","Email (username)"],["phone","Mobile phone"],["addr","Mailing address"]];
+var PROF_SAMPLE={
+  entity:{first:"Lauren",last:"Chen-Park",email:"laura.chen@reyesholdings.example",phone:"(555) 214-9001",addr:"220 Congress Ave, Austin, TX 78701"},
+  family:{first:"Rob",last:"Alvarez Jr.",email:"robert.alvarez@example.com",phone:"(555) 330-7712",addr:"48 Bayview Dr, Tampa, FL 33602"},
+  individual:{first:"María",last:"Reyes-Ortiz",email:"m.reyes@example.com",phone:"(555) 402-1188",addr:"9 Willow Ln, Denver, CO 80205"}};
+var PROF_BASE={entity:{phone:"(555) 214-8830",addr:"100 Main St, Austin, TX 78701"},family:{phone:"(555) 330-2045",addr:"12 Harbor St, Tampa, FL 33606"},individual:{phone:"(555) 402-5531",addr:"310 Elm St, Denver, CO 80203"}};
+function profVal(p,k){return p[k]!=null?p[k]:PROF_BASE[who][k];}
+function profPanel(p,ent){
+  var role='<div><small class="note">'+(ent?'Signs for':'Role')+'</small><div>'+(ent?esc(p.settlor):'Settlor · '+esc(p.rel))+'</div></div>';
+  var pend=emailPending?'<p class="note pendnote">We sent a confirmation link to <b>'+esc(emailPending)+'</b>. Until it’s confirmed, forms and log in still use <b>'+esc(p.email)+'</b>.</p>':'';
+  if(!prof){
+    return '<div class="panel"><div class="kpis">'+PROF_FIELDS.map(function(f){var v=f[0]==="first"?null:profVal(p,f[0]);
+        return f[0]==="first"?'<div><small class="note">Name</small><div>'+esc(p.first+" "+p.last)+'</div></div>':f[0]==="last"?'':'<div><small class="note">'+f[1]+'</small><div>'+esc(v)+'</div></div>';}).join("")+role+'</div>'+pend+
+      '<p style="margin:12px 0 0"><button class="btn sm" data-act="profedit">Edit my details</button></p></div>';
+  }
+  var changed=PROF_FIELDS.some(function(f){return prof[f[0]]!==profVal(p,f[0]);});
+  return '<div class="panel"><h2 class="h2" style="margin-bottom:4px">Edit my details</h2><p class="note" style="margin:0 0 10px">Click a field to fill a sample change.</p><div class="pwgrid">'+
+    PROF_FIELDS.map(function(f){var ch=prof[f[0]]!==profVal(p,f[0]);
+      return '<div class="f2"'+(f[0]==="addr"?' style="grid-column:1/-1"':'')+'><label>'+f[1]+(ch?' <span class="chg">changed</span>':'')+'</label><button class="pwf txt'+(ch?' on':'')+'" data-act="proffill" data-k="'+f[0]+'">'+esc(prof[f[0]])+'</button></div>';}).join("")+'</div>'+
+    (prof.email!==p.email?'<p class="note pendnote">Your email is also your username. We’ll send a link to the new address, and it takes effect once you confirm it.</p>':'')+
+    '<p class="note" style="margin:8px 0 0">'+(ent?'Signs for: <b>'+esc(p.settlor)+'</b>. Only NIW can change who you sign for.':'Role: Settlor · '+esc(p.rel)+'. Only NIW can change this.')+'</p>'+
+    '<div class="row2"><button class="btn primary" data-act="profsave"'+(changed?'':' disabled')+'>Save changes</button><button class="btn" data-act="profcancel">Cancel</button></div></div>';
 }
 function pwPanel(){
   var rules=[["8 or more characters",pw.nw.length>=8],["At least one number",/\d/.test(pw.nw)],["At least one symbol",/[^A-Za-z0-9]/.test(pw.nw)],["New passwords match",pw.nw&&pw.nw===pw.cf]];
@@ -784,7 +813,7 @@ document.addEventListener("click",function(ev){
   var t=ev.target.closest("[data-nav],[data-pick],[data-act],[data-dk],[data-w],[data-tab],[data-lk]"); if(!t) return;
   if(t.dataset.lk){ if(saved.locked) return; var k=t.dataset.lk; rowLock[k]=!rowLock[k]; var keep=document.getElementById("rail").scrollTop; persist(false, rowLock[k]?"Question locked and saved":"Question unlocked"); setTimeout(function(){document.getElementById("rail").scrollTop=keep;},0); return; }
   if(t.dataset.tab){ tabState[t.dataset.tab]=+t.dataset.ti; render(); return; }
-  if(t.dataset.w){ who=t.dataset.w; [].forEach.call(document.querySelectorAll("#who button"),function(b){b.setAttribute("aria-pressed",b===t?"true":"false");});
+  if(t.dataset.w){ who=t.dataset.w; prof=null; emailPending=""; [].forEach.call(document.querySelectorAll("#who button"),function(b){b.setAttribute("aria-pressed",b===t?"true":"false");});
     pol=null; view="home"; render(); return; }
   if(t.dataset.nav){ var v=t.dataset.nav; if(v==="home"){pol=null;} view=v; render(); window.scrollTo(0,0); return; }
   if(t.dataset.pick){ pol=P().policies.filter(function(x){return x.id===t.dataset.pick;})[0]; view="dash"; render(); window.scrollTo(0,0); return; }
@@ -794,6 +823,13 @@ document.addEventListener("click",function(ev){
   if(a==="viewcopy"){ toast("Mock: opens the signed PDF"); }
   if(a==="adv"){ advance(t.dataset.pid,t.dataset.sid); return; }
   if(a==="mock") toast("Mock: opens an edit form");
+  if(a==="profedit"){ var pp=P(); prof={}; PROF_FIELDS.forEach(function(f){prof[f[0]]=profVal(pp,f[0]);}); render(); return; }
+  if(a==="proffill"){ var k=t.dataset.k, cur=profVal(P(),k); prof[k]= prof[k]===cur ? PROF_SAMPLE[who][k] : cur; render(); return; }
+  if(a==="profcancel"){ prof=null; render(); return; }
+  if(a==="profsave"){ var q=P(), em=prof.email!==q.email;
+    ["first","last","phone","addr"].forEach(function(k){q[k]=prof[k];});
+    if(em) emailPending=prof.email; prof=null; render(); renderNav&&renderNav();
+    toast(em?"Details saved. Check your new email to confirm it.":"Details saved"); return; }
   if(a==="acct"){ acctOpen=!acctOpen; render(); return; }
   if(a==="myacct"){ acctOpen=false; pol=null; view="profile"; render(); window.scrollTo(0,0); return; }
   if(a==="logout"){ acctOpen=false; pol=null; view="loggedout"; render(); return; }
