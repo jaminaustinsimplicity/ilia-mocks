@@ -267,6 +267,14 @@ ul.activity{margin:0;padding:0}
 .sgcol.in{border-color:var(--accent);background:var(--accent-soft)}
 .sgarrow{align-self:center;font-size:20px;color:var(--muted)}
 .oq{color:#8a5a00}
+.cechoice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.cechoice{grid-template-columns:1fr}}
+.cecard{display:flex;flex-direction:column;gap:3px;text-align:left;border:1px solid var(--line-strong);border-radius:10px;padding:10px 12px;background:var(--surface);color:var(--ink);font-size:13.5px;cursor:pointer}
+.cecard.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--accent-soft)}
+.cecard:disabled{opacity:.5;cursor:not-allowed}
+.etypes{display:flex;flex-wrap:wrap;gap:6px}
+.etypes .chip{font-family:inherit;border:1px solid var(--line-strong);border-radius:20px;background:var(--surface);color:var(--ink);padding:5px 12px;font-size:13px;cursor:pointer}
+.etypes .chip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
 .pastsg{margin-top:14px;font-size:13px}.pastsg ul{margin:4px 0 0;padding-left:18px}
 .isec h4{margin:0;font-size:14px}
 .who-card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
@@ -556,7 +564,7 @@ function edFld(label,path,wide){var dirty=ed.hasOwnProperty(path);
   return '<label class="mf has edf'+(wide?' wide':'')+(dirty?' dirty':'')+'"><span class="mf-l">'+label+(dirty?' · edited':'')+'</span><input class="mf-in" data-ed="'+path+'" value="'+esc(edCur(path))+'" aria-label="'+label+'"></label>';}
 function edDirty(){return Object.keys(ed);}
 function pastHTML(){var li=(st.pastSigners||[]).map(function(x){return '<li><b>'+esc(x.name)+'</b>, '+esc(x.title)+' · until '+esc(x.until)+' · changed by '+esc(x.by)+'</li>';}).join("");
-  return li ? '<div class="pastsg"><span class="note">Past '+(st.type==="entity"?'authorized signers':'settlors / authorized signers')+'</span><ul>'+li+'</ul></div>' : '';}
+  return li ? '<div class="pastsg"><span class="note">Past settlors / authorized signers</span><ul>'+li+'</ul></div>' : '';}
 /* the signer's email key for the current settlor type */
 function emKey(){return st.type==="entity"?"sg.email":"in.email";}
 function mailHTML(to,subject,body){return '<div class="mail"><div class="mail-meta"><div><span>To</span>'+esc(to)+'</div><div><span>Subject</span><b>'+esc(subject)+'</b></div></div><div class="mail-body">'+body+'</div></div>';}
@@ -621,7 +629,7 @@ function render(){
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   } else {
     var e=st.ent;
-    h+='<div><div class="sec-t"><span>Settlor details · entity</span><button class="btn sm" data-act="editSettlor" title="Replace this entity with a different settlor">⇄ Change entity</button></div>'+
+    h+='<div><div class="sec-t"><span>Settlor details · entity</span><button class="btn sm" data-act="ceOpen">⇄ Change entity</button></div>'+
       '<p class="note" style="margin:-4px 0 14px">Click any field to update it. To replace this entity with a different one, use <b>Change entity</b>.</p><div class="ilia-grid">'+
       edFld("Entity Name","ent.name")+
       '<div class="mf has sel'+(ed.hasOwnProperty("ent.etype")?" dirty":"")+'"><span class="mf-l">Entity Type</span><select id="entType" class="mf-s" aria-label="Entity Type">'+ENTITY_TYPES.map(function(o){return '<option'+(o===edCur("ent.etype")?' selected':'')+'>'+esc(o)+'</option>';}).join("")+'</select></div>'+
@@ -652,6 +660,7 @@ document.getElementById("view").addEventListener("click",function(ev){
   else if(a==="edDiscard"){ed={};edMailOpen=false;toast("Changes discarded");}
   else if(a==="edMail"){edMailOpen=!edMailOpen;edBar();return;}
   else if(a==="sgChange"){openSg("change");return;}
+  else if(a==="ceOpen"){openCe();return;}
   else if(a==="mockInforce"){insInforce=!insInforce;}
   else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
   else if(a==="sAdv"||a==="pAdv"){var o=a==="sAdv"?s:pp, key=a==="sAdv"?"invite":"insInvite", nx=NEXT[o[key]]; o[key]=nx; o.d=o.d||{}; o.d[nx==="active"?"login":nx]="Oct 28";
@@ -668,7 +677,7 @@ document.getElementById("view").addEventListener("click",function(ev){
 document.getElementById("scen").addEventListener("click",function(ev){
   var b=ev.target.closest("button"); if(!b)return;
   [].forEach.call(this.children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
-  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; insInforce=true; closeDrawer(); if(lk)closeLink(); if(iv)closeInvite(); if(sg)closeSg(); ed={}; render();
+  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; insInforce=true; closeDrawer(); if(lk)closeLink(); if(iv)closeInvite(); if(sg)closeSg(); if(ce)closeCe(); ed={}; render();
 });
 
 /* ---------- Edit drawer ---------- */
@@ -957,6 +966,100 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   var bd=document.querySelector("#sgRoot .dr-bd"); if(bd) bd.scrollTop=keep;
 });
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&sg)closeSg();});
+
+/* ---------- Change entity: a different entity becomes the settlor ---------- */
+var ce=null;
+var CE_EXISTING={name:"Northgate Dental Group PC", etype:"Corporation", ein:"82-4471906", addr:"5800 Granite Pkwy, Plano, TX 75024",
+  signer:{first:"Priya",last:"Shah",title:"Chief Financial Officer",email:"p.shah@northgatedental.example",phone:"(972) 555-0142",access:true,invite:"active",d:{sent:"Sep 2",login:"Oct 20"}},
+  policies:[{first:"Ryan",last:"Patel",policy:"KZ-106020",tranche:84,inforce:true,insAccess:false,insInvite:"none"},{first:"Amy",last:"Nguyen",policy:"KZ-106118",tranche:85,inforce:true,insAccess:false,insInvite:"none"}], more:3};
+var CE_NEW={etype:"Trust (Irrevocable)", name:"Reyes Family Irrevocable Trust", ein:"87-5512034", addr:"2200 Ross Ave, Suite 900, Dallas, TX 75201"};
+var CE_NEW_SG={first:"Elena",last:"Reyes",title:"Trustee",email:"elena.reyes@example.com",phone:"(214) 555-0115"};
+var CE_F=[["name","Entity name"],["ein","EIN / Tax ID"],["addr","Address"]], CE_SF=[["first","First name"],["last","Last name"],["title","Title"],["email","Email address"],["phone","Phone number"]];
+function openCe(){ce={step:"pick", src:"", v:{etype:"",name:"",ein:"",addr:""}, sgMode:"keep", sv:{first:"",last:"",title:"",email:"",phone:""}, scope:"all", ok:false, mails:false}; renderCe();}
+function closeCe(){ce=null;document.getElementById("sgRoot").innerHTML="";}
+function ceShell(title,body,foot){document.getElementById("sgRoot").innerHTML='<div class="scrim" data-ce="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="ceH"><div class="dr-hd"><h3 id="ceH">'+title+'</h3><button class="btn sm" data-ce="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+foot+'</div></div>';}
+function ceFld(grp,k,label,val){var w=(k==="addr"||k==="email")?' style="grid-column:span 2"':'';
+  return val ? '<button class="mf has sgf" data-ce="fill" data-g="'+grp+'" data-k="'+k+'"'+w+'><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(val)+'</span></button>'
+             : '<button class="mf mf-add" data-ce="fill" data-g="'+grp+'" data-k="'+k+'"'+w+'>'+label+'<small>Click to add sample</small></button>';}
+function ceTarget(){return ce.src==="existing" ? CE_EXISTING : ce.v;}
+function ceNewSigner(){var g=st.signers[0]; return ce.src==="existing" ? CE_EXISTING.signer : ce.sgMode==="keep" ? g : ce.sv;}
+function ceReady(){ if(ce.src==="existing") return true;
+  var ok=ce.v.etype&&CE_F.every(function(f){return ce.v[f[0]];}); if(ce.sgMode==="new") ok=ok&&CE_SF.every(function(f){return ce.sv[f[0]];}); return ok;}
+function renderCe(){
+  var e=st.ent, g=st.signers[0], n=st.policies.length, nPol=n+' polic'+(n===1?'y':'ies'), thisP=st.policies.filter(function(p){return p.self;})[0];
+  var cur='<div class="sgcur"><b>'+esc(e.name)+'</b> · '+esc(e.etype)+'<br><span class="note">Authorized signer: '+esc(g?g.first+" "+g.last+", "+g.title:"none")+' · '+nPol+' linked</span></div>';
+  if(ce.step==="pick"){
+    var body='<div class="isec"><h4>Replace the settlor entity</h4><p class="note" style="margin:0">Use this when a <b>different entity</b> becomes the settlor, for example the policies move from an LLC to a trust. To fix this entity’s name, type or address, cancel and click into the fields instead.</p></div>'+
+      '<div class="isec"><h4>Current settlor</h4>'+cur+'</div>'+
+      '<div class="isec"><h4>Who is the new settlor?</h4><div class="cechoice">'+
+        '<button class="cecard'+(ce.src==="existing"?' on':'')+'" data-ce="src" data-v="existing"><b>An entity already in ILIA</b><span class="note">Pick an existing settlor record. Its authorized signer comes with it.</span></button>'+
+        '<button class="cecard'+(ce.src==="new"?' on':'')+'" data-ce="src" data-v="new"><b>A new entity</b><span class="note">Enter the entity’s details and choose its authorized signer.</span></button></div></div>';
+    if(ce.src==="existing") body+='<div class="isec"><h4>Existing settlor record</h4><div class="sgcur cepick"><b>'+esc(CE_EXISTING.name)+'</b> · '+esc(CE_EXISTING.etype)+' · EIN '+esc(mask(CE_EXISTING.ein,4))+'<br><span class="note">Authorized signer: '+esc(CE_EXISTING.signer.first+" "+CE_EXISTING.signer.last+", "+CE_EXISTING.signer.title)+' (has portal access) · '+(CE_EXISTING.policies.length+CE_EXISTING.more)+' policies already linked</span></div><p class="note" style="margin:0">Sample search result. In ILIA this is a search by entity name or EIN.</p></div>';
+    if(ce.src==="new"){
+      body+='<div class="isec"><h4>New entity</h4><div class="note" style="margin-bottom:2px">Entity type</div><div class="etypes">'+ENTITY_TYPES.map(function(t){return '<button class="chip'+(ce.v.etype===t?' on':'')+'" data-ce="etype" data-v="'+esc(t)+'">'+esc(t)+'</button>';}).join("")+'</div>'+
+        '<div class="ilia-grid sg-grid">'+CE_F.map(function(f){return ceFld("v",f[0],f[1],ce.v[f[0]]);}).join("")+'</div></div>'+
+        '<div class="isec"><h4>Authorized signer for the new entity</h4><div class="cechoice">'+
+          '<button class="cecard'+(ce.sgMode==="keep"?' on':'')+'" data-ce="sgmode" data-v="keep"><b>Keep '+esc(g.first+" "+g.last)+'</b><span class="note">Same person signs for the new entity. Their portal access carries over.</span></button>'+
+          '<button class="cecard'+(ce.sgMode==="new"?' on':'')+'" data-ce="sgmode" data-v="new"><b>A different person</b><span class="note">'+esc(g.first)+'’s access to these policies ends. The new signer starts with no portal access.</span></button></div>'+
+          (ce.sgMode==="new"?'<div class="ilia-grid sg-grid">'+CE_SF.map(function(f){return ceFld("sv",f[0],f[1],ce.sv[f[0]]);}).join("")+'</div>':'')+'</div>'+
+        '<button class="btn link sm" data-ce="fillall" style="align-self:flex-start">Fill all with sample</button>';
+    }
+    if(ce.src) body+='<div class="isec"><h4>Which policies move to the new settlor?</h4><div class="cechoice">'+
+        '<button class="cecard'+(ce.scope==="all"?' on':'')+'" data-ce="scope" data-v="all"><b>All '+nPol+' linked to '+esc(e.name)+'</b><span class="note">The whole settlor record moves.</span></button>'+
+        '<button class="cecard'+(ce.scope==="this"?' on':'')+'" data-ce="scope" data-v="this"'+(n===1?' disabled':'')+'><b>Only this policy</b><span class="note">'+(thisP?esc(thisP.first+" "+thisP.last)+' · '+esc(thisP.policy)+'. ':'')+esc(e.name)+' keeps the other '+(n-1)+'.</span></button></div></div>';
+    var ready=ce.src&&ceReady();
+    ceShell("Change entity",body,(ready?'':'<span class="note" style="margin-right:auto">'+(ce.src?'Fill every field to continue.':'Choose the new settlor.')+'</span>')+'<button class="btn" data-ce="close">Cancel</button><button class="btn primary" data-ce="next"'+(ready?'':' disabled')+'>Review change</button>');
+    return;
+  }
+  var t=ceTarget(), ns=ceNewSigner(), sameSigner=ce.src==="new"&&ce.sgMode==="keep", hasAcct=g&&g.invite!=="none";
+  var moving=ce.scope==="all"?st.policies:st.policies.filter(function(p){return p.self;});
+  var mvList='<ul class="signsfor">'+moving.map(function(p){return '<li><b>'+esc(p.first+" "+p.last)+'</b> <span class="note">(insured)</span> · <span class="mono">'+esc(p.policy)+'</span></li>';}).join("")+'</ul>';
+  var mails = sameSigner
+      ? (hasAcct?mailHTML(g.email,"The settlor on your ILIA policies changed","<p>Hi "+esc(g.first)+",</p><p>NIW updated the records. You’re now the authorized signer for <b>"+esc(t.name)+"</b> on "+moving.length+" polic"+(moving.length===1?"y":"ies")+". Nothing changes about how you log in.</p>"):'<p class="note" style="margin:0">'+esc(g.first)+' hasn’t been invited to the portal, so no email is sent.</p>')
+      : (hasAcct?mailHTML(g.email,"You’re no longer the authorized signer on these ILIA policies","<p>Hi "+esc(g.first)+",</p><p>NIW updated the records. "+moving.length+" polic"+(moving.length===1?"y":"ies")+" moved from "+esc(e.name)+" to <b>"+esc(t.name)+"</b>, and your access to "+(moving.length===1?"it":"them")+" has ended.</p>")+'<p class="note oq" style="margin:0 0 8px">Open question: send this, or end access silently?</p>':'')+
+        (ce.src==="existing" ? mailHTML(ns.email,"New policies added to your ILIA Settlor Servicing Portal","<p>Hi "+esc(ns.first)+",</p><p>"+moving.length+" polic"+(moving.length===1?"y is":"ies are")+" now linked to <b>"+esc(t.name)+"</b>. You’ll see "+(moving.length===1?"it":"them")+" next time you log in.</p>")
+                             : '<p class="note" style="margin:0">'+esc(ns.first)+' gets <b>no email yet</b>. Their invite goes out only when you click <b>Invite Authorized Signer to Servicing Portal</b>.</p>');
+  var body2='<div class="sgswap"><div class="sgcol out"><span class="note">Current settlor</span><b>'+esc(e.name)+'</b><span>'+esc(e.etype)+'</span><span class="note">Signer: '+esc(g.first+" "+g.last)+'</span></div><span class="sgarrow" aria-hidden="true">→</span><div class="sgcol in"><span class="note">New settlor'+(ce.src==="existing"?' (existing record)':'')+'</span><b>'+esc(t.name)+'</b><span>'+esc(t.etype)+'</span><span class="note">Signer: '+esc(ns.first+" "+ns.last)+'</span></div></div>'+
+    '<div class="isec"><h4>Policies that move ('+moving.length+')</h4>'+mvList+(ce.scope==="this"?'<p class="note" style="margin:0">'+esc(e.name)+' keeps its other '+(st.policies.length-1)+' polic'+(st.policies.length-1===1?'y':'ies')+' and its signer.</p>':'<p class="note" style="margin:0">'+esc(e.name)+' has no policies left. Its record stays in ILIA for history.</p>')+'</div>'+
+    '<div class="isec"><h4>Authorized signer and portal access</h4><ul class="can">'+
+      (sameSigner ? '<li><b>'+esc(g.first+" "+g.last)+'</b> stays the signer. Portal access carries over; their portal shows '+esc(t.name)+'.</li>'
+        : ce.src==="existing" ? '<li><b>'+esc(ns.first+" "+ns.last)+'</b> ('+esc(t.name)+'’s signer) becomes the signer for these policies. They already have portal access, so the policies appear in their portal.</li><li>'+esc(g.first)+'’s access to these policies ends'+(ce.scope==="this"?'; they keep the other '+(st.policies.length-1)+'.':'.')+'</li>'
+        : '<li><b>'+esc(ns.first+" "+ns.last)+'</b> becomes the signer and starts with <b>no portal access</b>. The Invite button shows once you save.</li><li>'+esc(g.first)+'’s access to these policies ends'+(ce.scope==="this"?'; they keep the other '+(st.policies.length-1)+'.':'.')+'</li>')+
+      '<li>Each insured’s own portal access doesn’t change.</li><li>'+esc(e.name)+' is kept in the history as a past settlor.</li></ul></div>'+
+    '<div class="isec"><h4>Emails this sends</h4>'+(ce.mails?mails:'')+'<button class="btn link sm" data-ce="mails" style="align-self:flex-start">'+(ce.mails?'Hide':'Show')+' emails</button></div>'+
+    '<div class="isec"><h4>Still to decide</h4><ul class="can oq"><li>Changing the settlor entity is a <b>legal change to the trust</b>. What document does NIW need first (Chris / Judy)?</li><li>Forms already waiting on '+esc(g.first)+' for these policies: cancel and resend, or an admin chooses each one?</li>'+(ce.scope==="this"?'<li>Should moving one policy be allowed, or must the whole settlor record move together?</li>':'')+'</ul></div>'+
+    '<button class="confirmchk" role="checkbox" aria-checked="'+ce.ok+'" data-ce="ok"><span class="cbx" aria-hidden="true">'+(ce.ok?'✓':'')+'</span><span>I confirmed the trust documents name <b>'+esc(t.name)+'</b> as the new settlor for '+(moving.length===1?'this policy':'these '+moving.length+' policies')+'.</span></button>';
+  ceShell("Review: change entity",body2,(ce.ok?'':'<span class="note">Tick the confirmation to save.</span>')+'<button class="btn" data-ce="back" style="margin-right:auto">← Back</button><button class="btn" data-ce="close">Cancel</button><button class="btn primary" data-ce="save"'+(ce.ok?'':' disabled')+'>Change entity</button>');
+}
+document.getElementById("sgRoot").addEventListener("click",function(ev){
+  var t=ev.target.closest("[data-ce]"); if(!t||!ce)return; var a=t.dataset.ce;
+  if(a==="close"){closeCe();return;}
+  if(a==="src"){ce.src=t.dataset.v;}
+  if(a==="sgmode"){ce.sgMode=t.dataset.v;}
+  if(a==="scope"){ce.scope=t.dataset.v;}
+  if(a==="etype"){ce.v.etype=ce.v.etype===t.dataset.v?"":t.dataset.v;}
+  if(a==="fill"){var grp=t.dataset.g,k=t.dataset.k,src=grp==="v"?CE_NEW:CE_NEW_SG; ce[grp][k]=ce[grp][k]?"":src[k];}
+  if(a==="fillall"){for(var k1 in CE_NEW)ce.v[k1]=CE_NEW[k1]; if(ce.sgMode==="new")for(var k3 in CE_NEW_SG)ce.sv[k3]=CE_NEW_SG[k3];}
+  if(a==="next"){ce.step="review";ce.ok=false;}
+  if(a==="back"){ce.step="pick";}
+  if(a==="ok"){ce.ok=!ce.ok;}
+  if(a==="mails"){ce.mails=!ce.mails;}
+  if(a==="save"&&ce.ok){
+    var e=st.ent, g=st.signers[0], tg=ceTarget(), ns=ceNewSigner(), sameSigner=ce.src==="new"&&ce.sgMode==="keep";
+    var moving=ce.scope==="all"?st.policies:st.policies.filter(function(p){return p.self;});
+    st.pastSigners=(st.pastSigners||[]); st.pastSigners.unshift({name:e.name,title:"Entity settlor ("+e.etype+"), signer "+g.first+" "+g.last,until:today(),by:"Jamin A."});
+    var m=(tg.addr||"").match(/^(.*), (.*), ([A-Z]{2}) (\d{5})$/)||[0,tg.addr,"","",""];
+    st.ent={name:tg.name,etype:tg.etype,ein:tg.ein,addr:tg.addr,street:m[1],city:m[2],state:m[3],zip:m[4]};
+    st.signers=[ sameSigner ? g : ce.src==="existing" ? clone(ns) : {first:ns.first,last:ns.last,title:ns.title,email:ns.email,phone:ns.phone,access:false,invite:"none",d:{}} ];
+    st.policies = moving.concat(ce.src==="existing"?clone(CE_EXISTING.policies):[]);
+    log("Changed settlor entity from "+e.name+" to "+tg.name+" for "+moving.length+" polic"+(moving.length===1?"y":"ies"));
+    var nm=tg.name, wasEx=ce.src==="existing"; closeCe(); ed={}; render();
+    toast(nm+" is now the settlor"+(sameSigner?". "+g.first+" stays the signer.":wasEx?". "+ns.first+" "+ns.last+" signs.":". Invite "+ns.first+" when ready."));
+    return;}
+  var keep=(document.querySelector("#sgRoot .dr-bd")||{}).scrollTop||0; renderCe();
+  var bd=document.querySelector("#sgRoot .dr-bd"); if(bd) bd.scrollTop=keep;
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&ce)closeCe();});
 
 /* ---------- Link a policy (search → review → link) ---------- */
 /* Sample search results. cur = who the policy's settlor is today. */

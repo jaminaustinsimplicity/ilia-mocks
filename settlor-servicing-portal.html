@@ -387,7 +387,7 @@ function renderNav(){
     ni("home","My Policies", p.policies.length>1?'<span class="tag t-view">'+p.policies.length+'</span>':'')+
     ni("sign","Waiting for my signature", n?'<span class="tag t-cnt">'+n+'</span>':'');
   if(pol&&pol.own){
-    h+='<div class="navsec">Your policy</div><div class="polctx">Viewing<b>Your policy (you’re the insured)</b>Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+'<br><button data-nav="home">⇄ Switch policy</button></div>'+
+    h+='<div class="navsec">Your policy</div>'+
       ni("dash","Policy Dashboard","")+ni("pay","Payments","")+ni("docs","Documents","")+ni("ar","Annual Review","")+
       ni("perf","Current Performance","")+ni("ins","Insured Details &amp; Changes","")+ni("claims","Claims &amp; Distributions","");
   } else if(pol){
