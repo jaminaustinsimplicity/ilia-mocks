@@ -446,6 +446,12 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
 i.dw-ss{background:#6f4bd8!important;color:#fff;border-color:#6f4bd8!important;font-style:normal;border-radius:6px;padding:0 5px}
 .dw-mail{font-size:12.5px;color:#555;margin:8px 0 0}
 .futtag{display:inline-block;font-size:11px;font-weight:600;color:#8a3b00;background:#fff1e0;border:1px solid #ffc98a;border-radius:10px;padding:0 8px;margin-left:6px;vertical-align:1px;white-space:nowrap}
+.cnbadge{border-color:#1b5e20!important;background:#e8f5e9!important;color:#1b5e20!important}
+.cn-why{font-size:14.5px;margin:0}
+.cn-g{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media (max-width:820px){.cn-g{grid-template-columns:1fr}}
+.cn-s{border-radius:10px;padding:12px 16px}.cn-s.must{border:1px solid #a5d6a7;background:#f3faf3}.cn-s.trim{border:1px solid #e0e0e0;background:#fafafa}
+.cn-s h4{margin:0 0 2px;font-size:16px;display:flex;align-items:center;gap:8px}.cn-s h4 span{font-size:12px;border-radius:10px;padding:0 8px;background:#fff;border:1px solid #ccc}
+.cn-l{margin:8px 0 0;padding-left:20px}.cn-l li{margin:0 0 9px;font-size:14px}.cn-l b{display:block}.cn-l span{color:#555;font-size:13.5px}
 </style>
 
 <div class="mockbar">
@@ -459,6 +465,7 @@ i.dw-ss{background:#6f4bd8!important;color:#fff;border-color:#6f4bd8!important;f
   </div>
   <button class="embadge" onclick="openEmails()">✉ Email table <b>60</b></button>
   <button class="embadge dwbadge" onclick="openDocWf()">⇢ Doc Workflow</button>
+  <button class="embadge cnbadge" onclick="openConsid()">★ Considerations</button>
   <span class="mocktag">Settlor Servicing Portal · first draft · sample data only · W-SETTLOR</span>
 </div>
 
@@ -1571,4 +1578,36 @@ function openDocWf(){
   var bd=document.querySelector("#wfRoot .dw-dlg .wf-bd"); if(bd) bd.scrollTop=keep;}
 document.addEventListener("click",function(ev){var b=ev.target.closest("[data-dwu]"); if(b){dwUser=b.dataset.dwu; openDocWf();}});
 document.addEventListener("change",function(ev){if(ev.target.id==="dwOnly"){dwOnly=ev.target.checked; openDocWf();}});
+
+/* ---------- Considerations: why each piece of the settlor work exists. Must-haves vs. could-trim, in plain words. ---------- */
+var CN_MUST=[
+  ["Know who the settlor is on every policy","ILIA assumes the insured is the settlor. For roughly 1 in 10 policies that’s wrong (a spouse, parent or trust/LLC)."],
+  ["Send documents to the right person","Today every servicing form goes to whoever is logged in, usually the insured. If the settlor isn’t the insured, the wrong person signs and the change may not be valid."],
+  ["One authorized signer per settlor, with their own login","Someone has to receive and sign. One person per settlor keeps it simple, even for a trust or LLC."],
+  ["A Signing Section for the signer","One place to see and sign everything that’s waiting, across all their policies."],
+  ["The insured can ask, but can’t approve","When the insured isn’t the settlor, their change requests go to the signer to approve and sign."],
+  ["Hide the insured’s private information","The signer sees the policy, not the insured’s medical answers, full SSN or ID documents."],
+  ["NIW can set, change and invite the signer","On Case Details: mark a separate settlor, enter the signer, send the invite, turn access on or off."],
+  ["The core emails","Invite, resend invite, access restored, and “please sign”. Without them the signer never knows to act."],
+  ["A record of who signed and who the settlor was","If the settlor or signer changes later, older signatures still trace back to the right person."]
+];
+var CN_TRIM=[
+  ["Signer pays contributions in the portal","If we skip it, the insured keeps paying, or the signer pays by check or wire outside the portal."],
+  ["Signer uploads settlor documents","If we skip it, documents are emailed to NIW."],
+  ["Rewording “your policy” for the signer","If we skip it, the wording is a little confusing for the signer, but nothing breaks."],
+  ["Change entity and Change authorized signer flows","If we skip them, NIW edits the records by hand. More room for mistakes, and no automatic emails."],
+  ["Status emails (request received, complete, details updated)","If we skip them, people call or email NIW to ask."],
+  ["Insured access turned on per policy","If we skip it, an insured who isn’t the settlor gets no portal access at all."],
+  ["Signer’s own policy and their policies in one login","If we skip it, a signer who is also an insured uses two logins."],
+  ["Allocation, claims and distributions through the portal","If we skip them, they stay email and offline, as today."],
+  ["Signer sees Annual Review and Current Performance","If we skip them, the signer sees fewer screens."],
+  ["Reason and expiry when the signer declines a request","If we skip them, the insured calls NIW to find out why."],
+  ["DBR election and Hold Harmless in the Signing Section","Belongs to the DBR project. Comes later."]
+];
+function openConsid(){
+  var li=function(a,cls){return '<ol class="cn-l '+cls+'">'+a.map(function(x){return '<li><b>'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></li>';}).join("")+'</ol>';};
+  var body='<p class="cn-why">Why this work exists: ILIA needs to handle policies where the settlor isn’t the insured. Below is what has to be there for that to work, and what could be trimmed.</p>'+
+    '<div class="cn-g"><section class="cn-s must"><h4>Must have <span>'+CN_MUST.length+'</span></h4><p class="note">Without these, settlors can’t work in ILIA, or the wrong person signs.</p>'+li(CN_MUST,"must")+'</section>'+
+    '<section class="cn-s trim"><h4>Could trim <span>'+CN_TRIM.length+'</span></h4><p class="note">Nice to have. Each line says what happens if we skip it.</p>'+li(CN_TRIM,"trim")+'</section></div>';
+  document.getElementById("wfRoot").innerHTML='<div class="wf-ov" data-acp="x"></div><div class="wf-dlg em-dlg cn-dlg" role="dialog" aria-modal="true" aria-label="Considerations"><div class="wf-hd"><h3>★ Considerations for settlor servicing</h3><button class="wf-x" data-acp="x" aria-label="Close">✕</button></div><div class="wf-bd">'+body+'</div><div class="wf-ft"><button class="ibtn" data-acp="x">Close</button></div></div>';}
 </script>
