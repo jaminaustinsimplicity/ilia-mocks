@@ -537,8 +537,7 @@ function entSignerHTML(){
   var g=st.signers[0];
   var head='<div class="sec-t" style="margin-top:20px"><span>Entity authorized signer</span>'+(g?'<span class="sg-acts"><button class="btn sm" data-act="sgChange">⇄ Change authorized signer</button></span>':'')+'</div>'+
     (g?'<p class="note" style="margin:-4px 0 14px">Same person, new details? Click a field and update it. A <b>different person</b>? Use <b>Change authorized signer</b>.</p>':'');
-  var past=(st.pastSigners||[]).map(function(x){return '<li><b>'+esc(x.name)+'</b>, '+esc(x.title)+' · authorized signer until '+esc(x.until)+' · changed by '+esc(x.by)+'</li>';}).join("");
-  past = past ? '<div class="pastsg"><span class="note">Past authorized signers</span><ul>'+past+'</ul></div>' : '';
+  var past=pastHTML();
   if(!g) return head+'<div class="ilia-grid">'+["Authorized Signer First Name","Last Name","Title","Email Address","Phone Number"].map(function(l){return '<button class="mf mf-add" data-act="addSigner">'+l+'<small>Click to add sample</small></button>';}).join("")+'</div>';
   return head+'<div class="ilia-grid">'+edFld("Authorized Signer First Name","sg.first")+edFld("Last Name","sg.last")+edFld("Title","sg.title")+
     edFld("Email Address","sg.email",true)+edFld("Phone Number","sg.phone")+'</div>'+past;
@@ -547,27 +546,39 @@ function secretFld(label,v){return '<div class="mf has"><span class="mf-l">'+lab
 function iliaFld(label,val,wide){return '<div class="mf'+(val?' has':'')+(wide?' wide':'')+'"><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(val)+'</span></div>';}
 /* ---------- Inline editing (same entity / same signer): edit in place, then Save changes ---------- */
 var ed={};
-function edGet(path){var g=st.signers[0], e=st.ent;
+function edGet(path){var g=st.signers[0], e=st.ent, n=st.ind;
+  if(path==="in.addr")return n.addr||(n.street+", "+n.city+", "+n.state+" "+n.zip); if(path.indexOf("in.")===0)return n[path.slice(3)];
   if(path==="ent.name")return e.name; if(path==="ent.addr")return e.addr||(e.street+", "+e.city+", "+e.state+" "+e.zip); if(path==="ent.etype")return e.etype;
   return g?g[path.slice(3)]:"";}
 function edCur(path){return ed.hasOwnProperty(path)?ed[path]:edGet(path);}
-var ED_LABEL={"ent.name":"entity name","ent.addr":"address","ent.etype":"entity type","sg.first":"signer first name","sg.last":"signer last name","sg.title":"signer title","sg.email":"signer email","sg.phone":"signer phone"};
+var ED_LABEL={"in.first":"first name","in.last":"last name","in.email":"email","in.phone":"phone","in.dob":"date of birth","in.addr":"address","ent.name":"entity name","ent.addr":"address","ent.etype":"entity type","sg.first":"signer first name","sg.last":"signer last name","sg.title":"signer title","sg.email":"signer email","sg.phone":"signer phone"};
 function edFld(label,path,wide){var dirty=ed.hasOwnProperty(path);
   return '<label class="mf has edf'+(wide?' wide':'')+(dirty?' dirty':'')+'"><span class="mf-l">'+label+(dirty?' · edited':'')+'</span><input class="mf-in" data-ed="'+path+'" value="'+esc(edCur(path))+'" aria-label="'+label+'"></label>';}
 function edDirty(){return Object.keys(ed);}
+function pastHTML(){var li=(st.pastSigners||[]).map(function(x){return '<li><b>'+esc(x.name)+'</b>, '+esc(x.title)+' · until '+esc(x.until)+' · changed by '+esc(x.by)+'</li>';}).join("");
+  return li ? '<div class="pastsg"><span class="note">Past '+(st.type==="entity"?'authorized signers':'settlors / authorized signers')+'</span><ul>'+li+'</ul></div>' : '';}
+/* the signer's email key for the current settlor type */
+function emKey(){return st.type==="entity"?"sg.email":"in.email";}
+function mailHTML(to,subject,body){return '<div class="mail"><div class="mail-meta"><div><span>To</span>'+esc(to)+'</div><div><span>Subject</span><b>'+esc(subject)+'</b></div></div><div class="mail-body">'+body+'</div></div>';}
+function emailChangeMails(g,newEmail){
+  return mailHTML(g.email,"Your ILIA email was changed","<p>Hi "+esc(g.first)+",</p><p>NIW changed the email on your ILIA account to <b>"+esc(newEmail)+"</b>. You’ll log in with the new email from now on.</p><p>If you didn’t expect this, contact us at niw.info@simplicitygroup.com or 800-294-9940 ext. 807.</p>")+
+         mailHTML(newEmail,"This is now your ILIA login","<p>Hi "+esc(g.first)+",</p><p>Your ILIA Settlor Servicing Portal login is now this email address. Your password hasn’t changed.</p><p>Forms to sign will come to this address.</p>");}
+var edMailOpen=false;
 function edBar(){var bar=document.getElementById("edBar"); if(!bar)return; var k=edDirty(), g=st.signers[0];
   if(!k.length){bar.hidden=true;bar.innerHTML="";return;}
-  var em=ed.hasOwnProperty("sg.email"), hasAcct=g&&g.invite!=="none";
-  var mail = em&&hasAcct ? '<div class="note">On save, <b>'+esc(g.email)+'</b> gets a “your email was changed” notice and <b>'+esc(ed["sg.email"])+'</b> becomes '+esc(g.first)+'’s ILIA login.</div>'
-    : k.some(function(x){return x.indexOf("sg.")===0;})&&hasAcct ? '<div class="note">On save, '+esc(g.first)+' gets a “your details were updated” email.</div>' : '';
+  var ek=emKey(), em=ed.hasOwnProperty(ek), hasAcct=g&&g.invite!=="none";
+  var mail = em&&hasAcct ? '<div class="note">On save, <b>'+esc(g.email)+'</b> gets a “your email was changed” notice and <b>'+esc(ed[ek])+'</b> becomes '+esc(g.first)+'’s ILIA login. <button class="btn link sm" data-act="edMail">'+(edMailOpen?'Hide':'Preview')+' the 2 emails</button></div>'+(edMailOpen?'<div class="edmails">'+emailChangeMails(g,ed[ek])+'</div>':'')
+    : em&&!hasAcct ? '<div class="note">'+esc(g.first)+' hasn’t been invited to the portal yet, so no email is sent. The invite will go to the new email.</div>'
+    : k.some(function(x){return x.indexOf("sg.")===0||/^in\.(first|last|phone)$/.test(x);})&&hasAcct ? '<div class="note">On save, '+esc(g.first)+' gets a “your details were updated” email.</div>' : '';
   bar.hidden=false;
   bar.innerHTML='<div class="edbar-tx"><b>Unsaved changes</b> · '+k.map(function(x){return ED_LABEL[x];}).join(", ")+mail+'</div><button class="btn sm" data-act="edDiscard">Discard</button><button class="btn sm primary" data-act="edSave">Save changes</button>';
 }
-function edSave(){var k=edDirty(); if(!k.length)return; var g=st.signers[0], e=st.ent, em=ed.hasOwnProperty("sg.email"), oldEmail=g&&g.email, hasAcct=g&&g.invite!=="none", sgCh=false;
+function edSave(){var k=edDirty(); if(!k.length)return; var g=st.signers[0], e=st.ent, em=ed.hasOwnProperty(emKey()), oldEmail=g&&g.email, hasAcct=g&&g.invite!=="none", sgCh=false;
   k.forEach(function(p){var v=ed[p];
-    if(p==="ent.name")e.name=v; else if(p==="ent.addr")e.addr=v; else if(p==="ent.etype")e.etype=v; else {g[p.slice(3)]=v; sgCh=true;}});
+    if(p.indexOf("in.")===0){ st.ind[p.slice(3)]=v; if(/^in\.(first|last|email|phone)$/.test(p)){ g[p.slice(3)]=v; sgCh=true; } }
+    else if(p==="ent.name")e.name=v; else if(p==="ent.addr")e.addr=v; else if(p==="ent.etype")e.etype=v; else {g[p.slice(3)]=v; sgCh=true;}});
   log("Updated "+k.map(function(x){return ED_LABEL[x];}).join(", "));
-  ed={}; render();
+  ed={}; edMailOpen=false; render();
   toast(em&&hasAcct ? "Changes saved. Emails sent to "+oldEmail+" and "+g.email : sgCh&&hasAcct ? "Changes saved. "+g.first+" got a “details updated” email." : "Changes saved");
 }
 function render(){
@@ -600,12 +611,13 @@ function render(){
       '<p class="note" style="margin:8px 0 0">This is the standard client Servicing Portal, not the Settlor Servicing Portal. The Settlor Servicing Portal is only for a separate settlor’s authorized signer.</p></div>';
   } else if(st.type==="individual"){
     var s=st.ind;
-    h+='<div><div class="sec-t"><span>Settlor details · individual (Authorized Signer)</span></div><div class="ilia-grid">'+
-      iliaFld("Settlor First Name",s.first)+iliaFld("Middle Name","")+iliaFld("Last Name",s.last)+
-      iliaFld("Settlor Email Address",s.email)+iliaFld("Settlor Phone Number",s.phone)+secretFld("Settlor Social",s.ssn)+
-      iliaFld("Settlor Relation to Insured",relText(s))+iliaFld("Date of Birth",s.dob)+
-      iliaFld("Address",s.street+", "+s.city+", "+s.state+" "+s.zip,true)+
-      '</div></div><hr class="divider">'+
+    h+='<div><div class="sec-t"><span>Settlor details · individual (Authorized Signer)</span><span class="sg-acts"><button class="btn sm" data-act="sgChange">⇄ Change authorized signer</button></span></div>'+
+      '<p class="note" style="margin:-4px 0 14px">Same person, new details? Click a field and update it. A <b>different person</b> is now the settlor? Use <b>Change authorized signer</b>.</p><div class="ilia-grid">'+
+      edFld("Settlor First Name","in.first")+iliaFld("Middle Name","")+edFld("Last Name","in.last")+
+      edFld("Settlor Email Address","in.email")+edFld("Settlor Phone Number","in.phone")+secretFld("Settlor Social",s.ssn)+
+      iliaFld("Settlor Relation to Insured",relText(s))+edFld("Date of Birth","in.dob")+
+      edFld("Address","in.addr",true)+
+      '</div>'+pastHTML()+'<div id="edBar" class="edbar" hidden></div></div><hr class="divider">'+
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   } else {
     var e=st.ent;
@@ -636,9 +648,9 @@ document.getElementById("view").addEventListener("click",function(ev){
   }
   else if(a==="sOffYes"){s.access=false;confirmKey="";log("Turned off portal access for "+nm(s));toast("Access turned off");}
   else if(a==="inviteModal"){openInvite(i);return;}
-  else if(a==="sgEdit"){openSg("edit");return;}
   else if(a==="edSave"){edSave();return;}
-  else if(a==="edDiscard"){ed={};toast("Changes discarded");}
+  else if(a==="edDiscard"){ed={};edMailOpen=false;toast("Changes discarded");}
+  else if(a==="edMail"){edMailOpen=!edMailOpen;edBar();return;}
   else if(a==="sgChange"){openSg("change");return;}
   else if(a==="mockInforce"){insInforce=!insInforce;}
   else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
@@ -879,74 +891,67 @@ document.getElementById("inviteRoot").addEventListener("click",function(ev){
 });
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&iv)closeInvite();});
 
-/* ---------- Entity authorized signer: Edit details (same person) vs Change signer (new person) ---------- */
+/* ---------- Change authorized signer (a different person). Same person = edit the fields in place. ---------- */
 var sg=null;
 var SG_F=[["first","First name"],["last","Last name"],["title","Title"],["email","Email address"],["phone","Phone number"]];
-var SG_EDIT_SAMPLE={first:"Laura",last:"Chen-Park",title:"Chief Financial Officer & Treasurer",email:"laura.chen@reyesholdings.example",phone:"(214) 555-0199"};
-function openSg(mode){var g=st.signers[0];
-  sg={mode:mode, ok:false, step:"form", v: mode==="edit" ? {first:g.first,last:g.last,title:g.title,email:g.email,phone:g.phone} : {first:"",last:"",title:"",email:"",phone:""}};
-  renderSg();}
+var IN_F=[["first","First name"],["last","Last name"],["email","Email address"],["phone","Phone number"],["rel","Relation to insured"],["dob","Date of birth"],["ssn","Social Security number"],["addr","Address"]];
+var IN_NEW={first:"Carlos",last:"Reyes",email:"carlos.reyes@example.com",phone:"(214) 555-0186",rel:"Other: Brother",dob:"07/22/1975",ssn:"623-55-1904",addr:"812 Gaston Ave, Dallas, TX 75214"};
+function sgFields(){return st.type==="entity"?SG_F:IN_F;}
+function openSg(){var v={}; sgFields().forEach(function(f){v[f[0]]="";}); sg={ok:false, docs:false, step:"form", v:v, mails:false}; renderSg();}
 function closeSg(){sg=null;document.getElementById("sgRoot").innerHTML="";}
-function sgNew(){var g=st.signers[0];return SAMPLE.signers.filter(function(x){return x.first!==g.first&&x.first!=="Daniel";})[0];}
+function sgNew(){if(st.type!=="entity")return IN_NEW; var g=st.signers[0];return SAMPLE.signers.filter(function(x){return x.first!==g.first&&x.first!=="Daniel";})[0];}
 function sgShell(title,body,foot){document.getElementById("sgRoot").innerHTML='<div class="scrim" data-sg="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="sgH"><div class="dr-hd"><h3 id="sgH">'+title+'</h3><button class="btn sm" data-sg="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+foot+'</div></div>';}
-function sgFld(act,k,label,val,chg){var w=k==="email"?' style="grid-column:span 2"':'';
-  return val ? '<button class="mf has sgf'+(chg?' sgchg':'')+'" data-sg="'+act+'" data-k="'+k+'"'+w+'><span class="mf-l">'+label+(chg?' · changed':'')+'</span><span class="mf-v">'+esc(val)+'</span></button>'
+function sgFld(act,k,label,val){var w=(k==="email"||k==="addr")?' style="grid-column:span 2"':'', shown=k==="ssn"&&val?mask(val,4):val;
+  return val ? '<button class="mf has sgf" data-sg="'+act+'" data-k="'+k+'"'+w+'><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(shown)+'</span></button>'
              : '<button class="mf mf-add" data-sg="'+act+'" data-k="'+k+'"'+w+'>'+label+'<small>Click to add sample</small></button>';}
 function renderSg(){
-  var g=st.signers[0], ent=st.ent, hasAcct=g.invite!=="none", nPol=st.policies.length+' polic'+(st.policies.length===1?'y':'ies');
-  if(sg.mode==="edit"){
-    var chg=SG_F.filter(function(f){return sg.v[f[0]]!==g[f[0]];}), em=sg.v.email!==g.email;
-    var flds='<div class="ilia-grid sg-grid">'+SG_F.map(function(f){return sgFld("fill",f[0],f[1],sg.v[f[0]],sg.v[f[0]]!==g[f[0]]);}).join("")+'</div>';
-    var tell = !chg.length ? '<p class="note" style="margin:0">No changes yet.</p>'
-      : !hasAcct ? '<p class="note" style="margin:0">'+esc(g.first)+' hasn’t been invited to the portal yet, so no email is sent. Forms will go to the details saved here.</p>'
-      : em ? '<ul class="can"><li><b>'+esc(g.email)+'</b> (old) gets: “NIW changed the email on your ILIA account. If you didn’t expect this, contact us.”</li><li><b>'+esc(sg.v.email)+'</b> (new) gets: “This is now your ILIA login.” Their portal username changes to this email.</li></ul>'
-      : '<ul class="can"><li><b>'+esc(g.email)+'</b> gets a short “Your details were updated” email listing what changed.</li></ul>';
-    var body='<div class="isec"><h4>Same person, new details</h4><p class="note" style="margin:0">Use this to fix a typo or update '+esc(g.first)+'’s contact details. To replace '+esc(g.first)+' with someone else, cancel and use <b>Change authorized signer</b>.</p></div>'+
-      '<div class="isec"><h4>Details <span class="note" style="font-weight:400">· click a field to fill a sample change</span></h4>'+flds+'</div>'+
-      '<div class="isec"><h4>What stays the same</h4><p class="note" style="margin:0">Portal access, invite status and signing history all stay with '+esc(g.first)+'.</p></div>'+
-      '<div class="isec"><h4>Who we email</h4>'+tell+'</div>';
-    sgShell("Edit signer details · "+esc(g.first+" "+g.last),body,'<button class="btn" data-sg="close">Cancel</button><button class="btn primary" data-sg="saveEdit">Save details</button>');
-    return;
-  }
-  var filled=SG_F.every(function(f){return sg.v[f[0]];});
+  var g=st.signers[0], isEnt=st.type==="entity", hasAcct=g.invite!=="none", nPol=st.policies.length+' polic'+(st.policies.length===1?'y':'ies'), F=sgFields(); var allPol=st.policies.length===1?'this policy':'all '+nPol;
+  var forWho = isEnt ? esc(st.ent.name) : 'the policy';
+  var role = isEnt ? 'authorized signer' : 'settlor and authorized signer';
+  var filled=F.every(function(f){return sg.v[f[0]];});
   if(sg.step==="form"){
-    var nf='<div class="ilia-grid sg-grid">'+SG_F.map(function(f){return sgFld("nfill",f[0],f[1],sg.v[f[0]],false);}).join("")+'</div>';
-    var body1='<div class="isec"><h4>Replace the authorized signer for '+esc(ent.name)+'</h4><p class="note" style="margin:0">Use this when a <b>different person</b> will sign for '+esc(ent.name)+'. Each settlor has one authorized signer, so the new person replaces <b>'+esc(g.first+" "+g.last)+'</b>. Same person with new details? Cancel and use <b>Edit signer details</b>.</p></div>'+
-      '<div class="isec"><h4>Current signer</h4><div class="sgcur"><b>'+esc(g.first+" "+g.last)+'</b> · '+esc(g.title)+'<br><span class="note">'+esc(g.email)+' · '+esc(g.phone)+' · '+(hasAcct?'has portal access':'not invited to the portal')+'</span></div></div>'+
-      '<div class="isec"><h4>New authorized signer</h4>'+nf+'<button class="btn link sm" data-sg="nall" style="align-self:flex-start">Fill all with sample</button></div>';
+    var nf='<div class="ilia-grid sg-grid">'+F.map(function(f){return sgFld("nfill",f[0],f[1],sg.v[f[0]]);}).join("")+'</div>';
+    var body1='<div class="isec"><h4>Replace the '+role+(isEnt?' for '+forWho:'')+'</h4><p class="note" style="margin:0">'+
+        (isEnt ? 'Use this when a <b>different person</b> will sign for '+forWho+'. Each settlor has one authorized signer, so the new person replaces <b>'+esc(g.first+" "+g.last)+'</b>.'
+               : 'Use this when a <b>different person</b> becomes the settlor. For an individual, the settlor is also the authorized signer, so the new person replaces <b>'+esc(g.first+" "+g.last)+'</b> in both roles.')+
+        ' Same person with new details? Cancel and click into the fields instead.</p></div>'+
+      '<div class="isec"><h4>Current '+role+'</h4><div class="sgcur"><b>'+esc(g.first+" "+g.last)+'</b> · '+esc(isEnt?g.title:relText(st.ind)+' of the insured')+'<br><span class="note">'+esc(g.email)+' · '+esc(g.phone)+' · '+(hasAcct?'has portal access':'not invited to the portal')+'</span></div></div>'+
+      '<div class="isec"><h4>New '+role+'</h4>'+nf+'<button class="btn link sm" data-sg="nall" style="align-self:flex-start">Fill all with sample</button></div>';
     sgShell("Change authorized signer",body1,(filled?'':'<span class="note" style="margin-right:auto">Fill every field to continue.</span>')+'<button class="btn" data-sg="close">Cancel</button><button class="btn primary" data-sg="next"'+(filled?'':' disabled')+'>Review change</button>');
     return;
   }
-  var nv=sg.v;
-  var body2='<div class="sgswap"><div class="sgcol out"><span class="note">Removing</span><b>'+esc(g.first+" "+g.last)+'</b><span>'+esc(g.title)+'</span><span class="note">'+esc(g.email)+'</span></div><span class="sgarrow" aria-hidden="true">→</span><div class="sgcol in"><span class="note">New authorized signer</span><b>'+esc(nv.first+" "+nv.last)+'</b><span>'+esc(nv.title)+'</span><span class="note">'+esc(nv.email)+'</span></div></div>'+
-    '<div class="isec"><h4>What happens to '+esc(g.first)+'</h4><ul class="can"><li>Removed as authorized signer for '+esc(ent.name)+' on all '+nPol+'.</li>'+(hasAcct?'<li>Settlor Servicing Portal access ends right away.</li><li class="oq">Open question: email '+esc(g.first)+' a “you’re no longer the signer” notice, or end it silently?</li>':'<li>Was never invited to the portal, so there’s no access to end.</li>')+'<li>Kept in the history as a past signer.</li></ul></div>'+
-    '<div class="isec"><h4>What happens for '+esc(nv.first)+'</h4><ul class="can"><li>Becomes the authorized signer on all '+nPol+'. New forms go to '+esc(nv.email)+'.</li><li>Starts with <b>no portal access</b>. The <b>Invite Authorized Signer to Servicing Portal</b> button shows once you save.</li></ul></div>'+
-    '<div class="isec"><h4>Forms already waiting on '+esc(g.first)+'</h4><p class="note oq" style="margin:0">Open question for Judy: cancel and resend them to '+esc(nv.first)+' automatically, or let an admin choose each one? And do we need proof (for example a company resolution) before changing an entity’s signer?</p></div>'+
-    '<button class="confirmchk" role="checkbox" aria-checked="'+sg.ok+'" data-sg="ok"><span class="cbx" aria-hidden="true">'+(sg.ok?'✓':'')+'</span><span>I confirmed '+esc(ent.name)+' has named <b>'+esc(nv.first+" "+nv.last)+'</b> as its new authorized signer.</span></button>';
-  sgShell("Review: change authorized signer",body2,(sg.ok?'':'<span class="note">Tick the confirmation to save.</span>')+'<button class="btn" data-sg="back" style="margin-right:auto">← Back</button><button class="btn" data-sg="close">Cancel</button><button class="btn primary" data-sg="saveChange"'+(sg.ok?'':' disabled')+'>Change authorized signer</button>');
+  var nv=sg.v, sub=function(o,isNew){return isEnt?o.title:(isNew?o.rel.replace(/^Other: /,""):relText(st.ind))+" of the insured";};
+  var mails = (hasAcct? mailHTML(g.email,"You’re no longer the "+role+" on your ILIA policies","<p>Hi "+esc(g.first)+",</p><p>NIW updated "+(isEnt?esc(st.ent.name)+"’s":"the")+" records. <b>"+esc(nv.first+" "+nv.last)+"</b> is now the "+role+" for "+nPol+", and your Settlor Servicing Portal access has ended.</p><p>Questions? Contact niw.info@simplicitygroup.com or 800-294-9940 ext. 807.</p>")+'<p class="note oq" style="margin:0 0 8px">Open question: send this, or end access silently?</p>' : '')+
+    '<p class="note" style="margin:0">'+esc(nv.first)+' gets <b>no email yet</b>. Their invite goes out only when you click <b>Invite Authorized Signer to Servicing Portal</b>.</p>';
+  var body2='<div class="sgswap"><div class="sgcol out"><span class="note">Removing</span><b>'+esc(g.first+" "+g.last)+'</b><span>'+esc(sub(g,false))+'</span><span class="note">'+esc(g.email)+'</span></div><span class="sgarrow" aria-hidden="true">→</span><div class="sgcol in"><span class="note">New '+role+'</span><b>'+esc(nv.first+" "+nv.last)+'</b><span>'+esc(sub(nv,true))+'</span><span class="note">'+esc(nv.email)+'</span></div></div>'+
+    '<div class="isec"><h4>What happens to '+esc(g.first)+'</h4><ul class="can"><li>No longer the '+role+' on '+allPol+'.</li>'+(hasAcct?'<li>Settlor Servicing Portal access ends right away.</li>':'<li>Was never invited to the portal, so there’s no access to end.</li>')+'<li>Kept in the history as a past '+(isEnt?'signer':'settlor')+'.</li></ul></div>'+
+    '<div class="isec"><h4>What happens for '+esc(nv.first)+'</h4><ul class="can"><li>Becomes the '+role+' on '+allPol+'. New forms go to '+esc(nv.email)+'.</li><li>Starts with <b>no portal access</b>. The <b>Invite Authorized Signer to Servicing Portal</b> button shows once you save.</li>'+(isEnt?'':'<li>Relation badge changes to <b>'+esc(nv.rel.replace(/^Other: /,""))+'</b>.</li>')+'</ul></div>'+
+    '<div class="isec"><h4>Emails this sends</h4>'+(sg.mails?mails:'')+'<button class="btn link sm" data-sg="mails" style="align-self:flex-start">'+(sg.mails?'Hide':'Show')+' emails</button></div>'+
+    '<div class="isec"><h4>Still to decide</h4><ul class="can oq"><li>Forms already waiting on '+esc(g.first)+': cancel and resend to '+esc(nv.first)+' automatically, or an admin chooses each one?</li>'+
+      (isEnt?'<li>Do we need proof (for example a company resolution) before changing an entity’s signer?</li>':'<li>Changing an individual settlor can be a <b>legal change to the trust</b>. What document does NIW need first (Chris / Judy)?</li>')+'</ul></div>'+
+    '<button class="confirmchk" role="checkbox" aria-checked="'+sg.ok+'" data-sg="ok"><span class="cbx" aria-hidden="true">'+(sg.ok?'✓':'')+'</span><span>'+(isEnt?'I confirmed '+esc(st.ent.name)+' has named <b>'+esc(nv.first+" "+nv.last)+'</b> as its new authorized signer.':'I confirmed the trust documents name <b>'+esc(nv.first+" "+nv.last)+'</b> as the new settlor.')+'</span></button>';
+  sgShell("Review: change "+role,body2,(sg.ok?'':'<span class="note">Tick the confirmation to save.</span>')+'<button class="btn" data-sg="back" style="margin-right:auto">← Back</button><button class="btn" data-sg="close">Cancel</button><button class="btn primary" data-sg="saveChange"'+(sg.ok?'':' disabled')+'>Change '+role+'</button>');
 }
 document.getElementById("sgRoot").addEventListener("click",function(ev){
   var t=ev.target.closest("[data-sg]"); if(!t||!sg)return; var a=t.dataset.sg, g=st.signers[0];
   if(a==="close"){closeSg();return;}
-  if(a==="fill"){var k=t.dataset.k; sg.v[k]= sg.v[k]===g[k] ? SG_EDIT_SAMPLE[k] : g[k];}
   if(a==="nfill"){var k2=t.dataset.k; sg.v[k2]= sg.v[k2] ? "" : sgNew()[k2];}
-  if(a==="nall"){var n=sgNew(); SG_F.forEach(function(f){sg.v[f[0]]=n[f[0]];});}
+  if(a==="nall"){var n=sgNew(); sgFields().forEach(function(f){sg.v[f[0]]=n[f[0]];});}
   if(a==="next"){sg.step="confirm";sg.ok=false;}
   if(a==="back"){sg.step="form";}
   if(a==="ok"){sg.ok=!sg.ok;}
-  if(a==="saveEdit"){
-    var ch=SG_F.filter(function(f){return sg.v[f[0]]!==g[f[0]];}).map(function(f){return f[1].toLowerCase();}), em=sg.v.email!==g.email, old=g.email;
-    if(!ch.length){closeSg();toast("No changes to save");return;}
-    SG_F.forEach(function(f){g[f[0]]=sg.v[f[0]];});
-    log("Updated authorized signer details for "+g.first+" "+g.last+": "+ch.join(", "));
-    closeSg(); render();
-    toast(g.invite==="none" ? "Signer details saved" : em ? "Saved. Emails sent to "+old+" and "+g.email : "Saved. "+g.first+" got a “details updated” email.");
-    return;}
+  if(a==="mails"){sg.mails=!sg.mails;}
   if(a==="saveChange"&&sg.ok){ ed={};
-    var nv=sg.v; st.pastSigners=(st.pastSigners||[]); st.pastSigners.unshift({name:g.first+" "+g.last,title:g.title,until:today(),by:"Jamin A."});
-    st.signers=[{first:nv.first,last:nv.last,title:nv.title,email:nv.email,phone:nv.phone,access:false,invite:"none",d:{}}];
-    log("Changed authorized signer from "+g.first+" "+g.last+" to "+nv.first+" "+nv.last);
-    closeSg(); render(); toast(nv.first+" "+nv.last+" is now the authorized signer. Invite them when ready.");
+    var nv=sg.v, isEnt=st.type==="entity", hadAcct=g.invite!=="none";
+    st.pastSigners=(st.pastSigners||[]); st.pastSigners.unshift({name:g.first+" "+g.last,title:isEnt?g.title:"Settlor & Authorized Signer ("+relText(st.ind)+")",until:today(),by:"Jamin A."});
+    if(isEnt){ st.signers=[{first:nv.first,last:nv.last,title:nv.title,email:nv.email,phone:nv.phone,access:false,invite:"none",d:{}}]; }
+    else {
+      var other=/^Other: /.test(nv.rel), m=nv.addr.match(/^(.*), (.*), ([A-Z]{2}) (\d{5})$/)||[0,nv.addr,"","",""];
+      st.ind={first:nv.first,last:nv.last,email:nv.email,phone:nv.phone,ssn:nv.ssn,dob:nv.dob,relation:other?"Other":nv.rel,otherRelation:other?nv.rel.replace(/^Other: /,""):"",street:m[1],city:m[2],state:m[3],zip:m[4]};
+      st.signers=[{first:nv.first,last:nv.last,title:"Settlor & Authorized Signer",email:nv.email,phone:nv.phone,access:false,invite:"none",d:{},isSettlor:true}];
+    }
+    log("Changed "+(isEnt?"authorized signer":"settlor and authorized signer")+" from "+g.first+" "+g.last+" to "+nv.first+" "+nv.last);
+    closeSg(); render(); toast(nv.first+" "+nv.last+" is now the "+(isEnt?"authorized signer":"settlor and authorized signer")+"."+(hadAcct?" "+g.first+"’s portal access ended.":"")+" Invite "+nv.first+" when ready.");
     return;}
   var keep=(document.querySelector("#sgRoot .dr-bd")||{}).scrollTop||0; renderSg();
   var bd=document.querySelector("#sgRoot .dr-bd"); if(bd) bd.scrollTop=keep;
