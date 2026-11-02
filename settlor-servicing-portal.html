@@ -382,8 +382,6 @@ function renderNav(){
     h+='<div class="navsec">This policy</div><div class="polctx">Viewing<b>'+esc(pol.insured)+' (insured)</b>Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+'<br><button data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button>'+'</div>'+
       ni("dash","Policy Dashboard",screenTag("dash"))+ni("pay","Payments",screenTag("pay"))+ni("docs","Documents",screenTag("docs"))+ni("ar","Annual Review",screenTag("ar"))+
       ni("perf","Current Performance",screenTag("perf"))+ni("ins","Insured Details",screenTag("ins"))+ni("claims","Claims & Distributions",screenTag("claims"));
-  } else {
-    h+='<div class="navsec">Policy pages</div><p class="note" style="margin:0 12px 6px">Pick a policy on My Policies to see its pages.</p>';
   }
   h+='<div class="navsec">Help</div>'+ni("faq","FAQs and Guides","")+ni("contact","Contact Us","");
   document.getElementById("nav").innerHTML=h;
