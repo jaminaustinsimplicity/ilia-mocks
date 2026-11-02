@@ -218,6 +218,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .viewbar{position:sticky;top:0;z-index:15;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--accent);border-radius:10px;background:var(--accent-soft);color:var(--ink);font-size:13.5px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .viewbar .vb-tx{flex:1 1 300px;min-width:0}
 .viewbar .btn{flex:0 0 auto}
+.viewbar.own{border-color:#3DDB93;background:#e9f9f1}
+.ilx-lock{font-size:13px;color:#777;white-space:nowrap}.ilx-dim{color:#9a9a9a}
+.ilx-locked{display:flex;gap:14px;align-items:flex-start;border:1px dashed #c4c4c4;border-radius:8px;background:#fafafa;padding:20px;margin:14px 0}.ilx-locked>span{font-size:30px}.ilx-locked p{margin:4px 0 0!important;font-size:15px}
+.ilx-lnk{border:0;background:none;color:#3671ED;font:500 14px Roboto,sans-serif;cursor:pointer;padding:0 2px}.ilx-lnk.red{color:#d32f2f}
+.ilx-sdh{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:12px 0}
+.ilx-st{display:inline-block;font-size:12.5px;border-radius:14px;padding:2px 10px}.ilx-st.ok{background:#e3f6ec;color:#1d7a4d}.ilx-st.rev{background:#fff4e0;color:#8a5a00}.ilx-st.bad{background:#fdecea;color:#b3261e}
+.ilx-confirm{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid #f1c0bc;background:#fdf3f2;border-radius:6px;padding:10px 12px;margin:10px 0;font-size:14.5px}.ilx-confirm span{flex:1 1 260px}
 .ctxline b{font-weight:700}
 .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px}
@@ -476,7 +483,7 @@ function dec(k){for(var i=0;i<DECISIONS.length;i++)for(var j=0;j<DECISIONS[i].it
 
 /* Screen -> menu tag derived from the decisions */
 var SCREEN_KEYS = {dash:["dash"],pay:["payV","payA"],docs:["docsP","docsU"],ar:["ar"],perf:["perfV","perfA"],ins:["insV","insE","benA"],claims:["clV","clA"]};
-function screenTag(s){
+function screenTag(s){ return ""; /* menu tags removed 11/2 */
   var ks=SCREEN_KEYS[s]||[], vals=ks.map(function(k){return choice[k];});
   if(vals.every(function(v){return v==="No";})) return '<span class="tag t-no">Hidden</span>';
   if(vals.some(function(v){return v==="Yes";})) return '<span class="tag t-act">Can act</span>';
@@ -569,6 +576,7 @@ function render(){
   else if(view==="faq"){ m+=hero("FAQs and Guides","Answers written for settlors: what you’re signing, why, and what happens next."); m+=specPanel("faq","FAQs and Guides","Kai-Zen FAQs written for the insured."); }
   else if(view==="contact"){ m+=hero("Contact Us","niw.info@simplicitygroup.com · 800-294-9940 ext. 807"); m+=specPanel("contact","Contact Us and Feedback","Same."); }
   else if(pol&&pol.own){
+    m+='<div class="viewbar own" role="status"><span class="vb-ic" aria-hidden="true">👤</span><span class="vb-tx">Viewing <b>your own policy</b> (you’re the insured) · Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+' · '+esc(pol.product)+'</span><button class="btn sm" data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button></div>';
     var octx='<div class="ctxline"><b>Your own policy</b> · You’re the insured · Policy ending '+last4(pol.id)+' · '+esc(pol.product)+' · Policy year '+pol.year+'</div>';
     var OWN_T={dash:"Your policy",pay:"Payments",docs:"Documents",ar:"Annual Review",perf:"Current Performance",ins:"Insured Details & Changes",claims:"Claims & Distributions"};
     if(false){
@@ -617,7 +625,13 @@ function wfA(pol,k){return pol.own?'data-act="mock"':'data-wf="'+k+'"';}
 /* ---------- Authorized signer action workflows (associated policies) ----------
    Each button opens a step-by-step modal: enter (click-to-fill sample) -> review -> sign (when a signature is needed) -> done.
    Done screens say what happens next and who is emailed. Flows for "To decide" items are marked Proposed. */
-var WFX={}, wf=null;
+var WFX={}, wf=null, SDOCS={}, sdConfirm=null;
+function sdocs(pol){ if(!SDOCS[pol.id]) SDOCS[pol.id]=[{name:"Trust Certification.pdf",type:"Trust Certification",date:"10/30/2026",status:"Approved"},{name:"Photo ID (front).jpg",type:"Photo ID (front)",date:"10/30/2026",status:"Needs attention",note:"Image is blurry. Please upload a clearer photo."}]; return SDOCS[pol.id]; }
+document.addEventListener("click",function(ev){var b=ev.target.closest("[data-sda]"); if(!b) return; var L=sdocs(pol), i=+b.dataset.i, a=b.dataset.sda;
+  if(a==="remove") sdConfirm=i; else if(a==="cancel") sdConfirm=null;
+  else if(a==="removeYes"){ var nm=L[i].name; L.splice(i,1); sdConfirm=null; render(); toast(nm+" removed"); return; }
+  else if(a==="replace"){ sdConfirm=null; openWf("upload"); wf.v.dtype=L[i].type; wf.replace=i; renderWf(); return; }
+  render(); });
 function wfAlert(pol,k){var r=WFX[pol.id+":"+k]; if(!r||pol.own) return "";
   return '<div class="ilx-alert"><b>'+esc(r.alertT)+'</b><span>'+r.alertB+'</span></div>';}
 function signerName(){return P().first+" "+P().last;}
@@ -650,7 +664,8 @@ var WF={
   upload:{title:"Upload a Settlor Document", gate:"docsU", steps:function(v){return [
       {t:"Choose the document",b:[{choice:"dtype",label:"Document type",opts:["Trust Certification","Entity Resolution","Photo ID (front)","Photo ID (back)","Other"]},{file:"file",label:"File",sample:"trust-cert-2026.pdf"}]},
       {t:"Review",b:[{review:1}]}];},
-    done:function(v){return {head:"Document uploaded",body:'<p><b>'+esc(v.dtype)+'</b> ('+esc(v.file)+') is in your <b>Settlor Documents</b> tab. NIW reviews it and contacts you if anything else is needed.</p>',
+    done:function(v,pol){var L=sdocs(pol), rec={name:v.file,type:v.dtype,date:"11/02/2026",status:"Under review"}; if(wf&&wf.replace!=null) L[wf.replace]=rec; else L.push(rec);
+      return {head:wf&&wf.replace!=null?"Document replaced":"Document uploaded",body:'<p><b>'+esc(v.dtype)+'</b> ('+esc(v.file)+') is in your <b>Settlor Documents</b> tab as <b>Under review</b>. You can replace or remove it until NIW approves it.</p>',
       emails:[["NIW servicing team","New settlor document to review"]],dtype:v.dtype,file:v.file};}},
   legal:{title:"Request a legal name change", gate:"insE", steps:function(v,pol){var n=ilxIns(pol);return [
       {t:"New legal name",b:[{info:'<p>For <b>'+esc(pol.insured)+'</b>, the insured on policy ending '+last4(pol.id)+'.</p>'},{fields:[["nfirst","New first name",n.first],["nlast","New last name",n.last+"-Brooks"]]},{choice:"reason",label:"Reason",opts:["Marriage","Divorce","Court order","Correction"]}]},
@@ -760,19 +775,36 @@ function iliaScreen(view,pol,p){
       '<div class="icard" style="margin-top:40px"><p class="s1">Contributions Payment History </p><p class="cap">Below is the history of payments made towards your policy with calculated totals.</p>'+ilxTabs("ipay",["Total Premium Payment History","Payment History"])+hist+'</div></section>';
   }
   if(view==="docs"){
-    var D0=[["Enrollment Documents",[["Signed Illustration","Illustration","01/12/2024"],["Life Insurance Application","Application","01/12/2024"],["Trust Agreement","Trust","01/15/2024"],["Policy Contract","Policy","02/20/2024"]]],["Personal Documents",[["Driver’s License","Identity Document","01/10/2024"]]],["Servicing Documents",[["Hold Harmless Agreement","Servicing Form","12/02/2025"]]]];
-    var D=D0.filter(function(d){return !(d[0]==="Personal Documents"&&!ilxSees(pol,"docsI"));});
-    if(!pol.own&&choice.docsU==="Yes") D.push(["Settlor Documents",[["Trust Certification","Settlor Document","10/30/2026"]].concat(WFX[pol.id+":upload"]?[[WFX[pol.id+":upload"].dtype+" — "+WFX[pol.id+":upload"].file,"Settlor Document","11/02/2026"]]:[])]);
-    if(tabState.idocs>=D.length) tabState.idocs=0;
-    var t=tabState.idocs, tn=D[t][0], act='<span class="ilx-ic">👁</span> <span class="ilx-ic">⭳</span>';
-    var rows=D[t][1].map(function(r){return [esc(r[0]),esc(r[1]),r[2],act];});
+    var act='<span class="ilx-ic" title="View">👁</span> <span class="ilx-ic" title="Download">⭳</span>', lockA='<span class="ilx-lock">🔒 Insured only</span>';
+    var enr=[["Signed Illustration","Illustration","01/12/2024"],["Life Insurance Application","Application","01/12/2024"],["Trust Agreement","Trust","01/15/2024"],["Policy Contract","Policy","02/20/2024"]];
+    if(pol.own){
+      var D=[["Enrollment Documents",enr],["Personal Documents",[["Driver’s License","Identity Document","01/10/2024"]]],["Servicing Documents",[["Hold Harmless Agreement","Servicing Form","12/02/2025"]]]];
+      if(tabState.idocs>=D.length) tabState.idocs=0; var t0=tabState.idocs, tn0=D[t0][0];
+      return '<section class="ilx">'+ilxHead("Plan Documents","View or download your "+esc(strat)+" plan documents like your policy, illustration, trust and other important documents.")+ilxSel(pol)+
+        '<div class="icard">'+ilxTabs("idocs",D.map(function(d){return d[0];}))+(tn0!=="Servicing Documents"?'<div class="ilx-search"><label class="ilx-out"><span>Search Documents</span><input placeholder=" " aria-label="Search Documents"><i aria-hidden="true">🔍</i></label></div>':'')+
+        (tn0==="Personal Documents"?'<div style="text-align:right;margin:10px 0"><button class="ibtn" data-act="mock">Upload</button></div>':'')+
+        ilxTable(["Name","Type","Date Modified","Actions"],D[t0][1].map(function(r){return [esc(r[0]),esc(r[1]),r[2],act];}),"There are no documents")+
+        (tn0==="Servicing Documents"?'<h5 class="ih5" style="margin-top:50px">Carrier Statements</h5>'+ilxTable(["Name","Type","Actions"],[["Annual Statement "+(2024+yr-1),"Carrier Statement",act]],"There are no statements"):'')+'</div></section>';
+    }
+    /* associated policy: enrollment + servicing view/download, insured-only items locked, Personal tab locked, Settlor Documents managed by the signer */
+    var first=pol.insured.split(" ")[0], seesP=choice.docsI!=="No", canU=choice.docsU==="Yes";
+    var tabs=["Enrollment Documents",(seesP?"":"🔒 ")+"Personal Documents","Servicing Documents"].concat(canU?["Settlor Documents"]:[]);
+    if(tabState.idocs>=tabs.length) tabState.idocs=0; var t=tabState.idocs, body="";
+    if(t===0) body=ilxTable(["Name","Type","Date Modified","Actions"],enr.map(function(r){return [esc(r[0]),esc(r[1]),r[2],act];}).concat([['<span class="ilx-dim">Medical Questionnaire</span>','<span class="ilx-dim">Underwriting</span>','<span class="ilx-dim">01/12/2024</span>',lockA]]),"There are no documents")+
+      '<p class="ilx-dec">Locked rows: documents only the insured and NIW can open (for example medical underwriting). The authorized signer sees that they exist but can’t open them.</p>';
+    else if(t===1) body = seesP ? ilxTable(["Name","Type","Date Modified","Actions"],[["Driver’s License","Identity Document","01/10/2024",act]],"There are no documents")
+      : '<div class="ilx-locked"><span aria-hidden="true">🔒</span><div><b>'+esc(first)+'’s personal documents are private</b><p>ID, utility bills and medical documents belong to the insured. Only '+esc(first)+' and NIW can see them.</p>'+(canU?'<p>Need to send NIW your own paperwork? Use the <button class="ilx-lnk" data-tab="idocs" data-ti="3">Settlor Documents</button> tab.</p>':'')+'</div></div>';
+    else if(t===2) body=ilxTable(["Name","Type","Date Modified","Actions"],[["Hold Harmless Agreement","Servicing Form","12/02/2025",act]],"There are no documents")+'<h5 class="ih5" style="margin-top:50px">Carrier Statements</h5>'+ilxTable(["Name","Type","Actions"],[["Annual Statement "+(2024+yr-1),"Carrier Statement",act]],"There are no statements");
+    else {
+      var L=sdocs(pol), stp={"Approved":"ok","Under review":"rev","Needs attention":"bad"};
+      body='<div class="ilx-sdh"><p class="cap" style="margin:0">Documents you send NIW as the '+(P().kind==="entity"?'authorized signer for '+esc(P().settlor):'settlor')+': trust or entity paperwork, your ID. Only you and NIW can see them; the insured can’t.</p><button class="ibtn" data-wf="upload">Upload</button></div>'+
+        ilxTable(["Name","Type","Uploaded","Status","Actions"],L.map(function(d,i){var mine=d.status!=="Approved";
+          return [esc(d.name),esc(d.type),d.date,'<span class="ilx-st '+stp[d.status]+'">'+d.status+'</span>'+(d.note?'<br><small class="ilx-dim">'+esc(d.note)+'</small>':''),act+(mine?' <button class="ilx-lnk" data-sda="replace" data-i="'+i+'">Replace</button> <button class="ilx-lnk red" data-sda="remove" data-i="'+i+'">Remove</button>':' <span class="ilx-dim" title="Approved documents can’t be removed">🔒</span>')];}),"No settlor documents yet")+
+        (sdConfirm!==null&&L[sdConfirm]?'<div class="ilx-confirm"><span>Remove <b>'+esc(L[sdConfirm].name)+'</b>? NIW hasn’t approved it yet, so it’s removed for good.</span><button class="ibtn sm" data-sda="removeYes" data-i="'+sdConfirm+'">Remove</button><button class="ibtn sm wf-back" data-sda="cancel">Cancel</button></div>':'')+
+        '<p class="ilx-dec">You can replace or remove a document until NIW approves it. Approved documents are locked. If NIW needs something fixed, the status says “Needs attention” with a note.</p>';
+    }
     return '<section class="ilx">'+ilxHead("Plan Documents","View or download your "+esc(strat)+" plan documents like your policy, illustration, trust and other important documents.")+ilxSel(pol)+
-      '<div class="icard">'+ilxTabs("idocs",D.map(function(d){return d[0];}))+
-      (tn!=="Servicing Documents"?'<div class="ilx-search"><label class="ilx-out"><span>Search Documents</span><input placeholder=" " aria-label="Search Documents"><i aria-hidden="true">🔍</i></label></div>':'')+
-      (tn==="Personal Documents"||tn==="Settlor Documents"?'<div style="text-align:right;margin:10px 0"><button class="ibtn" '+(tn==="Settlor Documents"?wfA(pol,"upload"):'data-act="mock"')+'>Upload</button></div>':'')+
-      (tn==="Settlor Documents"?'<p class="ilx-dec">Settlor view: new tab. The authorized signer uploads trust or entity paperwork and their ID here. The insured’s Personal Documents tab is hidden from them.</p>':'')+
-      ilxTable(["Name","Type","Date Modified","Actions"],rows,"There are no documents")+
-      (tn==="Servicing Documents"?'<h5 class="ih5" style="margin-top:50px">Carrier Statements</h5>'+ilxTable(["Name","Type","Actions"],[["Annual Statement "+(2024+yr-1),"Carrier Statement",act]],"There are no statements"):'')+'</div></section>';
+      '<div class="icard">'+ilxTabs("idocs",tabs)+(t<2&&!(t===1&&!seesP)?'<div class="ilx-search"><label class="ilx-out"><span>Search Documents</span><input placeholder=" " aria-label="Search Documents"><i aria-hidden="true">🔍</i></label></div>':'')+body+'</div></section>';
   }
   if(view==="ar"){
     var Y=Math.max(1,yr-1), cv=parseFloat(pol.cv.replace(/[$,]/g,""))||40000;
