@@ -275,6 +275,21 @@ ul.activity{margin:0;padding:0}
 .etypes{display:flex;flex-wrap:wrap;gap:6px}
 .etypes .chip{font-family:inherit;border:1px solid var(--line-strong);border-radius:20px;background:var(--surface);color:var(--ink);padding:5px 12px;font-size:13px;cursor:pointer}
 .etypes .chip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+.embadge{border:1px solid #6f4bd8;background:#f6f1ff;color:#4b2fa8;border-radius:20px;padding:5px 12px;font:600 13px Roboto,sans-serif;cursor:pointer}.embadge b{background:#6f4bd8;color:#fff;border-radius:10px;padding:0 6px;margin-left:4px;font-size:11.5px}
+.em-dlg{width:min(1180px,calc(100% - 32px))}.em-dlg .dr-bd>*{flex-shrink:0}
+.em-sum{border:1px solid #f0d27a;background:#fffaeb;border-radius:8px;padding:10px 12px;font-size:14px;display:flex;flex-direction:column;gap:8px}
+.em-tpls{display:flex;flex-wrap:wrap;gap:6px}.em-tp{font-size:12.5px;background:#fff;border:1px solid #e5c55d;border-radius:14px;padding:2px 9px}.em-tp b{color:#8a5a00}
+.em-only{font-size:13.5px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.em-t{width:100%;border-collapse:collapse;font-size:13px}.em-t th{background:#EDF3F8;text-align:left;font-weight:500;padding:8px 10px}.em-t td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.em-t td:first-child{white-space:nowrap}.em-must td{background:#fff6d6}.em-click{cursor:pointer}.em-click:hover td{background:#ffefb3}.em-car{color:#8a5a00;font-size:11px}
+.em-mh{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;background:#f0b429;color:#3d2a00;border-radius:4px;padding:1px 6px;margin-left:4px}.em-op{color:#b3261e;font-weight:500}
+.em-xrow td{background:#fffdf5;padding:10px 14px 16px}
+.em-prev{border:1px solid #e0e0e0;border-radius:8px;background:#fff;overflow:hidden;max-width:720px;color:#222}
+.em-pm{display:grid;grid-template-columns:70px 1fr;gap:4px 10px;padding:10px 14px;background:#f5f7fb;border-bottom:1px solid #e0e0e0;font-size:13px}.em-pm span{color:#777}
+.em-pb{padding:14px;font-size:14px}.em-pb p{margin:0 0 10px}
+.em-cta{display:inline-block;background:#3671ED;color:#fff;border-radius:50px;padding:8px 24px;font-weight:500;font-size:14px}
+.em-pd{padding:10px 14px;border-top:1px dashed #e0e0e0;font-size:13px;background:#fafafa}
+.em-var{background:#eaf1fe;color:#2a56c6;border-radius:3px;padding:0 3px;font-family:var(--fm,monospace);font-size:12px}
 .pastsg{margin-top:14px;font-size:13px}.pastsg ul{margin:4px 0 0;padding-left:18px}
 .isec h4{margin:0;font-size:14px}
 .who-card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
@@ -341,6 +356,7 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
     <button data-s="individual" aria-pressed="false">Separate · individual</button>
     <button data-s="entity" aria-pressed="false">Separate · entity</button>
   </div>
+  <button class="embadge" onclick="openEmails()">✉ Email table <b>13</b></button>
   <span class="mocktag">Mock · sample data only · W-SETTLOR</span>
 </div>
 
@@ -410,6 +426,7 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 <div id="linkRoot"></div>
 <div id="inviteRoot"></div>
 <div id="sgRoot"></div>
+<div id="emRoot"></div>
 <div id="toastRoot"></div>
 
 <script>
@@ -1162,4 +1179,29 @@ document.getElementById("view").addEventListener("change",function(ev){
 document.getElementById("view").addEventListener("click",function(ev){ if(ev.target.closest('[data-act="editSettlor"]')) openDrawer(); });
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&d)closeDrawer();});
 render();
+
+/* ---------- Email table for this screen (Case Details settlor section). Same rows/numbers as the portal mock and SETTLOR-EMAILS.md ---------- */
+var CD_EMAILS=[[41,"Case Details","Invite Authorized Signer","Admin sends invite","Authorized signer","You’re invited to your ILIA Settlor Servicing Portal","New (NIWD-2734)","Decided"],[42,"Case Details","Invite Authorized Signer","Admin resends invite","Authorized signer","Same invite, new link","New (NIWD-2734)","Decided"],[43,"Case Details","Portal access","Admin turns access back on","Authorized signer","Your access was restored","New (NIWD-2734)","Decided"],[44,"Case Details","Insured portal access","Admin turns on insured access for one policy","Insured","Servicing Portal invite (this policy only)","New (NIWD-2734)","Decided"],[45,"Case Details","Edit signer details","Admin changes signer email (signer has access)","Old email","NIW changed the email on your ILIA account","New","Suggested"],[46,"Case Details","Edit signer details","Admin changes signer email (signer has access)","New email","This is now your ILIA login","New","Suggested"],[47,"Case Details","Edit signer details","Admin changes name / phone (signer has access)","Authorized signer","Your details were updated","New","Suggested"],[48,"Case Details","Edit signer details","Email changed while invite pending","New email","Invite resent to new email?","—","Open (B5)"],[49,"Case Details","Change authorized signer","Admin replaces the signer","Removed signer","You’re no longer the authorized signer","New","Open (B9)"],[50,"Case Details","Change authorized signer","Admin replaces the signer","New signer","(none until Invite is sent)","—","Decided"],[51,"Case Details","Change entity","Admin moves policies, same signer","Authorized signer","The settlor on your ILIA policies changed","New","Suggested"],[52,"Case Details","Change entity","Admin moves policies to an existing record","That record’s signer","New policies added to your ILIA Settlor Servicing Portal","New","Suggested"],[53,"Case Details","Change entity","Admin moves policies, new signer","Removed signer","You’re no longer the authorized signer on these policies","New","Open (B9)"]];   /* [#, area, flow, trigger, to, email, ILIA today, status] */
+var CD_EMCOPY={"41":{"to":"Authorized signer","s":"You’re invited to your ILIA Settlor Servicing Portal","b":["Hi {SignerFirstName},","{SettlorName} has named you the authorized signer for {PolicyCount} life insurance policies. In the Settlor Servicing Portal you can view each policy, sign forms NIW sends you, and keep your contact details current.","This link expires in {Expiry}."],"cta":"Create your account","does":"Opens ILIA account setup (set password) for this email, then lands in the Settlor Servicing Portal. Defined in NIWD-2734."},"42":{"to":"Authorized signer","s":"Reminder: your ILIA Settlor Servicing Portal invite","b":["Hi {SignerFirstName},","Here’s a new link to set up your Settlor Servicing Portal account. Your earlier link no longer works.","This link expires in {Expiry}."],"cta":"Create your account","does":"Same as the invite; the previous link is invalidated. Defined in NIWD-2734."},"43":{"to":"Authorized signer","s":"Your Settlor Servicing Portal access is back on","b":["Hi {SignerFirstName},","NIW turned your Settlor Servicing Portal access back on. You can log in with your existing email and password."],"cta":"Log in","does":"Opens the ILIA login page."},"44":{"to":"Insured","s":"You now have access to your policy in ILIA","b":["Hi {InsuredFirstName},","NIW gave you access to view your policy ending {Last4} in the ILIA Servicing Portal."],"cta":"Set up your access","does":"Opens ILIA account setup (or login if they already have an account) and lands on that one policy. Defined in NIWD-2734."},"45":{"to":"Old email","s":"The email on your ILIA account was changed","b":["Hi {SignerFirstName},","NIW changed the email on your ILIA account to {NewEmail} on {Date}. You’ll log in with the new email from now on.","If you didn’t expect this, contact us right away at niw.info@simplicitygroup.com or 800-294-9940 ext. 807."],"cta":"Contact NIW","does":"Opens an email to niw.info@simplicitygroup.com (no login link, for security)."},"46":{"to":"New email","s":"This is now your ILIA login","b":["Hi {SignerFirstName},","Your ILIA Settlor Servicing Portal login is now this email address. Your password hasn’t changed. Forms to sign will come here."],"cta":"Log in","does":"Opens the ILIA login page with this email filled in."},"47":{"to":"Authorized signer","s":"Your details were updated by NIW","b":["Hi {SignerFirstName},","NIW updated your details on {Date}: {ChangedFields}.","If something looks wrong, contact us at niw.info@simplicitygroup.com or 800-294-9940 ext. 807."],"cta":"Review My Account","does":"Opens My Account in the Settlor Servicing Portal."},"51":{"to":"Authorized signer","s":"The settlor on your ILIA policies changed","b":["Hi {SignerFirstName},","NIW updated the records: you’re now the authorized signer for {NewSettlorName} on {PolicyCount} policies (previously {OldSettlorName}). Nothing changes about how you log in."],"cta":"View your policies","does":"Opens My Policies in the Settlor Servicing Portal."},"52":{"to":"That record’s signer","s":"New policies added to your ILIA Settlor Servicing Portal","b":["Hi {SignerFirstName},","{PolicyCount} policies are now linked to {SettlorName}. You’ll see them in your portal the next time you log in."],"cta":"View your policies","does":"Opens My Policies in the Settlor Servicing Portal."}};
+var emOnly=false, emOpen={};
+function emMust(e){return /^New/.test(e[6])&&!/^Open/.test(e[7]);}
+function emTpl(e){var x=e[5];
+  if(/invited|Same invite/.test(x)) return "T1 Signer portal invite"; if(/access was restored/.test(x)) return "T2 Access restored"; if(/this policy only/.test(x)) return "T3 Insured single-policy invite";
+  if(/NIW changed the email|now your ILIA login/.test(x)) return "T8 Email changed by NIW"; if(/details were updated/.test(x)) return "T9 Details updated";
+  if(/settlor on your|New policies added/.test(x)) return "T10 Change entity notice"; return "";}
+function emPreview(i){var c=CD_EMCOPY[i]; if(!c) return '<p class="note">No draft copy yet.</p>';
+  var hi=function(t){return esc(t).replace(/\{([A-Za-z0-9]+)\}/g,'<span class="em-var">{$1}</span>').replace(/\n/g,'<br>');};
+  return '<div class="em-prev"><div class="em-pm"><span>From</span>Kai-Zen Plan Servicing · Simplicity-NIW<span>To</span>'+esc(c.to)+'<span>Subject</span><b>'+hi(c.s)+'</b></div><div class="em-pb">'+c.b.map(function(p){return '<p>'+hi(p)+'</p>';}).join("")+'<span class="em-cta">'+esc(c.cta)+'</span></div><div class="em-pd"><b>CTA does:</b> '+esc(c.does)+'<br><span class="note">Draft copy for review. {Fields} are filled per email.</span></div></div>';}
+function openEmails(){var must=CD_EMAILS.filter(emMust), tp={}; must.forEach(function(e){var t=emTpl(e); if(t) tp[t]=(tp[t]||0)+1;});
+  var tk=Object.keys(tp).sort(function(a,b){return parseInt(a.slice(1))-parseInt(b.slice(1));});
+  var rows=CD_EMAILS.filter(function(e){return !emOnly||emMust(e);});
+  var body='<div class="em-sum"><div><b>'+must.length+' must-have new emails</b> from this screen (highlighted, click a row to see its copy) → <b>'+tk.length+' templates</b>. '+CD_EMAILS.filter(function(e){return /^Open/.test(e[7]);}).length+' wait on open questions; 1 sends nothing.</div><div class="em-tpls">'+tk.map(function(t){return '<span class="em-tp">'+esc(t)+' <b>'+tp[t]+'</b></span>';}).join("")+'</div><p class="note" style="margin:0">T1–T3 are already in NIWD-2734. Row numbers match the portal mock’s table and SETTLOR-EMAILS.md.</p><label class="em-only"><input type="checkbox" id="emOnly"'+(emOnly?' checked':'')+'> Show must-haves only</label></div>'+
+    '<div class="tblwrap"><table class="em-t"><thead><tr><th>#</th><th>Flow</th><th>Trigger</th><th>To</th><th>Email</th><th>Template</th><th>ILIA today</th><th>Status</th></tr></thead><tbody>'+rows.map(function(e){var i=e[0], m=emMust(e);
+      return '<tr'+(m?' class="em-must em-click" data-emx="'+i+'"':'')+'><td>'+(m?'<span class="em-car">'+(emOpen[i]?'▾':'▸')+'</span> ':'')+i+'</td><td>'+esc(e[2])+'</td><td>'+esc(e[3])+'</td><td>'+esc(e[4])+'</td><td><b>'+esc(e[5])+'</b>'+(m?' <span class="em-mh">MUST-HAVE · NEW</span>':'')+'</td><td>'+esc(m?emTpl(e):'')+'</td><td>'+esc(e[6])+'</td><td class="'+(/^Open/.test(e[7])?'em-op':'')+'">'+esc(e[7])+'</td></tr>'+(m&&emOpen[i]?'<tr class="em-xrow"><td colspan="8">'+emPreview(i)+'</td></tr>':'');}).join("")+'</tbody></table></div>';
+  var keep=(document.querySelector("#emRoot .dr-bd")||{}).scrollTop||0;
+  document.getElementById("emRoot").innerHTML='<div class="scrim" data-em="x"></div><div class="drawer em-dlg" role="dialog" aria-modal="true" aria-label="Email table"><div class="dr-hd"><h3>✉ Email table · Case Details settlor section · '+CD_EMAILS.length+' emails</h3><button class="btn sm" data-em="x" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft"><button class="btn primary" data-em="x">Close</button></div></div>';
+  var bd=document.querySelector("#emRoot .dr-bd"); if(bd) bd.scrollTop=keep;}
+document.getElementById("emRoot").addEventListener("click",function(ev){ if(ev.target.closest('[data-em="x"]')){document.getElementById("emRoot").innerHTML="";return;}
+  var r=ev.target.closest("[data-emx]"); if(r){emOpen[r.dataset.emx]=!emOpen[r.dataset.emx]; openEmails();} });
+document.getElementById("emRoot").addEventListener("change",function(ev){ if(ev.target.id==="emOnly"){emOnly=ev.target.checked; openEmails();} });
 </script>
