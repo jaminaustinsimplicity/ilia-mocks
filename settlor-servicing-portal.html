@@ -507,7 +507,7 @@ function renderNav(){
   var h='<div class="logo"><b>ilia</b><span>SERVICING</span></div>'+
     '<div class="navsec">My work</div>'+
     ni("home","My Policies", p.policies.length>1?'<span class="tag t-view">'+p.policies.length+'</span>':'')+
-    ni("sign","Waiting for my signature", n?'<span class="tag t-cnt">'+n+'</span>':'');
+    ni("sign","Signing Section", n?'<span class="tag t-cnt">'+n+'</span>':'');
   if(pol&&pol.own){
     h+='<div class="navsec">Your policy</div>'+
       ni("dash","Policy Dashboard","")+ni("pay","Payments","")+ni("docs","Documents","")+ni("ar","Annual Review","")+
@@ -562,7 +562,7 @@ function render(){
     m+=openQ("home")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("home","My Policies home","Lands on one policy’s dashboard with its values and a policy dropdown.")+'</details>';
   }
   else if(view==="sign"){
-    m+=hero("Waiting for your signature","Forms and documents NIW has sent to you as the authorized signer, across all your policies. Each opens in DocuSign.");
+    m+=hero("Signing Section","Forms and documents NIW has sent to you as the authorized signer, across all your policies. Each opens in DocuSign.");
     m+='<div class="panel">'+sigList(allSign(),true)+'</div>'+doneList(allDone())+openQ("sign")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("sign","Waiting for my signature","No such list. The insured signs only inside specific change requests.")+'</details>';
   }
   else if(view==="loggedout"){
