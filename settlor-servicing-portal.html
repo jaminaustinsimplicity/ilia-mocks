@@ -563,7 +563,7 @@ function render(){
   }
   else if(view==="sign"){
     m+=hero("Signing Section","Forms and documents NIW has sent to you as the authorized signer, across all your policies. Each opens in DocuSign.");
-    m+='<div class="panel">'+sigList(allSign(),true)+'</div>'+doneList(allDone())+openQ("sign")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("sign","Waiting for my signature","No such list. The insured signs only inside specific change requests.")+'</details>';
+    m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Signing Section <span class="note">'+allSign().length+' waiting for your signature</span></h2>'+sigList(allSign(),true)+'</div>'+doneList(allDone())+openQ("sign")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("sign","Waiting for my signature","No such list. The insured signs only inside specific change requests.")+'</details>';
   }
   else if(view==="loggedout"){
     document.getElementById("main").innerHTML='<div class="loggedout"><div class="lo-card"><div class="logo"><b>ilia</b><span>SERVICING</span></div><h2>You\u2019re logged out</h2><p class="note">For your security, close this window if you\u2019re on a shared computer.</p><button class="btn primary" data-act="relogin">Log in again</button></div></div>';
