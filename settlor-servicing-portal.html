@@ -606,13 +606,12 @@ function profPanel(p,ent){
         return f[0]==="first"?'<div><small class="note">Name</small><div>'+esc(p.first+" "+p.last)+'</div></div>':f[0]==="last"?'':'<div><small class="note">'+f[1]+'</small><div>'+esc(v)+'</div></div>';}).join("")+role+'</div>'+pend+
       '<p style="margin:12px 0 0"><button class="btn sm" data-act="profedit">Edit my details</button></p></div>';
   }
-  var changed=PROF_FIELDS.some(function(f){return prof[f[0]]!==profVal(p,f[0]);});
   return '<div class="panel"><h2 class="h2" style="margin-bottom:4px">Edit my details</h2><p class="note" style="margin:0 0 10px">Click a field to fill a sample change.</p><div class="pwgrid">'+
     PROF_FIELDS.map(function(f){var ch=prof[f[0]]!==profVal(p,f[0]);
       return '<div class="f2"'+(f[0]==="addr"?' style="grid-column:1/-1"':'')+'><label>'+f[1]+(ch?' <span class="chg">changed</span>':'')+'</label><button class="pwf txt'+(ch?' on':'')+'" data-act="proffill" data-k="'+f[0]+'">'+esc(prof[f[0]])+'</button></div>';}).join("")+'</div>'+
     (prof.email!==p.email?'<p class="note pendnote">Your email is also your username. We’ll send a link to the new address, and it takes effect once you confirm it.</p>':'')+
     '<p class="note" style="margin:8px 0 0">'+(ent?'Signs for: <b>'+esc(p.settlor)+'</b>. Only NIW can change who you sign for.':'Role: Settlor · '+esc(p.rel)+'. Only NIW can change this.')+'</p>'+
-    '<div class="row2"><button class="btn primary" data-act="profsave"'+(changed?'':' disabled')+'>Save changes</button><button class="btn" data-act="profcancel">Cancel</button></div></div>';
+    '<div class="row2"><button class="btn primary" data-act="profsave">Save changes</button><button class="btn" data-act="profcancel">Cancel</button></div></div>';
 }
 function pwPanel(){
   var rules=[["8 or more characters",pw.nw.length>=8],["At least one number",/\d/.test(pw.nw)],["At least one symbol",/[^A-Za-z0-9]/.test(pw.nw)],["New passwords match",pw.nw&&pw.nw===pw.cf]];
@@ -826,10 +825,10 @@ document.addEventListener("click",function(ev){
   if(a==="profedit"){ var pp=P(); prof={}; PROF_FIELDS.forEach(function(f){prof[f[0]]=profVal(pp,f[0]);}); render(); return; }
   if(a==="proffill"){ var k=t.dataset.k, cur=profVal(P(),k); prof[k]= prof[k]===cur ? PROF_SAMPLE[who][k] : cur; render(); return; }
   if(a==="profcancel"){ prof=null; render(); return; }
-  if(a==="profsave"){ var q=P(), em=prof.email!==q.email;
+  if(a==="profsave"){ var q=P(), em=prof.email!==q.email, any=PROF_FIELDS.some(function(f){return prof[f[0]]!==profVal(q,f[0]);});
     ["first","last","phone","addr"].forEach(function(k){q[k]=prof[k];});
     if(em) emailPending=prof.email; prof=null; render(); renderNav&&renderNav();
-    toast(em?"Details saved. Check your new email to confirm it.":"Details saved"); return; }
+    toast(!any?"No changes to save":em?"Details saved. Check your new email to confirm it.":"Details saved"); return; }
   if(a==="acct"){ acctOpen=!acctOpen; render(); return; }
   if(a==="myacct"){ acctOpen=false; pol=null; view="profile"; render(); window.scrollTo(0,0); return; }
   if(a==="logout"){ acctOpen=false; pol=null; view="loggedout"; render(); return; }
