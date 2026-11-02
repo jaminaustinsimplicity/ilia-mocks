@@ -218,6 +218,14 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .viewbar{position:sticky;top:0;z-index:15;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--accent);border-radius:10px;background:var(--accent-soft);color:var(--ink);font-size:13.5px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .viewbar .vb-tx{flex:1 1 300px;min-width:0}
 .viewbar .btn{flex:0 0 auto}
+.devbar{border:1px dashed #8e6bd8;border-radius:10px;background:#f6f1ff;color:#2e1f5e;font-size:13.5px}
+.devb-hd{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:8px 14px;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.devb-tag{font-size:11px;font-weight:700;letter-spacing:.08em;background:#6f4bd8;color:#fff;border-radius:4px;padding:2px 7px}
+.devb-ch{margin-left:auto;font-size:11px;color:#6f4bd8}
+.devb-bd{padding:4px 14px 12px;border-top:1px dashed #c9b6f2}
+.devb-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:8px 0}@media (max-width:900px){.devb-g{grid-template-columns:1fr}}
+.devb-g h5{margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#6f4bd8}.devb-g ul{margin:0;padding-left:18px}.devb-g li{margin-bottom:3px}
+.devb-bd p{margin:6px 0 0}.devb-ft{color:#6b5f8a;font-size:12.5px}
 .viewbar.own{border-color:#3DDB93;background:#e9f9f1}
 .ilx-lock{font-size:13px;color:#777;white-space:nowrap}.ilx-dim{color:#9a9a9a}
 .ilx-locked{display:flex;gap:14px;align-items:flex-start;border:1px dashed #c4c4c4;border-radius:8px;background:#fafafa;padding:20px;margin:14px 0}.ilx-locked>span{font-size:30px}.ilx-locked p{margin:4px 0 0!important;font-size:15px}
@@ -590,6 +598,7 @@ function render(){
   }
   else if(pol){
     var ctx='';
+    m+=devBar(view);
     m+='<div class="viewbar" role="status"><span class="vb-ic" aria-hidden="true">👁</span><span class="vb-tx">Viewing <b>'+esc(pol.insured)+'’s policy</b> (insured) · Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+' · '+esc(pol.product)+(pol.year?' · Policy year '+pol.year:'')+' · You’re the '+(ent?'authorized signer for '+esc(p.settlor):'settlor and authorized signer')+'</span><button class="btn sm" data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button></div>';
     m+=iliaScreen(view,pol,p);
     if(view==="dash"){
@@ -632,6 +641,39 @@ document.addEventListener("click",function(ev){var b=ev.target.closest("[data-sd
   else if(a==="removeYes"){ var nm=L[i].name; L.splice(i,1); sdConfirm=null; render(); toast(nm+" removed"); return; }
   else if(a==="replace"){ sdConfirm=null; openWf("upload"); wf.v.dtype=L[i].type; wf.replace=i; renderWf(); return; }
   render(); });
+/* ---------- Dev notes bar: what an authorized signer can see / do on each screen of an associated policy ---------- */
+var devOpen=false;
+var DEV_SCREEN={dash:"Policy Dashboard",pay:"Payments",docs:"Documents",ar:"Annual Review",perf:"Current Performance",ins:"Insured Details & Changes",claims:"Claims & Distributions"};
+function devRules(v){
+  var td=function(k){return choice[k]==="Not decided";};
+  var R={
+    dash:{see:["Payment status card (Paid in full / due date) and Policy Anniversary Date — same as ILIA client view","Growth rate, net death benefit and net cash value cards (view only) — NEW: ILIA shows these to admins only today","Shortcut tiles to Plan Documents, Insured Details & Changes, Claims & Distributions, FAQ, Contact"],
+      can:["Switch policy (policy dropdown or Switch policy button)"],no:[],copy:"Hero and tile copy speak to the signer (“As the authorized signer, you can view and manage this policy…”), not the insured."},
+    pay:{see:["Next Annual Contribution Due","Contributions Payment History: Total Premium Payment History and Payment History tabs (view only)"],
+      can:["Make Payment: Personal Check, Wire Transfer or Single ePay — same model as a GWT giftor paying a loved one’s policy","Each payment logged by payer type: “Paid by [name] (Authorized Signer)”; receipt to signer, notice to agent + IMO"],
+      no:["The insured’s saved bank accounts"],copy:"“your contribution / your policy” → “this policy’s contribution / this policy”.",open:["Entity settlor paying from a business or trust account?","Payer-type field: reuse giftor’s or new? (verify)"]},
+    docs:{see:["Enrollment Documents (view / download)","Servicing Documents + Carrier Statements (view / download)"],
+      can:["Settlor Documents tab (NEW): upload trust/entity paperwork and own ID; Replace or Remove until NIW approves; statuses Under review / Needs attention / Approved"],
+      no:["Personal Documents tab is locked (insured’s ID, utility bill, medical)","Insured-only enrollment items shown locked (e.g. Medical Questionnaire)"],copy:"“your plan documents” → “the plan documents for this policy”.",open:["Which enrollment documents are insured-only?"]},
+    ar:{see:["Full Annual Review: last year’s values, original illustrated values, the 3 comparison charts (view only)"],can:["Download Carrier Annual Statement and Client Proposal"],no:[],copy:"“your policy / your contribution” → “the policy / client contribution”."},
+    perf:{see:["Kai-Zen Risks & Considerations, Policy Performance table, Loan to Value (view only)"],
+      can:[(td("perfA")?"TO DECIDE — ":"")+"Request Allocation Change: pick new allocation → review → sign; NIW prepares the carrier form"],no:["Admin-only allocation form"],copy:"“Change My Allocations” → “Request Allocation Change”; allocation instructions rewritten for the signer.",open:td("perfA")?["Can the signer request + sign allocation changes? What workflow does the request start?"]:[]},
+    ins:{see:["Legal name; date of birth (masked), city and state","Beneficiary details (primary + contingent)"],
+      can:["Request legal name change (new name, reason, supporting document, signs)","Request personal details change (address / phone / email — enters new value only, signs)","Request beneficiary change (add / change % / remove, signs); shows “Requested” chip","Each request shows ILIA’s “Your Request is Processing” alert until NIW finishes"],
+      no:["SSN, phones, email, net worth, income, employer, full address"],copy:"“Edit Personal Details” → “Request Personal Details Change”; beneficiary text refers to “the insured’s” beneficiaries.",open:["Notify the insured when the signer requests a change?"]},
+    claims:{see:["Claim and distribution request status (view only)"],
+      can:[(td("clA")?"TO DECIDE — ":"")+"Start a Claim Request or Distribution Request"],no:[],copy:"Distribution text refers to “the policy’s loan”.",open:td("clA")?["Signer starts these for all policies? If yes, turn off for the insured on associated policies with servicing access."]:[]}
+  };
+  return R[v]||{see:[],can:[],no:[],copy:""};
+}
+function devBar(v){
+  var name=DEV_SCREEN[v]||v, r=devRules(v), li=function(a){return a.map(function(x){return '<li>'+esc(x)+'</li>';}).join("");};
+  var body=!devOpen?'':'<div class="devb-bd"><div class="devb-g"><div><h5>Can see</h5><ul>'+li(r.see)+'</ul></div><div><h5>Can do</h5><ul>'+(r.can.length?li(r.can):'<li>Nothing beyond viewing</li>')+'</ul></div><div><h5>Hidden / locked</h5><ul>'+(r.no.length?li(r.no):'<li>—</li>')+'</ul></div></div>'+
+    (r.copy?'<p><b>Copy:</b> '+esc(r.copy)+'</p>':'')+((r.open||[]).length?'<p><b>Open:</b> '+esc(r.open.join(" · "))+'</p>':'')+
+    '<p class="devb-ft">Applies to policies the signer signs for but isn’t the insured on. On the signer’s own policy, every screen works exactly as ILIA does today. Full lists: PORTAL-IMPACTS.md and SETTLOR-COPY-IMPACT.md.</p></div>';
+  return '<div class="devbar'+(devOpen?' open':'')+'"><button class="devb-hd" data-dev="toggle" aria-expanded="'+devOpen+'"><span class="devb-tag">DEV NOTES</span><span>Authorized signer viewing <b>'+esc(name)+'</b> · what they can see and do</span><span class="devb-ch" aria-hidden="true">'+(devOpen?'▲':'▼')+'</span></button>'+body+'</div>';
+}
+document.addEventListener("click",function(ev){if(ev.target.closest('[data-dev="toggle"]')){devOpen=!devOpen;render();}});
 function wfAlert(pol,k){var r=WFX[pol.id+":"+k]; if(!r||pol.own) return "";
   return '<div class="ilx-alert"><b>'+esc(r.alertT)+'</b><span>'+r.alertB+'</span></div>';}
 function signerName(){return P().first+" "+P().last;}
