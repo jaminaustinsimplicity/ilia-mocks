@@ -445,6 +445,7 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
 .dw-n{font-size:11px;color:#888}.dw-st .dw-act{align-self:flex-start}.dw-fl{display:flex;flex-wrap:wrap;gap:4px}.dw-fl i{font-style:normal;font-size:11px;background:#fff;border:1px solid #ddd;border-radius:6px;padding:0 5px}
 i.dw-ss{background:#6f4bd8!important;color:#fff;border-color:#6f4bd8!important;font-style:normal;border-radius:6px;padding:0 5px}
 .dw-mail{font-size:12.5px;color:#555;margin:8px 0 0}
+.futtag{display:inline-block;font-size:11px;font-weight:600;color:#8a3b00;background:#fff1e0;border:1px solid #ffc98a;border-radius:10px;padding:0 8px;margin-left:6px;vertical-align:1px;white-space:nowrap}
 </style>
 
 <div class="mockbar">
@@ -609,9 +610,10 @@ function policyCard(p){
     '<div class="meta"><span class="pill p-neu">Policy ending '+last4(p.id)+'</span><span class="pill p-neu">Tranche '+p.tranche+'</span>'+(s?'<span class="pill p-bad">'+s+' to sign</span>':'')+'</div>'+
     (p.inforce?'<span class="go">View policy →</span>':'<span class="note">Available here once the policy is in force.</span>')+'</button>';
 }
+function futTag(it){return /^(dbr|hh)$/.test(it.type)?' <span class="futtag" title="DBR election and Hold Harmless renewal are not in ILIA servicing today. Sample of a future DBR-project document.">Future · DBR project</span>':"";}
 function sigList(items,showPolicy){
   if(!items.length) return '<p class="note" style="margin:0">Nothing is waiting for your signature.</p>';
-  return items.map(function(x){return '<div class="sig'+(x.s.from?' sig-req':'')+'"><div><b>'+esc(x.s.what)+'</b>'+(x.s.from?' <span class="reqtag">Requested by the insured</span>':'')+'<small>'+(showPolicy?esc(x.p.insured)+' · policy ending '+last4(x.p.id)+' · ':'')+(x.s.from?esc(x.s.from)+' submitted it in their client portal on '+esc(x.s.submitted)+' · ':'')+'Due '+esc(x.s.due)+'</small></div><button class="btn sm primary" data-act="signdoc" data-pid="'+x.p.id+'" data-sid="'+x.s.id+'">'+(x.s.from?'Review &amp; approve':'Review &amp; sign')+'</button></div>';}).join("");
+  return items.map(function(x){return '<div class="sig'+(x.s.from?' sig-req':'')+'"><div><b>'+esc(x.s.what)+'</b>'+futTag(x.s)+(x.s.from?' <span class="reqtag">Requested by the insured</span>':'')+'<small>'+(showPolicy?esc(x.p.insured)+' · policy ending '+last4(x.p.id)+' · ':'')+(x.s.from?esc(x.s.from)+' submitted it in their client portal on '+esc(x.s.submitted)+' · ':'')+'Due '+esc(x.s.due)+'</small></div><button class="btn sm primary" data-act="signdoc" data-pid="'+x.p.id+'" data-sid="'+x.s.id+'">'+(x.s.from?'Review &amp; approve':'Review &amp; sign')+'</button></div>';}).join("");
 }
 function specPanel(screen,title,today){
   var rows=[]; DECISIONS.forEach(function(g){g.items.forEach(function(d){if(d.screen===screen)rows.push(d);});});
@@ -1346,7 +1348,7 @@ function renderSign(){
       '<div class="adoptrow"><div><small>Full name</small><b>'+esc(signerFull())+'</b></div><div><small>Initials</small><b>'+esc(initials())+'</b></div></div>'+
       '<div class="preview"><span class="sigfont big">'+esc(signerFull())+'</span><span class="sigfont">'+esc(initials())+'</span></div>'+
       '<p class="sm">By selecting Adopt and Sign, I agree this is the electronic representation of my signature. (Mock.)</p><div class="row2"><button class="btn primary" data-sg="adopt">Adopt and Sign</button><button class="btn" data-sg="noadopt">Cancel</button></div></div>' : '';
-    h='<div class="dsbar"><b>Signing in DocuSign <span class="mk">mock screen</span></b><span>'+esc(it.what)+'</span><span class="prog">'+n+' of '+req.length+' required fields</span></div>'+
+    h='<div class="dsbar"><b>Signing in DocuSign <span class="mk">mock screen</span></b><span>'+esc(it.what)+futTag(it)+'</span><span class="prog">'+n+' of '+req.length+' required fields</span></div>'+
       '<div class="dsbody"><p class="note" style="margin:0 0 10px">Please review the document. Fields marked in yellow need your action.</p>'+docBody(sg.type,pol)+adopt+'</div>'+
       '<div class="dsft"><button class="btn" data-sg="close">Finish later</button><button class="btn primary" data-sg="finish"'+(n<req.length?' disabled':'')+'>Finish</button></div>';
   }
@@ -1357,7 +1359,7 @@ function doneList(items){
   if(!items.length) return "";
   return '<div class="panel"><h2 class="h2" style="margin-bottom:6px">Recently signed</h2>'+items.map(function(x){
     var steps=ROUTES[x.s.type], last=steps.length-1, complete=x.s.step>=last;
-    return '<div class="donerow"><div class="dtop"><div><b>'+esc(x.s.what)+'</b><small>'+esc(x.p.insured)+' · policy ending '+last4(x.p.id)+' · Signed '+esc(x.s.signedOn)+(x.s.choiceLabel?' · Elected: '+esc(x.s.choiceLabel):'')+'</small></div>'+
+    return '<div class="donerow"><div class="dtop"><div><b>'+esc(x.s.what)+'</b>'+futTag(x.s)+'<small>'+esc(x.p.insured)+' · policy ending '+last4(x.p.id)+' · Signed '+esc(x.s.signedOn)+(x.s.choiceLabel?' · Elected: '+esc(x.s.choiceLabel):'')+'</small></div>'+
       (complete?'<span class="pill p-ok">Completed</span>':'<span class="pill p-warn">'+esc(steps[x.s.step])+'</span>')+'</div>'+
       routeHTML(x.s.type,complete?last+1:x.s.step)+
       '<div class="row2"><button class="btn sm" data-act="viewcopy">View signed copy</button>'+(complete?'':'<button class="btn sm mockadv" data-act="adv" data-pid="'+x.p.id+'" data-sid="'+x.s.id+'" title="Mock only">Mock: next step ›</button>')+'</div></div>';
