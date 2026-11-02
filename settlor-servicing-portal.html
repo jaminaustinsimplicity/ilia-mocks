@@ -751,7 +751,46 @@ function ilxStrat(pol){return pol.product.split(" · ")[0];}
 function ilxNum(pol){return pol.id.replace("KZ-","KZ")+"00";}
 function ilxIns(pol){var n=pol.insured.split(" ");return {first:n[0],last:n[n.length-1],email:(n[0]+"."+n[n.length-1]).toLowerCase()+"@example.com"};}
 var ILX_ICON={docs:"📄",ins:"👤",claims:"✅",faq:"❓",fb:"⭐",contact:"✉️",action:"📝"};
-function iliaScreen(view,pol,p){
+/* Copy for associated policies: ILIA's client screens speak to the insured ("your policy").
+   When the authorized signer views a policy they sign for but aren't the insured on, the copy speaks to them.
+   [screen, ILIA text today, settlor-portal text]. Also listed for devs in _worklog/w-settlor/SETTLOR-COPY-IMPACT.md */
+var COPY=[
+  ["dash","Now that you’ve successfully enrolled you will be able to view and manage your policy here. You can view documents, make a yearly contribution payment, file a claim, change your details, and get answers to your policy questions.","As the authorized signer, you can view and manage this policy here. You can view documents, make a contribution payment, request changes, and get answers to policy questions."],
+  ["dash","View and download important documents from your plan.","View and download important documents for this policy."],
+  ["dash","Make changes to your personal information, address, beneficiaries, and allocations.","Request changes to the insured’s details, beneficiaries, and allocations."],
+  ["dash","For more detailed information about your life insurance policy, reach out to your carrier.","For more detailed information about this life insurance policy, reach out to the carrier."],
+  ["pay","View and schedule your contribution payments and history.","View and schedule contribution payments and history for this policy."],
+  ["pay","Make a payment towards your annual contribution.","Make a payment towards this policy’s annual contribution."],
+  ["pay","Below is the history of payments made towards your policy with calculated totals.","Below is the history of payments made towards this policy with calculated totals."],
+  ["docs","plan documents like your policy, illustration, trust and other important documents.","plan documents for this policy, like the policy, illustration, trust and other important documents."],
+  ["docs","View or download your ","View or download the "],
+  ["ar","Your current plan coverage, returns, and performance.","The policy’s current plan coverage, returns, and performance."],
+  ["ar","How did your policy perform last","How did the policy perform last"],
+  ["ar","Policy values are sourced from your Carrier’s annual statement","Policy values are sourced from the Carrier’s annual statement"],
+  ["ar"," Your Contribution Paid to Carrier"," Client Contribution Paid to Carrier"],
+  ["ar","Your contribution and bank loan are paid to the policy","The client contribution and bank loan are paid to the policy"],
+  ["ar","credited to your policy cash value","credited to the policy cash value"],
+  ["ar","Your Original illustrated values for the next year","The original illustrated values for the next year"],
+  ["ar","🐷 Your Contribution","🐷 Client Contribution"],
+  ["ar","These values originally appeared on the illustration you signed when you purchased your policy.","These values originally appeared on the illustration signed when the policy was purchased."],
+  ["ar","Compare the cash value of your policy","Compare the cash value of the policy"],
+  ["ar","Compare the differences between your illustration death benefit estimation and your actual policy death benefits.","Compare the differences between the illustration’s death benefit estimate and the policy’s actual death benefits."],
+  ["perf","View your Policy Allocations.","View the policy’s allocations."],
+  ["perf","Review your annual statement and keep contributions current.","Review the annual statement and keep contributions current."],
+  ["perf","Contact your agent or email","Contact the agent or email"],
+  ["perf","Your policy is performing within expected range.","The policy is performing within expected range."],
+  ["perf","Loan to value compares your bank loan balance to your policy’s cash value.","Loan to value compares the bank loan balance to the policy’s cash value."],
+  ["perf","Your loan is well covered by your cash value.","The loan is well covered by the cash value."],
+  ["perf","You may make an allocation change request at any time…","As the authorized signer, you can request an allocation change at any time."],
+  ["perf","To make an allocation change request, you will need the following:","Click <b>Request Allocation Change</b>. You’ll need:"],
+  ["perf","1. The carrier’s allocation change form<br>2. Your policy number<br>3. Your signature","1. The new allocation you want<br>2. Your signature as the authorized signer"],
+  ["perf","…email it to niw.info@simplicitygroup.com to be processed.","NIW prepares the carrier’s allocation change form and sends it to the carrier."],
+  ["ins","Your primary beneficiary(ies) receives the","The insured’s primary beneficiary(ies) receive the"],
+  ["claims","Once your loan has been paid off you are eligible to start taking distributions.","Once the policy’s loan has been paid off, distributions can be requested."]
+];
+function iliaScreen(view,pol,p){ var h=iliaScreenRaw(view,pol,p); if(pol.own) return h;
+  COPY.forEach(function(c){ if(c[0]===view) h=h.split(c[1]).join(c[2]); }); return h; }
+function iliaScreenRaw(view,pol,p){
   var yr=pol.year||1, strat=ilxStrat(pol), pn=ilxNum(pol), ins=ilxIns(pol);
   if(view==="dash"){
     var pay = pol.paid ? '<h5 class="ih5">Paid in full</h5>' : '<p class="cap">Payment due by '+esc(pol.anniv)+'</p><h4 class="ih4">$40,000</h4>';
