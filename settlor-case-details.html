@@ -242,6 +242,20 @@ ul.activity{margin:0;padding:0}
 .checks li.ok i{background:var(--ok);border-color:var(--ok);color:var(--surface)}
 /* Invite authorized signer modal */
 .isec{display:flex;flex-direction:column;gap:8px}
+.sg-acts{display:flex;gap:8px;flex-wrap:wrap}
+.sg-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 16px;margin-top:6px}
+@media (max-width:720px){.sg-grid{grid-template-columns:1fr}.sg-grid>*{grid-column:auto!important}}
+.sgf{text-align:left;cursor:pointer;width:100%;height:50px}
+.sgf.sgchg{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sgf.sgchg .mf-l{color:var(--accent)}
+.sgcur{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface-2);font-size:13.5px}
+.sgswap{display:flex;align-items:stretch;gap:12px;flex-wrap:wrap}
+.sgcol{flex:1 1 200px;display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13.5px}
+.sgcol.out{background:var(--surface-2)}.sgcol.out b{text-decoration:line-through;text-decoration-color:var(--faint)}
+.sgcol.in{border-color:var(--accent);background:var(--accent-soft)}
+.sgarrow{align-self:center;font-size:20px;color:var(--muted)}
+.oq{color:#8a5a00}
+.pastsg{margin-top:14px;font-size:13px}.pastsg ul{margin:4px 0 0;padding-left:18px}
 .isec h4{margin:0;font-size:14px}
 .who-card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
 @media (max-width:520px){.who-card{grid-template-columns:1fr}}
@@ -375,6 +389,7 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 <div id="drawerRoot"></div>
 <div id="linkRoot"></div>
 <div id="inviteRoot"></div>
+<div id="sgRoot"></div>
 <div id="toastRoot"></div>
 
 <script>
@@ -508,10 +523,12 @@ function clientHTML(){
 }
 function entSignerHTML(){
   var g=st.signers[0];
-  var head='<div class="sec-t" style="margin-top:20px"><span>Entity authorized signer</span>'+(g?'<button class="btn link sm" data-act="editSettlor">Change authorized signer</button>':'')+'</div>';
+  var head='<div class="sec-t" style="margin-top:20px"><span>Entity authorized signer</span>'+(g?'<span class="sg-acts"><button class="btn sm" data-act="sgEdit">✎ Edit signer details</button><button class="btn sm" data-act="sgChange">⇄ Change authorized signer</button></span>':'')+'</div>';
+  var past=(st.pastSigners||[]).map(function(x){return '<li><b>'+esc(x.name)+'</b>, '+esc(x.title)+' · authorized signer until '+esc(x.until)+' · changed by '+esc(x.by)+'</li>';}).join("");
+  past = past ? '<div class="pastsg"><span class="note">Past authorized signers</span><ul>'+past+'</ul></div>' : '';
   if(!g) return head+'<div class="ilia-grid">'+["Authorized Signer First Name","Last Name","Title","Email Address","Phone Number"].map(function(l){return '<button class="mf mf-add" data-act="addSigner">'+l+'<small>Click to add sample</small></button>';}).join("")+'</div>';
   return head+'<div class="ilia-grid">'+iliaFld("Authorized Signer First Name",g.first)+iliaFld("Last Name",g.last)+iliaFld("Title",g.title)+
-    iliaFld("Email Address",g.email,true)+iliaFld("Phone Number",g.phone)+'</div>';
+    iliaFld("Email Address",g.email,true)+iliaFld("Phone Number",g.phone)+'</div>'+past;
 }
 function secretFld(label,v){return '<div class="mf has"><span class="mf-l">'+label+'</span><span class="mf-v">'+(ssnShown?esc(v):mask(v,4))+'</span><button class="reveal mf-r" data-act="ssn">'+(ssnShown?"Hide":"Show")+'</button></div>';}
 function iliaFld(label,val,wide){return '<div class="mf'+(val?' has':'')+(wide?' wide':'')+'"><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(val)+'</span></div>';}
@@ -579,6 +596,8 @@ document.getElementById("view").addEventListener("click",function(ev){
   }
   else if(a==="sOffYes"){s.access=false;confirmKey="";log("Turned off portal access for "+nm(s));toast("Access turned off");}
   else if(a==="inviteModal"){openInvite(i);return;}
+  else if(a==="sgEdit"){openSg("edit");return;}
+  else if(a==="sgChange"){openSg("change");return;}
   else if(a==="mockInforce"){insInforce=!insInforce;}
   else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
   else if(a==="sAdv"||a==="pAdv"){var o=a==="sAdv"?s:pp, key=a==="sAdv"?"invite":"insInvite", nx=NEXT[o[key]]; o[key]=nx; o.d=o.d||{}; o.d[nx==="active"?"login":nx]="Oct 28";
@@ -595,7 +614,7 @@ document.getElementById("view").addEventListener("click",function(ev){
 document.getElementById("scen").addEventListener("click",function(ev){
   var b=ev.target.closest("button"); if(!b)return;
   [].forEach.call(this.children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
-  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; insInforce=true; closeDrawer(); if(lk)closeLink(); if(iv)closeInvite(); render();
+  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; insInforce=true; closeDrawer(); if(lk)closeLink(); if(iv)closeInvite(); if(sg)closeSg(); render();
 });
 
 /* ---------- Edit drawer ---------- */
@@ -817,6 +836,80 @@ document.getElementById("inviteRoot").addEventListener("click",function(ev){
   var bd=document.querySelector("#inviteRoot .dr-bd"); if(bd) bd.scrollTop=keep;
 });
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&iv)closeInvite();});
+
+/* ---------- Entity authorized signer: Edit details (same person) vs Change signer (new person) ---------- */
+var sg=null;
+var SG_F=[["first","First name"],["last","Last name"],["title","Title"],["email","Email address"],["phone","Phone number"]];
+var SG_EDIT_SAMPLE={first:"Laura",last:"Chen-Park",title:"Chief Financial Officer & Treasurer",email:"laura.chen@reyesholdings.example",phone:"(214) 555-0199"};
+function openSg(mode){var g=st.signers[0];
+  sg={mode:mode, ok:false, step:"form", v: mode==="edit" ? {first:g.first,last:g.last,title:g.title,email:g.email,phone:g.phone} : {first:"",last:"",title:"",email:"",phone:""}};
+  renderSg();}
+function closeSg(){sg=null;document.getElementById("sgRoot").innerHTML="";}
+function sgNew(){var g=st.signers[0];return SAMPLE.signers.filter(function(x){return x.first!==g.first&&x.first!=="Daniel";})[0];}
+function sgShell(title,body,foot){document.getElementById("sgRoot").innerHTML='<div class="scrim" data-sg="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="sgH"><div class="dr-hd"><h3 id="sgH">'+title+'</h3><button class="btn sm" data-sg="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+foot+'</div></div>';}
+function sgFld(act,k,label,val,chg){var w=k==="email"?' style="grid-column:span 2"':'';
+  return val ? '<button class="mf has sgf'+(chg?' sgchg':'')+'" data-sg="'+act+'" data-k="'+k+'"'+w+'><span class="mf-l">'+label+(chg?' · changed':'')+'</span><span class="mf-v">'+esc(val)+'</span></button>'
+             : '<button class="mf mf-add" data-sg="'+act+'" data-k="'+k+'"'+w+'>'+label+'<small>Click to add sample</small></button>';}
+function renderSg(){
+  var g=st.signers[0], ent=st.ent, hasAcct=g.invite!=="none", nPol=st.policies.length+' polic'+(st.policies.length===1?'y':'ies');
+  if(sg.mode==="edit"){
+    var chg=SG_F.filter(function(f){return sg.v[f[0]]!==g[f[0]];}), em=sg.v.email!==g.email;
+    var flds='<div class="ilia-grid sg-grid">'+SG_F.map(function(f){return sgFld("fill",f[0],f[1],sg.v[f[0]],sg.v[f[0]]!==g[f[0]]);}).join("")+'</div>';
+    var tell = !chg.length ? '<p class="note" style="margin:0">No changes yet.</p>'
+      : !hasAcct ? '<p class="note" style="margin:0">'+esc(g.first)+' hasn’t been invited to the portal yet, so no email is sent. Forms will go to the details saved here.</p>'
+      : em ? '<ul class="can"><li><b>'+esc(g.email)+'</b> (old) gets: “NIW changed the email on your ILIA account. If you didn’t expect this, contact us.”</li><li><b>'+esc(sg.v.email)+'</b> (new) gets: “This is now your ILIA login.” Their portal username changes to this email.</li></ul>'
+      : '<ul class="can"><li><b>'+esc(g.email)+'</b> gets a short “Your details were updated” email listing what changed.</li></ul>';
+    var body='<div class="isec"><h4>Same person, new details</h4><p class="note" style="margin:0">Use this to fix a typo or update '+esc(g.first)+'’s contact details. To replace '+esc(g.first)+' with someone else, cancel and use <b>Change authorized signer</b>.</p></div>'+
+      '<div class="isec"><h4>Details <span class="note" style="font-weight:400">· click a field to fill a sample change</span></h4>'+flds+'</div>'+
+      '<div class="isec"><h4>What stays the same</h4><p class="note" style="margin:0">Portal access, invite status and signing history all stay with '+esc(g.first)+'.</p></div>'+
+      '<div class="isec"><h4>Who we email</h4>'+tell+'</div>';
+    sgShell("Edit signer details · "+esc(g.first+" "+g.last),body,'<button class="btn" data-sg="close">Cancel</button><button class="btn primary" data-sg="saveEdit">Save details</button>');
+    return;
+  }
+  var filled=SG_F.every(function(f){return sg.v[f[0]];});
+  if(sg.step==="form"){
+    var nf='<div class="ilia-grid sg-grid">'+SG_F.map(function(f){return sgFld("nfill",f[0],f[1],sg.v[f[0]],false);}).join("")+'</div>';
+    var body1='<div class="isec"><h4>Replace the authorized signer for '+esc(ent.name)+'</h4><p class="note" style="margin:0">Use this when a <b>different person</b> will sign for '+esc(ent.name)+'. Each settlor has one authorized signer, so the new person replaces <b>'+esc(g.first+" "+g.last)+'</b>. Same person with new details? Cancel and use <b>Edit signer details</b>.</p></div>'+
+      '<div class="isec"><h4>Current signer</h4><div class="sgcur"><b>'+esc(g.first+" "+g.last)+'</b> · '+esc(g.title)+'<br><span class="note">'+esc(g.email)+' · '+esc(g.phone)+' · '+(hasAcct?'has portal access':'not invited to the portal')+'</span></div></div>'+
+      '<div class="isec"><h4>New authorized signer</h4>'+nf+'<button class="btn link sm" data-sg="nall" style="align-self:flex-start">Fill all with sample</button></div>';
+    sgShell("Change authorized signer",body1,(filled?'':'<span class="note" style="margin-right:auto">Fill every field to continue.</span>')+'<button class="btn" data-sg="close">Cancel</button><button class="btn primary" data-sg="next"'+(filled?'':' disabled')+'>Review change</button>');
+    return;
+  }
+  var nv=sg.v;
+  var body2='<div class="sgswap"><div class="sgcol out"><span class="note">Removing</span><b>'+esc(g.first+" "+g.last)+'</b><span>'+esc(g.title)+'</span><span class="note">'+esc(g.email)+'</span></div><span class="sgarrow" aria-hidden="true">→</span><div class="sgcol in"><span class="note">New authorized signer</span><b>'+esc(nv.first+" "+nv.last)+'</b><span>'+esc(nv.title)+'</span><span class="note">'+esc(nv.email)+'</span></div></div>'+
+    '<div class="isec"><h4>What happens to '+esc(g.first)+'</h4><ul class="can"><li>Removed as authorized signer for '+esc(ent.name)+' on all '+nPol+'.</li>'+(hasAcct?'<li>Settlor Servicing Portal access ends right away.</li><li class="oq">Open question: email '+esc(g.first)+' a “you’re no longer the signer” notice, or end it silently?</li>':'<li>Was never invited to the portal, so there’s no access to end.</li>')+'<li>Kept in the history as a past signer.</li></ul></div>'+
+    '<div class="isec"><h4>What happens for '+esc(nv.first)+'</h4><ul class="can"><li>Becomes the authorized signer on all '+nPol+'. New forms go to '+esc(nv.email)+'.</li><li>Starts with <b>no portal access</b>. The <b>Invite Authorized Signer to Servicing Portal</b> button shows once you save.</li></ul></div>'+
+    '<div class="isec"><h4>Forms already waiting on '+esc(g.first)+'</h4><p class="note oq" style="margin:0">Open question for Judy: cancel and resend them to '+esc(nv.first)+' automatically, or let an admin choose each one? And do we need proof (for example a company resolution) before changing an entity’s signer?</p></div>'+
+    '<button class="confirmchk" role="checkbox" aria-checked="'+sg.ok+'" data-sg="ok"><span class="cbx" aria-hidden="true">'+(sg.ok?'✓':'')+'</span><span>I confirmed '+esc(ent.name)+' has named <b>'+esc(nv.first+" "+nv.last)+'</b> as its new authorized signer.</span></button>';
+  sgShell("Review: change authorized signer",body2,(sg.ok?'':'<span class="note">Tick the confirmation to save.</span>')+'<button class="btn" data-sg="back" style="margin-right:auto">← Back</button><button class="btn" data-sg="close">Cancel</button><button class="btn primary" data-sg="saveChange"'+(sg.ok?'':' disabled')+'>Change authorized signer</button>');
+}
+document.getElementById("sgRoot").addEventListener("click",function(ev){
+  var t=ev.target.closest("[data-sg]"); if(!t||!sg)return; var a=t.dataset.sg, g=st.signers[0];
+  if(a==="close"){closeSg();return;}
+  if(a==="fill"){var k=t.dataset.k; sg.v[k]= sg.v[k]===g[k] ? SG_EDIT_SAMPLE[k] : g[k];}
+  if(a==="nfill"){var k2=t.dataset.k; sg.v[k2]= sg.v[k2] ? "" : sgNew()[k2];}
+  if(a==="nall"){var n=sgNew(); SG_F.forEach(function(f){sg.v[f[0]]=n[f[0]];});}
+  if(a==="next"){sg.step="confirm";sg.ok=false;}
+  if(a==="back"){sg.step="form";}
+  if(a==="ok"){sg.ok=!sg.ok;}
+  if(a==="saveEdit"){
+    var ch=SG_F.filter(function(f){return sg.v[f[0]]!==g[f[0]];}).map(function(f){return f[1].toLowerCase();}), em=sg.v.email!==g.email, old=g.email;
+    if(!ch.length){closeSg();toast("No changes to save");return;}
+    SG_F.forEach(function(f){g[f[0]]=sg.v[f[0]];});
+    log("Updated authorized signer details for "+g.first+" "+g.last+": "+ch.join(", "));
+    closeSg(); render();
+    toast(g.invite==="none" ? "Signer details saved" : em ? "Saved. Emails sent to "+old+" and "+g.email : "Saved. "+g.first+" got a “details updated” email.");
+    return;}
+  if(a==="saveChange"&&sg.ok){
+    var nv=sg.v; st.pastSigners=(st.pastSigners||[]); st.pastSigners.unshift({name:g.first+" "+g.last,title:g.title,until:today(),by:"Jamin A."});
+    st.signers=[{first:nv.first,last:nv.last,title:nv.title,email:nv.email,phone:nv.phone,access:false,invite:"none",d:{}}];
+    log("Changed authorized signer from "+g.first+" "+g.last+" to "+nv.first+" "+nv.last);
+    closeSg(); render(); toast(nv.first+" "+nv.last+" is now the authorized signer. Invite them when ready.");
+    return;}
+  var keep=(document.querySelector("#sgRoot .dr-bd")||{}).scrollTop||0; renderSg();
+  var bd=document.querySelector("#sgRoot .dr-bd"); if(bd) bd.scrollTop=keep;
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&sg)closeSg();});
 
 /* ---------- Link a policy (search → review → link) ---------- */
 /* Sample search results. cur = who the policy's settlor is today. */
