@@ -421,6 +421,11 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
 .reqtag{display:inline-block;font-size:11px;font-weight:600;color:#8a3b00;background:#fff1e0;border:1px solid #ffc98a;border-radius:10px;padding:0 8px;margin-left:6px;vertical-align:1px}
 .sig-req{border-left:3px solid #f08c00;padding-left:10px}
 .mini th{text-align:left;font-weight:500;color:#555;padding-right:14px;white-space:nowrap}
+.viewbar.insv{background:#fff7e6;border-color:#f5c26b;color:#5a3a00}
+.tag.t-wait{background:#fff1e0;color:#8a3b00;border:1px solid #ffc98a}
+.insroute{display:flex;flex-direction:column;gap:4px;border:1px solid #f5c26b;background:#fff7e6;border-radius:8px;padding:10px 12px;font-size:14px}
+.ilx-alert.iwait{background:#fff7e6;border-color:#f5c26b}.ilx-alert.idone{background:#e8f5e9;border-color:#a5d6a7}.ilx-alert.idecl{background:#fdecea;border-color:#f5b5ae}
+.ia-mock{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 </style>
 
 <div class="mockbar">
@@ -430,6 +435,7 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
     <button data-w="entity" aria-pressed="true">Entity signer · 3 policies</button>
     <button data-w="family" aria-pressed="false">Individual settlor · 3 family policies</button>
     <button data-w="individual" aria-pressed="false">Individual settlor · 1 policy</button>
+    <button data-w="insured" aria-pressed="false" title="Daniel is the insured on KZ-104233. Maria (his spouse) is the settlor and authorized signer. NIW turned on Daniel’s servicing access.">Insured (not settlor) · Daniel</button>
   </div>
   <button class="embadge" onclick="openEmails()">✉ Email table <b>60</b></button>
   <span class="mocktag">Settlor Servicing Portal · first draft · sample data only · W-SETTLOR</span>
@@ -475,6 +481,11 @@ var PEOPLE = {
       {id:"KZ-104305", own:true, insured:"Maria Reyes", product:"Kai-Zen · Allianz", tranche:80, inforce:true, year:3, paid:false, growth:"4.80%", ndb:"$1,350,000.00", cv:"$72,118.45", anniv:"01/15/2027", contrib:"Contribution due Jan 15, 2027", sign:[]},
       {id:"KZ-104233", insured:"Daniel Reyes", product:"Kai-Zen · National Life (LSW)", tranche:79, inforce:true, year:3, paid:true, growth:"5.25%", ndb:"$1,584,955.77", cv:"$96,760.82", anniv:"11/03/2026",
         sign:[{id:"s6",type:"insreq",what:"Approve: legal name change requested by Daniel Reyes", due:"Nov 10, 2026", from:"Daniel Reyes", fromRole:"insured", submitted:"Oct 27, 2026"},{id:"s4",type:"dbr",what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]}
+    ]},
+  /* Insured who is NOT the settlor, with servicing access turned on by NIW. Sees ILIA's client portal for their one policy. */
+  insured: {first:"Daniel", last:"Reyes", title:"Insured", settlor:"Maria Reyes", kind:"insured", rel:"Insured", signerName:"Maria Reyes", signerRel:"spouse", email:"daniel.reyes@example.com",
+    policies:[
+      {id:"KZ-104233", own:true, insured:"Daniel Reyes", product:"Kai-Zen · National Life (LSW)", tranche:79, inforce:true, year:3, paid:true, growth:"5.25%", ndb:"$1,584,955.77", cv:"$96,760.82", anniv:"11/03/2026", sign:[]}
     ]}
 };
 
@@ -531,6 +542,8 @@ function screenTag(s){ return ""; /* menu tags removed 11/2 */
 /* ---------- State ---------- */
 var who="entity", view="home", pol=null;
 function P(){return PEOPLE[who];}
+function isIns(){return who==="insured";}
+var IREQ={}; /* insured request state per flow: wait | proc | done | declined */
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
 function last4(id){return id.replace(/\D/g,"").slice(-4);}
 function toast(m){var r=document.getElementById("toastRoot");r.innerHTML='<div class="toast" role="status">'+esc(m)+'</div>';clearTimeout(window.__t);window.__t=setTimeout(function(){r.innerHTML="";},2200);}
@@ -541,6 +554,9 @@ function allDone(){var out=[];P().policies.forEach(function(p){(p.sign||[]).forE
 /* ---------- Nav ---------- */
 function renderNav(){
   var p=P(), ent=p.kind==="entity", n=allSign().length;
+  if(isIns()){ document.getElementById("nav").innerHTML='<div class="logo"><b>ilia</b><span>SERVICING</span></div><div class="navsec">Your policy</div>'+
+      ni("dash","Policy Dashboard","")+ni("pay","Payments","")+ni("docs","Documents","")+ni("ar","Annual Review","")+ni("perf","Current Performance","")+ni("ins","Insured Details &amp; Changes",Object.keys(IREQ).some(function(k){return IREQ[k]==="wait";})?'<span class="tag t-wait">Waiting</span>':'')+ni("claims","Claims &amp; Distributions","")+
+      '<div class="navsec">Help</div>'+ni("faq","FAQs and Guides","")+ni("contact","Contact Us",""); return; }
   var h='<div class="logo"><b>ilia</b><span>SERVICING</span></div>'+
     '<div class="navsec">My work</div>'+
     ni("home","My Policies", p.policies.length>1?'<span class="tag t-view">'+p.policies.length+'</span>':'')+
@@ -561,6 +577,7 @@ function ni(id,label,tag){return '<button class="ni" data-nav="'+id+'"'+(view===
 
 /* ---------- Main views ---------- */
 function whoCard(){var p=P(), ent=p.kind==="entity";
+  if(isIns()) return '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>Settlor: '+esc(p.signerName)+' ('+esc(p.signerRel)+')</small><span class="rb">Insured</span></div>';
   return '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+(ent?esc(p.title)+' · '+esc(p.settlor):esc(p.rel))+'</small>'+
     (ent?'':'<span class="rb s">Settlor</span> ')+'<span class="rb">Authorized Signer</span></div>';}
 function hero(title,text){return '<section class="hero"><div class="hero-tx"><div class="bar"></div><h1>'+title+'</h1><p>'+text+'</p></div>'+whoCard()+'</section>';}
@@ -616,7 +633,8 @@ function render(){
   else if(view==="faq"){ m+=hero("FAQs and Guides","Answers written for settlors: what you’re signing, why, and what happens next."); m+=specPanel("faq","FAQs and Guides","Kai-Zen FAQs written for the insured."); }
   else if(view==="contact"){ m+=hero("Contact Us","niw.info@simplicitygroup.com · 800-294-9940 ext. 807"); m+=specPanel("contact","Contact Us and Feedback","Same."); }
   else if(pol&&pol.own){
-    m+='<div class="viewbar own" role="status"><span class="vb-ic" aria-hidden="true">👤</span><span class="vb-tx">Viewing <b>your own policy</b> (you’re the insured) · Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+' · '+esc(pol.product)+'</span><button class="btn sm" data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button></div>';
+    if(isIns()) m+=insDev(view)+'<div class="viewbar insv" role="status"><span class="vb-ic" aria-hidden="true">👤</span><span class="vb-tx">Your policy · ending '+last4(pol.id)+' · <b>'+esc(p.signerName)+'</b> (settlor) is the authorized signer. Changes you request go to '+esc(p.signerName.split(" ")[0])+' to approve and sign.</span></div>';
+    else m+='<div class="viewbar own" role="status"><span class="vb-ic" aria-hidden="true">👤</span><span class="vb-tx">Viewing <b>your own policy</b> (you’re the insured) · Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+' · '+esc(pol.product)+'</span><button class="btn sm" data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button></div>';
     var octx='<div class="ctxline"><b>Your own policy</b> · You’re the insured · Policy ending '+last4(pol.id)+' · '+esc(pol.product)+' · Policy year '+pol.year+'</div>';
     var OWN_T={dash:"Your policy",pay:"Payments",docs:"Documents",ar:"Annual Review",perf:"Current Performance",ins:"Insured Details & Changes",claims:"Claims & Distributions"};
     if(false){
@@ -626,7 +644,7 @@ function render(){
       m+='<div class="oq"><h3>Open questions for this screen</h3><ol><li>When the authorized signer is also an insured, do they see their own policy here in one login, or switch to the client Servicing Portal for it?</li><li>On their own policy, everything works exactly as ILIA does today for an insured (no settlor rules). Agree?</li></ol></div>';
     }
     m+=iliaScreen(view,pol,p);
-    if(view==="dash") m+='<div class="oq"><h3>Open questions for this screen</h3><ol><li>When the authorized signer is also an insured, do they see their own policy here in one login, or switch to the client Servicing Portal for it?</li><li>On their own policy, everything works exactly as ILIA does today for an insured (no settlor rules). Agree?</li></ol></div>';
+    if(view==="dash"&&!isIns()) m+='<div class="oq"><h3>Open questions for this screen</h3><ol><li>When the authorized signer is also an insured, do they see their own policy here in one login, or switch to the client Servicing Portal for it?</li><li>On their own policy, everything works exactly as ILIA does today for an insured (no settlor rules). Agree?</li></ol></div>';
   }
   else if(pol){
     var ctx='';
@@ -654,6 +672,7 @@ function render(){
    Client view (roles 5/6): admin-only cards and buttons are not shown. Sample data only. */
 
 function ilxWho(){var p=P(), ent=p.kind==="entity";
+  if(isIns()) return '<div class="ilx-who"><b>'+esc(p.first+" "+p.last)+'</b><small>Settlor: '+esc(p.signerName)+' ('+esc(p.signerRel)+')</small><span class="rb">Insured</span></div>';
   return '<div class="ilx-who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+(ent?esc(p.title)+' · '+esc(p.settlor):esc(p.rel))+'</small>'+(ent?'':'<span class="rb s">Settlor</span> ')+'<span class="rb">Authorized Signer</span></div>';}
 function ilxHead(h,sub,h3){return '<div class="ilx-head"><div class="ilx-ht">'+(h3?'<h3 class="ih3">'+h+'</h3>':'<h2 class="ih2">'+h+'</h2>')+'<p class="sub1">'+sub+'</p></div>'+ilxWho()+'</div>';}
 function ilxSel(pol){var opts=P().policies.filter(function(x){return x.inforce;});
@@ -662,7 +681,7 @@ function ilxTable(cols,rows,empty){return '<div class="ilx-tw"><table class="ilx
 function ilxTabs(key,labels){return '<div class="ilx-tabs" role="tablist">'+labels.map(function(l,i){return '<button role="tab" aria-selected="'+(tabState[key]===i)+'" data-tab="'+key+'" data-ti="'+i+'">'+l+'</button>';}).join("")+'</div>';}
 function ilxGate(pol,k,html){ if(pol.own) return html; var c=choice[k];
   if(c==="Yes") return html; if(c==="Not decided") return '<span class="ilx-tbd">'+html+' <span class="tag t-ask">To decide</span></span>'; return ''; }
-function wfA(pol,k){return pol.own?'data-act="mock"':'data-wf="'+k+'"';}
+function wfA(pol,k){if(isIns()&&/^(legal|pers|ben)$/.test(k)) return 'data-wf="'+k+'"'; return pol.own?'data-act="mock"':'data-wf="'+k+'"';}
 /* ---------- Authorized signer action workflows (associated policies) ----------
    Each button opens a step-by-step modal: enter (click-to-fill sample) -> review -> sign (when a signature is needed) -> done.
    Done screens say what happens next and who is emailed. Flows for "To decide" items are marked Proposed. */
@@ -706,9 +725,20 @@ function devBar(v){
   return '<div class="devbar'+(devOpen?' open':'')+'"><button class="devb-hd" data-dev="toggle" aria-expanded="'+devOpen+'"><span class="devb-tag">DEV NOTES</span><span>Authorized signer viewing <b>'+esc(name)+'</b> · what they can see and do</span><span class="devb-ch" aria-hidden="true">'+(devOpen?'▲':'▼')+'</span></button>'+body+'</div>';
 }
 document.addEventListener("click",function(ev){if(ev.target.closest('[data-dev="toggle"]')){devOpen=!devOpen;render();}});
-function wfAlert(pol,k){var r=WFX[pol.id+":"+k]; if(!r||pol.own) return "";
+function wfAlert(pol,k){var r=WFX[pol.id+":"+k]; if(r&&isIns()) return insAlert(k,r); if(!r||pol.own) return "";
   return '<div class="ilx-alert"><b>'+esc(r.alertT)+'</b><span>'+r.alertB+'</span></div>';}
 function signerName(){return P().first+" "+P().last;}
+function insDone(k,v,d){var sn=P().signerName, fn=sn.split(" ")[0];
+  return {head:"Sent to "+sn+" for approval", body:'<p>Your request is with <b>'+esc(sn)+'</b>, the authorized signer on your policy. We emailed '+esc(fn)+' to approve and sign it. You’ll get an email when '+esc(fn)+' approves, and again when NIW finishes.</p>',
+    alertT:"Waiting for authorized signer approval", alertB:esc((d.alertB||"").replace(/ · requested by you on .*$/,""))+" · sent to "+esc(sn)+" on Nov 2, 2026", what:(d.alertB||"").replace(/ · requested by you on .*$/,""), bname:d.bname, brel:d.brel};}
+function insAlert(k,r){var sn=P().signerName, fn=sn.split(" ")[0], s=IREQ[k];
+  if(s==="wait") return '<div class="ilx-alert iwait"><b>Waiting for authorized signer approval</b><span>'+esc(r.what)+' · sent to '+esc(sn)+' on Nov 2, 2026. NIW starts once '+esc(fn)+' approves and signs.</span><span class="ia-mock"><button class="btn sm mockadv" data-ireq="'+k+'" data-to="proc" title="Mock only">Mock: '+esc(fn)+' approves ›</button><button class="btn sm mockadv" data-ireq="'+k+'" data-to="declined" title="Mock only">Mock: '+esc(fn)+' declines ›</button></span></div>';
+  if(s==="proc") return '<div class="ilx-alert"><b>Your Request is Processing</b><span>'+esc(r.what)+' · approved and signed by '+esc(sn)+' on Nov 3, 2026. NIW is working on it.</span><span class="ia-mock"><button class="btn sm mockadv" data-ireq="'+k+'" data-to="done" title="Mock only">Mock: NIW completes ›</button></span></div>';
+  if(s==="done") return '<div class="ilx-alert idone"><b>Request complete</b><span>'+esc(r.what)+' · completed Nov 10, 2026.</span></div>';
+  if(s==="declined") return '<div class="ilx-alert idecl"><b>Request not approved</b><span>'+esc(sn)+' didn’t approve your request ('+esc(r.what)+'). Nothing changed on your policy. Questions? Contact '+esc(fn)+' or NIW at 800-294-9940 ext. 807.</span><span class="cap">Open question (D3): do we show the signer’s reason?</span></div>';
+  return "";}
+function insDev(v){if(v!=="ins") return "";
+  return '<div class="devbar'+(devOpen?' open':'')+'"><button class="devb-hd" data-dev="toggle" aria-expanded="'+devOpen+'"><span class="devb-tag">DEV NOTES</span><span>Insured who <b>isn’t the settlor</b> viewing <b>Insured Details &amp; Changes</b></span><span class="devb-ch" aria-hidden="true">'+(devOpen?'▲':'▼')+'</span></button>'+(devOpen?'<div class="devb-bd"><div class="devb-g"><div><h5>Same as ILIA today</h5><ul><li>Every screen, card and field of the client Servicing Portal for their own policy</li><li>Edit Legal Name, Edit Personal Details, Edit Beneficiaries buttons</li></ul></div><div><h5>Different</h5><ul><li>No signature step for the insured: the last step is “Review and send for approval”</li><li>The request goes to the authorized signer’s Signing Section (Settlor Servicing Portal), tagged “Requested by the insured”</li><li>New state before “Your Request is Processing”: “Waiting for authorized signer approval”</li><li>Declined state: “Request not approved”</li></ul></div><div><h5>Emails</h5><ul><li>#57 to the signer · #58–59 to the insured · #60 declined (open)</li></ul></div></div><p class="devb-ft">Applies when the policy’s settlor is someone else and NIW turned on the insured’s servicing access (Case Details). Tracker: PORTAL-IMPACTS.md section D.</p></div>':'')+'</div>';}
 var WF={
   payinfo:{title:"Make Payment", gate:"payA", info:function(){return '<div class="wf-ok"><span style="background:#ff9800">!</span><h4>Payments by the authorized signer are being designed</h4></div>'+
       '<p>We’ve decided the authorized signer <b>can</b> pay contributions on the policies they sign for. <b>How</b> it works still needs Kyle, our payments SME, before this button goes live.</p>'+
@@ -720,7 +750,7 @@ var WF={
       '<li><b>Receipts and reminders:</b> who gets them: the signer, the insured, or both?</li>'+
       '<li><b>Conflicts:</b> what if the insured already has monthly recurring ePay set up on the policy?</li></ol>'+
       '<p class="wf-note">Next step: a working session with Kyle and Jamin. The draft flow below is a starting point for that conversation.</p>';}},
-  payown:{title:"Make Payment", gate:"payA", info:function(){return '<p>This is <b>your own policy</b> (you’re the insured), so Make Payment opens ILIA’s existing payment flow, exactly as it works for any client today: Personal Check, Wire Transfer or Single ePay Payment.</p><p class="wf-note">Nothing new to build here. The new payment work is for the policies you sign for but aren’t the insured on.</p>';}},
+  payown:{title:"Make Payment", gate:"payA", info:function(){if(isIns()) return '<p>Make Payment opens ILIA’s existing payment flow, exactly as it works for any client today: Personal Check, Wire Transfer or Single ePay Payment.</p><p class="wf-note">Payments don’t need the authorized signer’s approval. (Confirm with Judy as part of D4.)</p>'; return '<p>This is <b>your own policy</b> (you’re the insured), so Make Payment opens ILIA’s existing payment flow, exactly as it works for any client today: Personal Check, Wire Transfer or Single ePay Payment.</p><p class="wf-note">Nothing new to build here. The new payment work is for the policies you sign for but aren’t the insured on.</p>';}},
   pay:{title:"Make Payment", gate:"payA", steps:function(v,pol){
       var a=[{t:"Payment details",b:[{info:'<div class="wf-kv"><span>Policy</span><b>'+esc(pol.insured)+' · ending '+last4(pol.id)+'</b><span>Amount due</span><b>'+(pol.paid?'$40,000.00 (next annual contribution, '+esc(pol.anniv)+')':'$40,000.00 · '+esc(pol.contrib||""))+'</b><span>Paid by</span><b>'+esc(signerName())+' (you)</b></div>'},
         {choice:"method",label:"How do you want to pay?",opts:["Personal Check","Wire Transfer","Single ePay Payment"]},
@@ -749,7 +779,7 @@ var WF={
       emails:[[signerName()+" (you)","Request received + signed copy"],[pol.insured+" (insured)","Open question: notify them of the change?"],["NIW servicing team","New legal name request"]],alertT:"Your Request is Processing",alertB:"Legal name change to "+esc(v.nfirst+" "+v.nlast)+" · requested by you on Nov 2, 2026"};}},
   pers:{title:"Request a personal details change", gate:"insE", steps:function(v,pol){
       var F={"Home address":[["street","New home address","812 Gaston Ave"],["city","City","Dallas"],["zip","Zip code","75214"]],"Phone number":[["phone","New cell phone","(214) 555-0199"]],"Email address":[["email","New email","ethan.a@example.com"]]};
-      return [{t:"What needs to change?",b:[{info:'<p>You can’t see '+esc(pol.insured.split(" ")[0])+'’s full details, so enter only the new information.</p>'},{choice:"what",label:"Change",opts:["Home address","Phone number","Email address"]}].concat(v.what?[{fields:F[v.what]}]:[])},
+      return [{t:"What needs to change?",b:[{info:isIns()?'<p>Enter only the new information.</p>':'<p>You can’t see '+esc(pol.insured.split(" ")[0])+'’s full details, so enter only the new information.</p>'},{choice:"what",label:"Change",opts:["Home address","Phone number","Email address"]}].concat(v.what?[{fields:F[v.what]}]:[])},
         {t:"Review and sign",b:[{review:1},{sign:"sig"}]}];},
     done:function(v,pol){return {head:"Request sent to NIW",body:'<p>NIW updates the insured’s '+esc((v.what||"").toLowerCase())+' after review.</p>',
       emails:[[signerName()+" (you)","Request received"],[pol.insured+" (insured)","Open question: tell the insured their details changed?"],["NIW servicing team","New personal details request"]],alertT:"Your Request is Processing",alertB:esc(v.what)+" change · requested by you on Nov 2, 2026"};}},
@@ -777,7 +807,14 @@ var WF={
 };
 /* What happens after each signer action: [who acts, what happens, [[email to, subject], ...], open question?]
    Shown on the Done screen of every flow so the full process and its emails are documented in the mock. */
-function PROC(k,v,pol){var me=signerName()+" (authorized signer)", ins=pol.insured+" (insured)", niw="NIW servicing team", first=pol.insured.split(" ")[0];
+function insProc(k,v){var p=P(), sg=p.signerName+" (authorized signer)", me=p.first+" "+p.last+" (you, the insured)", niw="NIW servicing team", what={legal:"legal name change",pers:(v.what||"personal details").toLowerCase()+" change",ben:"beneficiary change"}[k];
+  return [["You (insured)","Send the "+what+" request. Insured Details shows “Waiting for authorized signer approval”.",[[sg,"#57 Request from Daniel Reyes needs your approval"],[me,"#58 Your request was sent to "+p.signerName+" for approval"]]],
+    ["Authorized signer","Reviews the request in the Settlor Servicing Portal (Signing Section, tagged “Requested by the insured”) and approves and signs it in DocuSign, or declines it.",[[me,"#59 "+p.signerName+" approved your request"],[me,"#60 Your request wasn’t approved (if declined · open question)"]]],
+    ["NIW","Starts work only after the signer’s signature. Insured Details shows “Your Request is Processing”.",[[niw,"New "+what+" request (signed by the authorized signer)"]]],
+    [k==="pers"?"ILIA":"NIW → carrier",k==="pers"?"Change saved.":"Sends the change to the carrier. Carrier confirms; ILIA updates the page.",[[me,"Your request is complete"],[sg,"Request complete (copy)"]]],
+    ["Open","",[],"If the signer declines, is the insured told why? Does an unapproved request expire? (D3)"],
+    ["Open","",[],"Which requests need the signer’s approval: legal name, personal details, beneficiaries… allocation, claims, distributions? (D4)"]];}
+function PROC(k,v,pol){ if(isIns()&&/^(legal|pers|ben)$/.test(k)) return insProc(k,v);var me=signerName()+" (authorized signer)", ins=pol.insured+" (insured)", niw="NIW servicing team", first=pol.insured.split(" ")[0];
   var P={
     pay:[["Authorized signer","Submits the "+(v.method||"payment")+". ILIA logs it on the policy as “Paid by "+signerName()+" (Authorized Signer)”, status Pending.",[[me,"Payment received — receipt"],["Agent","Payment notice (same as giftor payments)"],["IMO","Payment notice (same as giftor payments)"]]],
       ["NIW payments",v.method==="Single ePay Payment"?"ePay clears in 3–5 business days.":"NIW marks it received when the "+(v.method==="Wire Transfer"?"wire":"check")+" arrives.",[]],
@@ -857,7 +894,9 @@ document.addEventListener("click",function(ev){var r=ev.target.closest("[data-em
 var WF_LABEL={method:"Payment method",amt:"Amount",holder:"Account holder",routing:"Routing number",acct:"Account number",atype:"Account type",dtype:"Document type",file:"File",nfirst:"New first name",nlast:"New last name",reason:"Reason",doc:"Supporting document",what:"Change",street:"New home address",city:"City",zip:"Zip code",phone:"New cell phone",email:"New email",act:"Action",bname:"Beneficiary",brel:"Relationship",bdob:"Date of birth",btype:"Type",mix:"New allocation",ctype:"Claim type",det:"Details"};
 function openWf(k){wf={k:k,i:0,v:{},done:null}; renderWf();}
 function closeWf(){wf=null;document.getElementById("wfRoot").innerHTML="";}
-function wfSteps(){return WF[wf.k].steps(wf.v,pol);}
+function wfSteps(){var st=WF[wf.k].steps(wf.v,pol); if(!isIns()) return st;
+  return st.map(function(x){ if(!x.b.some(function(b){return b.sign;})) return x;
+    return {t:"Review and send for approval", b:x.b.filter(function(b){return !b.sign;}).concat([{info:'<div class="insroute"><b>'+esc(P().signerName)+' approves this, not you.</b><span>'+esc(P().signerName)+' is the settlor and authorized signer on your policy. When you send this request, '+esc(P().signerName.split(" ")[0])+' gets an email and approves and signs it in DocuSign. NIW starts work only after that.</span></div>'},{confirm:"ok2",text:"Send this request to "+esc(P().signerName)+" for approval."}])};});}
 function wfBlockOk(b){var v=wf.v;
   if(b.choice) return !!v[b.choice]; if(b.fields) return b.fields.every(function(x){return v[x[0]];}); if(b.file) return !!v[b.file];
   if(b.confirm) return !!v[b.confirm]; if(b.sign) return !!v[b.sign]; return true;}
@@ -883,7 +922,7 @@ function renderWf(){
   var st=wfSteps(), cur=st[Math.min(wf.i,st.length-1)], ok=cur.b.every(wfBlockOk), last=wf.i>=st.length-1;
   var dots='<ol class="wf-steps">'+st.map(function(x,j){return '<li class="'+(j<wf.i?'d':j===wf.i?'c':'')+'">'+x.t+'</li>';}).join("")+'</ol>';
   document.getElementById("wfRoot").innerHTML='<div class="wf-ov" data-wfa="close"></div><div class="wf-dlg" role="dialog" aria-modal="true" aria-label="'+F.title+'">'+head+dots+'<div class="wf-bd">'+cur.b.map(wfBlock).join("")+'</div>'+
-    '<div class="wf-ft">'+(wf.i?'<button class="ibtn wf-back" data-wfa="back">Back</button>':'<button class="ibtn wf-back" data-wfa="close">Cancel</button>')+'<button class="ibtn" data-wfa="'+(last?'submit':'next')+'"'+(ok?'':' disabled')+'>'+(last?(cur.b.some(function(b){return b.sign;})?'Sign and submit':'Submit'):'Next')+'</button></div></div>';
+    '<div class="wf-ft">'+(wf.i?'<button class="ibtn wf-back" data-wfa="back">Back</button>':'<button class="ibtn wf-back" data-wfa="close">Cancel</button>')+'<button class="ibtn" data-wfa="'+(last?'submit':'next')+'"'+(ok?'':' disabled')+'>'+(last?(isIns()&&/approval/.test(cur.t)?'Send for approval':cur.b.some(function(b){return b.sign;})?'Sign and submit':'Submit'):'Next')+'</button></div></div>';
 }
 document.getElementById("wfRoot").addEventListener("click",function(ev){
   if(!wf) return; var t=ev.target.closest("[data-wfa],[data-wfc],[data-wff],[data-wfk]"); if(!t) return;
@@ -891,13 +930,15 @@ document.getElementById("wfRoot").addEventListener("click",function(ev){
   if(t.dataset.wfa==="draft"){openWf("pay");return;}
   if(t.dataset.wfa==="back"){wf.i--;}
   if(t.dataset.wfa==="next"){wf.i++;}
-  if(t.dataset.wfa==="submit"){var d=WF[wf.k].done(wf.v,pol); WFX[pol.id+":"+wf.k]=d; wf.done=d;}
+  if(t.dataset.wfa==="submit"){var d=WF[wf.k].done(wf.v,pol); if(isIns()){d=insDone(wf.k,wf.v,d); IREQ[wf.k]="wait";} WFX[pol.id+":"+wf.k]=d; wf.done=d;}
   if(t.dataset.wfc){wf.v[t.dataset.wfc]=t.dataset.v; if(t.dataset.wfc==="method"){delete wf.v.ok1;}}
   if(t.dataset.wff){var k=t.dataset.wff; if(wf.v[k]) delete wf.v[k]; else wf.v[k]=t.dataset.s;}
   if(t.dataset.wfk){var k2=t.dataset.wfk; if(wf.v[k2]) delete wf.v[k2]; else wf.v[k2]=true;}
   renderWf();
 });
 document.addEventListener("click",function(ev){var b=ev.target.closest("[data-wf]"); if(b&&!wf){openWf(b.dataset.wf);}});
+document.addEventListener("click",function(ev){var b=ev.target.closest("[data-ireq]"); if(!b) return; IREQ[b.dataset.ireq]=b.dataset.to; render();
+  toast({proc:P().signerName+" approved and signed. NIW is processing it.",declined:P().signerName+" declined the request.",done:"Request complete."}[b.dataset.to]);});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&wf){closeWf();render();}});
 function ilxSees(pol,k){return pol.own||choice[k]!=="No";}
 function ilxStrat(pol){return pol.product.split(" · ")[0];}
@@ -1031,12 +1072,12 @@ function iliaScreenRaw(view,pol,p){
     return '<section class="ilx">'+ilxHead("Insured Details","View insured address, contact numbers, beneficiary information, and other important details.")+
       '<div class="ilx-w8"><p class="s1 ilx-sec"><strong>Legal Name</strong>'+ilxGate(pol,"insE",'<button class="ilx-tbtn" '+wfA(pol,"legal")+'>Edit Legal Name</button>')+'</p>'+wfAlert(pol,"legal")+'<div class="ilx-g3">'+fld("First Name",ins.first)+fld("Middle Name","")+fld("Last Name",ins.last)+'</div><hr>'+
       (pol.own
-      ? '<p class="s1 ilx-sec"><strong>Personal Details</strong><button class="ilx-tbtn" data-act="mock">Edit Personal Details</button></p><div class="ilx-g3">'+fld("Cell Phone Number*","(214) 555-0132")+fld("Work Phone","")+fld("Home Number","")+fld("Email*",ins.email)+fld("Client Greeting (Nickname)",ins.first)+fld("Date of Birth*","06/02/1998")+fld("Last 4 of Social*","4417")+fld("Age*","28")+fld("Net Worth","$250,000")+fld("Annual Income","$95,000")+fld("Employer","Sample Co.")+'</div>'+
+      ? '<p class="s1 ilx-sec"><strong>Personal Details</strong><button class="ilx-tbtn" '+wfA(pol,"pers")+'>Edit Personal Details</button></p>'+wfAlert(pol,"pers")+'<div class="ilx-g3">'+fld("Cell Phone Number*","(214) 555-0132")+fld("Work Phone","")+fld("Home Number","")+fld("Email*",ins.email)+fld("Client Greeting (Nickname)",ins.first)+fld("Date of Birth*","06/02/1998")+fld("Last 4 of Social*","4417")+fld("Age*","28")+fld("Net Worth","$250,000")+fld("Annual Income","$95,000")+fld("Employer","Sample Co.")+'</div>'+
         '<p class="b1"><strong>Home Address</strong></p><div class="ilx-g3">'+fld("Home Address*","4410 Oak Lawn Ave")+fld("City*","Dallas")+fld("State*","TX")+fld("Zip Code*","75219")+'</div><p class="cap">☑ Mailing is same as home address.</p><hr>'
       : '<p class="s1 ilx-sec"><strong>Personal Details</strong>'+ilxGate(pol,"insE",'<button class="ilx-tbtn" '+wfA(pol,"pers")+'>Request Personal Details Change</button>')+'</p>'+wfAlert(pol,"pers")+'<div class="ilx-g3">'+fld("Date of Birth","••/••/1998")+fld("City","Dallas")+fld("State","TX")+'</div>'+
         '<p class="ilx-dec">Settlor view: basic details only (name, masked date of birth, city and state). No SSN, phones, email, income or full address. The authorized signer can request changes, because they sign off on them.</p><hr>')+
       '<p class="s1 ilx-sec"><strong>Beneficiary Details</strong>'+ilxGate(pol,"benA",'<button class="ilx-tbtn" '+wfA(pol,"ben")+'>Edit Beneficiaries</button>')+'</p>'+wfAlert(pol,"ben")+'<details class="ilx-acc"><summary>Beneficiary Details</summary><p class="b1">Your primary beneficiary(ies) receives the '+esc(strat)+' Plan benefit…</p><p class="b1"><strong>Primary Beneficiaries</strong> ⓘ</p>'+
-        ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],(WFX[pol.id+":ben"]&&!pol.own?[["Ana Alvarez","Individual","50%","Spouse","Dallas, TX","ana@example.com","(214) 555-0111"],[esc(WFX[pol.id+":ben"].bname)+' <span class="ilx-chip">Requested</span>',"Individual","50%",esc(WFX[pol.id+":ben"].brel),"Dallas, TX","","(214) 555-0177"]]:[["Ana Alvarez","Individual","100%","Spouse","Dallas, TX","ana@example.com","(214) 555-0111"]]),"No Beneficiary Found")+'<p class="b1"><strong>Contingent Beneficiaries</strong></p>'+ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],[],"No Beneficiary Found")+'</details></div></section>';
+        ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],(WFX[pol.id+":ben"]&&(!pol.own||isIns())&&IREQ.ben!=="declined"?[["Ana Alvarez","Individual","50%","Spouse","Dallas, TX","ana@example.com","(214) 555-0111"],[esc(WFX[pol.id+":ben"].bname)+' <span class="ilx-chip">Requested</span>',"Individual","50%",esc(WFX[pol.id+":ben"].brel),"Dallas, TX","","(214) 555-0177"]]:[["Ana Alvarez","Individual","100%","Spouse","Dallas, TX","ana@example.com","(214) 555-0111"]]),"No Beneficiary Found")+'<p class="b1"><strong>Contingent Beneficiaries</strong></p>'+ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],[],"No Beneficiary Found")+'</details></div></section>';
   }
   if(view==="claims"){
     return '<section class="ilx">'+ilxHead("Claims and Distributions","Here you can make an insurance claim or take a policy distribution. This action is available once loan is paid off.")+
@@ -1251,7 +1292,7 @@ function docBody(type,pol){
     return '<div class="page"><div class="dochd">Legal Name Change Request · needs authorized signer approval</div>'+
       '<p>Policy ending '+last4(pol.id)+' · Insured: <b>'+esc(pol.insured)+'</b> · Settlor: <b>'+esc(p.settlor)+'</b></p>'+
       '<p class="sm"><b>Requested by '+esc(it.from)+' (the insured)</b> in their client Servicing Portal on '+esc(it.submitted)+'. Because the insured isn’t the settlor, the authorized signer must approve and sign before NIW acts on it.</p>'+
-      '<table class="mini"><tbody><tr><th>Current legal name</th><td>Daniel Reyes</td></tr><tr><th>New legal name</th><td><b>Daniel Reyes Ortega</b></td></tr><tr><th>Reason</th><td>Marriage</td></tr><tr><th>Supporting document</th><td><span class="lnk">marriage-certificate.pdf</span></td></tr></tbody></table>'+
+      '<table class="mini"><tbody><tr><th>Current legal name</th><td>Daniel Reyes</td></tr><tr><th>New legal name</th><td><b>Daniel Reyes-Brooks</b></td></tr><tr><th>Reason</th><td>Marriage</td></tr><tr><th>Supporting document</th><td><span class="lnk">marriage-certificate.pdf</span></td></tr></tbody></table>'+
       '<div class="optlist">'+ro.map(function(o){var on=sg.f.opt===o[0];return '<button class="dopt'+(on?' on':'')+(!sg.f.opt?' need':'')+'" data-sg="opt" data-v="'+o[0]+'"><span class="radio">'+(on?'●':'')+'</span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div>'+
       '<div class="sline"><span>Signed by '+who+'</span>'+tab("sig1","sig")+'</div></div>';
   }
@@ -1410,7 +1451,7 @@ document.addEventListener("click",function(ev){
   if(t.dataset.lk){ if(saved.locked) return; var k=t.dataset.lk; rowLock[k]=!rowLock[k]; var keep=document.getElementById("rail").scrollTop; persist(false, rowLock[k]?"Question locked and saved":"Question unlocked"); setTimeout(function(){document.getElementById("rail").scrollTop=keep;},0); return; }
   if(t.dataset.tab){ tabState[t.dataset.tab]=+t.dataset.ti; render(); return; }
   if(t.dataset.w){ who=t.dataset.w; prof=null; emailPending=""; [].forEach.call(document.querySelectorAll("#who button"),function(b){b.setAttribute("aria-pressed",b===t?"true":"false");});
-    pol=null; view="home"; render(); return; }
+    pol=null; view="home"; if(isIns()){pol=P().policies[0]; view="dash";} render(); return; }
   if(t.dataset.nav){ var v=t.dataset.nav; if(v==="home"){pol=null;} view=v; render(); window.scrollTo(0,0); return; }
   if(t.dataset.pick){ pol=P().policies.filter(function(x){return x.id===t.dataset.pick;})[0]; view="dash"; render(); window.scrollTo(0,0); return; }
   if(t.dataset.dk){ choice[t.dataset.dk]=t.dataset.dv; var keep=document.getElementById("rail").scrollTop; render(); document.getElementById("rail").scrollTop=keep; return; }
