@@ -273,6 +273,9 @@ ul.activity{margin:0;padding:0}
 .cecard.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--accent-soft)}
 .cecard:disabled{opacity:.5;cursor:not-allowed}
 .etypes{display:flex;flex-wrap:wrap;gap:6px}
+.cs-btn{margin-left:auto;font-weight:500}
+.cs-flash{animation:csflash 2.6s ease-out}
+@keyframes csflash{0%,40%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:var(--shadow)}}
 .etypes .chip{font-family:inherit;border:1px solid var(--line-strong);border-radius:20px;background:var(--surface);color:var(--ink);padding:5px 12px;font-size:13px;cursor:pointer}
 .etypes .chip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
 .embadge{border:1px solid #6f4bd8;background:#f6f1ff;color:#4b2fa8;border-radius:20px;padding:5px 12px;font:600 13px Roboto,sans-serif;cursor:pointer}.embadge b{background:#6f4bd8;color:#fff;border-radius:10px;padding:0 6px;margin-left:4px;font-size:11.5px}
@@ -356,7 +359,7 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
     <button data-s="individual" aria-pressed="false">Separate · individual</button>
     <button data-s="entity" aria-pressed="false">Separate · entity</button>
   </div>
-  <button class="embadge" onclick="openEmails()">✉ Email table <b>13</b></button>
+  <button class="embadge" onclick="openEmails()">✉ Email table <b>16</b></button>
   <span class="mocktag">Mock · sample data only · W-SETTLOR</span>
 </div>
 
@@ -610,7 +613,7 @@ function render(){
   var v=document.getElementById("view"), h=st.type==="insured"?setupHTML():setupHTML().replace(/^<div class="setup">[\s\S]*?<\/div><div class="signer-banner">/,'<div class="signer-banner">');
   document.querySelector(".card").classList.add("ilia");
   if(st.type==="insured"){
-    v.innerHTML='<div class="ilia-sd"><h3 class="ilia-h">Settlor Details <span class="isins">Is the insured</span></h3><div class="ilia-grid">'+
+    v.innerHTML='<div class="ilia-sd"><h3 class="ilia-h">Settlor Details <span class="isins">Is the insured</span><button class="btn sm cs-btn" data-act="csOpen" title="ILIA has the insured as the settlor, but the trust documents name someone else">⇄ Settlor isn’t the insured</button></h3><div class="ilia-grid">'+
       iliaFld("Settlor First Name",POLICY.first)+iliaFld("Middle Name","")+iliaFld("Last Name",POLICY.last)+
       iliaFld("Settlor Email Address","daniel.reyes@example.com")+iliaFld("Settlor Phone Number","(214) 555-0132")+iliaFld("Settlor Social","•••-••-4417")+
       relSel("Self")+
@@ -678,6 +681,7 @@ document.getElementById("view").addEventListener("click",function(ev){
   else if(a==="edMail"){edMailOpen=!edMailOpen;edBar();return;}
   else if(a==="sgChange"){openSg("change");return;}
   else if(a==="ceOpen"){openCe();return;}
+  else if(a==="csOpen"){openCs();return;}
   else if(a==="mockInforce"){insInforce=!insInforce;}
   else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
   else if(a==="sAdv"||a==="pAdv"){var o=a==="sAdv"?s:pp, key=a==="sAdv"?"invite":"insInvite", nx=NEXT[o[key]]; o[key]=nx; o.d=o.d||{}; o.d[nx==="active"?"login":nx]="Oct 28";
@@ -694,7 +698,7 @@ document.getElementById("view").addEventListener("click",function(ev){
 document.getElementById("scen").addEventListener("click",function(ev){
   var b=ev.target.closest("button"); if(!b)return;
   [].forEach.call(this.children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
-  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; insInforce=true; closeDrawer(); if(lk)closeLink(); if(iv)closeInvite(); if(sg)closeSg(); if(ce)closeCe(); ed={}; render();
+  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; insInforce=true; closeDrawer(); if(lk)closeLink(); if(iv)closeInvite(); if(sg)closeSg(); if(ce)closeCe(); if(cs)closeCs(); ed={}; render();
 });
 
 /* ---------- Edit drawer ---------- */
@@ -1078,6 +1082,113 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
 });
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&ce)closeCe();});
 
+/* ---------- Settlor isn't the insured: admin sets a separate settlor (individual or entity) on a policy where ILIA has the insured as settlor ---------- */
+var cs=null;
+var CS_IND={first:"Maria",last:"Reyes",email:"maria.reyes@example.com",phone:"(214) 555-0148",rel:"Spouse",dob:"03/14/1979",ssn:"512-44-4821",addr:"4410 Oak Lawn Ave, Dallas, TX 75219"};
+var CS_RELS=["Spouse","Other: Brother","Other: Business partner"];
+var CS_EXISTING_SG={first:"Laura",last:"Chen",title:"Chief Financial Officer",email:"l.chen@reyesholdings.example",phone:"(214) 555-0177",access:true,invite:"active",d:{sent:"Sep 12",opened:"Sep 12",created:"Sep 13",login:"Oct 24"}};
+var CS_IN_F=IN_F.filter(function(f){return f[0]!=="rel";});
+function openCs(){cs={step:"pick",kind:"",src:"",v:{first:"",last:"",email:"",phone:"",rel:"",dob:"",ssn:"",addr:""},ev:{etype:"",name:"",ein:"",addr:""},sv:{first:"",last:"",title:"",email:"",phone:""},ins:"keep",ok:false,mails:false};renderCs();}
+function closeCs(){cs=null;document.getElementById("sgRoot").innerHTML="";}
+function csShell(title,body,foot){document.getElementById("sgRoot").innerHTML='<div class="scrim" data-cs="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="csH"><div class="dr-hd"><h3 id="csH">'+title+'</h3><button class="btn sm" data-cs="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+foot+'</div></div>';}
+function csFld(grp,k,label,val){var w=(k==="addr"||k==="email")?' style="grid-column:span 2"':'', shown=k==="ssn"&&val?mask(val,4):val;
+  return val ? '<button class="mf has sgf" data-cs="fill" data-g="'+grp+'" data-k="'+k+'"'+w+'><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(shown)+'</span></button>'
+             : '<button class="mf mf-add" data-cs="fill" data-g="'+grp+'" data-k="'+k+'"'+w+'>'+label+'<small>Click to add sample</small></button>';}
+function csSrc(g){return g==="v"?CS_IND:g==="ev"?CE_NEW:CE_NEW_SG;}
+function csReady(){ if(cs.kind==="individual") return CS_IN_F.every(function(f){return cs.v[f[0]];})&&cs.v.rel;
+  if(cs.kind==="entity"){ if(cs.src==="existing") return true; if(cs.src!=="new") return false;
+    return cs.ev.etype&&CE_F.every(function(f){return cs.ev[f[0]];})&&CE_SF.every(function(f){return cs.sv[f[0]];});}
+  return false;}
+/* What the new settlor looks like, for the review and the save */
+function csTarget(){
+  if(cs.kind==="individual"){var v=cs.v; return {name:v.first+" "+v.last, sub:v.rel.replace(/^Other: /,"")+" of the insured", signer:{first:v.first,last:v.last,email:v.email}, signerSub:"Settlor & Authorized Signer", hasAcct:false};}
+  if(cs.src==="existing") return {name:SAMPLE.ent.name, sub:SAMPLE.ent.etype+" · existing record", signer:CS_EXISTING_SG, signerSub:CS_EXISTING_SG.title, hasAcct:true};
+  return {name:cs.ev.name, sub:cs.ev.etype, signer:cs.sv, signerSub:cs.sv.title, hasAcct:false};}
+function renderCs(){
+  var ins=POLICY.first+" "+POLICY.last;
+  if(cs.step==="pick"){
+    var body='<div class="isec"><h4>Set a separate settlor</h4><p class="note" style="margin:0">Use this when ILIA has <b>'+esc(ins)+'</b> (the insured) as the settlor, but the trust documents name <b>someone else</b>. The new settlor’s authorized signer takes over signing for this policy.</p></div>'+
+      '<div class="isec"><h4>Settlor today</h4><div class="sgcur"><b>'+esc(ins)+'</b> · the insured · Relation: Self<br><span class="note">Signs in the client Servicing Portal · policy '+esc(POLICY.policy)+'</span></div></div>'+
+      '<div class="isec"><h4>Who is the settlor?</h4><div class="cechoice">'+
+        '<button class="cecard'+(cs.kind==="individual"?' on':'')+'" data-cs="kind" data-v="individual"><b>An individual</b><span class="note">A person other than the insured, for example a spouse or parent. They are also the authorized signer.</span></button>'+
+        '<button class="cecard'+(cs.kind==="entity"?' on':'')+'" data-cs="kind" data-v="entity"><b>An entity</b><span class="note">A trust, LLC, corporation or other entity. It has one authorized signer.</span></button></div></div>';
+    if(cs.kind==="individual"){
+      body+='<div class="isec"><h4>Relation to the insured</h4><div class="etypes">'+CS_RELS.map(function(r){return '<button class="chip'+(cs.v.rel===r?' on':'')+'" data-cs="rel" data-v="'+esc(r)+'">'+esc(r)+'</button>';}).join("")+'</div></div>'+
+        '<div class="isec"><h4>Settlor &amp; authorized signer</h4><div class="ilia-grid sg-grid">'+CS_IN_F.map(function(f){return csFld("v",f[0],f[1],cs.v[f[0]]);}).join("")+'</div>'+
+        '<button class="btn link sm" data-cs="fillall" style="align-self:flex-start">Fill all with sample</button></div>';
+    }
+    if(cs.kind==="entity"){
+      body+='<div class="isec"><h4>Which entity?</h4><div class="cechoice">'+
+        '<button class="cecard'+(cs.src==="existing"?' on':'')+'" data-cs="src" data-v="existing"><b>An entity already in ILIA</b><span class="note">Link this policy to an existing settlor record. Its authorized signer comes with it.</span></button>'+
+        '<button class="cecard'+(cs.src==="new"?' on':'')+'" data-cs="src" data-v="new"><b>A new entity</b><span class="note">Enter the entity’s details and its authorized signer.</span></button></div></div>';
+      if(cs.src==="existing") body+='<div class="isec"><h4>Existing settlor record</h4><div class="sgcur cepick"><b>'+esc(SAMPLE.ent.name)+'</b> · '+esc(SAMPLE.ent.etype)+' · EIN '+esc(mask(SAMPLE.ent.ein,4))+'<br><span class="note">Authorized signer: '+esc(CS_EXISTING_SG.first+" "+CS_EXISTING_SG.last+", "+CS_EXISTING_SG.title)+' (has portal access) · '+POLICY_POOL.slice(0,2).length+' policies already linked</span></div><p class="note" style="margin:0">Sample search result. In ILIA this is a search by entity name or EIN.</p></div>';
+      if(cs.src==="new") body+='<div class="isec"><h4>New entity</h4><div class="note" style="margin-bottom:2px">Entity type</div><div class="etypes">'+ENTITY_TYPES.map(function(t){return '<button class="chip'+(cs.ev.etype===t?' on':'')+'" data-cs="etype" data-v="'+esc(t)+'">'+esc(t)+'</button>';}).join("")+'</div>'+
+          '<div class="ilia-grid sg-grid">'+CE_F.map(function(f){return csFld("ev",f[0],f[1],cs.ev[f[0]]);}).join("")+'</div></div>'+
+        '<div class="isec"><h4>Authorized signer for the entity</h4><div class="ilia-grid sg-grid">'+CE_SF.map(function(f){return csFld("sv",f[0],f[1],cs.sv[f[0]]);}).join("")+'</div>'+
+        '<button class="btn link sm" data-cs="fillall" style="align-self:flex-start">Fill all with sample</button></div>';
+    }
+    if(cs.kind&&(cs.kind==="individual"||cs.src)) body+='<div class="isec"><h4>'+esc(POLICY.first)+'’s own Servicing Portal access to this policy</h4><div class="cechoice">'+
+        '<button class="cecard'+(cs.ins==="keep"?' on':'')+'" data-cs="ins" data-v="keep"><b>Keep access</b><span class="note">'+esc(POLICY.first)+' can still view the policy in the client portal. Signing moves to the new signer.</span></button>'+
+        '<button class="cecard'+(cs.ins==="off"?' on':'')+'" data-cs="ins" data-v="off"><b>Turn access off</b><span class="note">The default when the insured isn’t the settlor. Silent, and can be turned back on later.</span></button></div></div>';
+    var ready=csReady();
+    csShell("Settlor isn’t the insured",body,(ready?'':'<span class="note" style="margin-right:auto">'+(!cs.kind?'Choose who the settlor is.':cs.kind==="entity"&&!cs.src?'Choose the entity.':'Fill every field to continue.')+'</span>')+'<button class="btn" data-cs="close">Cancel</button><button class="btn primary" data-cs="next"'+(ready?'':' disabled')+'>Review change</button>');
+    return;
+  }
+  var t=csTarget(), ng=t.signer, isEnt=cs.kind==="entity";
+  var mails=(t.hasAcct ? mailHTML(ng.email,"New policies added to your ILIA Settlor Servicing Portal","<p>Hi "+esc(ng.first)+",</p><p>1 policy is now linked to <b>"+esc(t.name)+"</b>. You’ll see it in your portal the next time you log in.</p>")+'<p class="note" style="margin:0 0 8px">Same email as #52 (Change entity).</p>'
+                       : '<p class="note" style="margin:0 0 8px">'+esc(ng.first)+' gets <b>no email yet</b>. Their invite goes out only when you click <b>Invite Authorized Signer to Servicing Portal</b> (#41).</p>')+
+    '<p class="note oq" style="margin:0">'+esc(POLICY.first)+' (the insured): '+(cs.ins==="off"?'access is turned off silently, per the access rule. Open question: should the insured be told the settlor changed?':'no email today. Open question: should the insured be told the settlor changed and that signing moved to '+esc(ng.first)+'?')+'</p>';
+  var body2='<div class="sgswap"><div class="sgcol out"><span class="note">Settlor today</span><b>'+esc(ins)+'</b><span>The insured · Self</span><span class="note">Signs in the client portal</span></div><span class="sgarrow" aria-hidden="true">→</span><div class="sgcol in"><span class="note">New settlor</span><b>'+esc(t.name)+'</b><span>'+esc(t.sub)+'</span><span class="note">Signer: '+esc(ng.first+" "+ng.last)+'</span></div></div>'+
+    '<div class="isec"><h4>What changes on this policy</h4><ul class="can">'+
+      '<li>Settlor Details switch to the <b>Settlor / Authorized Signer</b> section with a <b>'+esc(isEnt?"Entity":t.sub.replace(/ of the insured$/,""))+'</b> badge.</li>'+
+      '<li>New forms for this policy go to <b>'+esc(ng.first+" "+ng.last)+'</b> ('+esc(ng.email)+'), not '+esc(POLICY.first)+'.</li>'+
+      (t.hasAcct ? '<li>'+esc(ng.first)+' already has Settlor Servicing Portal access, so the policy shows in their portal next time they log in.</li><li>The policy joins '+esc(t.name)+'’s other '+POLICY_POOL.slice(0,2).length+' linked policies.</li>'
+                 : '<li>'+esc(ng.first)+' starts with <b>no portal access</b>. The <b>Invite Authorized Signer to Servicing Portal</b> button shows once you save.</li>')+
+      '<li>'+esc(POLICY.first)+'’s client portal access to this policy: <b>'+(cs.ins==="off"?'turned off':'kept')+'</b>. You can change it later under Policies linked to this settlor.</li>'+
+      '<li>'+esc(ins)+' is kept in the history as the past settlor.</li></ul></div>'+
+    '<div class="isec"><h4>Emails this sends</h4>'+(cs.mails?mails:'')+'<button class="btn link sm" data-cs="mails" style="align-self:flex-start">'+(cs.mails?'Hide':'Show')+' emails</button></div>'+
+    '<div class="isec"><h4>Still to decide</h4><ul class="can oq"><li>Changing the settlor is a <b>legal change to the trust</b>. What document does NIW need first (Chris / Judy)?</li><li>Forms already out for signature with '+esc(POLICY.first)+' on this policy: void and resend to '+esc(ng.first)+', or let them finish?</li><li>Should the insured get an email that the settlor changed?</li></ul></div>'+
+    '<button class="confirmchk" role="checkbox" aria-checked="'+cs.ok+'" data-cs="ok"><span class="cbx" aria-hidden="true">'+(cs.ok?'✓':'')+'</span><span>I confirmed the trust documents name <b>'+esc(t.name)+'</b> as the settlor of this policy, not the insured.</span></button>';
+  csShell("Review: settlor isn’t the insured",body2,(cs.ok?'':'<span class="note">Tick the confirmation to save.</span>')+'<button class="btn" data-cs="back" style="margin-right:auto">← Back</button><button class="btn" data-cs="close">Cancel</button><button class="btn primary" data-cs="save"'+(cs.ok?'':' disabled')+'>Set new settlor</button>');
+}
+function csSave(){
+  var t=csTarget(), p=thisPolicy(), old=st.activity||[];
+  if(cs.ins==="keep"){p.insAccess=true;p.insInvite="active";p.d={sent:"Jan 8",opened:"Jan 8",created:"Jan 9",login:"Oct 26"};}
+  var past=[{name:POLICY.first+" "+POLICY.last,title:"Settlor (the insured, Self)",until:today(),by:"Jamin A."}];
+  if(cs.kind==="individual"){var v=cs.v, other=/^Other: /.test(v.rel), m=v.addr.match(/^(.*), (.*), ([A-Z]{2}) (\d{5})$/)||[0,v.addr,"","",""];
+    st={type:"individual", ind:{first:v.first,last:v.last,email:v.email,phone:v.phone,ssn:v.ssn,dob:v.dob,relation:other?"Other":v.rel,otherRelation:other?v.rel.replace(/^Other: /,""):"",street:m[1],city:m[2],state:m[3],zip:m[4]}, ent:null,
+      signers:[{first:v.first,last:v.last,title:"Settlor & Authorized Signer",email:v.email,phone:v.phone,access:false,invite:"none",d:{},isSettlor:true}], policies:[p], activity:old, pastSigners:past};}
+  else if(cs.src==="existing"){var p1=clone(POLICY_POOL[0]),p2=clone(POLICY_POOL[1]);
+    st={type:"entity", ind:null, ent:clone(SAMPLE.ent), signers:[clone(CS_EXISTING_SG)], policies:[p,p1,p2], activity:old, pastSigners:past};}
+  else {var e=cs.ev, m2=e.addr.match(/^(.*), (.*), ([A-Z]{2}) (\d{5})$/)||[0,e.addr,"","",""];
+    st={type:"entity", ind:null, ent:{name:e.name,etype:e.etype,ein:e.ein,addr:e.addr,street:m2[1],city:m2[2],state:m2[3],zip:m2[4]},
+      signers:[{first:cs.sv.first,last:cs.sv.last,title:cs.sv.title,email:cs.sv.email,phone:cs.sv.phone,access:false,invite:"none",d:{}}], policies:[p], activity:old, pastSigners:past};}
+  log("Settlor changed from the insured ("+POLICY.first+" "+POLICY.last+") to "+t.name+(cs.src==="existing"?" (existing record)":"")+(cs.ins==="off"?"; insured portal access turned off":""));
+  [].forEach.call(document.getElementById("scen").children,function(x){x.setAttribute("aria-pressed",x.dataset.s===st.type?"true":"false");});
+  var ng=t.signer, had=t.hasAcct; closeCs(); ed={}; confirmKey=""; render(); window.scrollTo(0,0);
+  var card=document.querySelector(".sa-card"); if(card){card.classList.add("cs-flash"); setTimeout(function(){card.classList.remove("cs-flash");},2600);}
+  toast(t.name+" is now the settlor."+(had?" "+ng.first+" will see the policy in their portal.":" Invite "+ng.first+" when ready."));
+}
+document.getElementById("sgRoot").addEventListener("click",function(ev){
+  var t=ev.target.closest("[data-cs]"); if(!t||!cs)return; var a=t.dataset.cs;
+  if(a==="close"){closeCs();return;}
+  if(a==="kind"){cs.kind=t.dataset.v;}
+  if(a==="src"){cs.src=t.dataset.v;}
+  if(a==="ins"){cs.ins=t.dataset.v;}
+  if(a==="rel"){cs.v.rel=cs.v.rel===t.dataset.v?"":t.dataset.v;}
+  if(a==="etype"){cs.ev.etype=cs.ev.etype===t.dataset.v?"":t.dataset.v;}
+  if(a==="fill"){var g=t.dataset.g,k=t.dataset.k; cs[g][k]=cs[g][k]?"":csSrc(g)[k];}
+  if(a==="fillall"){ if(cs.kind==="individual"){for(var k1 in CS_IND)cs.v[k1]=CS_IND[k1];} else {for(var k2 in CE_NEW)cs.ev[k2]=CE_NEW[k2]; for(var k3 in CE_NEW_SG)cs.sv[k3]=CE_NEW_SG[k3];} }
+  if(a==="next"){cs.step="review";cs.ok=false;}
+  if(a==="back"){cs.step="pick";}
+  if(a==="ok"){cs.ok=!cs.ok;}
+  if(a==="mails"){cs.mails=!cs.mails;}
+  if(a==="save"&&cs.ok){csSave();return;}
+  var keep=(document.querySelector("#sgRoot .dr-bd")||{}).scrollTop||0; renderCs();
+  var bd=document.querySelector("#sgRoot .dr-bd"); if(bd) bd.scrollTop=keep;
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&cs)closeCs();});
+
 /* ---------- Link a policy (search → review → link) ---------- */
 /* Sample search results. cur = who the policy's settlor is today. */
 var LINK_POOL = [
@@ -1181,7 +1292,7 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape"&&d)closeDraw
 render();
 
 /* ---------- Email table for this screen (Case Details settlor section). Same rows/numbers as the portal mock and SETTLOR-EMAILS.md ---------- */
-var CD_EMAILS=[[41,"Case Details","Invite Authorized Signer","Admin sends invite","Authorized signer","You’re invited to your ILIA Settlor Servicing Portal","New (NIWD-2734)","Decided"],[42,"Case Details","Invite Authorized Signer","Admin resends invite","Authorized signer","Same invite, new link","New (NIWD-2734)","Decided"],[43,"Case Details","Portal access","Admin turns access back on","Authorized signer","Your access was restored","New (NIWD-2734)","Decided"],[44,"Case Details","Insured portal access","Admin turns on insured access for one policy","Insured","Servicing Portal invite (this policy only)","New (NIWD-2734)","Decided"],[45,"Case Details","Edit signer details","Admin changes signer email (signer has access)","Old email","NIW changed the email on your ILIA account","New","Suggested"],[46,"Case Details","Edit signer details","Admin changes signer email (signer has access)","New email","This is now your ILIA login","New","Suggested"],[47,"Case Details","Edit signer details","Admin changes name / phone (signer has access)","Authorized signer","Your details were updated","New","Suggested"],[48,"Case Details","Edit signer details","Email changed while invite pending","New email","Invite resent to new email?","—","Open (B5)"],[49,"Case Details","Change authorized signer","Admin replaces the signer","Removed signer","You’re no longer the authorized signer","New","Open (B9)"],[50,"Case Details","Change authorized signer","Admin replaces the signer","New signer","(none until Invite is sent)","—","Decided"],[51,"Case Details","Change entity","Admin moves policies, same signer","Authorized signer","The settlor on your ILIA policies changed","New","Suggested"],[52,"Case Details","Change entity","Admin moves policies to an existing record","That record’s signer","New policies added to your ILIA Settlor Servicing Portal","New","Suggested"],[53,"Case Details","Change entity","Admin moves policies, new signer","Removed signer","You’re no longer the authorized signer on these policies","New","Open (B9)"]];   /* [#, area, flow, trigger, to, email, ILIA today, status] */
+var CD_EMAILS=[[41,"Case Details","Invite Authorized Signer","Admin sends invite","Authorized signer","You’re invited to your ILIA Settlor Servicing Portal","New (NIWD-2734)","Decided"],[42,"Case Details","Invite Authorized Signer","Admin resends invite","Authorized signer","Same invite, new link","New (NIWD-2734)","Decided"],[43,"Case Details","Portal access","Admin turns access back on","Authorized signer","Your access was restored","New (NIWD-2734)","Decided"],[44,"Case Details","Insured portal access","Admin turns on insured access for one policy","Insured","Servicing Portal invite (this policy only)","New (NIWD-2734)","Decided"],[45,"Case Details","Edit signer details","Admin changes signer email (signer has access)","Old email","NIW changed the email on your ILIA account","New","Suggested"],[46,"Case Details","Edit signer details","Admin changes signer email (signer has access)","New email","This is now your ILIA login","New","Suggested"],[47,"Case Details","Edit signer details","Admin changes name / phone (signer has access)","Authorized signer","Your details were updated","New","Suggested"],[48,"Case Details","Edit signer details","Email changed while invite pending","New email","Invite resent to new email?","—","Open (B5)"],[49,"Case Details","Change authorized signer","Admin replaces the signer","Removed signer","You’re no longer the authorized signer","New","Open (B9)"],[50,"Case Details","Change authorized signer","Admin replaces the signer","New signer","(none until Invite is sent)","—","Decided"],[51,"Case Details","Change entity","Admin moves policies, same signer","Authorized signer","The settlor on your ILIA policies changed","New","Suggested"],[52,"Case Details","Change entity","Admin moves policies to an existing record","That record’s signer","New policies added to your ILIA Settlor Servicing Portal","New","Suggested"],[53,"Case Details","Change entity","Admin moves policies, new signer","Removed signer","You’re no longer the authorized signer on these policies","New","Open (B9)"],[54,"Case Details","Settlor isn’t the insured","Admin sets a separate settlor (new signer)","New signer","(none until Invite is sent)","—","Decided"],[55,"Case Details","Settlor isn’t the insured","Admin links the policy to an existing settlor record","That record’s signer","New policies added to your ILIA Settlor Servicing Portal","Same as #52","Suggested"],[56,"Case Details","Settlor isn’t the insured","Admin sets a separate settlor","Insured","The settlor on your policy changed?","—","Open (B21)"]];   /* [#, area, flow, trigger, to, email, ILIA today, status] */
 var CD_EMCOPY={"41":{"to":"Authorized signer","s":"You’re invited to your ILIA Settlor Servicing Portal","b":["Hi {SignerFirstName},","{SettlorName} has named you the authorized signer for {PolicyCount} life insurance policies. In the Settlor Servicing Portal you can view each policy, sign forms NIW sends you, and keep your contact details current.","This link expires in {Expiry}."],"cta":"Create your account","does":"Opens ILIA account setup (set password) for this email, then lands in the Settlor Servicing Portal. Defined in NIWD-2734."},"42":{"to":"Authorized signer","s":"Reminder: your ILIA Settlor Servicing Portal invite","b":["Hi {SignerFirstName},","Here’s a new link to set up your Settlor Servicing Portal account. Your earlier link no longer works.","This link expires in {Expiry}."],"cta":"Create your account","does":"Same as the invite; the previous link is invalidated. Defined in NIWD-2734."},"43":{"to":"Authorized signer","s":"Your Settlor Servicing Portal access is back on","b":["Hi {SignerFirstName},","NIW turned your Settlor Servicing Portal access back on. You can log in with your existing email and password."],"cta":"Log in","does":"Opens the ILIA login page."},"44":{"to":"Insured","s":"You now have access to your policy in ILIA","b":["Hi {InsuredFirstName},","NIW gave you access to view your policy ending {Last4} in the ILIA Servicing Portal."],"cta":"Set up your access","does":"Opens ILIA account setup (or login if they already have an account) and lands on that one policy. Defined in NIWD-2734."},"45":{"to":"Old email","s":"The email on your ILIA account was changed","b":["Hi {SignerFirstName},","NIW changed the email on your ILIA account to {NewEmail} on {Date}. You’ll log in with the new email from now on.","If you didn’t expect this, contact us right away at niw.info@simplicitygroup.com or 800-294-9940 ext. 807."],"cta":"Contact NIW","does":"Opens an email to niw.info@simplicitygroup.com (no login link, for security)."},"46":{"to":"New email","s":"This is now your ILIA login","b":["Hi {SignerFirstName},","Your ILIA Settlor Servicing Portal login is now this email address. Your password hasn’t changed. Forms to sign will come here."],"cta":"Log in","does":"Opens the ILIA login page with this email filled in."},"47":{"to":"Authorized signer","s":"Your details were updated by NIW","b":["Hi {SignerFirstName},","NIW updated your details on {Date}: {ChangedFields}.","If something looks wrong, contact us at niw.info@simplicitygroup.com or 800-294-9940 ext. 807."],"cta":"Review My Account","does":"Opens My Account in the Settlor Servicing Portal."},"51":{"to":"Authorized signer","s":"The settlor on your ILIA policies changed","b":["Hi {SignerFirstName},","NIW updated the records: you’re now the authorized signer for {NewSettlorName} on {PolicyCount} policies (previously {OldSettlorName}). Nothing changes about how you log in."],"cta":"View your policies","does":"Opens My Policies in the Settlor Servicing Portal."},"52":{"to":"That record’s signer","s":"New policies added to your ILIA Settlor Servicing Portal","b":["Hi {SignerFirstName},","{PolicyCount} policies are now linked to {SettlorName}. You’ll see them in your portal the next time you log in."],"cta":"View your policies","does":"Opens My Policies in the Settlor Servicing Portal."}};
 var emOnly=false, emOpen={};
 function emMust(e){return /^New/.test(e[6])&&!/^Open/.test(e[7]);}
@@ -1195,7 +1306,7 @@ function emPreview(i){var c=CD_EMCOPY[i]; if(!c) return '<p class="note">No draf
 function openEmails(){var must=CD_EMAILS.filter(emMust), tp={}; must.forEach(function(e){var t=emTpl(e); if(t) tp[t]=(tp[t]||0)+1;});
   var tk=Object.keys(tp).sort(function(a,b){return parseInt(a.slice(1))-parseInt(b.slice(1));});
   var rows=CD_EMAILS.filter(function(e){return !emOnly||emMust(e);});
-  var body='<div class="em-sum"><div><b>'+must.length+' must-have new emails</b> from this screen (highlighted, click a row to see its copy) → <b>'+tk.length+' templates</b>. '+CD_EMAILS.filter(function(e){return /^Open/.test(e[7]);}).length+' wait on open questions; 1 sends nothing.</div><div class="em-tpls">'+tk.map(function(t){return '<span class="em-tp">'+esc(t)+' <b>'+tp[t]+'</b></span>';}).join("")+'</div><p class="note" style="margin:0">T1–T3 are already in NIWD-2734. Row numbers match the portal mock’s table and SETTLOR-EMAILS.md.</p><label class="em-only"><input type="checkbox" id="emOnly"'+(emOnly?' checked':'')+'> Show must-haves only</label></div>'+
+  var body='<div class="em-sum"><div><b>'+must.length+' must-have new emails</b> from this screen (highlighted, click a row to see its copy) → <b>'+tk.length+' templates</b>. '+CD_EMAILS.filter(function(e){return /^Open/.test(e[7]);}).length+' wait on open questions; '+CD_EMAILS.filter(function(e){return /^\(none/.test(e[5]);}).length+' send nothing.</div><div class="em-tpls">'+tk.map(function(t){return '<span class="em-tp">'+esc(t)+' <b>'+tp[t]+'</b></span>';}).join("")+'</div><p class="note" style="margin:0">T1–T3 are already in NIWD-2734. Row numbers match the portal mock’s table and SETTLOR-EMAILS.md.</p><label class="em-only"><input type="checkbox" id="emOnly"'+(emOnly?' checked':'')+'> Show must-haves only</label></div>'+
     '<div class="tblwrap"><table class="em-t"><thead><tr><th>#</th><th>Flow</th><th>Trigger</th><th>To</th><th>Email</th><th>Template</th><th>ILIA today</th><th>Status</th></tr></thead><tbody>'+rows.map(function(e){var i=e[0], m=emMust(e);
       return '<tr'+(m?' class="em-must em-click" data-emx="'+i+'"':'')+'><td>'+(m?'<span class="em-car">'+(emOpen[i]?'▾':'▸')+'</span> ':'')+i+'</td><td>'+esc(e[2])+'</td><td>'+esc(e[3])+'</td><td>'+esc(e[4])+'</td><td><b>'+esc(e[5])+'</b>'+(m?' <span class="em-mh">MUST-HAVE · NEW</span>':'')+'</td><td>'+esc(m?emTpl(e):'')+'</td><td>'+esc(e[6])+'</td><td class="'+(/^Open/.test(e[7])?'em-op':'')+'">'+esc(e[7])+'</td></tr>'+(m&&emOpen[i]?'<tr class="em-xrow"><td colspan="8">'+emPreview(i)+'</td></tr>':'');}).join("")+'</tbody></table></div>';
   var keep=(document.querySelector("#emRoot .dr-bd")||{}).scrollTop||0;
