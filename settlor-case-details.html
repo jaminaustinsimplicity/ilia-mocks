@@ -556,7 +556,7 @@ function policiesHTML(){
     return '<tr><td>'+esc(p.first+" "+p.last)+'</td><td class="mono">'+esc(p.policy)+(p.self?'<span class="this">this policy</span>':'')+'</td><td>'+p.tranche+'</td><td>'+pstatusPill(p)+'</td><td>'+accCell+'</td><td>'+statCell+' '+actCell+'</td><td>'+unlink+'</td></tr>'+conf;
   }).join("");
   return '<div><div class="sec-t"><span>Policies linked to this settlor</span><button class="btn sm" data-act="openLink">+ Link a policy</button></div>'+
-    '<p class="note" style="margin:0 0 10px">The insured on each policy has <b>no portal access by default</b> when they are not the settlor. Turn it on per policy if they need to see their own policy.</p>'+
+    '<p class="note" style="margin:0 0 10px">The insured on each policy has <b>no portal access by default</b> when they are not the settlor. Turn it on per policy if they need to see their own policy. With access they can <b>request</b> changes, but each request goes to the authorized signer to approve and sign.</p>'+
     '<div class="tblwrap"><table><thead><tr><th>Insured</th><th>Policy number</th><th>Tranche</th><th>Policy status</th><th>Servicing Portal Access</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 
@@ -693,7 +693,7 @@ document.getElementById("view").addEventListener("click",function(ev){
   else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
   else if(a==="sAdv"||a==="pAdv"){var o=a==="sAdv"?s:pp, key=a==="sAdv"?"invite":"insInvite", nx=NEXT[o[key]]; o[key]=nx; o.d=o.d||{}; o.d[nx==="active"?"login":nx]="Oct 28";
     var words={opened:"Opened the portal invite email",created:"Created their portal account",active:"Logged in to the portal"}; st.activity.unshift({who:nm(o),what:words[nx],when:today()}); toast(nm(o)+": "+words[nx].toLowerCase());}
-  else if(a==="pToggle"){ if(pp.insAccess){pp.insAccess=false;log("Turned off "+nm(pp)+"’s portal access to "+pp.policy);toast("Access turned off");} else openGa({mode:"give",first:pp.first,last:pp.last,policy:pp.policy,invited:pp.insInvite!=="none"},function(){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 28"};}log("Gave "+nm(pp)+" portal access to "+pp.policy+(pp.insInvite==="sent"?" and sent an invite":""));render();toast("Access on. Invite emailed to "+pp.first+".");}); }
+  else if(a==="pToggle"){ if(pp.insAccess){pp.insAccess=false;log("Turned off "+nm(pp)+"’s portal access to "+pp.policy);toast("Access turned off");} else openGa({mode:"give",first:pp.first,last:pp.last,policy:pp.policy,invited:pp.insInvite!=="none",signer:st.signers[0]?st.signers[0].first+" "+st.signers[0].last:""},function(){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 28"};}log("Gave "+nm(pp)+" portal access to "+pp.policy+(pp.insInvite==="sent"?" and sent an invite":""));render();toast("Access on. Invite emailed to "+pp.first+".");}); }
   else if(a==="pOnYes"){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 28"};}confirmKey="";log("Gave "+nm(pp)+" portal access to "+pp.policy+" and sent an invite");toast("Access on. Invite emailed to "+pp.first+".");}
   else if(a==="pResend"){pp.insInvite="sent";pp.d={sent:"Oct 28"};log("Resent portal invite to "+nm(pp));toast("Invite resent");}
   else if(a==="openLink"){openLink();return;}
@@ -1136,7 +1136,7 @@ function renderCs(){
     }
     if(cs.kind&&(cs.kind==="individual"||cs.src)) body+='<div class="isec cs-acc"><h4>'+esc(POLICY.first)+'’s own Servicing Portal access to this policy</h4><div class="cechoice">'+
         '<button class="cecard'+(cs.ins==="off"?' on':'')+'" data-cs="ins" data-v="off"><b>Turn access off <span class="cs-def">Default</span></b><span class="note">The default when the insured isn’t the settlor. Silent, and can be turned back on later.</span></button>'+
-        '<button class="cecard'+(cs.ins==="keep"?' on':'')+'" data-cs="ins" data-v="keep"><b>Keep access</b><span class="note">'+esc(POLICY.first)+' can still view the policy in the client portal. Signing moves to the new signer.</span></button></div>'+
+        '<button class="cecard'+(cs.ins==="keep"?' on':'')+'" data-cs="ins" data-v="keep"><b>Keep access</b><span class="note">'+esc(POLICY.first)+' can still view the policy and request changes in the client portal. Approvals and signing move to the new signer.</span></button></div>'+
         '<p class="cs-warn">⚠ Make sure '+esc(POLICY.first)+' is allowed access to servicing before you select <b>Keep access</b>. The trust documents decide who may see the policy.</p></div>';
     var ready=csReady();
     csShell("Settlor isn’t the insured",body,(ready?'':'<span class="note" style="margin-right:auto">'+(!cs.kind?'Choose who the settlor is.':cs.kind==="entity"&&!cs.src?'Choose the entity.':'Fill every field to continue.')+'</span>')+'<button class="btn" data-cs="close">Cancel</button><button class="btn primary" data-cs="next"'+(ready?'':' disabled')+'>Review change</button>');
@@ -1182,7 +1182,7 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   if(a==="close"){closeCs();return;}
   if(a==="kind"){cs.kind=t.dataset.v;}
   if(a==="src"){cs.src=t.dataset.v;}
-  if(a==="ins"){ if(t.dataset.v==="keep"&&cs.ins!=="keep"){ openGa({mode:"keep",first:POLICY.first,last:POLICY.last,policy:POLICY.policy}, function(){cs.ins="keep"; renderCs();}); return; } cs.ins=t.dataset.v; }
+  if(a==="ins"){ if(t.dataset.v==="keep"&&cs.ins!=="keep"){ openGa({mode:"keep",first:POLICY.first,last:POLICY.last,policy:POLICY.policy,signer:(function(){var g=csTarget().signer;return g.first?g.first+" "+g.last:"";})()}, function(){cs.ins="keep"; renderCs();}); return; } cs.ins=t.dataset.v; }
   if(a==="rel"){cs.v.rel=cs.v.rel===t.dataset.v?"":t.dataset.v;}
   if(a==="etype"){cs.ev.etype=cs.ev.etype===t.dataset.v?"":t.dataset.v;}
   if(a==="fill"){var g=t.dataset.g,k=t.dataset.k; cs[g][k]=cs[g][k]?"":csSrc(g)[k];}
@@ -1204,7 +1204,7 @@ function closeGa(){ga=null;document.getElementById("gaRoot").innerHTML="";}
 function renderGa(){var o=ga.o, nm=esc(o.first+" "+o.last), keep=o.mode==="keep";
   var body='<div class="isec"><p style="margin:0">'+(keep?'Keep <b>'+nm+'</b>’s client Servicing Portal access to policy <span class="mono">'+esc(o.policy)+'</span> after the settlor changes?':'Give <b>'+nm+'</b> (the insured) Servicing Portal access to policy <span class="mono">'+esc(o.policy)+'</span>?')+'</p></div>'+
     '<div class="cs-warn ga-warn">⚠ <b>Make sure '+esc(o.first)+' is allowed access to servicing.</b> The insured isn’t the settlor, so the trust documents or the settlor decide whether they may see this policy.</div>'+
-    '<div class="isec"><h4>What '+esc(o.first)+' gets</h4><ul class="can"><li>View-only access to this one policy in the client Servicing Portal.</li><li>No signing. Forms still go to the authorized signer.</li><li>You can turn it off at any time under Policies linked to this settlor. Turning it off is silent.</li></ul></div>'+
+    '<div class="isec"><h4>What '+esc(o.first)+' gets</h4><ul class="can"><li>Access to this one policy in the client Servicing Portal: view it and <b>start change requests</b> (legal name, personal details, beneficiaries…).</li><li><b>Can’t approve them.</b> Every request goes to '+esc(o.signer||"the authorized signer")+' (authorized signer) to approve and sign in the Settlor Servicing Portal before NIW acts on it. Other forms also go to the signer.</li><li>You can turn it off at any time under Policies linked to this settlor. Turning it off is silent.</li></ul></div>'+
     '<div class="isec"><h4>Email</h4><p class="note" style="margin:0">'+(keep?'None. '+esc(o.first)+' already uses the client portal.':o.invited?'Access-restored email (#43 style) if they already have an account.':esc(o.first)+' gets the “Servicing Portal invite (this policy only)” email (#44).')+'</p></div>'+
     '<button class="confirmchk" role="checkbox" aria-checked="'+ga.ok+'" data-ga="ok"><span class="cbx" aria-hidden="true">'+(ga.ok?'✓':'')+'</span><span>I confirmed '+nm+' is allowed access to servicing for this policy.</span></button>';
   document.getElementById("gaRoot").innerHTML='<div class="scrim ga-scrim" data-ga="no"></div><div class="drawer ga-dlg" role="alertdialog" aria-modal="true" aria-labelledby="gaH"><div class="dr-hd"><h3 id="gaH">'+(keep?'Confirm: keep insured access':'Confirm: give insured access')+'</h3><button class="btn sm" data-ga="no" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+(ga.ok?'':'<span class="note" style="margin-right:auto">Tick the confirmation to continue.</span>')+'<button class="btn" data-ga="no">Cancel</button><button class="btn primary" data-ga="yes"'+(ga.ok?'':' disabled')+'>'+(keep?'Yes, keep access':'Yes, give access'+(o.invited?'':' &amp; send invite'))+'</button></div></div>';}
