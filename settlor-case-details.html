@@ -243,6 +243,18 @@ ul.activity{margin:0;padding:0}
 /* Invite authorized signer modal */
 .isec{display:flex;flex-direction:column;gap:8px}
 .sg-acts{display:flex;gap:8px;flex-wrap:wrap}
+.edf{cursor:text}
+.edf:hover{border-color:#8a8a8a}
+.edf:focus-within{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.edf:focus-within .mf-l{color:var(--accent)}
+.mf.dirty{border-color:#c98a00;background:#fffaf0}
+.mf.dirty .mf-l{color:#8a5a00}
+.sa-card .mf.dirty .mf-l{background:linear-gradient(var(--surface) 50%,#fffaf0 50%)}
+.mf-in{width:100%;border:0;outline:0;background:transparent;font:inherit;font-size:14.5px;color:#1b1b1b;padding:14px 0}
+.edbar{position:sticky;bottom:12px;z-index:5;margin-top:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border:1px solid #e3c47a;background:#fff8e6;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.edbar[hidden]{display:none}
+.edbar-tx{flex:1 1 300px;font-size:13.5px}
+.edbar-tx .note{margin-top:2px}
 .sg-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 16px;margin-top:6px}
 @media (max-width:720px){.sg-grid{grid-template-columns:1fr}.sg-grid>*{grid-column:auto!important}}
 .sgf{text-align:left;cursor:pointer;width:100%;height:50px}
@@ -523,15 +535,41 @@ function clientHTML(){
 }
 function entSignerHTML(){
   var g=st.signers[0];
-  var head='<div class="sec-t" style="margin-top:20px"><span>Entity authorized signer</span>'+(g?'<span class="sg-acts"><button class="btn sm" data-act="sgEdit">✎ Edit signer details</button><button class="btn sm" data-act="sgChange">⇄ Change authorized signer</button></span>':'')+'</div>';
+  var head='<div class="sec-t" style="margin-top:20px"><span>Entity authorized signer</span>'+(g?'<span class="sg-acts"><button class="btn sm" data-act="sgChange">⇄ Change authorized signer</button></span>':'')+'</div>'+
+    (g?'<p class="note" style="margin:-4px 0 14px">Same person, new details? Click a field and update it. A <b>different person</b>? Use <b>Change authorized signer</b>.</p>':'');
   var past=(st.pastSigners||[]).map(function(x){return '<li><b>'+esc(x.name)+'</b>, '+esc(x.title)+' · authorized signer until '+esc(x.until)+' · changed by '+esc(x.by)+'</li>';}).join("");
   past = past ? '<div class="pastsg"><span class="note">Past authorized signers</span><ul>'+past+'</ul></div>' : '';
   if(!g) return head+'<div class="ilia-grid">'+["Authorized Signer First Name","Last Name","Title","Email Address","Phone Number"].map(function(l){return '<button class="mf mf-add" data-act="addSigner">'+l+'<small>Click to add sample</small></button>';}).join("")+'</div>';
-  return head+'<div class="ilia-grid">'+iliaFld("Authorized Signer First Name",g.first)+iliaFld("Last Name",g.last)+iliaFld("Title",g.title)+
-    iliaFld("Email Address",g.email,true)+iliaFld("Phone Number",g.phone)+'</div>'+past;
+  return head+'<div class="ilia-grid">'+edFld("Authorized Signer First Name","sg.first")+edFld("Last Name","sg.last")+edFld("Title","sg.title")+
+    edFld("Email Address","sg.email",true)+edFld("Phone Number","sg.phone")+'</div>'+past;
 }
 function secretFld(label,v){return '<div class="mf has"><span class="mf-l">'+label+'</span><span class="mf-v">'+(ssnShown?esc(v):mask(v,4))+'</span><button class="reveal mf-r" data-act="ssn">'+(ssnShown?"Hide":"Show")+'</button></div>';}
 function iliaFld(label,val,wide){return '<div class="mf'+(val?' has':'')+(wide?' wide':'')+'"><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(val)+'</span></div>';}
+/* ---------- Inline editing (same entity / same signer): edit in place, then Save changes ---------- */
+var ed={};
+function edGet(path){var g=st.signers[0], e=st.ent;
+  if(path==="ent.name")return e.name; if(path==="ent.addr")return e.addr||(e.street+", "+e.city+", "+e.state+" "+e.zip); if(path==="ent.etype")return e.etype;
+  return g?g[path.slice(3)]:"";}
+function edCur(path){return ed.hasOwnProperty(path)?ed[path]:edGet(path);}
+var ED_LABEL={"ent.name":"entity name","ent.addr":"address","ent.etype":"entity type","sg.first":"signer first name","sg.last":"signer last name","sg.title":"signer title","sg.email":"signer email","sg.phone":"signer phone"};
+function edFld(label,path,wide){var dirty=ed.hasOwnProperty(path);
+  return '<label class="mf has edf'+(wide?' wide':'')+(dirty?' dirty':'')+'"><span class="mf-l">'+label+(dirty?' · edited':'')+'</span><input class="mf-in" data-ed="'+path+'" value="'+esc(edCur(path))+'" aria-label="'+label+'"></label>';}
+function edDirty(){return Object.keys(ed);}
+function edBar(){var bar=document.getElementById("edBar"); if(!bar)return; var k=edDirty(), g=st.signers[0];
+  if(!k.length){bar.hidden=true;bar.innerHTML="";return;}
+  var em=ed.hasOwnProperty("sg.email"), hasAcct=g&&g.invite!=="none";
+  var mail = em&&hasAcct ? '<div class="note">On save, <b>'+esc(g.email)+'</b> gets a “your email was changed” notice and <b>'+esc(ed["sg.email"])+'</b> becomes '+esc(g.first)+'’s ILIA login.</div>'
+    : k.some(function(x){return x.indexOf("sg.")===0;})&&hasAcct ? '<div class="note">On save, '+esc(g.first)+' gets a “your details were updated” email.</div>' : '';
+  bar.hidden=false;
+  bar.innerHTML='<div class="edbar-tx"><b>Unsaved changes</b> · '+k.map(function(x){return ED_LABEL[x];}).join(", ")+mail+'</div><button class="btn sm" data-act="edDiscard">Discard</button><button class="btn sm primary" data-act="edSave">Save changes</button>';
+}
+function edSave(){var k=edDirty(); if(!k.length)return; var g=st.signers[0], e=st.ent, em=ed.hasOwnProperty("sg.email"), oldEmail=g&&g.email, hasAcct=g&&g.invite!=="none", sgCh=false;
+  k.forEach(function(p){var v=ed[p];
+    if(p==="ent.name")e.name=v; else if(p==="ent.addr")e.addr=v; else if(p==="ent.etype")e.etype=v; else {g[p.slice(3)]=v; sgCh=true;}});
+  log("Updated "+k.map(function(x){return ED_LABEL[x];}).join(", "));
+  ed={}; render();
+  toast(em&&hasAcct ? "Changes saved. Emails sent to "+oldEmail+" and "+g.email : sgCh&&hasAcct ? "Changes saved. "+g.first+" got a “details updated” email." : "Changes saved");
+}
 function render(){
   var v=document.getElementById("view"), h=st.type==="insured"?setupHTML():setupHTML().replace(/^<div class="setup">[\s\S]*?<\/div><div class="signer-banner">/,'<div class="signer-banner">');
   document.querySelector(".card").classList.add("ilia");
@@ -571,16 +609,18 @@ function render(){
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   } else {
     var e=st.ent;
-    h+='<div><div class="sec-t"><span>Settlor details · entity</span></div><div class="ilia-grid">'+
-      iliaFld("Entity Name",e.name)+
-      '<div class="mf has sel"><span class="mf-l">Entity Type</span><select id="entType" class="mf-s" aria-label="Entity Type">'+ENTITY_TYPES.map(function(o){return '<option'+(o===e.etype?' selected':'')+'>'+esc(o)+'</option>';}).join("")+'</select></div>'+
+    h+='<div><div class="sec-t"><span>Settlor details · entity</span><button class="btn sm" data-act="editSettlor" title="Replace this entity with a different settlor">⇄ Change entity</button></div>'+
+      '<p class="note" style="margin:-4px 0 14px">Click any field to update it. To replace this entity with a different one, use <b>Change entity</b>.</p><div class="ilia-grid">'+
+      edFld("Entity Name","ent.name")+
+      '<div class="mf has sel'+(ed.hasOwnProperty("ent.etype")?" dirty":"")+'"><span class="mf-l">Entity Type</span><select id="entType" class="mf-s" aria-label="Entity Type">'+ENTITY_TYPES.map(function(o){return '<option'+(o===edCur("ent.etype")?' selected':'')+'>'+esc(o)+'</option>';}).join("")+'</select></div>'+
       secretFld("EIN / Tax ID",e.ein)+
-      iliaFld("Address",e.street+", "+e.city+", "+e.state+" "+e.zip,true)+
-      '</div>'+entSignerHTML()+'</div><hr class="divider">'+
+      edFld("Address","ent.addr",true)+
+      '</div>'+entSignerHTML()+'<div id="edBar" class="edbar" hidden></div></div><hr class="divider">'+
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   }
   var relBadge = st.type==="entity" ? "Entity" : (st.ind.relation==="Other" ? (st.ind.otherRelation||"Other") : st.ind.relation);
   v.innerHTML='<section class="sa-card" aria-labelledby="saH"><div class="card-hd"><h2 id="saH" class="sa-h">Settlor / Authorized Signer <span class="isins rel" title="Relationship to the insured">'+esc(relBadge)+'</span></h2><button class="btn primary" data-act="editSettlor">✎ Edit settlor</button></div><div class="card-bd">'+h+'</div></section>';
+  edBar();
 }
 
 document.getElementById("view").addEventListener("click",function(ev){
@@ -597,6 +637,8 @@ document.getElementById("view").addEventListener("click",function(ev){
   else if(a==="sOffYes"){s.access=false;confirmKey="";log("Turned off portal access for "+nm(s));toast("Access turned off");}
   else if(a==="inviteModal"){openInvite(i);return;}
   else if(a==="sgEdit"){openSg("edit");return;}
+  else if(a==="edSave"){edSave();return;}
+  else if(a==="edDiscard"){ed={};toast("Changes discarded");}
   else if(a==="sgChange"){openSg("change");return;}
   else if(a==="mockInforce"){insInforce=!insInforce;}
   else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
@@ -614,7 +656,7 @@ document.getElementById("view").addEventListener("click",function(ev){
 document.getElementById("scen").addEventListener("click",function(ev){
   var b=ev.target.closest("button"); if(!b)return;
   [].forEach.call(this.children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
-  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; insInforce=true; closeDrawer(); if(lk)closeLink(); if(iv)closeInvite(); if(sg)closeSg(); render();
+  st=scenarios[b.dataset.s](); ssnShown=false; confirmKey=""; insInforce=true; closeDrawer(); if(lk)closeLink(); if(iv)closeInvite(); if(sg)closeSg(); ed={}; render();
 });
 
 /* ---------- Edit drawer ---------- */
@@ -900,7 +942,7 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
     closeSg(); render();
     toast(g.invite==="none" ? "Signer details saved" : em ? "Saved. Emails sent to "+old+" and "+g.email : "Saved. "+g.first+" got a “details updated” email.");
     return;}
-  if(a==="saveChange"&&sg.ok){
+  if(a==="saveChange"&&sg.ok){ ed={};
     var nv=sg.v; st.pastSigners=(st.pastSigners||[]); st.pastSigners.unshift({name:g.first+" "+g.last,title:g.title,until:today(),by:"Jamin A."});
     st.signers=[{first:nv.first,last:nv.last,title:nv.title,email:nv.email,phone:nv.phone,access:false,invite:"none",d:{}}];
     log("Changed authorized signer from "+g.first+" "+g.last+" to "+nv.first+" "+nv.last);
@@ -994,9 +1036,16 @@ document.getElementById("drawerRoot").addEventListener("change",function(ev){
   var sel=document.getElementById("relSel"); if(sel) sel.focus();
 });
 document.getElementById("editBtn").addEventListener("click",openDrawer);
+document.getElementById("view").addEventListener("input",function(ev){
+  var t=ev.target, p=t.dataset&&t.dataset.ed; if(!p)return;
+  if(t.value===edGet(p)) delete ed[p]; else ed[p]=t.value;
+  var box=t.closest(".edf"), dirty=ed.hasOwnProperty(p); box.classList.toggle("dirty",dirty);
+  var lb=box.querySelector(".mf-l"); lb.textContent=lb.textContent.replace(/ · edited$/,"")+(dirty?" · edited":"");
+  edBar();
+});
 document.getElementById("view").addEventListener("change",function(ev){
   var t=ev.target;
-  if(t.id==="entType"){ log("Entity type changed from "+st.ent.etype+" to "+t.value); st.ent.etype=t.value; toast("Entity type updated"); render(); return; }
+  if(t.id==="entType"){ if(t.value===st.ent.etype) delete ed["ent.etype"]; else ed["ent.etype"]=t.value; t.closest(".mf").classList.toggle("dirty",ed.hasOwnProperty("ent.etype")); edBar(); return; }
   if(t.id!=="iliaRel"||t.value===t.dataset.cur) return;
   var rel=t.value; t.value=t.dataset.cur; openDrawer();
   if(rel==="Self"){ d.type="insured"; } else { d.type="individual"; d.ind.relation=rel; }
