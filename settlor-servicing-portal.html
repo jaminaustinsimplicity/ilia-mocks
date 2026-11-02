@@ -179,6 +179,39 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ilx-dec{font-size:13.5px;line-height:1.45;color:#5b4a00;background:#fff8e1;border:1px dashed #e0b84a;border-radius:6px;padding:8px 10px;margin:8px 0 16px!important}
 .ilx-tbd{display:inline-flex;align-items:center;gap:6px;float:right}.ilx-tbd .ibtn[disabled],.ilx-tbd .ilx-tbtn[disabled]{opacity:.5;cursor:not-allowed}
 .ilx-cl .ilx-tbd{float:none;flex-direction:column}
+.ilx-alert{display:flex;flex-direction:column;gap:2px;border:1px solid #ff9800;color:#663c00;border-radius:4px;padding:10px 14px;margin:6px 0 14px;font-size:14px;background:#fff}
+.ilx-alert b{font-size:16px}
+.ilx-chip{display:inline-block;font-size:12px;border-radius:16px;padding:1px 8px;background:#e0e0e0;color:#424242;margin-left:4px}
+.wf-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40}
+.wf-dlg{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:41;width:min(640px,calc(100% - 32px));max-height:calc(100% - 40px);display:flex;flex-direction:column;background:#fff;border-radius:8px;box-shadow:0 11px 15px -7px rgba(0,0,0,.2),0 24px 38px 3px rgba(0,0,0,.14);font-family:Roboto,Arial,sans-serif;color:#424242}
+.wf-hd{display:flex;justify-content:space-between;align-items:center;padding:16px 24px 8px}.wf-hd h3{margin:0;font-size:22px;font-weight:500}
+.wf-x{border:0;background:none;font-size:18px;cursor:pointer;color:#666}
+.wf-prop{margin:0 24px 6px;font-size:13px;color:#8a5a00;background:#fff8e1;border:1px dashed #e0b84a;border-radius:6px;padding:6px 10px}
+.wf-steps{display:flex;gap:6px;list-style:none;margin:4px 24px 0;padding:0 0 10px;border-bottom:1px solid #e0e0e0;font-size:12.5px;flex-wrap:wrap}
+.wf-steps li{padding:3px 10px;border-radius:14px;background:#f2f2f2;color:#777}.wf-steps li.c{background:#3671ED;color:#fff}.wf-steps li.d{background:#e3f6ec;color:#1d7a4d}
+.wf-bd{padding:16px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;font-size:15px}
+.wf-bd p{margin:0}
+.wf-ft{display:flex;justify-content:flex-end;gap:10px;padding:12px 24px 18px;border-top:1px solid #e0e0e0}
+.wf-ft .ibtn{padding:8px 32px}.wf-ft .ibtn[disabled]{opacity:.45;cursor:not-allowed}.wf-back{background:#fff!important;color:#3671ED!important;border:1px solid #3671ED!important}
+.wf-l{font-weight:500;margin-bottom:6px!important}
+.wf-opts{display:flex;flex-wrap:wrap;gap:8px}
+.wf-opt{border:1px solid #c4c4c4;border-radius:50px;background:#fff;padding:7px 16px;font:15px Roboto,sans-serif;cursor:pointer;color:#424242}
+.wf-opt.on{border-color:#3671ED;background:#eaf1fe;color:#3671ED;font-weight:500}
+.wf-f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}@media (max-width:560px){.wf-f{grid-template-columns:1fr}}
+.wf-fld{position:relative;text-align:left;border:1px solid #c4c4c4;border-radius:4px;background:#fff;padding:16px 12px 10px;font:15px Roboto,sans-serif;cursor:pointer;color:#1b1b1b;min-height:50px}
+.wf-fld span{position:absolute;top:-9px;left:8px;background:#fff;padding:0 4px;font-size:12px;color:#666}.wf-fld i{color:#9a9a9a;font-style:normal}
+.wf-fld.has{border-color:#3671ED}
+.wf-file{width:100%;border:1px dashed #9db5ea;border-radius:6px;background:#f6f9ff;padding:16px;font:15px Roboto,sans-serif;color:#3671ED;cursor:pointer;text-align:left}.wf-file.has{border-style:solid}
+.wf-chk{display:flex;gap:10px;align-items:flex-start;text-align:left;border:0;background:none;font:15px Roboto,sans-serif;color:#424242;cursor:pointer;padding:0}.wf-chk span{font-size:18px;line-height:1}
+.wf-sig{width:100%;min-height:80px;border:1px solid #c4c4c4;border-radius:6px;background:#fffdf3;font:15px Roboto,sans-serif;color:#3671ED;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.wf-sig.has{border-color:#3671ED}.wf-cur{font-family:'Dancing Script',cursive;font-size:30px;color:#1b2a6b}.wf-sig small{color:#666}
+.wf-kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14.5px}.wf-kv span{color:#666}
+.wf-info{font-size:14.5px}.wf-info p{margin:0 0 6px}
+.wf-note{font-size:13px;color:#666}
+.wf-oq{font-size:13px;color:#8a5a00}
+.wf-t{border-collapse:collapse;width:100%;font-size:14px}.wf-t th{background:#EDF3F8;text-align:left;font-weight:400;padding:8px 10px}.wf-t td{padding:6px 10px;border-bottom:1px solid #e0e0e0}
+.wf-ok{display:flex;align-items:center;gap:10px}.wf-ok span{display:inline-flex;width:30px;height:30px;border-radius:50%;background:#3DDB93;color:#fff;align-items:center;justify-content:center;font-weight:700}.wf-ok h4{margin:0;font-size:20px;font-weight:500}
+.wf-mail{margin:0;padding-left:18px;font-size:14.5px}
 .ilx-clr{display:flex;flex-direction:column;align-items:center;gap:14px}.ilx-big{font-size:64px}
 .viewbar{position:sticky;top:0;z-index:15;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--accent);border-radius:10px;background:var(--accent-soft);color:var(--ink);font-size:13.5px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .viewbar .vb-tx{flex:1 1 300px;min-width:0}
@@ -362,6 +395,7 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
   <aside class="rail" id="rail" aria-label="What can the settlor do"></aside>
 </div>
 <div id="signRoot"></div>
+<div id="wfRoot"></div>
 <div id="toastRoot"></div>
 
 <script>
@@ -576,7 +610,112 @@ function ilxSel(pol){var opts=P().policies.filter(function(x){return x.inforce;}
 function ilxTable(cols,rows,empty){return '<div class="ilx-tw"><table class="ilx-t"><thead><tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join("")+'</tr></thead><tbody>'+(rows.length?rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join("")+'</tr>';}).join(""):'<tr><td colspan="'+cols.length+'" class="cap">'+empty+'</td></tr>')+'</tbody></table></div>';}
 function ilxTabs(key,labels){return '<div class="ilx-tabs" role="tablist">'+labels.map(function(l,i){return '<button role="tab" aria-selected="'+(tabState[key]===i)+'" data-tab="'+key+'" data-ti="'+i+'">'+l+'</button>';}).join("")+'</div>';}
 function ilxGate(pol,k,html){ if(pol.own) return html; var c=choice[k];
-  if(c==="Yes") return html; if(c==="Not decided") return '<span class="ilx-tbd">'+html.replace(/<button /,'<button disabled ')+' <span class="tag t-ask">To decide</span></span>'; return ''; }
+  if(c==="Yes") return html; if(c==="Not decided") return '<span class="ilx-tbd">'+html+' <span class="tag t-ask">To decide</span></span>'; return ''; }
+function wfA(pol,k){return pol.own?'data-act="mock"':'data-wf="'+k+'"';}
+/* ---------- Authorized signer action workflows (associated policies) ----------
+   Each button opens a step-by-step modal: enter (click-to-fill sample) -> review -> sign (when a signature is needed) -> done.
+   Done screens say what happens next and who is emailed. Flows for "To decide" items are marked Proposed. */
+var WFX={}, wf=null;
+function wfAlert(pol,k){var r=WFX[pol.id+":"+k]; if(!r||pol.own) return "";
+  return '<div class="ilx-alert"><b>'+esc(r.alertT)+'</b><span>'+r.alertB+'</span></div>';}
+function signerName(){return P().first+" "+P().last;}
+var WF={
+  pay:{title:"Make Payment", gate:"payA", steps:function(v,pol){
+      var a=[{t:"Payment details",b:[{info:'<div class="wf-kv"><span>Policy</span><b>'+esc(pol.insured)+' · ending '+last4(pol.id)+'</b><span>Amount due</span><b>'+(pol.paid?'$40,000.00 (next annual contribution, '+esc(pol.anniv)+')':'$40,000.00 · '+esc(pol.contrib||""))+'</b><span>Paid by</span><b>'+esc(signerName())+' (you)</b></div>'},
+        {choice:"method",label:"How do you want to pay?",opts:["Personal Check","Wire Transfer","Single ePay Payment"]},
+        {choice:"amt",label:"Amount",opts:["40,000.00","20,000.00"]},
+        {oq:"Payment rules to confirm with Kyle (payments SME): can an entity settlor pay from a business or trust account? Today’s rule is personal accounts of the insured or settlor only."}]}];
+      if(v.method==="Personal Check") a.push({t:"Mail your check",b:[{info:'<p>Make the check payable to <b>Kai-Zen Plan Servicing</b> and write policy number <b>'+esc(pol.id)+'</b> in the memo.</p><div class="wf-kv"><span>Mail to</span><b>Simplicity-NIW, Attn: Kai-Zen Servicing<br>PO Box 1234, Sample City, NE 68000</b></div>'},{confirm:"ok1",text:"I’ll mail a check from my own personal account."}]});
+      else if(v.method==="Wire Transfer") a.push({t:"Wire instructions",b:[{info:'<div class="wf-kv"><span>Bank</span><b>Sample National Bank</b><span>ABA routing</span><b>•••••0025</b><span>Account</span><b>••••••7781</b><span>Reference</span><b>'+esc(pol.id)+' · '+esc(pol.insured)+'</b></div><p class="wf-note">Funds must come from a personal account owned by the insured and/or the settlor, not a business or trust account (ILIA’s current wire rule).</p>'},{confirm:"ok1",text:"I’ll send the wire from my own personal account."}]});
+      else if(v.method) a.push({t:"Your bank account",b:[{fields:[["holder","Account holder",signerName()],["routing","Routing number","111000025"],["acct","Account number","••••••4410"]]},{choice:"atype",label:"Account type",opts:["Checking","Savings"]},{confirm:"ok1",text:"I authorize a one-time ePay debit from this account."}]});
+      a.push({t:"Review",b:[{review:1}]});
+      return a;},
+    done:function(v,pol){return {head:v.method==="Single ePay Payment"?"Payment submitted":"Payment noted",
+      body:'<p>'+(v.method==="Single ePay Payment"?'Your ePay payment of <b>$'+v.amt+'</b> is <b>Pending</b>. It usually clears in 3–5 business days.':'We’ll mark the payment as received when your '+(v.method==="Wire Transfer"?'wire arrives':'check arrives')+'. It shows as <b>Pending</b> until then.')+'</p>',
+      emails:[[signerName()+" (you)","Payment receipt"],[pol.insured+" (insured)","Open question: do they get a copy?"]],
+      alertT:"Payment pending",alertB:"$"+v.amt+" by "+esc(v.method)+" · submitted Nov 2, 2026",method:v.method,amt:v.amt};}},
+  upload:{title:"Upload a Settlor Document", gate:"docsU", steps:function(v){return [
+      {t:"Choose the document",b:[{choice:"dtype",label:"Document type",opts:["Trust Certification","Entity Resolution","Photo ID (front)","Photo ID (back)","Other"]},{file:"file",label:"File",sample:"trust-cert-2026.pdf"}]},
+      {t:"Review",b:[{review:1}]}];},
+    done:function(v){return {head:"Document uploaded",body:'<p><b>'+esc(v.dtype)+'</b> ('+esc(v.file)+') is in your <b>Settlor Documents</b> tab. NIW reviews it and contacts you if anything else is needed.</p>',
+      emails:[["NIW servicing team","New settlor document to review"]],dtype:v.dtype,file:v.file};}},
+  legal:{title:"Request a legal name change", gate:"insE", steps:function(v,pol){var n=ilxIns(pol);return [
+      {t:"New legal name",b:[{info:'<p>For <b>'+esc(pol.insured)+'</b>, the insured on policy ending '+last4(pol.id)+'.</p>'},{fields:[["nfirst","New first name",n.first],["nlast","New last name",n.last+"-Brooks"]]},{choice:"reason",label:"Reason",opts:["Marriage","Divorce","Court order","Correction"]}]},
+      {t:"Supporting document",b:[{file:"doc",label:"Marriage certificate, divorce decree or court order",sample:"marriage-certificate.pdf"}]},
+      {t:"Review and sign",b:[{review:1},{sign:"sig"}]}];},
+    done:function(v,pol){return {head:"Request sent to NIW",body:'<p>NIW reviews the name change and sends it to the carrier. The legal name updates once the carrier confirms.</p>',
+      emails:[[signerName()+" (you)","Request received + signed copy"],[pol.insured+" (insured)","Open question: notify them of the change?"],["NIW servicing team","New legal name request"]],alertT:"Your Request is Processing",alertB:"Legal name change to "+esc(v.nfirst+" "+v.nlast)+" · requested by you on Nov 2, 2026"};}},
+  pers:{title:"Request a personal details change", gate:"insE", steps:function(v,pol){
+      var F={"Home address":[["street","New home address","812 Gaston Ave"],["city","City","Dallas"],["zip","Zip code","75214"]],"Phone number":[["phone","New cell phone","(214) 555-0199"]],"Email address":[["email","New email","ethan.a@example.com"]]};
+      return [{t:"What needs to change?",b:[{info:'<p>You can’t see '+esc(pol.insured.split(" ")[0])+'’s full details, so enter only the new information.</p>'},{choice:"what",label:"Change",opts:["Home address","Phone number","Email address"]}].concat(v.what?[{fields:F[v.what]}]:[])},
+        {t:"Review and sign",b:[{review:1},{sign:"sig"}]}];},
+    done:function(v,pol){return {head:"Request sent to NIW",body:'<p>NIW updates the insured’s '+esc((v.what||"").toLowerCase())+' after review.</p>',
+      emails:[[signerName()+" (you)","Request received"],[pol.insured+" (insured)","Open question: tell the insured their details changed?"],["NIW servicing team","New personal details request"]],alertT:"Your Request is Processing",alertB:esc(v.what)+" change · requested by you on Nov 2, 2026"};}},
+  ben:{title:"Request a beneficiary change", gate:"benA", steps:function(v){return [
+      {t:"Current beneficiaries",b:[{info:'<table class="wf-t"><tr><th>Name</th><th>Type</th><th>%</th><th>Relationship</th></tr><tr><td>Ana Alvarez</td><td>Primary</td><td>100%</td><td>Spouse</td></tr></table>'},{choice:"act",label:"What do you want to do?",opts:["Add a beneficiary","Change percentages","Remove a beneficiary"]}]},
+      {t:"New beneficiary",b:[{fields:[["bname","Full name","Mia Alvarez"],["brel","Relationship","Daughter"],["bdob","Date of birth","04/11/2015"]]},{choice:"btype",label:"Beneficiary type",opts:["Primary","Contingent"]},{info:'<p class="wf-note">Percentages after the change: Ana Alvarez 50% · new beneficiary 50% (total 100%).</p>'}]},
+      {t:"Review and sign",b:[{review:1},{sign:"sig"}]}];},
+    done:function(v,pol){return {head:"Beneficiary change requested",body:'<p>The change shows as <b>Requested</b> in the beneficiary table until NIW and the carrier confirm it.</p>',
+      emails:[[signerName()+" (you)","Signed beneficiary change form"],["NIW servicing team","New beneficiary change"],[pol.insured+" (insured)","Open question: notify the insured?"]],alertT:"Your Request is Processing",alertB:"Beneficiary change: add "+esc(v.bname)+" ("+esc(v.btype)+") · requested by you on Nov 2, 2026",bname:v.bname,brel:v.brel};}},
+  alloc:{title:"Request an allocation change", gate:"perfA", steps:function(v){return [
+      {t:"Choose the new allocation",b:[{info:'<table class="wf-t"><tr><th>Index strategy</th><th>Today</th></tr><tr><td>S&amp;P 500 1-year point-to-point</td><td>60%</td></tr><tr><td>Multi-index blend</td><td>40%</td></tr></table>'},{choice:"mix",label:"New allocation",opts:["100% S&P 500","50% / 50%","70% S&P 500 / 30% blend"]}]},
+      {t:"Review and sign",b:[{review:1},{sign:"sig"}]}];},
+    done:function(v){return {head:"Allocation change requested",body:'<p>NIW fills the carrier’s allocation change form and sends it for signature, then to the carrier.</p>',
+      emails:[[signerName()+" (you)","Request received"],["NIW servicing team","New allocation change request"]],alertT:"Your Request is Processing",alertB:"Allocation change to "+esc(v.mix)+" · requested by you on Nov 2, 2026"};}},
+  claim:{title:"Claim Request", gate:"clA", steps:function(v){return [
+      {t:"Claim type",b:[{choice:"ctype",label:"Select a claim type",opts:["Death claim","Terminal illness","Chronic illness","Other"]},{fields:[["det","Details","Sample details for the claim."]]}]},
+      {t:"Review",b:[{review:1}]}];},
+    done:function(v){return {head:"Claim request sent",body:'<p>NIW sends you the correct document to fill out. An NIW specialist contacts you to complete the process.</p>',
+      emails:[[signerName()+" (you)","Request received"],["NIW servicing team","New claim request"]],alertT:"Your Request is Processing",alertB:esc(v.ctype)+" · requested by you on Nov 2, 2026"};}},
+  dist:{title:"Distribution Request", gate:"clA", steps:function(v){return [
+      {t:"Distribution",b:[{choice:"dtype",label:"Type",opts:["Policy loan","Partial withdrawal"]},{fields:[["amt","Amount","$25,000.00"]]}]},
+      {t:"Review",b:[{review:1}]}];},
+    done:function(v){return {head:"Distribution request sent",body:'<p>NIW confirms the loan is paid off and contacts you with the next steps.</p>',
+      emails:[[signerName()+" (you)","Request received"],["NIW servicing team","New distribution request"]],alertT:"Your Request is Processing",alertB:esc(v.dtype)+" of "+esc(v.amt)+" · requested by you on Nov 2, 2026"};}}
+};
+var WF_LABEL={method:"Payment method",amt:"Amount",holder:"Account holder",routing:"Routing number",acct:"Account number",atype:"Account type",dtype:"Document type",file:"File",nfirst:"New first name",nlast:"New last name",reason:"Reason",doc:"Supporting document",what:"Change",street:"New home address",city:"City",zip:"Zip code",phone:"New cell phone",email:"New email",act:"Action",bname:"Beneficiary",brel:"Relationship",bdob:"Date of birth",btype:"Type",mix:"New allocation",ctype:"Claim type",det:"Details"};
+function openWf(k){wf={k:k,i:0,v:{},done:null}; renderWf();}
+function closeWf(){wf=null;document.getElementById("wfRoot").innerHTML="";}
+function wfSteps(){return WF[wf.k].steps(wf.v,pol);}
+function wfBlockOk(b){var v=wf.v;
+  if(b.choice) return !!v[b.choice]; if(b.fields) return b.fields.every(function(x){return v[x[0]];}); if(b.file) return !!v[b.file];
+  if(b.confirm) return !!v[b.confirm]; if(b.sign) return !!v[b.sign]; return true;}
+function wfBlock(b){var v=wf.v;
+  if(b.info) return '<div class="wf-info">'+b.info+'</div>';
+  if(b.oq) return '<p class="wf-oq">Open question: '+b.oq+'</p>';
+  if(b.choice) return '<div class="wf-q"><p class="wf-l">'+b.label+'</p><div class="wf-opts">'+b.opts.map(function(o){return '<button class="wf-opt'+(v[b.choice]===o?' on':'')+'" data-wfc="'+b.choice+'" data-v="'+esc(o)+'">'+esc(o)+'</button>';}).join("")+'</div></div>';
+  if(b.fields) return '<div class="wf-f">'+b.fields.map(function(x){return v[x[0]]?'<button class="wf-fld has" data-wff="'+x[0]+'" data-s="'+esc(x[2])+'"><span>'+x[1]+'</span>'+esc(v[x[0]])+'</button>':'<button class="wf-fld" data-wff="'+x[0]+'" data-s="'+esc(x[2])+'"><span>'+x[1]+'</span><i>Click to fill sample</i></button>';}).join("")+'</div>';
+  if(b.file) return '<div class="wf-q"><p class="wf-l">'+b.label+'</p><button class="wf-file'+(v[b.file]?' has':'')+'" data-wff="'+b.file+'" data-s="'+esc(b.sample)+'">'+(v[b.file]?'📎 '+esc(v[b.file])+' · click to remove':'⇪ Click to attach a sample file')+'</button></div>';
+  if(b.confirm) return '<button class="wf-chk" data-wfk="'+b.confirm+'"><span>'+(v[b.confirm]?'☑':'☐')+'</span>'+b.text+'</button>';
+  if(b.sign) return '<div class="wf-q"><p class="wf-l">Signature</p><button class="wf-sig'+(v[b.sign]?' has':'')+'" data-wfk="'+b.sign+'">'+(v[b.sign]?'<span class="wf-cur">'+esc(signerName())+'</span><small>Signed electronically · Nov 2, 2026</small>':'Click to sign as '+esc(signerName()))+'</button><p class="wf-note">Signed as the '+(P().kind==="entity"?'authorized signer for '+esc(P().settlor):'settlor and authorized signer')+'. In ILIA this step opens DocuSign.</p></div>';
+  if(b.review){ var rows=Object.keys(v).filter(function(k){return WF_LABEL[k];}).map(function(k){return '<span>'+WF_LABEL[k]+'</span><b>'+esc(v[k])+'</b>';}).join("");
+    return '<div class="wf-kv">'+rows+'<span>Policy</span><b>'+esc(pol.insured)+' · ending '+last4(pol.id)+'</b><span>Requested by</span><b>'+esc(signerName())+'</b></div>'; }
+  return "";}
+function renderWf(){
+  var F=WF[wf.k], proposed=choice[F.gate]==="Not decided";
+  var head='<div class="wf-hd"><h3>'+F.title+'</h3><button class="wf-x" data-wfa="close" aria-label="Close">✕</button></div>'+(proposed?'<p class="wf-prop">Proposed flow · still to decide</p>':'');
+  if(wf.done){var d=wf.done;
+    document.getElementById("wfRoot").innerHTML='<div class="wf-ov" data-wfa="close"></div><div class="wf-dlg" role="dialog" aria-modal="true">'+head+'<div class="wf-bd"><div class="wf-ok"><span>✓</span><h4>'+d.head+'</h4></div>'+d.body+
+      '<p class="wf-l">Who we email</p><ul class="wf-mail">'+d.emails.map(function(e){return '<li><b>'+esc(e[0])+'</b> · '+esc(e[1])+'</li>';}).join("")+'</ul>'+(d.alertT?'<p class="wf-note">On the page: “'+esc(d.alertT)+'” shows until NIW finishes.</p>':'')+'</div><div class="wf-ft"><button class="ibtn" data-wfa="close">Done</button></div></div>';
+    return;}
+  var st=wfSteps(), cur=st[Math.min(wf.i,st.length-1)], ok=cur.b.every(wfBlockOk), last=wf.i>=st.length-1;
+  var dots='<ol class="wf-steps">'+st.map(function(x,j){return '<li class="'+(j<wf.i?'d':j===wf.i?'c':'')+'">'+x.t+'</li>';}).join("")+'</ol>';
+  document.getElementById("wfRoot").innerHTML='<div class="wf-ov" data-wfa="close"></div><div class="wf-dlg" role="dialog" aria-modal="true" aria-label="'+F.title+'">'+head+dots+'<div class="wf-bd">'+cur.b.map(wfBlock).join("")+'</div>'+
+    '<div class="wf-ft">'+(wf.i?'<button class="ibtn wf-back" data-wfa="back">Back</button>':'<button class="ibtn wf-back" data-wfa="close">Cancel</button>')+'<button class="ibtn" data-wfa="'+(last?'submit':'next')+'"'+(ok?'':' disabled')+'>'+(last?(cur.b.some(function(b){return b.sign;})?'Sign and submit':'Submit'):'Next')+'</button></div></div>';
+}
+document.getElementById("wfRoot").addEventListener("click",function(ev){
+  if(!wf) return; var t=ev.target.closest("[data-wfa],[data-wfc],[data-wff],[data-wfk]"); if(!t) return;
+  if(t.dataset.wfa==="close"){closeWf();render();return;}
+  if(t.dataset.wfa==="back"){wf.i--;}
+  if(t.dataset.wfa==="next"){wf.i++;}
+  if(t.dataset.wfa==="submit"){var d=WF[wf.k].done(wf.v,pol); WFX[pol.id+":"+wf.k]=d; wf.done=d;}
+  if(t.dataset.wfc){wf.v[t.dataset.wfc]=t.dataset.v; if(t.dataset.wfc==="method"){delete wf.v.ok1;}}
+  if(t.dataset.wff){var k=t.dataset.wff; if(wf.v[k]) delete wf.v[k]; else wf.v[k]=t.dataset.s;}
+  if(t.dataset.wfk){var k2=t.dataset.wfk; if(wf.v[k2]) delete wf.v[k2]; else wf.v[k2]=true;}
+  renderWf();
+});
+document.addEventListener("click",function(ev){var b=ev.target.closest("[data-wf]"); if(b&&!wf){openWf(b.dataset.wf);}});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&wf){closeWf();render();}});
 function ilxSees(pol,k){return pol.own||choice[k]!=="No";}
 function ilxStrat(pol){return pol.product.split(" · ")[0];}
 function ilxNum(pol){return pol.id.replace("KZ-","KZ")+"00";}
@@ -599,23 +738,23 @@ function iliaScreen(view,pol,p){
   if(view==="pay"){
     var hist = tabState.ipay===0
       ? ilxTable(["Years","Client Owed","Client Paid","Client Balance Due","Bank Leverage"],contribRows(pol),"No Data")
-      : ilxTable(["Cont. Type","Date","Amount","Method","Details"],pol.paid||yr>1?[["Annual","03/01/2025","$40,000.00","Wire Transfer","Year 2 contribution"],["Annual","03/01/2024","$40,000.00","Personal Check","Year 1 contribution"]]:[],"No Payments");
+      : ilxTable(["Cont. Type","Date","Amount","Method","Details"],(WFX[pol.id+":pay"]&&!pol.own?[["Annual","11/02/2026","$"+WFX[pol.id+":pay"].amt,esc(WFX[pol.id+":pay"].method),'Paid by '+esc(P().first+" "+P().last)+' · <span class="ilx-chip">Pending</span>']]:[]).concat(pol.paid||yr>1?[["Annual","03/01/2025","$40,000.00","Wire Transfer","Year 2 contribution"],["Annual","03/01/2024","$40,000.00","Personal Check","Year 1 contribution"]]:[]),"No Payments");
     return '<section class="ilx">'+ilxHead("Payments","View and schedule your contribution payments and history.")+ilxSel(pol)+
-      '<div class="ilx-2">'+ilxGate(pol,"payA",'<div class="icard"><p class="s1"><strong>Manage Payments</strong></p><p class="cap">Make a payment towards your annual contribution.</p><div class="ilx-row"><label class="ilx-out"><span>Payment Method</span><select><option>Personal Check</option><option>Wire Transfer</option><option>Single ePay Payment</option></select></label><button class="ibtn" data-act="mock">Make Payment</button></div>'+(pol.own?'':'<p class="ilx-dec">Settlor view: the authorized signer can pay. Payment rules to be confirmed with Kyle (payments SME).</p>')+'</div>')+
+      '<div class="ilx-2">'+ilxGate(pol,"payA",'<div class="icard"><p class="s1"><strong>Manage Payments</strong></p><p class="cap">Make a payment towards your annual contribution.</p><div class="ilx-row"><label class="ilx-out"><span>Payment Method</span><select><option>Personal Check</option><option>Wire Transfer</option><option>Single ePay Payment</option></select></label><button class="ibtn" '+wfA(pol,"pay")+'>Make Payment</button></div>'+wfAlert(pol,"pay")+(pol.own?'':'<p class="ilx-dec">Settlor view: the authorized signer can pay. Payment rules to be confirmed with Kyle (payments SME).</p>')+'</div>')+
       '<div class="icard"><p class="s1"><span aria-hidden="true">📅</span> <strong>Next Annual Contribution Due</strong></p>'+(pol.paid?'<p class="h5g">Paid in full</p>':'<p class="h5d">'+esc(pol.anniv)+'</p>')+'</div></div>'+
       '<div class="icard" style="margin-top:40px"><p class="s1">Contributions Payment History </p><p class="cap">Below is the history of payments made towards your policy with calculated totals.</p>'+ilxTabs("ipay",["Total Premium Payment History","Payment History"])+hist+'</div></section>';
   }
   if(view==="docs"){
     var D0=[["Enrollment Documents",[["Signed Illustration","Illustration","01/12/2024"],["Life Insurance Application","Application","01/12/2024"],["Trust Agreement","Trust","01/15/2024"],["Policy Contract","Policy","02/20/2024"]]],["Personal Documents",[["Driver’s License","Identity Document","01/10/2024"]]],["Servicing Documents",[["Hold Harmless Agreement","Servicing Form","12/02/2025"]]]];
     var D=D0.filter(function(d){return !(d[0]==="Personal Documents"&&!ilxSees(pol,"docsI"));});
-    if(!pol.own&&choice.docsU==="Yes") D.push(["Settlor Documents",[["Trust Certification","Settlor Document","10/30/2026"]]]);
+    if(!pol.own&&choice.docsU==="Yes") D.push(["Settlor Documents",[["Trust Certification","Settlor Document","10/30/2026"]].concat(WFX[pol.id+":upload"]?[[WFX[pol.id+":upload"].dtype+" — "+WFX[pol.id+":upload"].file,"Settlor Document","11/02/2026"]]:[])]);
     if(tabState.idocs>=D.length) tabState.idocs=0;
     var t=tabState.idocs, tn=D[t][0], act='<span class="ilx-ic">👁</span> <span class="ilx-ic">⭳</span>';
     var rows=D[t][1].map(function(r){return [esc(r[0]),esc(r[1]),r[2],act];});
     return '<section class="ilx">'+ilxHead("Plan Documents","View or download your "+esc(strat)+" plan documents like your policy, illustration, trust and other important documents.")+ilxSel(pol)+
       '<div class="icard">'+ilxTabs("idocs",D.map(function(d){return d[0];}))+
       (tn!=="Servicing Documents"?'<div class="ilx-search"><label class="ilx-out"><span>Search Documents</span><input placeholder=" " aria-label="Search Documents"><i aria-hidden="true">🔍</i></label></div>':'')+
-      (tn==="Personal Documents"||tn==="Settlor Documents"?'<div style="text-align:right;margin:10px 0"><button class="ibtn" data-act="mock">Upload</button></div>':'')+
+      (tn==="Personal Documents"||tn==="Settlor Documents"?'<div style="text-align:right;margin:10px 0"><button class="ibtn" '+(tn==="Settlor Documents"?wfA(pol,"upload"):'data-act="mock"')+'>Upload</button></div>':'')+
       (tn==="Settlor Documents"?'<p class="ilx-dec">Settlor view: new tab. The authorized signer uploads trust or entity paperwork and their ID here. The insured’s Personal Documents tab is hidden from them.</p>':'')+
       ilxTable(["Name","Type","Date Modified","Actions"],rows,"There are no documents")+
       (tn==="Servicing Documents"?'<h5 class="ih5" style="margin-top:50px">Carrier Statements</h5>'+ilxTable(["Name","Type","Actions"],[["Annual Statement "+(2024+yr-1),"Carrier Statement",act]],"There are no statements"):'')+'</div></section>';
@@ -646,24 +785,24 @@ function iliaScreen(view,pol,p){
       '<div class="icard" style="margin-top:40px"><div class="ilx-2 w57"><div><p class="s1"><strong><u>Kai-Zen Risks &amp; Considerations</u></strong></p><p class="b2 blue"><strong>Policy Risks</strong></p><p class="cap">Index returns can be lower than illustrated, which affects cash value growth.</p><p class="b2 blue"><strong>Leverage Risks</strong></p><p class="cap">Bank loan interest can rise above policy growth.</p><p class="b2 blue"><strong>How to Protect Yourself</strong></p><p class="cap">Review your annual statement and keep contributions current.</p><p class="cap">Contact your agent or email info@kaizenplan.com for additional information…</p></div>'+
         '<div><p class="s1"><strong>Policy Performance</strong></p><div class="ilx-call good"><p class="b2">Your policy is performing within expected range.</p></div>'+ilxTable(["Policy Year","Policy Growth Rate Earned","Bank Interest Rate","Spread"],rows,"")+
         '<p class="s1" style="margin-top:20px"><strong>Loan to Value</strong></p><p class="b2">Loan to value compares your bank loan balance to your policy’s cash value.</p><div class="ilx-ltv"><span>Current Loan to Value:</span><strong>42.10%</strong><span class="g">Good</span></div><p class="cap">Current Status - Good : Your loan is well covered by your cash value.</p></div></div></div>'+
-      '<div class="icard" style="margin-top:40px"><p class="s1"><strong>Allocation Changes</strong>'+ilxGate(pol,"perfA",'<button class="ilx-tbtn" data-act="mock">'+(pol.own?'Change My Allocations':'Request Allocation Change')+'</button>')+'</p>'+(pol.own?'':'<p class="ilx-dec">Still to decide: the authorized signer triggers allocation change requests. What workflow does a request start?</p>')+'<p class="cap">You may make an allocation change request at any time…</p><p class="cap">To make an allocation change request, you will need the following:</p><p class="cap" style="padding-left:20px">1. The carrier’s allocation change form<br>2. Your policy number<br>3. Your signature</p><p class="cap">…email it to niw.info@simplicitygroup.com to be processed.</p></div></section>';
+      '<div class="icard" style="margin-top:40px"><p class="s1"><strong>Allocation Changes</strong>'+ilxGate(pol,"perfA",'<button class="ilx-tbtn" '+wfA(pol,"alloc")+'>'+(pol.own?'Change My Allocations':'Request Allocation Change')+'</button>')+'</p>'+wfAlert(pol,"alloc")+(pol.own?'':'<p class="ilx-dec">Still to decide: the authorized signer triggers allocation change requests. What workflow does a request start?</p>')+'<p class="cap">You may make an allocation change request at any time…</p><p class="cap">To make an allocation change request, you will need the following:</p><p class="cap" style="padding-left:20px">1. The carrier’s allocation change form<br>2. Your policy number<br>3. Your signature</p><p class="cap">…email it to niw.info@simplicitygroup.com to be processed.</p></div></section>';
   }
   if(view==="ins"){
     var fld=function(l,v,w){return '<label class="ilx-dis'+(w?' w':'')+'"><span>'+l+'</span><input disabled value="'+esc(v)+'"></label>';};
     return '<section class="ilx">'+ilxHead("Insured Details","View insured address, contact numbers, beneficiary information, and other important details.")+
-      '<div class="ilx-w8"><p class="s1 ilx-sec"><strong>Legal Name</strong>'+ilxGate(pol,"insE",'<button class="ilx-tbtn" data-act="mock">Edit Legal Name</button>')+'</p><div class="ilx-g3">'+fld("First Name",ins.first)+fld("Middle Name","")+fld("Last Name",ins.last)+'</div><hr>'+
+      '<div class="ilx-w8"><p class="s1 ilx-sec"><strong>Legal Name</strong>'+ilxGate(pol,"insE",'<button class="ilx-tbtn" '+wfA(pol,"legal")+'>Edit Legal Name</button>')+'</p>'+wfAlert(pol,"legal")+'<div class="ilx-g3">'+fld("First Name",ins.first)+fld("Middle Name","")+fld("Last Name",ins.last)+'</div><hr>'+
       (pol.own
       ? '<p class="s1 ilx-sec"><strong>Personal Details</strong><button class="ilx-tbtn" data-act="mock">Edit Personal Details</button></p><div class="ilx-g3">'+fld("Cell Phone Number*","(214) 555-0132")+fld("Work Phone","")+fld("Home Number","")+fld("Email*",ins.email)+fld("Client Greeting (Nickname)",ins.first)+fld("Date of Birth*","06/02/1998")+fld("Last 4 of Social*","4417")+fld("Age*","28")+fld("Net Worth","$250,000")+fld("Annual Income","$95,000")+fld("Employer","Sample Co.")+'</div>'+
         '<p class="b1"><strong>Home Address</strong></p><div class="ilx-g3">'+fld("Home Address*","4410 Oak Lawn Ave")+fld("City*","Dallas")+fld("State*","TX")+fld("Zip Code*","75219")+'</div><p class="cap">☑ Mailing is same as home address.</p><hr>'
-      : '<p class="s1 ilx-sec"><strong>Personal Details</strong>'+ilxGate(pol,"insE",'<button class="ilx-tbtn" data-act="mock">Request Personal Details Change</button>')+'</p><div class="ilx-g3">'+fld("Date of Birth","••/••/1998")+fld("City","Dallas")+fld("State","TX")+'</div>'+
+      : '<p class="s1 ilx-sec"><strong>Personal Details</strong>'+ilxGate(pol,"insE",'<button class="ilx-tbtn" '+wfA(pol,"pers")+'>Request Personal Details Change</button>')+'</p>'+wfAlert(pol,"pers")+'<div class="ilx-g3">'+fld("Date of Birth","••/••/1998")+fld("City","Dallas")+fld("State","TX")+'</div>'+
         '<p class="ilx-dec">Settlor view: basic details only (name, masked date of birth, city and state). No SSN, phones, email, income or full address. The authorized signer can request changes, because they sign off on them.</p><hr>')+
-      '<p class="s1 ilx-sec"><strong>Beneficiary Details</strong>'+ilxGate(pol,"benA",'<button class="ilx-tbtn" data-act="mock">Edit Beneficiaries</button>')+'</p><details class="ilx-acc"><summary>Beneficiary Details</summary><p class="b1">Your primary beneficiary(ies) receives the '+esc(strat)+' Plan benefit…</p><p class="b1"><strong>Primary Beneficiaries</strong> ⓘ</p>'+
-        ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],[["Ana Alvarez","Individual","100%","Spouse","Dallas, TX","ana@example.com","(214) 555-0111"]],"No Beneficiary Found")+'<p class="b1"><strong>Contingent Beneficiaries</strong></p>'+ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],[],"No Beneficiary Found")+'</details></div></section>';
+      '<p class="s1 ilx-sec"><strong>Beneficiary Details</strong>'+ilxGate(pol,"benA",'<button class="ilx-tbtn" '+wfA(pol,"ben")+'>Edit Beneficiaries</button>')+'</p>'+wfAlert(pol,"ben")+'<details class="ilx-acc"><summary>Beneficiary Details</summary><p class="b1">Your primary beneficiary(ies) receives the '+esc(strat)+' Plan benefit…</p><p class="b1"><strong>Primary Beneficiaries</strong> ⓘ</p>'+
+        ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],(WFX[pol.id+":ben"]&&!pol.own?[["Ana Alvarez","Individual","50%","Spouse","Dallas, TX","ana@example.com","(214) 555-0111"],[esc(WFX[pol.id+":ben"].bname)+' <span class="ilx-chip">Requested</span>',"Individual","50%",esc(WFX[pol.id+":ben"].brel),"Dallas, TX","","(214) 555-0177"]]:[["Ana Alvarez","Individual","100%","Spouse","Dallas, TX","ana@example.com","(214) 555-0111"]]),"No Beneficiary Found")+'<p class="b1"><strong>Contingent Beneficiaries</strong></p>'+ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],[],"No Beneficiary Found")+'</details></div></section>';
   }
   if(view==="claims"){
     return '<section class="ilx">'+ilxHead("Claims and Distributions","Here you can make an insurance claim or take a policy distribution. This action is available once loan is paid off.")+
-      '<div class="ilx-w9"><div class="icard p30 ilx-cl"><div><p class="s1"><strong>Make a Claim Request</strong></p><p class="b1">Select a claim type below and we will send you the correct document to fill out. Once your claim has been submitted, one of our NIW specialists will contact you to complete the process or to get any additional information from you. If you have questions please contact us at niw.info@simplicitygroup.com or call 800-294-9940 ext-216.</p></div><div class="ilx-clr"><span class="ilx-big" aria-hidden="true">📋</span>'+ilxGate(pol,"clA",'<button class="ibtn" data-act="mock">Claim Request</button>')+'</div></div>'+
-      '<div class="icard p30 ilx-cl" style="margin-top:25px"><div><p class="s1"><strong>Distribution Request</strong></p><p class="b1">Once your loan has been paid off you are eligible to start taking distributions. Please contact us at niw.info@simplicitygroup.com or call 800-294-9940 ext-216 if you have any questions.</p></div><div class="ilx-clr"><span class="ilx-big" aria-hidden="true">💵</span>'+ilxGate(pol,"clA",'<button class="ibtn sm" data-act="mock">Make Distributions Request</button>')+'</div></div>'+(pol.own?'':'<p class="ilx-dec">Still to decide: the authorized signer starts these for all their policies. If so, turn this off for the insured on associated policies that have servicing access.</p>')+'</div></section>';
+      '<div class="ilx-w9"><div class="icard p30 ilx-cl"><div><p class="s1"><strong>Make a Claim Request</strong></p><p class="b1">Select a claim type below and we will send you the correct document to fill out. Once your claim has been submitted, one of our NIW specialists will contact you to complete the process or to get any additional information from you. If you have questions please contact us at niw.info@simplicitygroup.com or call 800-294-9940 ext-216.</p></div><div class="ilx-clr"><span class="ilx-big" aria-hidden="true">📋</span>'+ilxGate(pol,"clA",'<button class="ibtn" '+wfA(pol,"claim")+'>Claim Request</button>')+'</div></div>'+wfAlert(pol,"claim")+
+      '<div class="icard p30 ilx-cl" style="margin-top:25px"><div><p class="s1"><strong>Distribution Request</strong></p><p class="b1">Once your loan has been paid off you are eligible to start taking distributions. Please contact us at niw.info@simplicitygroup.com or call 800-294-9940 ext-216 if you have any questions.</p></div><div class="ilx-clr"><span class="ilx-big" aria-hidden="true">💵</span>'+ilxGate(pol,"clA",'<button class="ibtn sm" '+wfA(pol,"dist")+'>Make Distributions Request</button>')+'</div></div>'+wfAlert(pol,"dist")+(pol.own?'':'<p class="ilx-dec">Still to decide: the authorized signer starts these for all their policies. If so, turn this off for the insured on associated policies that have servicing access.</p>')+'</div></section>';
   }
   return "";
 }
