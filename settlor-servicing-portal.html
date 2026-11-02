@@ -1,7 +1,7 @@
 <title>Settlor Servicing Portal</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@600;700&family=Roboto+Mono:wght@400;500&family=Dancing+Script:wght@600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@900&family=Roboto+Slab:wght@600;700&family=Roboto+Mono:wght@400;500&family=Dancing+Script:wght@600&display=swap">
 <style>
 /* Layout: ILIA servicing-portal shell (left nav · main) + a decisions rail for what the settlor can do per screen */
 :root{
@@ -107,6 +107,79 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .btn.sm{padding:5px 10px;font-size:12px}
 .note{font-size:12.5px;color:var(--muted)}
 .ctxline{font-size:13.5px}
+.ilx{font-family:Roboto,Arial,sans-serif;color:#424242;display:flex;flex-direction:column;gap:0;background:#fff;border-radius:8px;padding:24px}
+.ilx p{margin:0 0 1.3rem}
+.ilx .ih2{font-family:'Playfair Display',serif;font-weight:900;font-size:42px;line-height:1.3;color:#424242;margin:0 0 8px}
+.ilx .ih3{font-family:'Playfair Display',serif;font-weight:900;font-size:34px;line-height:1.3;color:#424242;margin:30px 0 8px}
+.ilx .ih4{font-size:34px;line-height:39px;margin:4px 0 10px;font-weight:400}
+.ilx .ih5{font-size:22px;line-height:33px;margin:0 0 10px;font-weight:400}
+.ilx .sub1,.ilx .s1{font-size:20px;line-height:30px}
+.ilx .b1{font-size:18px;line-height:27px}.ilx .b2{font-size:16px;line-height:24px}
+.ilx .cap{font-size:16px;line-height:24px;letter-spacing:.4px;margin-bottom:6px}
+.ilx .blue{color:#3671ED;margin-bottom:2px}.ilx .g{color:#3cda93}
+.ilx hr{border:0;border-top:1px solid #e0e0e0;margin:20px 0}
+.ilx-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.ilx-ht{flex:1 1 380px;min-width:0}
+.ilx-who{flex:0 0 auto;width:240px;padding:10px 12px;border:1px solid #D8D8D8;border-radius:8px;background:#fafafa;font-size:13px}
+.ilx-who b{display:block;font-size:14px}.ilx-who small{display:block;color:#666;font-size:12px}
+.ilx-who.dark{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff}.ilx-who.dark small{color:rgba(255,255,255,.85)}
+.ilx-hero{position:relative;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;min-height:300px;border-radius:8px;padding:15px 15px 15px 40px;margin-bottom:30px;color:#fff;background:linear-gradient(90deg,#14395E 0%,#1B6DB2 35%,#2691EC 100%)}
+.ilx-hero-l{flex:1 1 360px;max-width:640px}
+.ilx-hero h2{font-family:'Playfair Display',serif;font-weight:900;font-size:36px;color:#fff;margin:0 0 12px}
+.ilx-hero p{font-size:20px;line-height:30px;color:#fff}
+.ilx-bar{width:73px;height:4px;border-radius:4px;margin-bottom:14px;background:linear-gradient(90deg,#1E88E5,#3DDB93 32%,#F50057 69%,#FFB05F)}
+.ilx-sel{margin:10px 0 16px;max-width:420px}.ilx-sel .b1{margin-bottom:8px}
+.ilx-out{position:relative;display:block;border:1px solid #c4c4c4;border-radius:4px;padding:0 12px;min-width:200px}
+.ilx-out>span{position:absolute;top:-9px;left:8px;background:#fff;padding:0 4px;font-size:12px;color:#666}
+.ilx-out select,.ilx-out input{width:100%;border:0;background:transparent;font:inherit;font-size:16px;padding:14px 0;outline:0}
+.ilx-out i{position:absolute;right:12px;top:14px;font-style:normal}
+.ilx-sum{display:flex;flex-wrap:wrap;gap:16px;margin:10px 0 24px}
+.ilx-paycard,.ilx-scard{width:300px;min-height:170px;border-radius:8px;box-shadow:0 0 16px rgba(0,0,0,.18);padding:16px;box-sizing:border-box}
+.ilx-paycard{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;background:linear-gradient(330.33deg,#3DDB93 0%,#1E88E5 100%)}
+.ilx-paycard .cap{color:#fff}
+.ilx-scard{display:flex;align-items:center;gap:14px;background:#fff}.ilx-scard p{margin:0}.ilx-sic{font-size:36px}
+.ibtn{border-radius:50px;padding:10px 50px;font-size:16px;font-family:Roboto,sans-serif;background:#3671ED;color:#fff;border:0;cursor:pointer;box-shadow:none}
+.ibtn.sm{padding:6px 25px}.ibtn.wht{background:#fff;color:#000}
+.ilx-paycard .ibtn{background:#fff;color:#3671ED}
+.ilx-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;margin-bottom:24px}
+.ilx-tile{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-height:260px;border:0;border-radius:8px;box-shadow:0 0 16px rgba(0,0,0,.18);background:#fff;padding:20px;color:#424242;cursor:pointer;font-family:Roboto,sans-serif}
+.ilx-tile .s1{font-size:20px}.ilx-timg{display:flex;align-items:center;justify-content:center;width:100%;height:110px;border-radius:6px;background:#EDF3F8;font-size:44px}
+.ilx-disc{font-size:16px}
+.icard{background:#fff;border-radius:8px;box-shadow:0 0 16px rgba(0,0,0,.18);padding:24px}.icard.p30{padding:30px}
+.ilx-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.ilx-2.w57{grid-template-columns:5fr 7fr}
+.ilx-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.ilx-2,.ilx-2.w57,.ilx-3{grid-template-columns:1fr}.ilx .ih2{font-size:30px}}
+.ilx-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.ilx-row .ilx-out{flex:1 1 200px}
+.h5g{font-size:22px;color:#3cda93}.h5d{font-size:22px}
+.ilx-tabs{display:flex;background:#f5f5f5;box-shadow:0 2px 4px rgba(0,0,0,.12);margin:12px 0}
+.ilx-tabs button{flex:1;border:0;background:none;padding:12px 8px;font:500 14px Roboto,sans-serif;text-transform:uppercase;letter-spacing:.4px;color:rgba(0,0,0,.6);border-bottom:2px solid transparent;cursor:pointer}
+.ilx-tabs button[aria-selected="true"]{color:#3671ED;border-bottom-color:#3671ED}
+.ilx-tw{overflow-x:auto}
+.ilx-t{width:100%;border-collapse:collapse;font-size:16px}
+.ilx-t th{background:#EDF3F8;font-weight:400;font-size:18px;text-align:left;padding:16px 15px}
+.ilx-t td{padding:8px 15px;border-bottom:1px solid #e0e0e0}
+.ilx-ic{color:#3671ED}
+.ilx-search{display:flex;justify-content:flex-end;margin:10px 0}.ilx-search .ilx-out{width:42%;min-width:220px}
+.ilx-blue{color:#fff;border-radius:8px;padding:24px;background:linear-gradient(131.65deg,#12253D 0%,#2196F3 100%);box-shadow:0 8px 30px rgba(0,0,0,.16)}
+.ilx-blue .cap,.ilx-blue p{color:#fff}
+.ilx-arrow{display:flex;justify-content:space-between;gap:12px;padding:6px 8px;font-size:16px}
+.ilx-arrow.hl{background:rgba(255,215,0,.15);border-top:2px solid #3cda93;font-weight:700}
+.ilx-arw{max-width:66%;margin-bottom:16px}@media (max-width:900px){.ilx-arw{max-width:none}}
+.ilx-call{border-left:3px solid #22C55E;background:rgba(34,197,94,.03);border-radius:0 4px 4px 0;padding:10px 12px;margin-bottom:12px}.ilx-call p{margin:0}
+.ilx-ltv{display:flex;justify-content:space-between;border:1px solid #22C55E;border-radius:4px;padding:10px 12px;margin-bottom:8px}
+.ilx-tbtn{float:right;border:0;background:none;color:#3671ED;font:500 14px Roboto,sans-serif;cursor:pointer;padding:6px 8px}
+.ilx-sec{overflow:hidden}
+.ilx-w8{max-width:880px}.ilx-w9{max-width:980px}
+.ilx-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:18px}@media (max-width:700px){.ilx-g3{grid-template-columns:1fr}}
+.ilx-dis{position:relative;display:block;border:1px solid #c4c4c4;border-radius:4px;background:#d4d4d4}
+.ilx-dis span{position:absolute;top:-9px;left:8px;padding:0 4px;font-size:12px;color:#666;background:linear-gradient(#fff 50%,#d4d4d4 50%)}
+.ilx-dis input{width:100%;border:0;background:transparent;font:inherit;font-size:16px;padding:14px 12px;color:rgba(0,0,0,.38)}
+.ilx-acc{border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.2);padding:0 16px}.ilx-acc summary{padding:14px 0;font-size:16px;cursor:pointer}
+.ilx-cl{display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:center}@media (max-width:700px){.ilx-cl{grid-template-columns:1fr}}
+.ilx-dec{font-size:13.5px;line-height:1.45;color:#5b4a00;background:#fff8e1;border:1px dashed #e0b84a;border-radius:6px;padding:8px 10px;margin:8px 0 16px!important}
+.ilx-tbd{display:inline-flex;align-items:center;gap:6px;float:right}.ilx-tbd .ibtn[disabled],.ilx-tbd .ilx-tbtn[disabled]{opacity:.5;cursor:not-allowed}
+.ilx-cl .ilx-tbd{float:none;flex-direction:column}
+.ilx-clr{display:flex;flex-direction:column;align-items:center;gap:14px}.ilx-big{font-size:64px}
 .viewbar{position:sticky;top:0;z-index:15;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--accent);border-radius:10px;background:var(--accent-soft);color:var(--ink);font-size:13.5px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .viewbar .vb-tx{flex:1 1 300px;min-width:0}
 .viewbar .btn{flex:0 0 auto}
@@ -359,7 +432,10 @@ var DECISIONS = [
   ]}
 ];
 var choice = {}, notes = {}, rowLock = {}, saved = {locked:false, savedAt:null};
-DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=d.rec; notes[d.k]="";});});
+/* Jamin's answers, 11/2/2026 (from his locked decision panel). Not decided = still open. */
+var ANSWERS={home:"Yes",sign:"Yes",profile:"Yes",dash:"View only",payV:"View only",payA:"Yes",payB:"No",docsP:"Yes",docsI:"No",docsU:"Yes",ar:"View only",perfV:"View only",perfA:"Not decided",insV:"View only",insE:"Yes",benA:"Yes",clV:"View only",clA:"Not decided",faq:"Yes",cont:"Yes"};
+var ANOTES={payA:"Need this task to include Kyle, the SME on how payments work.",perfA:"The authorized signer is the one who triggers this request.",insV:"No one signs this. The request triggers the workflow, so this screen needs an option for the authorized signer to request an allocation change; then decide what workflow that triggers.",insE:"Because they are the ones who sign off on these requests.",clA:"The authorized signer does this for all policies. Need to turn this off for the insured on associated policies that have servicing access."};
+DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=ANSWERS[d.k]||d.rec; notes[d.k]=ANOTES[d.k]||"";});});
 function dec(k){for(var i=0;i<DECISIONS.length;i++)for(var j=0;j<DECISIONS[i].items.length;j++)if(DECISIONS[i].items[j].k===k)return DECISIONS[i].items[j];}
 
 /* Screen -> menu tag derived from the decisions */
@@ -396,7 +472,7 @@ function renderNav(){
   } else if(pol){
     h+='<div class="navsec">This policy</div>'+
       ni("dash","Policy Dashboard",screenTag("dash"))+ni("pay","Payments",screenTag("pay"))+ni("docs","Documents",screenTag("docs"))+ni("ar","Annual Review",screenTag("ar"))+
-      ni("perf","Current Performance",screenTag("perf"))+ni("ins","Insured Details",screenTag("ins"))+ni("claims","Claims & Distributions",screenTag("claims"));
+      ni("perf","Current Performance",screenTag("perf"))+ni("ins","Insured Details &amp; Changes",screenTag("ins"))+ni("claims","Claims & Distributions",screenTag("claims"));
   }
   h+='<div class="navsec">Help</div>'+ni("faq","FAQs and Guides","")+ni("contact","Contact Us","");
   document.getElementById("nav").innerHTML=h;
@@ -459,24 +535,21 @@ function render(){
   else if(pol&&pol.own){
     var octx='<div class="ctxline"><b>Your own policy</b> · You’re the insured · Policy ending '+last4(pol.id)+' · '+esc(pol.product)+' · Policy year '+pol.year+'</div>';
     var OWN_T={dash:"Your policy",pay:"Payments",docs:"Documents",ar:"Annual Review",perf:"Current Performance",ins:"Insured Details & Changes",claims:"Claims & Distributions"};
-    if(view==="dash"){
-      m+=hero("Your policy","This is your own policy. You’re the insured, so you see the standard ILIA Servicing Portal with full access, the same as any client.");
+    if(false){
       m+=octx+'<div class="kpis">'+
         (pol.paid?'<div class="kpi paid"><small>Contribution</small><b>Paid in full</b></div>':'<div class="kpi"><small>Contribution</small><b style="font-size:15px">'+esc(pol.contrib)+'</b></div>')+
         '<div class="kpi"><small>Last year’s policy growth rate</small><b>'+pol.growth+'</b></div><div class="kpi"><small>Estimated net death benefit</small><b>'+pol.ndb+'</b></div><div class="kpi"><small>Estimated net cash value</small><b>'+pol.cv+'</b></div><div class="kpi"><small>Policy anniversary date</small><b>'+pol.anniv+'</b></div></div>';
       m+='<div class="oq"><h3>Open questions for this screen</h3><ol><li>When the authorized signer is also an insured, do they see their own policy here in one login, or switch to the client Servicing Portal for it?</li><li>On their own policy, everything works exactly as ILIA does today for an insured (no settlor rules). Agree?</li></ol></div>';
-    } else {
-      var Sx=SCREENS[view];
-      m+=hero(esc(OWN_T[view]),"Your own policy, ending "+last4(pol.id)+".")+octx+
-        '<div class="panel ownscr"><span class="tag t-act">Same as ILIA today</span><h2 class="h2" style="margin:8px 0 6px">'+esc(OWN_T[view])+'</h2><p style="margin:0 0 8px">This is ILIA’s existing client screen. As the insured, you see and do everything here, with no settlor limits.</p><p class="note" style="margin:0"><b>What’s on it today:</b> '+esc(Sx?Sx.today:"")+'</p></div>';
     }
+    m+=iliaScreen(view,pol,p);
+    if(view==="dash") m+='<div class="oq"><h3>Open questions for this screen</h3><ol><li>When the authorized signer is also an insured, do they see their own policy here in one login, or switch to the client Servicing Portal for it?</li><li>On their own policy, everything works exactly as ILIA does today for an insured (no settlor rules). Agree?</li></ol></div>';
   }
   else if(pol){
     var ctx='';
     m+='<div class="viewbar" role="status"><span class="vb-ic" aria-hidden="true">👁</span><span class="vb-tx">Viewing <b>'+esc(pol.insured)+'’s policy</b> (insured) · Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+' · '+esc(pol.product)+(pol.year?' · Policy year '+pol.year:'')+' · You’re the '+(ent?'authorized signer for '+esc(p.settlor):'settlor and authorized signer')+'</span><button class="btn sm" data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button></div>';
+    m+=iliaScreen(view,pol,p);
     if(view==="dash"){
-      m+=hero(esc(pol.insured)+"’s policy","You’re viewing this policy as the "+(ent?"authorized signer for "+esc(p.settlor):"settlor and authorized signer")+". The insured is "+esc(pol.insured)+".");
-      m+=ctx+'<div class="kpis">'+
+      if(false) m+=ctx+'<div class="kpis">'+
         (pol.paid?'<div class="kpi paid"><small>Contribution</small><b>Paid in full</b></div>':'<div class="kpi"><small>Contribution</small><b style="font-size:15px">'+esc(pol.contrib)+'</b></div>')+
         '<div class="kpi"><small>Last year’s policy growth rate</small><b>'+pol.growth+'</b></div><div class="kpi"><small>Estimated net death benefit</small><b>'+pol.ndb+'</b></div><div class="kpi"><small>Estimated net cash value</small><b>'+pol.cv+'</b></div><div class="kpi"><small>Policy anniversary date</small><b>'+pol.anniv+'</b></div></div>';
       var ps=pending(pol).map(function(s){return {p:pol,s:s};});
@@ -484,17 +557,122 @@ function render(){
       m+=openQ("dash")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("dash","Policy Dashboard","The same cards and quick links, for the insured’s own policy.")+'</details>';
     } else {
       var S=SCREENS[view];
-      m+=hero(S.title,S.sub(pol,ent,p))+ctx+S.body(pol,ent,p)+openQ(view)+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel(view,S.title,S.today)+'</details>';
+      m+=openQ(view)+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel(view,S.title,S.today)+'</details>';
     }
   }
   document.getElementById("main").innerHTML=topbar()+m;
   renderNav(); renderRail();
 }
 
+/* ---------- ILIA client Servicing Portal screens, as ILIA renders them today ----------
+   Source: niw-web-admin src/pages/clientServicing/* and components/clientServicing/* (branch ilia-v2-ui), kaiZenTheme.
+   Client view (roles 5/6): admin-only cards and buttons are not shown. Sample data only. */
+
+function ilxWho(){var p=P(), ent=p.kind==="entity";
+  return '<div class="ilx-who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+(ent?esc(p.title)+' · '+esc(p.settlor):esc(p.rel))+'</small>'+(ent?'':'<span class="rb s">Settlor</span> ')+'<span class="rb">Authorized Signer</span></div>';}
+function ilxHead(h,sub,h3){return '<div class="ilx-head"><div class="ilx-ht">'+(h3?'<h3 class="ih3">'+h+'</h3>':'<h2 class="ih2">'+h+'</h2>')+'<p class="sub1">'+sub+'</p></div>'+ilxWho()+'</div>';}
+function ilxSel(pol){var opts=P().policies.filter(function(x){return x.inforce;});
+  return '<div class="ilx-sel"><p class="b1"><strong>Select policy to view details</strong></p><label class="ilx-out"><span>Policy Number</span><select id="ilxPol">'+opts.map(function(x){return '<option value="'+x.id+'"'+(x.id===pol.id?' selected':'')+'>'+esc(x.id)+(x.own?'':' · '+esc(x.insured))+'</option>';}).join("")+'</select></label></div>';}
+function ilxTable(cols,rows,empty){return '<div class="ilx-tw"><table class="ilx-t"><thead><tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join("")+'</tr></thead><tbody>'+(rows.length?rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join("")+'</tr>';}).join(""):'<tr><td colspan="'+cols.length+'" class="cap">'+empty+'</td></tr>')+'</tbody></table></div>';}
+function ilxTabs(key,labels){return '<div class="ilx-tabs" role="tablist">'+labels.map(function(l,i){return '<button role="tab" aria-selected="'+(tabState[key]===i)+'" data-tab="'+key+'" data-ti="'+i+'">'+l+'</button>';}).join("")+'</div>';}
+function ilxGate(pol,k,html){ if(pol.own) return html; var c=choice[k];
+  if(c==="Yes") return html; if(c==="Not decided") return '<span class="ilx-tbd">'+html.replace(/<button /,'<button disabled ')+' <span class="tag t-ask">To decide</span></span>'; return ''; }
+function ilxSees(pol,k){return pol.own||choice[k]!=="No";}
+function ilxStrat(pol){return pol.product.split(" · ")[0];}
+function ilxNum(pol){return pol.id.replace("KZ-","KZ")+"00";}
+function ilxIns(pol){var n=pol.insured.split(" ");return {first:n[0],last:n[n.length-1],email:(n[0]+"."+n[n.length-1]).toLowerCase()+"@example.com"};}
+var ILX_ICON={docs:"📄",ins:"👤",claims:"✅",faq:"❓",fb:"⭐",contact:"✉️",action:"📝"};
+function iliaScreen(view,pol,p){
+  var yr=pol.year||1, strat=ilxStrat(pol), pn=ilxNum(pol), ins=ilxIns(pol);
+  if(view==="dash"){
+    var pay = pol.paid ? '<h5 class="ih5">Paid in full</h5>' : '<p class="cap">Payment due by '+esc(pol.anniv)+'</p><h4 class="ih4">$40,000</h4>';
+    var tiles=[["docs","Plan Documents","View and download important documents from your plan."],["ins","Insured Details &amp; Changes","Make changes to your personal information, address, beneficiaries, and allocations."],["claims","Claims &amp; Distributions","Make a claim or distribution request."],["faq","Common Questions (FAQ)","Get answers to questions regarding policies, claims, distributions and more."],["fb","Feedback &amp; Referrals","Rate your experience or invite someone to learn about this strategy."],["contact","Contact us","Have a question or need help?"],["action","Action Items","Action Items"]];
+    return '<section class="ilx"><div class="ilx-hero"><div class="ilx-hero-l"><div class="ilx-bar"></div><h2>Welcome '+esc(P().first+" "+P().last)+'</h2><p>Now that you’ve successfully enrolled you will be able to view and manage your policy here. You can view documents, make a yearly contribution payment, file a claim, change your details, and get answers to your policy questions.</p></div>'+ilxWho().replace('ilx-who','ilx-who dark')+'</div>'+
+      ilxSel(pol)+'<p class="cap"><strong>Policy Number - '+pn+' '+esc(strat)+' (Policy Year '+(yr-1||1)+') Year '+yr+' credits (growth) are applied at the beginning of the following policy year.</strong></p>'+
+      '<div class="ilx-sum"><div class="ilx-paycard">'+pay+'<button class="ibtn sm" data-nav="pay">View Payments</button></div>'+
+      (!pol.own&&ilxSees(pol,"dash")?'<div class="ilx-scard"><span class="ilx-sic" aria-hidden="true">💲</span><div><p class="cap">Last Year\'s Policy Growth Rate</p><p class="s1"><strong>'+esc(pol.growth)+'</strong></p></div></div><div class="ilx-scard"><span class="ilx-sic" aria-hidden="true">📄</span><div><p class="cap">Estimated</p><p class="cap">Net Death Benefit</p><p class="s1"><strong>'+esc(pol.ndb)+'</strong></p></div></div><div class="ilx-scard"><span class="ilx-sic" aria-hidden="true">🤲</span><div><p class="cap">Estimated</p><p class="cap">Net Cash Value</p><p class="s1"><strong>'+esc(pol.cv)+'</strong></p></div></div>':'')+
+      '<div class="ilx-scard"><span class="ilx-sic" aria-hidden="true">🕘</span><div><p class="cap">Policy</p><p class="cap">Anniversary Date</p><p class="s1"><strong>'+esc(pol.anniv)+'</strong></p></div></div></div>'+
+      (!pol.own?'<p class="ilx-dec">Settlor view: growth rate, net death benefit and cash value cards show for the authorized signer (view only). In ILIA today only admins see them.</p>':'')+
+      '<div class="ilx-tiles">'+tiles.map(function(t){var nav={docs:"docs",ins:"ins",claims:"claims",faq:"faq",contact:"contact"}[t[0]];return '<button class="ilx-tile"'+(nav?' data-nav="'+nav+'"':' data-act="mock"')+'><span class="ilx-timg" aria-hidden="true">'+ILX_ICON[t[0]]+'</span><span class="s1"><strong>'+t[1]+'</strong></span><span class="cap">'+t[2]+'</span></button>';}).join("")+'</div>'+
+      '<p class="b1 ilx-disc">Should you believe there is any discrepancy please contact Kai-Zen Support at 800-294-9940 or email niw.info@simplicitygroup.com. For more detailed information about your life insurance policy, reach out to your carrier. Past performance does not guarantee future results. Guarantees are backed by the financial strength and claims paying ability of the issuing company.</p></section>';
+  }
+  if(view==="pay"){
+    var hist = tabState.ipay===0
+      ? ilxTable(["Years","Client Owed","Client Paid","Client Balance Due","Bank Leverage"],contribRows(pol),"No Data")
+      : ilxTable(["Cont. Type","Date","Amount","Method","Details"],pol.paid||yr>1?[["Annual","03/01/2025","$40,000.00","Wire Transfer","Year 2 contribution"],["Annual","03/01/2024","$40,000.00","Personal Check","Year 1 contribution"]]:[],"No Payments");
+    return '<section class="ilx">'+ilxHead("Payments","View and schedule your contribution payments and history.")+ilxSel(pol)+
+      '<div class="ilx-2">'+ilxGate(pol,"payA",'<div class="icard"><p class="s1"><strong>Manage Payments</strong></p><p class="cap">Make a payment towards your annual contribution.</p><div class="ilx-row"><label class="ilx-out"><span>Payment Method</span><select><option>Personal Check</option><option>Wire Transfer</option><option>Single ePay Payment</option></select></label><button class="ibtn" data-act="mock">Make Payment</button></div>'+(pol.own?'':'<p class="ilx-dec">Settlor view: the authorized signer can pay. Payment rules to be confirmed with Kyle (payments SME).</p>')+'</div>')+
+      '<div class="icard"><p class="s1"><span aria-hidden="true">📅</span> <strong>Next Annual Contribution Due</strong></p>'+(pol.paid?'<p class="h5g">Paid in full</p>':'<p class="h5d">'+esc(pol.anniv)+'</p>')+'</div></div>'+
+      '<div class="icard" style="margin-top:40px"><p class="s1">Contributions Payment History </p><p class="cap">Below is the history of payments made towards your policy with calculated totals.</p>'+ilxTabs("ipay",["Total Premium Payment History","Payment History"])+hist+'</div></section>';
+  }
+  if(view==="docs"){
+    var D0=[["Enrollment Documents",[["Signed Illustration","Illustration","01/12/2024"],["Life Insurance Application","Application","01/12/2024"],["Trust Agreement","Trust","01/15/2024"],["Policy Contract","Policy","02/20/2024"]]],["Personal Documents",[["Driver’s License","Identity Document","01/10/2024"]]],["Servicing Documents",[["Hold Harmless Agreement","Servicing Form","12/02/2025"]]]];
+    var D=D0.filter(function(d){return !(d[0]==="Personal Documents"&&!ilxSees(pol,"docsI"));});
+    if(!pol.own&&choice.docsU==="Yes") D.push(["Settlor Documents",[["Trust Certification","Settlor Document","10/30/2026"]]]);
+    if(tabState.idocs>=D.length) tabState.idocs=0;
+    var t=tabState.idocs, tn=D[t][0], act='<span class="ilx-ic">👁</span> <span class="ilx-ic">⭳</span>';
+    var rows=D[t][1].map(function(r){return [esc(r[0]),esc(r[1]),r[2],act];});
+    return '<section class="ilx">'+ilxHead("Plan Documents","View or download your "+esc(strat)+" plan documents like your policy, illustration, trust and other important documents.")+ilxSel(pol)+
+      '<div class="icard">'+ilxTabs("idocs",D.map(function(d){return d[0];}))+
+      (tn!=="Servicing Documents"?'<div class="ilx-search"><label class="ilx-out"><span>Search Documents</span><input placeholder=" " aria-label="Search Documents"><i aria-hidden="true">🔍</i></label></div>':'')+
+      (tn==="Personal Documents"||tn==="Settlor Documents"?'<div style="text-align:right;margin:10px 0"><button class="ibtn" data-act="mock">Upload</button></div>':'')+
+      (tn==="Settlor Documents"?'<p class="ilx-dec">Settlor view: new tab. The authorized signer uploads trust or entity paperwork and their ID here. The insured’s Personal Documents tab is hidden from them.</p>':'')+
+      ilxTable(["Name","Type","Date Modified","Actions"],rows,"There are no documents")+
+      (tn==="Servicing Documents"?'<h5 class="ih5" style="margin-top:50px">Carrier Statements</h5>'+ilxTable(["Name","Type","Actions"],[["Annual Statement "+(2024+yr-1),"Carrier Statement",act]],"There are no statements"):'')+'</div></section>';
+  }
+  if(view==="ar"){
+    var Y=Math.max(1,yr-1), cv=parseFloat(pol.cv.replace(/[$,]/g,""))||40000;
+    var row=function(l,v,hl){return '<div class="ilx-arrow'+(hl?' hl':'')+'"><span>'+l+'</span><span>'+v+'</span></div>';};
+    return '<section class="ilx">'+ilxHead("Annual Review ","Your current plan coverage, returns, and performance. <strong>Policy Number - "+pn+"</strong>")+ilxSel(pol)+
+      '<div class="ilx-blue"><p class="s1"><strong>How did your policy perform last (Year '+Y+')? ('+(2023+Y)+'-'+String(24+Y).slice(-2)+')</strong></p><p class="cap">Policy values are sourced from your Carrier’s annual statement, which can be downloaded below. Values are updated annually based on anniversary and crediting dates.</p><p class="cap">Policy Anniversary Date: '+esc(pol.anniv)+' ⓘ &nbsp; Policy Crediting Date: '+esc(pol.anniv)+' ⓘ</p><div class="ilx-arw">'+
+        (Y>1?row("Year "+(Y-1)+" Ending Carrier Statement Value",money(cv*0.55)):'')+row("Year "+Y+" Your Contribution Paid to Carrier",money(40000))+row("Year "+Y+" Minus Fees Paid to Trust",money(1200))+row("Year "+Y+" Bank loaned",money(36300))+
+        row("Year "+Y+" Total Amount Paid to Carrier (Premium)",money(75100),1)+row("Year "+Y+" Ending Carrier Statement Value",money(cv*1.08))+row("Policy Credited "+esc(pol.growth||"5.00%"),"")+row("Year "+Y+" Estimated CSV¹ with crediting²",money(cv*1.13),1)+
+        row("Year "+(Y-1)+" Beginning Estimated Bank Loan Amount",money(36300*(Y-1)))+row("Year "+Y+" Bank Loan Paid to Carrier",money(36300))+row("Year "+Y+" Estimated Bank Loan Interest 5.25%",money(1906*Y))+row("Estimated End of Year Cumulative Bank Loan Amount",money(36300*Y+1906*Y),1)+row("Year "+Y+" Carrier Statement Death Benefit",esc(pol.ndb||"$0.00"))+
+        '</div><p class="s1"><strong>Year '+Y+' Estimated Net of loan values</strong></p>'+row("Estimated Net of Loan CSV¹:",money(cv*1.13-(36300*Y+1906*Y)))+row("Estimated Net of Loan Death Benefit",esc(pol.ndb||""))+
+        '<p class="cap">¹CSV = Cash Surrender Value<br>²See Carrier Annual statements for additional credit earnings (Bonuses)</p><button class="ibtn wht" data-act="mock">⭳ Carrier Annual Statement</button></div>'+
+      '<div class="icard" style="margin-top:40px"><div class="ilx-2"><div><p class="s1"><strong>Original Illustrated Values</strong></p><p class="b2">Premiums paid for Year '+yr+' ('+(2023+yr)+'-'+(2024+yr)+'). Your contribution and bank loan are paid to the policy at the beginning of the year. Any growth is credited to your policy cash value on next year\'s crediting/anniversary date.</p><p class="b2">Your Original illustrated values for the next year are shown to the right.</p>'+
+        row("🐷 Your Contribution",pol.paid?'<span class="g">(Paid in full) $0</span>':"$40,000")+row("🐷 Bank Loan Amount","$36,300")+row("Total Amount Paid","$76,300",1)+'<p class="b1">Actual Bank Loan Interest Rate for the Upcoming Year '+yr+' ('+(2023+yr)+'-'+(2024+yr)+') (5.25%).</p></div>'+
+        '<div class="ilx-blue"><p class="s1"><strong>What is this year\'s (Year '+yr+') projected illustrated performance?</strong></p><p class="cap">These values originally appeared on the illustration you signed when you purchased your policy. They are estimates only based on historical conditions.</p>'+
+        row("Illustrated Year "+(yr-1)+" CSV:",money(cv*0.95))+row("Expected Total Paid to Policy:","$76,300.00")+row("Expected bank premium loan:","$36,300.00")+row("Illustrated bank loan interest:","5.00%")+row("Illustrated policy growth:","6.50%")+row("Illustrated Year "+yr+" CSV¹:",money(cv*1.18))+
+        '<button class="ibtn wht" data-act="mock">⭳ Client Proposal</button></div></div></div>'+
+      '<div class="icard" style="margin-top:40px"><p class="s1"><strong>Comparison: Illustrated Cash Value Vs. Actual Cash Value.</strong></p><p class="b1">Compare the cash value of your policy as it was originally illustrated to the actual values from the previous years</p><p class="cap"><span style="color:#2196F3">●</span> Original Estimate &nbsp; <span style="color:#3DDB93">●</span> Actual Performance</p>'+spark()+'</div>'+
+      '<div class="icard" style="margin-top:40px"><p class="s1"><strong>Comparison: Actual Loan Rate Vs. Actual Growth Rate</strong></p><p class="cap"><span style="color:#2196F3">●</span> Actual Loan Rate &nbsp; <span style="color:#3DDB93">●</span> Actual Growth Rate &nbsp; <span style="color:#002057">●</span> Illustrated Growth Rate</p><div class="ilx-3"><p class="cap">Actual Average Growth Rate: <strong>'+esc(pol.growth||"5.00%")+'</strong></p><p class="cap">Actual Average Loan Rate: <strong>5.10%</strong></p><p class="cap">Actual Average Rate Spread: <strong>0.15%</strong></p></div></div>'+
+      '<div class="icard" style="margin-top:40px"><p class="s1"><strong>Comparison: Original Illustration Estimated Net Death Benefit Vs. Actual Net Death Benefit.</strong></p><p class="b1">Compare the differences between your illustration death benefit estimation and your actual policy death benefits.</p>'+spark()+'<p class="cap" style="color:#3671ED">*Graphs are updated at the end of each policy year on the crediting date of the policy.</p></div></section>';
+  }
+  if(view==="perf"){
+    var rows=[]; for(var y=1;y<yr;y++) rows.push([(2023+y)+" - "+(2024+y)+" (year-"+y+")",(5+y*0.1).toFixed(2)+"%",(5.2-y*0.05).toFixed(2)+"%",'<span class="g">'+(y*0.15-0.05).toFixed(2)+"%</span>"]);
+    rows.push(['<strong>Total Averages</strong>','<strong>'+esc(pol.growth||"5.10%")+'</strong>','<strong>5.10%</strong>','<strong class="g">0.15%</strong>']);
+    return '<section class="ilx">'+ilxHead("Performance and Allocations","View your Policy Allocations.",true)+
+      '<div class="icard" style="margin-top:40px"><div class="ilx-2 w57"><div><p class="s1"><strong><u>Kai-Zen Risks &amp; Considerations</u></strong></p><p class="b2 blue"><strong>Policy Risks</strong></p><p class="cap">Index returns can be lower than illustrated, which affects cash value growth.</p><p class="b2 blue"><strong>Leverage Risks</strong></p><p class="cap">Bank loan interest can rise above policy growth.</p><p class="b2 blue"><strong>How to Protect Yourself</strong></p><p class="cap">Review your annual statement and keep contributions current.</p><p class="cap">Contact your agent or email info@kaizenplan.com for additional information…</p></div>'+
+        '<div><p class="s1"><strong>Policy Performance</strong></p><div class="ilx-call good"><p class="b2">Your policy is performing within expected range.</p></div>'+ilxTable(["Policy Year","Policy Growth Rate Earned","Bank Interest Rate","Spread"],rows,"")+
+        '<p class="s1" style="margin-top:20px"><strong>Loan to Value</strong></p><p class="b2">Loan to value compares your bank loan balance to your policy’s cash value.</p><div class="ilx-ltv"><span>Current Loan to Value:</span><strong>42.10%</strong><span class="g">Good</span></div><p class="cap">Current Status - Good : Your loan is well covered by your cash value.</p></div></div></div>'+
+      '<div class="icard" style="margin-top:40px"><p class="s1"><strong>Allocation Changes</strong>'+ilxGate(pol,"perfA",'<button class="ilx-tbtn" data-act="mock">'+(pol.own?'Change My Allocations':'Request Allocation Change')+'</button>')+'</p>'+(pol.own?'':'<p class="ilx-dec">Still to decide: the authorized signer triggers allocation change requests. What workflow does a request start?</p>')+'<p class="cap">You may make an allocation change request at any time…</p><p class="cap">To make an allocation change request, you will need the following:</p><p class="cap" style="padding-left:20px">1. The carrier’s allocation change form<br>2. Your policy number<br>3. Your signature</p><p class="cap">…email it to niw.info@simplicitygroup.com to be processed.</p></div></section>';
+  }
+  if(view==="ins"){
+    var fld=function(l,v,w){return '<label class="ilx-dis'+(w?' w':'')+'"><span>'+l+'</span><input disabled value="'+esc(v)+'"></label>';};
+    return '<section class="ilx">'+ilxHead("Insured Details","View insured address, contact numbers, beneficiary information, and other important details.")+
+      '<div class="ilx-w8"><p class="s1 ilx-sec"><strong>Legal Name</strong>'+ilxGate(pol,"insE",'<button class="ilx-tbtn" data-act="mock">Edit Legal Name</button>')+'</p><div class="ilx-g3">'+fld("First Name",ins.first)+fld("Middle Name","")+fld("Last Name",ins.last)+'</div><hr>'+
+      (pol.own
+      ? '<p class="s1 ilx-sec"><strong>Personal Details</strong><button class="ilx-tbtn" data-act="mock">Edit Personal Details</button></p><div class="ilx-g3">'+fld("Cell Phone Number*","(214) 555-0132")+fld("Work Phone","")+fld("Home Number","")+fld("Email*",ins.email)+fld("Client Greeting (Nickname)",ins.first)+fld("Date of Birth*","06/02/1998")+fld("Last 4 of Social*","4417")+fld("Age*","28")+fld("Net Worth","$250,000")+fld("Annual Income","$95,000")+fld("Employer","Sample Co.")+'</div>'+
+        '<p class="b1"><strong>Home Address</strong></p><div class="ilx-g3">'+fld("Home Address*","4410 Oak Lawn Ave")+fld("City*","Dallas")+fld("State*","TX")+fld("Zip Code*","75219")+'</div><p class="cap">☑ Mailing is same as home address.</p><hr>'
+      : '<p class="s1 ilx-sec"><strong>Personal Details</strong>'+ilxGate(pol,"insE",'<button class="ilx-tbtn" data-act="mock">Request Personal Details Change</button>')+'</p><div class="ilx-g3">'+fld("Date of Birth","••/••/1998")+fld("City","Dallas")+fld("State","TX")+'</div>'+
+        '<p class="ilx-dec">Settlor view: basic details only (name, masked date of birth, city and state). No SSN, phones, email, income or full address. The authorized signer can request changes, because they sign off on them.</p><hr>')+
+      '<p class="s1 ilx-sec"><strong>Beneficiary Details</strong>'+ilxGate(pol,"benA",'<button class="ilx-tbtn" data-act="mock">Edit Beneficiaries</button>')+'</p><details class="ilx-acc"><summary>Beneficiary Details</summary><p class="b1">Your primary beneficiary(ies) receives the '+esc(strat)+' Plan benefit…</p><p class="b1"><strong>Primary Beneficiaries</strong> ⓘ</p>'+
+        ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],[["Ana Alvarez","Individual","100%","Spouse","Dallas, TX","ana@example.com","(214) 555-0111"]],"No Beneficiary Found")+'<p class="b1"><strong>Contingent Beneficiaries</strong></p>'+ilxTable(["Name","Type","Percentage","Relationship","Address","Email","Phone"],[],"No Beneficiary Found")+'</details></div></section>';
+  }
+  if(view==="claims"){
+    return '<section class="ilx">'+ilxHead("Claims and Distributions","Here you can make an insurance claim or take a policy distribution. This action is available once loan is paid off.")+
+      '<div class="ilx-w9"><div class="icard p30 ilx-cl"><div><p class="s1"><strong>Make a Claim Request</strong></p><p class="b1">Select a claim type below and we will send you the correct document to fill out. Once your claim has been submitted, one of our NIW specialists will contact you to complete the process or to get any additional information from you. If you have questions please contact us at niw.info@simplicitygroup.com or call 800-294-9940 ext-216.</p></div><div class="ilx-clr"><span class="ilx-big" aria-hidden="true">📋</span>'+ilxGate(pol,"clA",'<button class="ibtn" data-act="mock">Claim Request</button>')+'</div></div>'+
+      '<div class="icard p30 ilx-cl" style="margin-top:25px"><div><p class="s1"><strong>Distribution Request</strong></p><p class="b1">Once your loan has been paid off you are eligible to start taking distributions. Please contact us at niw.info@simplicitygroup.com or call 800-294-9940 ext-216 if you have any questions.</p></div><div class="ilx-clr"><span class="ilx-big" aria-hidden="true">💵</span>'+ilxGate(pol,"clA",'<button class="ibtn sm" data-act="mock">Make Distributions Request</button>')+'</div></div>'+(pol.own?'':'<p class="ilx-dec">Still to decide: the authorized signer starts these for all their policies. If so, turn this off for the insured on associated policies that have servicing access.</p>')+'</div></section>';
+  }
+  return "";
+}
+document.addEventListener("change",function(ev){ if(ev.target.id==="ilxPol"){ pol=P().policies.filter(function(x){return x.id===ev.target.value;})[0]; render(); window.scrollTo(0,0); } });
+
 /* ---------- Settlor versions of each policy screen ----------
    Mirrors ILIA's existing client servicing screens (niw-web-admin src/pages/clientServicing/*),
    reworded for the settlor and gated by the decisions in the right-hand panel. */
-var tabState={pay:0,docs:0};
+var tabState={pay:0,docs:0,ipay:0,idocs:0};
 function can(k){return choice[k]==="Yes";}
 function sees(k){return choice[k]==="Yes"||choice[k]==="View only";}
 function money(n){return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
