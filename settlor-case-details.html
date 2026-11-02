@@ -274,6 +274,12 @@ ul.activity{margin:0;padding:0}
 .cecard:disabled{opacity:.5;cursor:not-allowed}
 .etypes{display:flex;flex-wrap:wrap;gap:6px}
 .cs-btn{margin-left:auto;font-weight:500}
+.cs-acc{background:#fdecea;border:1px solid #f5b5ae;border-radius:10px;padding:12px 14px}
+.cs-acc .cecard{background:#fff}.cs-acc .cecard.on{background:var(--accent-soft)}
+.cs-warn{margin:0;font-size:13.5px;color:#b3261e}
+.ga-warn{background:#fdecea;border:1px solid #f5b5ae;border-radius:8px;padding:10px 12px}
+.cs-def{font-size:11px;font-weight:600;color:#1b5e20;background:#e3f2e5;border:1px solid #a5d6a7;border-radius:10px;padding:0 7px;margin-left:4px}
+.ga-scrim{z-index:60}.ga-dlg{z-index:61;width:min(560px,calc(100% - 32px))}
 .cs-flash{animation:csflash 2.6s ease-out}
 @keyframes csflash{0%,40%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:var(--shadow)}}
 .etypes .chip{font-family:inherit;border:1px solid var(--line-strong);border-radius:20px;background:var(--surface);color:var(--ink);padding:5px 12px;font-size:13px;cursor:pointer}
@@ -429,6 +435,7 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 <div id="linkRoot"></div>
 <div id="inviteRoot"></div>
 <div id="sgRoot"></div>
+<div id="gaRoot"></div>
 <div id="emRoot"></div>
 <div id="toastRoot"></div>
 
@@ -686,7 +693,7 @@ document.getElementById("view").addEventListener("click",function(ev){
   else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
   else if(a==="sAdv"||a==="pAdv"){var o=a==="sAdv"?s:pp, key=a==="sAdv"?"invite":"insInvite", nx=NEXT[o[key]]; o[key]=nx; o.d=o.d||{}; o.d[nx==="active"?"login":nx]="Oct 28";
     var words={opened:"Opened the portal invite email",created:"Created their portal account",active:"Logged in to the portal"}; st.activity.unshift({who:nm(o),what:words[nx],when:today()}); toast(nm(o)+": "+words[nx].toLowerCase());}
-  else if(a==="pToggle"){ if(pp.insAccess){pp.insAccess=false;log("Turned off "+nm(pp)+"’s portal access to "+pp.policy);toast("Access turned off");} else confirmKey="p"+i; }
+  else if(a==="pToggle"){ if(pp.insAccess){pp.insAccess=false;log("Turned off "+nm(pp)+"’s portal access to "+pp.policy);toast("Access turned off");} else openGa({mode:"give",first:pp.first,last:pp.last,policy:pp.policy,invited:pp.insInvite!=="none"},function(){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 28"};}log("Gave "+nm(pp)+" portal access to "+pp.policy+(pp.insInvite==="sent"?" and sent an invite":""));render();toast("Access on. Invite emailed to "+pp.first+".");}); }
   else if(a==="pOnYes"){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 28"};}confirmKey="";log("Gave "+nm(pp)+" portal access to "+pp.policy+" and sent an invite");toast("Access on. Invite emailed to "+pp.first+".");}
   else if(a==="pResend"){pp.insInvite="sent";pp.d={sent:"Oct 28"};log("Resent portal invite to "+nm(pp));toast("Invite resent");}
   else if(a==="openLink"){openLink();return;}
@@ -1088,7 +1095,7 @@ var CS_IND={first:"Maria",last:"Reyes",email:"maria.reyes@example.com",phone:"(2
 var CS_RELS=["Spouse","Other: Brother","Other: Business partner"];
 var CS_EXISTING_SG={first:"Laura",last:"Chen",title:"Chief Financial Officer",email:"l.chen@reyesholdings.example",phone:"(214) 555-0177",access:true,invite:"active",d:{sent:"Sep 12",opened:"Sep 12",created:"Sep 13",login:"Oct 24"}};
 var CS_IN_F=IN_F.filter(function(f){return f[0]!=="rel";});
-function openCs(){cs={step:"pick",kind:"",src:"",v:{first:"",last:"",email:"",phone:"",rel:"",dob:"",ssn:"",addr:""},ev:{etype:"",name:"",ein:"",addr:""},sv:{first:"",last:"",title:"",email:"",phone:""},ins:"keep",ok:false,mails:false};renderCs();}
+function openCs(){cs={step:"pick",kind:"",src:"",v:{first:"",last:"",email:"",phone:"",rel:"",dob:"",ssn:"",addr:""},ev:{etype:"",name:"",ein:"",addr:""},sv:{first:"",last:"",title:"",email:"",phone:""},ins:"off",ok:false,mails:false};renderCs();}
 function closeCs(){cs=null;document.getElementById("sgRoot").innerHTML="";}
 function csShell(title,body,foot){document.getElementById("sgRoot").innerHTML='<div class="scrim" data-cs="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="csH"><div class="dr-hd"><h3 id="csH">'+title+'</h3><button class="btn sm" data-cs="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+foot+'</div></div>';}
 function csFld(grp,k,label,val){var w=(k==="addr"||k==="email")?' style="grid-column:span 2"':'', shown=k==="ssn"&&val?mask(val,4):val;
@@ -1127,9 +1134,10 @@ function renderCs(){
         '<div class="isec"><h4>Authorized signer for the entity</h4><div class="ilia-grid sg-grid">'+CE_SF.map(function(f){return csFld("sv",f[0],f[1],cs.sv[f[0]]);}).join("")+'</div>'+
         '<button class="btn link sm" data-cs="fillall" style="align-self:flex-start">Fill all with sample</button></div>';
     }
-    if(cs.kind&&(cs.kind==="individual"||cs.src)) body+='<div class="isec"><h4>'+esc(POLICY.first)+'’s own Servicing Portal access to this policy</h4><div class="cechoice">'+
-        '<button class="cecard'+(cs.ins==="keep"?' on':'')+'" data-cs="ins" data-v="keep"><b>Keep access</b><span class="note">'+esc(POLICY.first)+' can still view the policy in the client portal. Signing moves to the new signer.</span></button>'+
-        '<button class="cecard'+(cs.ins==="off"?' on':'')+'" data-cs="ins" data-v="off"><b>Turn access off</b><span class="note">The default when the insured isn’t the settlor. Silent, and can be turned back on later.</span></button></div></div>';
+    if(cs.kind&&(cs.kind==="individual"||cs.src)) body+='<div class="isec cs-acc"><h4>'+esc(POLICY.first)+'’s own Servicing Portal access to this policy</h4><div class="cechoice">'+
+        '<button class="cecard'+(cs.ins==="off"?' on':'')+'" data-cs="ins" data-v="off"><b>Turn access off <span class="cs-def">Default</span></b><span class="note">The default when the insured isn’t the settlor. Silent, and can be turned back on later.</span></button>'+
+        '<button class="cecard'+(cs.ins==="keep"?' on':'')+'" data-cs="ins" data-v="keep"><b>Keep access</b><span class="note">'+esc(POLICY.first)+' can still view the policy in the client portal. Signing moves to the new signer.</span></button></div>'+
+        '<p class="cs-warn">⚠ Make sure '+esc(POLICY.first)+' is allowed access to servicing before you select <b>Keep access</b>. The trust documents decide who may see the policy.</p></div>';
     var ready=csReady();
     csShell("Settlor isn’t the insured",body,(ready?'':'<span class="note" style="margin-right:auto">'+(!cs.kind?'Choose who the settlor is.':cs.kind==="entity"&&!cs.src?'Choose the entity.':'Fill every field to continue.')+'</span>')+'<button class="btn" data-cs="close">Cancel</button><button class="btn primary" data-cs="next"'+(ready?'':' disabled')+'>Review change</button>');
     return;
@@ -1174,7 +1182,7 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   if(a==="close"){closeCs();return;}
   if(a==="kind"){cs.kind=t.dataset.v;}
   if(a==="src"){cs.src=t.dataset.v;}
-  if(a==="ins"){cs.ins=t.dataset.v;}
+  if(a==="ins"){ if(t.dataset.v==="keep"&&cs.ins!=="keep"){ openGa({mode:"keep",first:POLICY.first,last:POLICY.last,policy:POLICY.policy}, function(){cs.ins="keep"; renderCs();}); return; } cs.ins=t.dataset.v; }
   if(a==="rel"){cs.v.rel=cs.v.rel===t.dataset.v?"":t.dataset.v;}
   if(a==="etype"){cs.ev.etype=cs.ev.etype===t.dataset.v?"":t.dataset.v;}
   if(a==="fill"){var g=t.dataset.g,k=t.dataset.k; cs[g][k]=cs[g][k]?"":csSrc(g)[k];}
@@ -1188,6 +1196,21 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   var bd=document.querySelector("#sgRoot .dr-bd"); if(bd) bd.scrollTop=keep;
 });
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&cs)closeCs();});
+
+/* ---------- Confirm insured Servicing Portal access (keep it when the settlor changes, or turn it on per policy) ---------- */
+var ga=null;
+function openGa(o,onYes){ga={o:o,yes:onYes,ok:false};renderGa();}
+function closeGa(){ga=null;document.getElementById("gaRoot").innerHTML="";}
+function renderGa(){var o=ga.o, nm=esc(o.first+" "+o.last), keep=o.mode==="keep";
+  var body='<div class="isec"><p style="margin:0">'+(keep?'Keep <b>'+nm+'</b>’s client Servicing Portal access to policy <span class="mono">'+esc(o.policy)+'</span> after the settlor changes?':'Give <b>'+nm+'</b> (the insured) Servicing Portal access to policy <span class="mono">'+esc(o.policy)+'</span>?')+'</p></div>'+
+    '<div class="cs-warn ga-warn">⚠ <b>Make sure '+esc(o.first)+' is allowed access to servicing.</b> The insured isn’t the settlor, so the trust documents or the settlor decide whether they may see this policy.</div>'+
+    '<div class="isec"><h4>What '+esc(o.first)+' gets</h4><ul class="can"><li>View-only access to this one policy in the client Servicing Portal.</li><li>No signing. Forms still go to the authorized signer.</li><li>You can turn it off at any time under Policies linked to this settlor. Turning it off is silent.</li></ul></div>'+
+    '<div class="isec"><h4>Email</h4><p class="note" style="margin:0">'+(keep?'None. '+esc(o.first)+' already uses the client portal.':o.invited?'Access-restored email (#43 style) if they already have an account.':esc(o.first)+' gets the “Servicing Portal invite (this policy only)” email (#44).')+'</p></div>'+
+    '<button class="confirmchk" role="checkbox" aria-checked="'+ga.ok+'" data-ga="ok"><span class="cbx" aria-hidden="true">'+(ga.ok?'✓':'')+'</span><span>I confirmed '+nm+' is allowed access to servicing for this policy.</span></button>';
+  document.getElementById("gaRoot").innerHTML='<div class="scrim ga-scrim" data-ga="no"></div><div class="drawer ga-dlg" role="alertdialog" aria-modal="true" aria-labelledby="gaH"><div class="dr-hd"><h3 id="gaH">'+(keep?'Confirm: keep insured access':'Confirm: give insured access')+'</h3><button class="btn sm" data-ga="no" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+(ga.ok?'':'<span class="note" style="margin-right:auto">Tick the confirmation to continue.</span>')+'<button class="btn" data-ga="no">Cancel</button><button class="btn primary" data-ga="yes"'+(ga.ok?'':' disabled')+'>'+(keep?'Yes, keep access':'Yes, give access'+(o.invited?'':' &amp; send invite'))+'</button></div></div>';}
+document.getElementById("gaRoot").addEventListener("click",function(ev){var t=ev.target.closest("[data-ga]"); if(!t||!ga)return; var a=t.dataset.ga;
+  if(a==="no"){closeGa();return;} if(a==="ok"){ga.ok=!ga.ok;renderGa();return;} if(a==="yes"&&ga.ok){var y=ga.yes;closeGa();y();}});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&ga){e.stopImmediatePropagation();closeGa();}},true);
 
 /* ---------- Link a policy (search → review → link) ---------- */
 /* Sample search results. cur = who the policy's settlor is today. */
