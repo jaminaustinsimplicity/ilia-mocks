@@ -426,6 +426,25 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
 .insroute{display:flex;flex-direction:column;gap:4px;border:1px solid #f5c26b;background:#fff7e6;border-radius:8px;padding:10px 12px;font-size:14px}
 .ilx-alert.iwait{background:#fff7e6;border-color:#f5c26b}.ilx-alert.idone{background:#e8f5e9;border-color:#a5d6a7}.ilx-alert.idecl{background:#fdecea;border-color:#f5b5ae}
 .ia-mock{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.dwbadge{border-color:#0d47a1!important;background:#e3f2fd!important;color:#0d47a1!important}
+.dw-top{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}@media (max-width:820px){.dw-top{grid-template-columns:1fr}}
+.dw-rule{border:1px solid #c5b5f2;background:#f7f3ff;border-radius:8px;padding:10px 14px;font-size:14px}.dw-rule ol{margin:6px 0 0;padding-left:20px}.dw-rule li{margin:3px 0}
+.dw-gap{border:1px solid #f5b5ae;background:#fdf3f2;border-radius:8px;padding:10px 14px;font-size:13.5px}.dw-gap ul{margin:6px 0 0;padding-left:18px}.dw-gap li{margin:3px 0}
+.dw-tag{font-size:11px;font-weight:600;border-radius:8px;padding:0 6px}.dw-tag.change{background:#efe9ff;color:#4b2fa8}.dw-tag.future{background:#fff1e0;color:#8a3b00}.dw-tag.decide{background:#fff6d6;color:#8a5a00}
+.dw-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:sticky;top:-16px;z-index:2;background:#fff;padding:8px 0}
+.dw-l{font-size:13px;color:#555}.dw-u{border:1px solid #c9c9c9;background:#fff;border-radius:20px;padding:5px 12px;font:500 13px Roboto,sans-serif;cursor:pointer}.dw-u.on{border-color:#3671ED;background:#eaf1fe;color:#1d4fc4}
+.dw-legend{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px}.dw-legend i{font-style:normal;color:#444}.dw-sep{width:10px}
+.dw-act{display:inline-block;font-size:11.5px;font-weight:600;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.dw-card{border:1px solid #e0e0e0;border-radius:10px;padding:12px 14px;background:#fff}
+.dw-hd{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.dw-hd h4{margin:0;font-size:16px}.dw-scr{font-size:12.5px;color:#666}.dw-pill{margin-left:auto;font-size:11.5px;font-weight:600;border-radius:10px;padding:2px 9px}
+.dw-doc{font-size:13.5px;margin:8px 0}
+.dw-flow{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 0;counter-reset:dw}
+.dw-st{display:flex;flex-direction:column;gap:4px;width:200px;border:1px solid #e3e3e3;border-radius:8px;padding:8px 10px;background:#fafafa;font-size:13px;position:relative;margin-right:22px}
+.dw-st:not(:last-child)::after{content:"→";position:absolute;right:-18px;top:40%;color:#999;font-size:16px}
+.dw-st.dw-land{border:2px solid #6f4bd8;background:#f7f3ff}
+.dw-n{font-size:11px;color:#888}.dw-st .dw-act{align-self:flex-start}.dw-fl{display:flex;flex-wrap:wrap;gap:4px}.dw-fl i{font-style:normal;font-size:11px;background:#fff;border:1px solid #ddd;border-radius:6px;padding:0 5px}
+i.dw-ss{background:#6f4bd8!important;color:#fff;border-color:#6f4bd8!important;font-style:normal;border-radius:6px;padding:0 5px}
+.dw-mail{font-size:12.5px;color:#555;margin:8px 0 0}
 </style>
 
 <div class="mockbar">
@@ -438,6 +457,7 @@ table.mini th,table.mini td{border:1px solid #d5d9e0;padding:6px 8px;text-align:
     <button data-w="insured" aria-pressed="false" title="Daniel is the insured on KZ-104233. Maria (his spouse) is the settlor and authorized signer. NIW turned on Daniel’s servicing access.">Insured (not settlor) · Daniel</button>
   </div>
   <button class="embadge" onclick="openEmails()">✉ Email table <b>60</b></button>
+  <button class="embadge dwbadge" onclick="openDocWf()">⇢ Doc Workflow</button>
   <span class="mocktag">Settlor Servicing Portal · first draft · sample data only · W-SETTLOR</span>
 </div>
 
@@ -1483,4 +1503,70 @@ document.addEventListener("click",function(ev){
     try{ navigator.clipboard.writeText(txt).then(function(){toast("Decisions copied");},function(){toast("Copy blocked. Select the text in the panel instead.");}); }catch(e){ toast("Copy blocked."); } }
 });
 render();
+
+/* ---------- Doc Workflow: which document each action creates, who signs, in what order, and when it lands in the Signing Section.
+   "ILIA today" rows were checked in code (niw-web-admin clientServicing, niw-api servicing + applicationService.createServicing, 11/2). ---------- */
+var DW_ACT={I:["Insured","#0d47a1","#e3f2fd"],S:["Authorized signer","#4b2fa8","#efe9ff"],N:["NIW","#1b5e20","#e3f2e5"],T:["Trustee (Provident)","#8a3b00","#fff1e0"],C:["Carrier","#37474f","#eceff1"],X:["ILIA","#555","#f3f3f3"]};
+var DW_USERS=[["signer","Authorized signer · policy they sign for"],["insured","Insured who isn’t the settlor"],["own","Insured is the settlor (ILIA today)"]];
+var DW_STATUS={today:["ILIA today · checked in code","#1b5e20","#e3f2e5"],change:["Change for the settlor portal","#4b2fa8","#efe9ff"],decide:["To decide","#8a5a00","#fff6d6"],future:["Future · DBR project","#8a3b00","#fff1e0"],none:["No document","#555","#f3f3f3"]};
+var LEGAL_DOC="Legal Name Change servicing form (template nlServicingTemplateId; Allianz: allianzAppServicingTemplateId) + supporting document (marriage certificate, divorce decree or court order)";
+var PERS_DOC="Personal Information Change servicing form (template personalServicingTemplate). No document when only nickname, net worth, income or employer change. A new email also sends a verification link.";
+var BEN_DOC="Beneficiary Change form + Trust Amendment (template picked by tranche: getTemplateBasedOnTranche)";
+function dwAfter(k){ if(k==="ben") return [["N","Approves the UPDATE_BENEFICIARY action item"],["T","Trustee action item created (Provident signs the trust amendment: routing is set in the DocuSign Lambda, to confirm)","sign"],["C","Carrier updates. “Requested” chip clears"]];
+  if(k==="legal") return [["N","Reviews the UPDATE_LEGAL_NAME action item and the supporting document"],["C","Carrier updates the name. ILIA clears “Your Request is Processing”"]];
+  return [["N","Reviews the UPDATE_PERSONAL_DETAIL action item and updates ILIA"+(k==="pers"?"; sends a new address to the carrier":"")]];}
+function dwReq(k,doc,mails){var nm={legal:"Edit Legal Name",pers:"Edit Personal Details",ben:"Edit Beneficiaries"}[k];
+  return {own:{status:"today",steps:[["I","Clicks "+nm+" and fills the request"],["X","Creates the servicing envelope: "+doc,"doc"],["I","Signs right away, embedded in the page (DocuSign)","sign"]].concat(dwAfter(k)),mails:"Today: request received / complete emails to the client (verify)"},
+    signer:{status:"change",steps:[["S","Clicks "+nm.replace("Edit","Request")+" on the associated policy"+(k==="pers"?" (enters only the new value; can’t see the insured’s full details)":"")],["X","Same envelope and template, but the DocuSign recipient is the authorized signer, not the logged-in insured","doc"],["S","Signs right away, embedded. If they close before finishing, it waits in the Signing Section as “Finish signing”","sign"]].concat(dwAfter(k)),mails:mails},
+    insured:{status:"change",steps:[["I","Clicks "+nm+" in their client portal and fills it, then <b>Send for approval</b>. The insured doesn’t sign"],["X","Creates the same envelope with the authorized signer as the recipient","doc"],["S","<b>Lands in the Signing Section</b> tagged “Requested by the insured”. Approve and sign, or Decline","land sign"]].concat(dwAfter(k)),mails:"#57 to the signer · #58 sent for approval · #59 approved · #60 declined (open)"}};}
+var DOCWF=[
+  {k:"legal",name:"Legal name change",screen:"Insured Details & Changes",doc:LEGAL_DOC,flows:dwReq("legal",LEGAL_DOC,"#11 request received + signed copy · #12 NIW · #14 complete")},
+  {k:"pers",name:"Personal details change",screen:"Insured Details & Changes",doc:PERS_DOC,flows:dwReq("pers",PERS_DOC,"#16 request received · #17 NIW · #18 complete")},
+  {k:"ben",name:"Beneficiary change",screen:"Insured Details & Changes",doc:BEN_DOC,flows:dwReq("ben",BEN_DOC,"#19–#22 signed form, NIW, complete")},
+  {k:"alloc",name:"Allocation change",screen:"Current Performance",doc:"Carrier’s allocation change form. ILIA today: no document in the system; the client downloads the carrier form and emails it to NIW (the modal’s submit does nothing).",
+    flows:{own:{status:"today",steps:[["I","Downloads the carrier’s allocation change form, signs it outside ILIA"],["I","Emails it to niw.info@simplicitygroup.com"],["N","Sends it to the carrier"],["C","Updates the allocation"]],mails:"None from ILIA"},
+      signer:{status:"decide",steps:[["S","Clicks Request Allocation Change and picks the new mix"],["N","Prepares the carrier’s allocation change form and sends it as an envelope","doc"],["S","<b>Lands in the Signing Section</b> → signs","land sign"],["N","Sends the signed form to the carrier"],["C","Carrier confirms; Current Performance updates"]],mails:"Request received · Please sign · Complete (draft)"},
+      insured:{status:"decide",steps:[["I","Requests the change (D4: does this need the signer’s approval?)"],["N","Sends the carrier form to the authorized signer","doc"],["S","<b>Lands in the Signing Section</b> → signs","land sign"],["C","Carrier updates"]],mails:"To decide (D4)"}}},
+  {k:"claim",name:"Claim request",screen:"Claims & Distributions",doc:"ILIA today: no document. The request is emailed to NIW (client/request); NIW follows up offline with the carrier’s claim forms.",
+    flows:{own:{status:"today",steps:[["I","Clicks Request Claim and writes the request"],["X","Emails NIW. Toast: “A team member will contact you shortly”"],["N","Contacts the client and sends the carrier’s claim forms outside ILIA"]],mails:"Request email to NIW"},
+      signer:{status:"decide",steps:[["S","Submits the claim request"],["N","Sends the right carrier claim form as an envelope","doc"],["S","<b>Lands in the Signing Section</b> → completes and signs","land sign"],["C","Processes the claim"]],mails:"Request received · Please complete · Claim update (draft)"},
+      insured:{status:"decide",steps:[["I","Submits the claim request (D4: allowed? routed to the signer?)"],["N","Sends the form to whoever must sign (to decide)","doc"]],mails:"To decide"}}},
+  {k:"dist",name:"Distribution request",screen:"Claims & Distributions",doc:"ILIA today: no document. Same email-to-NIW request as claims (requestType “Distribution”).",
+    flows:{own:{status:"today",steps:[["I","Clicks Request Distribution"],["X","Emails NIW"],["N","Confirms the loan is paid off and sends the carrier forms outside ILIA"]],mails:"Request email to NIW"},
+      signer:{status:"decide",steps:[["S","Submits the distribution request"],["N","Confirms the loan is paid off; sends the distribution forms as an envelope","doc"],["S","<b>Lands in the Signing Section</b> → signs","land sign"],["C","Sends the funds (to the trust?)"]],mails:"Request received · Please sign · Processed (draft)"},
+      insured:{status:"decide",steps:[["I","Submits the request (D4)"],["N","Sends the forms to the authorized signer","doc"],["S","<b>Lands in the Signing Section</b> → signs","land sign"]],mails:"To decide"}}},
+  {k:"dbr",name:"Death Benefit Reduction election + Hold Harmless",screen:"NIW sends it (no client button)",doc:"DBR election form + Provident Trust Group Hold Harmless. Not in ILIA servicing today: the only Hold Harmless templates are enrollment / GWT ones.",
+    flows:{own:{status:"future",steps:[["N","Sends the election + Hold Harmless envelope with the in-force illustrations","doc"],["I","Elects (full / half / none) and signs","sign"],["T","Provident signs the Hold Harmless","sign"],["N","Reviews"],["C","Applies the reduction"]],mails:"Please sign · complete (DBR project)"},
+      signer:{status:"future",steps:[["N","Sends the election + Hold Harmless envelope to the authorized signer","doc"],["S","<b>Lands in the Signing Section</b> → elects and signs","land sign"],["T","Provident signs the Hold Harmless","sign"],["N","Reviews"],["C","Applies the reduction"]],mails:"Please sign · complete; does the insured get a copy? (open)"},
+      insured:{status:"future",steps:[["N","Sends it to the authorized signer, not the insured","doc"],["S","<b>Lands in the Signing Section</b> → elects and signs","land sign"],["T","Provident signs","sign"]],mails:"Insured copy or notice: open"}}},
+  {k:"hh",name:"Hold Harmless renewal",screen:"NIW sends it (no client button)",doc:"Annual Hold Harmless renewal (Provident Trust Group). Not in ILIA servicing today.",
+    flows:{own:{status:"future",steps:[["N","Sends the renewal envelope","doc"],["I","Signs","sign"],["N","Files it with the trust"]],mails:"Please sign"},
+      signer:{status:"future",steps:[["N","Sends the renewal envelope to the authorized signer","doc"],["S","<b>Lands in the Signing Section</b> → initials and signs","land sign"],["N","Files it with the trust"]],mails:"Please sign · reminders (open)"},
+      insured:{status:"future",steps:[["N","Sends it to the authorized signer","doc"],["S","<b>Lands in the Signing Section</b>","land sign"]],mails:"—"}}},
+  {k:"pay",name:"Make Payment",screen:"Payments",doc:"No signed document. ePay shows an on-screen “I authorize NIW to debit…” click-through.",
+    flows:{own:{status:"none",steps:[["I","Pays by check, wire or ePay (click-through authorization)"],["N","Marks it received"]],mails:"Payment receipt (exists)"},
+      signer:{status:"none",steps:[["S","Pays like a giftor (GWT model). Logged “Paid by Authorized Signer”"],["N","Marks it received"]],mails:"Receipt to the payer · agent + IMO notices"},
+      insured:{status:"none",steps:[["I","Pays as today. No signer approval (confirm in D4)"]],mails:"Receipt (exists)"}}},
+  {k:"upload",name:"Upload a document",screen:"Documents",doc:"No signing. Upload only (insured: Personal Documents; signer: Settlor Documents).",
+    flows:{own:{status:"none",steps:[["I","Uploads a personal document"]],mails:"—"},
+      signer:{status:"none",steps:[["S","Uploads a Settlor Document (trust certification, entity resolution, ID)"],["N","Approves it or marks Needs attention"]],mails:"#8 NIW · #9 approved · #10 needs attention"},
+      insured:{status:"none",steps:[["I","Uploads a personal document (as today)"]],mails:"—"}}}
+];
+var dwUser="signer", dwOnly=false;
+function dwStep(x,i){var a=DW_ACT[x[0]], fl=x[2]||"";
+  return '<li class="dw-st'+(/land/.test(fl)?' dw-land':'')+'"><span class="dw-n">'+(i+1)+'</span><span class="dw-act" style="color:'+a[1]+';background:'+a[2]+'">'+a[0]+'</span><span class="dw-tx">'+x[1]+'</span><span class="dw-fl">'+(/doc/.test(fl)?'<i title="Document created">📄 Document</i>':'')+(/sign/.test(fl)?'<i title="Signature">✍ Signs</i>':'')+(/land/.test(fl)?'<i class="dw-ss" title="Lands in the Signing Section">📥 Signing Section</i>':'')+'</span></li>';}
+function openDocWf(){
+  var rows=DOCWF.filter(function(e){return !dwOnly||e.flows[dwUser].steps.some(function(x){return /land/.test(x[2]||"");});});
+  var body='<div class="dw-top"><div class="dw-rule"><b>When does a document land in the authorized signer’s Signing Section?</b><ol><li>The <b>insured</b> (not the settlor) requests a legal name, personal details or beneficiary change. The envelope is created with the signer as recipient. <span class="dw-tag change">New</span></li><li><b>NIW sends</b> a form to sign: DBR election + Hold Harmless, Hold Harmless renewal <span class="dw-tag future">Future · DBR</span>, and allocation, claim or distribution forms <span class="dw-tag decide">To decide</span></li><li>The signer started signing their own request and closed it before finishing (“Finish signing”).</li></ol><p class="note" style="margin:6px 0 0">It does <b>not</b> land there when the signer requests a change themselves: they sign right away in the page, like ILIA today. Payments and uploads have no signature.</p></div>'+
+    '<div class="dw-gap"><b>Dev gaps found in ILIA code (11/2)</b><ul><li>Servicing envelopes always go to the <b>logged-in user</b> (createServicing passes the client, role 5). Nothing reads the settlor. New: recipient = the policy’s authorized signer when the settlor isn’t the insured.</li><li>Signer roles and routing order live in the external DocuSign Lambda (docusign/servicing), not in niw-api. It needs the signer-as-recipient change too.</li><li>Branch NIWD-1372 adds the settlor tables but no servicing or DocuSign routing.</li><li>The Go port DocuSignServicing doesn’t send templateIds (the Node version does). Check before building on it.</li><li>DBR election and Hold Harmless renewal don’t exist in servicing yet. The mock’s sample Signing Section items are future DBR-project documents.</li></ul></div></div>'+
+    '<div class="dw-ctl"><span class="dw-l">Show the flow for</span>'+DW_USERS.map(function(u){return '<button class="dw-u'+(dwUser===u[0]?' on':'')+'" data-dwu="'+u[0]+'">'+u[1]+'</button>';}).join("")+'<label class="em-only"><input type="checkbox" id="dwOnly"'+(dwOnly?' checked':'')+'> Only flows that land in the Signing Section</label></div>'+
+    '<div class="dw-legend">'+Object.keys(DW_ACT).map(function(k){var a=DW_ACT[k];return '<span class="dw-act" style="color:'+a[1]+';background:'+a[2]+'">'+a[0]+'</span>';}).join("")+'<span class="dw-sep"></span><i>📄 Document</i><i>✍ Signs</i><i class="dw-ss">📥 Signing Section</i></div>'+
+    (rows.length?'':'<p class="note">Nothing lands in the Signing Section for this user type.</p>')+rows.map(function(e){var fl=e.flows[dwUser], stt=DW_STATUS[fl.status];
+      return '<section class="dw-card"><div class="dw-hd"><h4>'+esc(e.name)+'</h4><span class="dw-scr">'+esc(e.screen)+'</span><span class="dw-pill" style="color:'+stt[1]+';background:'+stt[2]+'">'+stt[0]+'</span></div>'+
+        '<p class="dw-doc"><b>Document:</b> '+esc(e.doc)+'</p><ol class="dw-flow">'+fl.steps.map(dwStep).join("")+'</ol><p class="dw-mail">✉ '+esc(fl.mails)+'</p></section>';}).join("");
+  var keep=(document.querySelector("#wfRoot .dw-dlg .wf-bd")||{}).scrollTop||0;
+  document.getElementById("wfRoot").innerHTML='<div class="wf-ov" data-acp="x"></div><div class="wf-dlg em-dlg dw-dlg" role="dialog" aria-modal="true" aria-label="Doc Workflow"><div class="wf-hd"><h3>⇢ Doc Workflow · which document, who signs, in what order</h3><button class="wf-x" data-acp="x" aria-label="Close">✕</button></div><div class="wf-bd">'+body+'</div><div class="wf-ft"><button class="ibtn" data-acp="x">Close</button></div></div>';
+  var bd=document.querySelector("#wfRoot .dw-dlg .wf-bd"); if(bd) bd.scrollTop=keep;}
+document.addEventListener("click",function(ev){var b=ev.target.closest("[data-dwu]"); if(b){dwUser=b.dataset.dwu; openDocWf();}});
+document.addEventListener("change",function(ev){if(ev.target.id==="dwOnly"){dwOnly=ev.target.checked; openDocWf();}});
 </script>
