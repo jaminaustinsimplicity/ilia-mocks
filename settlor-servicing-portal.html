@@ -89,6 +89,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pcard[disabled]{opacity:.75;cursor:not-allowed}
 .pcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .pcard .nm{font-size:16px;font-weight:700}
+.pcard.own{border:2px solid var(--accent);position:relative}
+.ownb{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);border-radius:20px;padding:2px 10px}
 .pcard .sub{font-size:12.5px;color:var(--muted)}
 .pcard .meta{display:flex;flex-wrap:wrap;gap:6px}
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 9px;white-space:nowrap}
@@ -307,12 +309,14 @@ var PEOPLE = {
     ]},
   family: {first:"Robert", last:"Alvarez", title:"Settlor", settlor:"Robert Alvarez", kind:"individual", rel:"Parent of the insureds", email:"r.alvarez@example.com",
     policies:[
+      {id:"KZ-106402", own:true, insured:"Robert Alvarez", product:"Kai-Zen · National Life (LSW)", tranche:84, inforce:true, year:2, paid:true, growth:"5.10%", ndb:"$2,100,000.00", cv:"$61,240.33", anniv:"03/01/2027", sign:[]},
       {id:"KZ-106410", insured:"Ethan Alvarez", product:"Kai-Zen · National Life (LSW)", tranche:84, inforce:true, year:2, paid:true, growth:"5.10%", ndb:"$1,250,000.00", cv:"$38,412.60", anniv:"03/01/2027", sign:[{id:"s3",type:"hh",what:"Hold Harmless renewal", due:"Dec 1, 2026"}]},
       {id:"KZ-106411", insured:"Olivia Alvarez", product:"Kai-Zen · National Life (LSW)", tranche:84, inforce:true, year:2, paid:false, growth:"5.10%", ndb:"$1,250,000.00", cv:"$37,980.15", anniv:"03/01/2027", contrib:"Contribution due Mar 1, 2027", sign:[]},
       {id:"KZ-106972", insured:"Noah Alvarez", product:"Kai-Zen · Allianz", tranche:86, inforce:false, sign:[]}
     ]},
   individual: {first:"Maria", last:"Reyes", title:"Settlor", settlor:"Maria Reyes", kind:"individual", rel:"Spouse of the insured", email:"maria.reyes@example.com",
     policies:[
+      {id:"KZ-104305", own:true, insured:"Maria Reyes", product:"Kai-Zen · Allianz", tranche:80, inforce:true, year:3, paid:false, growth:"4.80%", ndb:"$1,350,000.00", cv:"$72,118.45", anniv:"01/15/2027", contrib:"Contribution due Jan 15, 2027", sign:[]},
       {id:"KZ-104233", insured:"Daniel Reyes", product:"Kai-Zen · National Life (LSW)", tranche:79, inforce:true, year:3, paid:true, growth:"5.25%", ndb:"$1,584,955.77", cv:"$96,760.82", anniv:"11/03/2026",
         sign:[{id:"s4",type:"dbr",what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]}
     ]}
@@ -382,7 +386,11 @@ function renderNav(){
     '<div class="navsec">My work</div>'+
     ni("home","My Policies", p.policies.length>1?'<span class="tag t-view">'+p.policies.length+'</span>':'')+
     ni("sign","Waiting for my signature", n?'<span class="tag t-cnt">'+n+'</span>':'');
-  if(pol){
+  if(pol&&pol.own){
+    h+='<div class="navsec">Your policy</div><div class="polctx">Viewing<b>Your policy (you’re the insured)</b>Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+'<br><button data-nav="home">⇄ Switch policy</button></div>'+
+      ni("dash","Policy Dashboard","")+ni("pay","Payments","")+ni("docs","Documents","")+ni("ar","Annual Review","")+
+      ni("perf","Current Performance","")+ni("ins","Insured Details &amp; Changes","")+ni("claims","Claims &amp; Distributions","");
+  } else if(pol){
     h+='<div class="navsec">This policy</div><div class="polctx">Viewing<b>'+esc(pol.insured)+' (insured)</b>Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+'<br><button data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button>'+'</div>'+
       ni("dash","Policy Dashboard",screenTag("dash"))+ni("pay","Payments",screenTag("pay"))+ni("docs","Documents",screenTag("docs"))+ni("ar","Annual Review",screenTag("ar"))+
       ni("perf","Current Performance",screenTag("perf"))+ni("ins","Insured Details",screenTag("ins"))+ni("claims","Claims & Distributions",screenTag("claims"));
@@ -399,8 +407,9 @@ function whoCard(){var p=P(), ent=p.kind==="entity";
 function hero(title,text){return '<section class="hero"><div class="hero-tx"><div class="bar"></div><h1>'+title+'</h1><p>'+text+'</p></div>'+whoCard()+'</section>';}
 function policyCard(p){
   var s=pending(p).length;
-  return '<button class="pcard" '+(p.inforce?'data-pick="'+p.id+'"':'disabled')+'>'+
-    '<div class="top"><div><div class="nm">'+esc(p.insured)+'</div><div class="sub">Insured · '+esc(p.product)+'</div></div>'+(p.inforce?'<span class="pill p-ok">In force</span>':'<span class="pill p-neu">Not yet in force</span>')+'</div>'+
+  return '<button class="pcard'+(p.own?' own':'')+'" '+(p.inforce?'data-pick="'+p.id+'"':'disabled')+'>'+
+    (p.own?'<span class="ownb">Your policy</span>':'')+
+    '<div class="top"><div><div class="nm">'+esc(p.insured)+(p.own?' <span class="note" style="font-weight:400">(you)</span>':'')+'</div><div class="sub">'+(p.own?'You’re the insured':'Insured')+' · '+esc(p.product)+'</div></div>'+(p.inforce?'<span class="pill p-ok">In force</span>':'<span class="pill p-neu">Not yet in force</span>')+'</div>'+
     '<div class="meta"><span class="pill p-neu">Policy ending '+last4(p.id)+'</span><span class="pill p-neu">Tranche '+p.tranche+'</span>'+(s?'<span class="pill p-bad">'+s+' to sign</span>':'')+'</div>'+
     (p.inforce?'<span class="go">View policy →</span>':'<span class="note">Available here once the policy is in force.</span>')+'</button>';
 }
@@ -421,10 +430,12 @@ function render(){
   if(view==="home"){
     var sigs=allSign(), live=p.policies.filter(function(x){return x.inforce;}).length;
     m+=hero("Welcome, "+esc(p.first),
-      (ent?"You’re the authorized signer for <b>"+esc(p.settlor)+"</b>. ":"You’re the settlor and authorized signer for these policies. ")+
+      (ent?"You’re the authorized signer for <b>"+esc(p.settlor)+"</b>. ":"You’re the settlor and authorized signer for these policies. ")+(p.policies.some(function(x){return x.own;})?"Your own policy, where you’re the insured, is listed first. ":"")+
       "Choose a policy to see its details and documents. Anything that needs your signature is listed below.");
-    m+='<div class="sumrow"><div class="sum"><b>'+p.policies.length+'</b> polic'+(p.policies.length===1?'y':'ies')+' you sign for</div><div class="sum"><b>'+sigs.length+'</b> waiting for your signature</div>'+(p.policies.length-live?'<div class="sum"><b>'+(p.policies.length-live)+'</b> not yet in force</div>':'')+'</div>';
-    m+='<h2 class="h2">Your policies</h2><div class="cards">'+p.policies.map(policyCard).join("")+'</div>';
+    var nSign=p.policies.filter(function(x){return !x.own;}).length, nOwn=p.policies.length-nSign;
+    m+='<div class="sumrow">'+(nOwn?'<div class="sum"><b>'+nOwn+'</b> your own policy</div>':'')+'<div class="sum"><b>'+nSign+'</b> polic'+(nSign===1?'y':'ies')+' you sign for</div><div class="sum"><b>'+sigs.length+'</b> waiting for your signature</div>'+(p.policies.length-live?'<div class="sum"><b>'+(p.policies.length-live)+'</b> not yet in force</div>':'')+'</div>';
+    var ordered=p.policies.filter(function(x){return x.own;}).concat(p.policies.filter(function(x){return !x.own;}));
+    m+='<h2 class="h2">Your policies</h2><div class="cards">'+ordered.map(policyCard).join("")+'</div>';
     m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature <span class="note">'+sigs.length+' total</span></h2>'+sigList(sigs,true)+'</div>'+doneList(allDone());
     m+=openQ("home")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("home","My Policies home","Lands on one policy’s dashboard with its values and a policy dropdown.")+'</details>';
   }
@@ -442,6 +453,21 @@ function render(){
   }
   else if(view==="faq"){ m+=hero("FAQs and Guides","Answers written for settlors: what you’re signing, why, and what happens next."); m+=specPanel("faq","FAQs and Guides","Kai-Zen FAQs written for the insured."); }
   else if(view==="contact"){ m+=hero("Contact Us","niw.info@simplicitygroup.com · 800-294-9940 ext. 807"); m+=specPanel("contact","Contact Us and Feedback","Same."); }
+  else if(pol&&pol.own){
+    var octx='<div class="ctxline"><b>Your own policy</b> · You’re the insured · Policy ending '+last4(pol.id)+' · '+esc(pol.product)+' · Policy year '+pol.year+'</div>';
+    var OWN_T={dash:"Your policy",pay:"Payments",docs:"Documents",ar:"Annual Review",perf:"Current Performance",ins:"Insured Details & Changes",claims:"Claims & Distributions"};
+    if(view==="dash"){
+      m+=hero("Your policy","This is your own policy. You’re the insured, so you see the standard ILIA Servicing Portal with full access, the same as any client.");
+      m+=octx+'<div class="kpis">'+
+        (pol.paid?'<div class="kpi paid"><small>Contribution</small><b>Paid in full</b></div>':'<div class="kpi"><small>Contribution</small><b style="font-size:15px">'+esc(pol.contrib)+'</b></div>')+
+        '<div class="kpi"><small>Last year’s policy growth rate</small><b>'+pol.growth+'</b></div><div class="kpi"><small>Estimated net death benefit</small><b>'+pol.ndb+'</b></div><div class="kpi"><small>Estimated net cash value</small><b>'+pol.cv+'</b></div><div class="kpi"><small>Policy anniversary date</small><b>'+pol.anniv+'</b></div></div>';
+      m+='<div class="oq"><h3>Open questions for this screen</h3><ol><li>When the authorized signer is also an insured, do they see their own policy here in one login, or switch to the client Servicing Portal for it?</li><li>On their own policy, everything works exactly as ILIA does today for an insured (no settlor rules). Agree?</li></ol></div>';
+    } else {
+      var Sx=SCREENS[view];
+      m+=hero(esc(OWN_T[view]),"Your own policy, ending "+last4(pol.id)+".")+octx+
+        '<div class="panel ownscr"><span class="tag t-act">Same as ILIA today</span><h2 class="h2" style="margin:8px 0 6px">'+esc(OWN_T[view])+'</h2><p style="margin:0 0 8px">This is ILIA’s existing client screen. As the insured, you see and do everything here, with no settlor limits.</p><p class="note" style="margin:0"><b>What’s on it today:</b> '+esc(Sx?Sx.today:"")+'</p></div>';
+    }
+  }
   else if(pol){
     var ctx='<div class="ctxline"><b>'+esc(pol.insured)+'</b> (insured) · Policy ending '+last4(pol.id)+' · '+esc(pol.product)+' · Policy year '+pol.year+' · You are the authorized signer</div>';
     if(view==="dash"){
