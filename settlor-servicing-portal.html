@@ -453,6 +453,7 @@ i.dw-ss{background:#6f4bd8!important;color:#fff;border-color:#6f4bd8!important;f
 .cn-s h4{margin:0 0 2px;font-size:16px;display:flex;align-items:center;gap:8px}.cn-s h4 span{font-size:12px;border-radius:10px;padding:0 8px;background:#fff;border:1px solid #ccc}
 .cn-l{margin:8px 0 0;padding-left:20px}.cn-l li{margin:0 0 9px;font-size:14px}.cn-l b{display:block}.cn-l span{color:#555;font-size:13.5px}
 .logo-id{font-size:12px;font-weight:600;color:#4b2fa8;margin:-10px 0 8px 12px;letter-spacing:.01em}
+.sg-sep{border-top:1px solid #d9dee8;margin:12px 0 4px}
 </style>
 
 <div class="mockbar">
@@ -662,7 +663,7 @@ function render(){
     var onP=function(x){return !pol||x.p.id===pol.id;}, sgs=allSign().filter(onP), dns=allDone().filter(onP);
     var scope=pol?(pol.own?'your own policy':esc(pol.insured)+'’s policy')+' <span class="sg-pol">ending '+last4(pol.id)+(pol.own?'':' · Insured: '+esc(pol.insured))+'</span>':'all associated policies';
     m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Signing Section for '+scope+' <span class="note">'+sgs.length+' waiting for your signature</span></h2>'+
-      (pol?'<p class="note" style="margin:0 0 8px">Showing this policy only. <button class="ilx-lnk" data-act="signAll">Show all associated policies ('+allSign().length+' waiting)</button></p>':'')+sigList(sgs,true)+'</div>'+doneList(dns)+openQ("sign")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("sign","Waiting for my signature","No such list. The insured signs only inside specific change requests.")+'</details>';
+      (pol?'<p class="note" style="margin:0 0 8px">Showing this policy only. <button class="ilx-lnk" data-act="signAll">Show all associated policies ('+allSign().length+' waiting)</button></p>':'')+'<div class="sg-sep" role="separator"></div>'+sigList(sgs,true)+'</div>'+doneList(dns)+openQ("sign")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("sign","Waiting for my signature","No such list. The insured signs only inside specific change requests.")+'</details>';
   }
   else if(view==="loggedout"){
     document.getElementById("main").innerHTML='<div class="loggedout"><div class="lo-card"><div class="logo"><b>ilia</b><span>SERVICING</span></div><h2>You\u2019re logged out</h2><p class="note">For your security, close this window if you\u2019re on a shared computer.</p><button class="btn primary" data-act="relogin">Log in again</button></div></div>';
