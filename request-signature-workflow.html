@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ILIA · Request Signature Workflow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --blue:#2f6fed; --blue-d:#245ad0; --blue-soft:#e8f0fe;
+    --ink:#2b3442; --muted:#6b7686; --faint:#9aa4b2;
+    --line:#e4e8ee; --bg:#f4f6f9; --surface:#fff;
+    --ok:#1f9d5b; --ok-soft:#e6f6ee; --warn:#b7791f; --warn-soft:#fbf1dc;
+    --red:#d64545; --red-soft:#fdecec;
+    --snapshot:#f7f9fc;
+    --sans:"Segoe UI",Roboto,system-ui,-apple-system,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px}
+  a{color:var(--blue);text-decoration:none;cursor:pointer}
+
+  /* ---- prototype ribbon + start over ---- */
+  #startover{position:fixed;left:0;top:46%;z-index:60;background:var(--ink);color:#fff;border:none;
+    font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:.03em;padding:12px 10px;
+    border-radius:0 10px 10px 0;cursor:pointer;writing-mode:vertical-rl;transform:rotate(180deg);box-shadow:0 3px 12px rgba(0,0,0,.22)}
+  #startover:hover{background:#000}
+  .proto{position:fixed;right:14px;bottom:12px;z-index:60;background:#fff7e6;border:1px solid var(--warn);
+    color:var(--warn);font-size:11px;font-weight:700;padding:5px 11px;border-radius:100px;letter-spacing:.03em}
+
+  /* ---- top bar ---- */
+  .topbar{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    padding:0 22px;gap:14px;position:sticky;top:0;z-index:30}
+  .logo{display:flex;align-items:flex-end;gap:9px}
+  .logo .word{font-weight:800;font-size:26px;color:#1f3a6e;letter-spacing:-.02em;line-height:.8;position:relative}
+  .logo .word .dots{position:absolute;left:2px;bottom:-7px;display:flex;gap:4px}
+  .logo .word .dots i{width:6px;height:6px;border-radius:50%}
+  .logo .sub{font-size:8.5px;line-height:1.25;color:#5a6b86;max-width:120px;font-weight:600}
+  .logo .sub b{color:var(--blue);font-weight:800;letter-spacing:.08em}
+  .welcome{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--ink);font-size:14px}
+  .welcome b{font-weight:700}
+  .welcome .pic{width:26px;height:26px;border-radius:50%;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;color:var(--blue);font-weight:700;font-size:12px}
+
+  /* ---- layout ---- */
+  .shell{display:grid;grid-template-columns:232px 1fr}
+  @media (max-width:900px){.shell{grid-template-columns:1fr}.side{display:none}}
+  .side{background:#fff;border-right:1px solid var(--line);min-height:calc(100vh - 60px);padding:10px 10px}
+  .navi{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:8px;color:#45506180;color:var(--ink);font-size:13.5px;cursor:pointer;margin-bottom:2px}
+  .navi .i{width:18px;text-align:center;color:var(--muted)}
+  .navi:hover{background:#f3f5f9}
+  .navi.active{background:var(--blue-soft);color:var(--blue);font-weight:700}
+  .navi.active .i{color:var(--blue)}
+  .navi.hot{position:relative}
+  .navi .dot{width:8px;height:8px;border-radius:50%;background:var(--blue);margin-left:auto}
+
+  /* ---- main ---- */
+  .main{padding:22px 26px 80px;min-width:0}
+  .selbar{margin-bottom:14px}
+  .selbar label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px}
+  .policy{display:flex;align-items:center;justify-content:space-between;max-width:420px;border:1px solid var(--line);
+    border-radius:7px;padding:10px 13px;background:#fff;color:var(--ink);font-size:13px}
+  .policy .cv{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+
+  .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;margin-bottom:18px}
+  .tab{padding:13px 16px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:2px solid transparent;cursor:pointer}
+  .tab:hover{color:var(--ink)}
+  .tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+
+  .layout{display:grid;grid-template-columns:1fr 310px;gap:20px;align-items:start}
+  @media (max-width:980px){.layout{grid-template-columns:1fr}}
+
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .search{flex:1;min-width:180px;max-width:320px;border:1px solid var(--line);border-radius:7px;padding:9px 12px;color:var(--faint);background:#fff;display:flex;align-items:center;gap:8px;font-size:13px}
+  .btn{border:none;border-radius:7px;padding:10px 16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .btn.primary{background:var(--blue);color:#fff}
+  .btn.primary:hover{background:var(--blue-d)}
+  .btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--blue)}
+  .btn.ghost:hover{background:var(--blue-soft)}
+  .btn.sign{background:#0a7d4b;color:#fff;position:relative}
+  .btn.sign:hover{background:#0a6b41}
+  .btn.sign::after{content:"new";position:absolute;top:-8px;right:-8px;background:var(--warn);color:#fff;font-size:8.5px;font-weight:800;padding:2px 5px;border-radius:100px;letter-spacing:.05em}
+  .btn.pulse{animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(10,125,75,.0)}50%{box-shadow:0 0 0 6px rgba(10,125,75,.14)}}
+
+  .alert{background:var(--red-soft);border:1px solid #f3c9c9;color:#b43b3b;border-radius:8px;padding:11px 14px;font-size:13px;display:flex;align-items:center;gap:9px;margin-bottom:12px}
+
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  thead th{text-align:left;font-size:11.5px;color:#54607140;color:var(--muted);font-weight:700;padding:12px 14px;background:#f6f8fb;border-bottom:1px solid var(--line)}
+  tbody td{padding:13px 14px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  .docname{color:var(--blue);font-weight:600}
+  .act{color:var(--blue);font-weight:600;margin-right:12px}
+  .act.red{color:var(--red)}
+  .pill{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:100px}
+  .pill.done{background:var(--ok-soft);color:var(--ok)}
+  .pill.pend{background:var(--warn-soft);color:var(--warn)}
+  tr.fresh{animation:fresh 2.4s ease}
+  @keyframes fresh{0%{background:#fff7df}60%{background:#fff7df}100%{background:#fff}}
+
+  /* ---- snapshot ---- */
+  .snap{background:var(--snapshot);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .snap h3{display:flex;align-items:center;gap:9px;margin:0 0 14px;font-size:15px}
+  .snap h3 .si{width:30px;height:30px;border-radius:7px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center}
+  .srow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+  .srow:last-child{border-bottom:none}
+  .srow .k{color:var(--muted)}
+  .srow .v{font-weight:600;text-align:right}
+  .srow .v.b{color:var(--blue)}
+
+  /* ---- modal ---- */
+  .scrim{position:fixed;inset:0;background:rgba(22,30,45,.5);z-index:50;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+  .scrim.open{display:flex}
+  .modal{background:#fff;border-radius:14px;width:100%;max-width:680px;box-shadow:0 24px 70px rgba(0,0,0,.3);overflow:hidden}
+  .mhead{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+  .mhead .mt{font-size:16px;font-weight:700}
+  .mhead .mx{margin-left:auto;cursor:pointer;color:var(--faint);font-size:20px;line-height:1}
+  .mhead .mt span{display:block;font-size:11.5px;color:var(--muted);font-weight:500;margin-top:2px}
+
+  .stepper{display:flex;padding:14px 22px;gap:6px;border-bottom:1px solid var(--line);background:#fafbfd;overflow-x:auto}
+  .stp{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--faint);font-weight:600;white-space:nowrap}
+  .stp .n{width:20px;height:20px;border-radius:50%;background:#e6eaf0;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .stp.on{color:var(--blue)} .stp.on .n{background:var(--blue);color:#fff}
+  .stp.ok{color:var(--ok)} .stp.ok .n{background:var(--ok);color:#fff}
+  .stp .arw{color:var(--line)}
+
+  .mbody{padding:22px}
+  .step{display:none}
+  .step.show{display:block}
+  .step h4{margin:0 0 4px;font-size:15px}
+  .step .lead{margin:0 0 16px;color:var(--muted);font-size:13px}
+
+  .tpl{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin-bottom:9px;cursor:pointer}
+  .tpl:hover{border-color:var(--blue);background:var(--blue-soft)}
+  .tpl.sel{border-color:var(--blue);background:var(--blue-soft);box-shadow:0 0 0 1px var(--blue) inset}
+  .tpl .ti{width:34px;height:34px;border-radius:8px;background:#eef1f6;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .tpl .tn{font-weight:700;font-size:13.5px}
+  .tpl .td{font-size:11.5px;color:var(--muted)}
+  .tpl .chk{margin-left:auto;color:var(--blue);font-weight:800;opacity:0}
+  .tpl.sel .chk{opacity:1}
+
+  .autobar{background:#f0f7ff;border:1px dashed var(--blue);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .autobar .txt{font-size:12.5px;color:#30527e}
+  .autobar .txt b{color:var(--blue)}
+  .autobar button{margin-left:auto}
+
+  .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media (max-width:560px){.fields{grid-template-columns:1fr}}
+  .fld{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fbfcfe}
+  .fld .fk{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:6px}
+  .fld .fk .src{font-size:8.5px;background:var(--ok-soft);color:var(--ok);padding:1px 5px;border-radius:100px;font-weight:700;opacity:0;transition:opacity .2s}
+  .fld .fv{font-size:13px;font-weight:600;margin-top:3px;color:var(--faint);min-height:17px}
+  .fld.filled{background:#f3fbf6;border-color:#bfe6cf}
+  .fld.filled .fv{color:var(--ink)}
+  .fld.filled .src{opacity:1}
+
+  .recipient{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px;background:#fbfcfe}
+  .recipient .rt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+  .rchip{display:flex;align-items:center;gap:11px}
+  .rchip .rav{width:34px;height:34px;border-radius:50%;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700}
+  .rchip .rn{font-weight:700;font-size:13.5px}
+  .rchip .re{font-size:12px;color:var(--muted)}
+
+  /* signing tracker */
+  .track{display:flex;flex-direction:column;gap:0;margin:8px 0 6px}
+  .trow{display:flex;gap:13px;align-items:flex-start;padding:4px 0}
+  .trow .td2{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--faint);flex:none;background:#fff;z-index:1}
+  .trow .tl{flex:none;width:26px;display:flex;justify-content:center;position:relative}
+  .trow .conn{position:absolute;top:-16px;width:2px;height:16px;background:var(--line)}
+  .trow .tc .ti{font-weight:700;font-size:13px}
+  .trow .tc .ts{font-size:11.5px;color:var(--muted)}
+  .trow.done .td2{border-color:var(--ok);background:var(--ok);color:#fff}
+  .trow.done .conn{background:var(--ok)}
+  .trow.cur .td2{border-color:var(--blue);color:var(--blue);animation:blink 1s infinite}
+  @keyframes blink{50%{opacity:.4}}
+
+  .env{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--muted);background:#f4f6f9;border-radius:6px;padding:7px 10px;margin-top:12px;display:inline-block}
+
+  .done-wrap{text-align:center;padding:14px 10px}
+  .done-wrap .big{width:64px;height:64px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 14px}
+  .done-wrap h4{font-size:18px;margin:0 0 6px}
+  .done-wrap p{color:var(--muted);font-size:13px;margin:0 auto;max-width:360px}
+
+  .mfoot{padding:16px 22px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;background:#fafbfd}
+  .mfoot .back{color:var(--muted);font-weight:600;font-size:13px;cursor:pointer}
+  .mfoot .sp{flex:1}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
+  .hint{font-size:11.5px;color:var(--warn);font-weight:600}
+</style>
+</head>
+<body>
+
+<button id="startover" onclick="resetAll()">↺ Start over</button>
+<div class="proto">PROTOTYPE · sample data</div>
+
+<!-- top bar -->
+<div class="topbar">
+  <div class="logo">
+    <div class="word">ilia<div class="dots"><i style="background:#e8573f"></i><i style="background:#2f9e63"></i><i style="background:#2f6fed"></i></div></div>
+    <div class="sub">Interactive Learning Information Assistant<br><b>ADMIN</b></div>
+  </div>
+  <div class="welcome">Welcome! <b>Jamin</b> <span class="pic">J</span></div>
+</div>
+
+<div class="shell">
+  <!-- sidebar -->
+  <nav class="side">
+    <div class="navi active"><span class="i">👥</span> Account Management</div>
+    <div class="navi"><span class="i">📝</span> Carrier Requests</div>
+    <div class="navi"><span class="i">🔔</span> Notifications</div>
+    <div class="navi"><span class="i">💠</span> Tranche Management</div>
+    <div class="navi"><span class="i">📂</span> Document Management</div>
+    <div class="navi hot"><span class="i">💲</span> Incoming Payments<span class="dot"></span></div>
+    <div class="navi"><span class="i">📐</span> Estimator Management</div>
+    <div class="navi"><span class="i">☰</span> ilia Product Type</div>
+    <div class="navi"><span class="i">🖊️</span> Signature Flows</div>
+    <div class="navi"><span class="i">🔑</span> SAML Configuration</div>
+    <div class="navi hot"><span class="i">📋</span> NIW Action Items<span class="dot"></span></div>
+    <div class="navi"><span class="i">📅</span> Events &amp; Webinars</div>
+  </nav>
+
+  <!-- main -->
+  <div class="main">
+    <div class="selbar">
+      <label>Select policy to view details</label>
+      <div class="policy"><span class="cv">3f59606b-580c-4eb8-9983-63238e1b35d0</span><span>▾</span></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab">Client Profile</div>
+      <div class="tab">Participant Status</div>
+      <div class="tab">Enrollment Details</div>
+      <div class="tab">My Action Items</div>
+      <div class="tab">Illustrations</div>
+      <div class="tab active">Documents</div>
+      <div class="tab">Notes</div>
+      <div class="tab">Giftor Details</div>
+      <div class="tab">Case Details</div>
+      <div class="tab">Tickets</div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <div class="toolbar">
+          <div class="search">🔍 Search</div>
+          <button class="btn sign pulse" onclick="openModal()">🖊️ Request Signature</button>
+          <button class="btn primary">Request Docs</button>
+          <button class="btn primary">Upload</button>
+        </div>
+
+        <div class="alert">⚠️ Documents need approval.</div>
+
+        <table>
+          <thead><tr><th>Name</th><th>Doc Type</th><th>File Type</th><th>Date Modified</th><th>Uploaded By</th><th>Actions</th></tr></thead>
+          <tbody id="doctable">
+            <tr><td class="docname">Carrier Illustration</td><td>N/A</td><td>PDF</td><td>11-04-2026</td><td>ANTHONY POLITI</td><td><a class="act">Approve</a><a class="act red">Replace</a>⬇</td></tr>
+            <tr><td class="docname">Client Proposal</td><td>N/A</td><td>PDF</td><td>11-04-2026</td><td>ANTHONY POLITI</td><td><a class="act">Approve</a><a class="act red">Replace</a>⬇</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- snapshot -->
+      <div class="snap">
+        <h3><span class="si">📇</span> Client Snapshot</h3>
+        <div class="srow"><span class="k">Current Status</span><span class="v b">Delivered</span></div>
+        <div class="srow"><span class="k">Agent</span><span class="v">Donna Politi</span></div>
+        <div class="srow"><span class="k">Tranche Number</span><span class="v">NA ✎</span></div>
+        <div class="srow"><span class="k">Agent Type</span><span class="v">Preferred</span></div>
+        <div class="srow"><span class="k">Carrier</span><span class="v">Allianz Life</span></div>
+        <div class="srow"><span class="k">Product Type</span><span class="v">Greatest Wealth Transfer</span></div>
+        <div class="srow"><span class="k">Target Amount</span><span class="v">$0.00</span></div>
+        <div class="srow"><span class="k">Gen 1 Name</span><span class="v b">ANTHONY POLITI</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div class="scrim" id="scrim">
+  <div class="modal">
+    <div class="mhead">
+      <div class="mt">Request Signature<span id="subhead">Send a document to the client for e-signature via DocuSign</span></div>
+      <div class="mx" onclick="closeModal()">✕</div>
+    </div>
+
+    <div class="stepper" id="stepper">
+      <div class="stp on" data-s="1"><span class="n">1</span>Template</div><span class="arw">›</span>
+      <div class="stp" data-s="2"><span class="n">2</span>Review data</div><span class="arw">›</span>
+      <div class="stp" data-s="3"><span class="n">3</span>Recipient</div><span class="arw">›</span>
+      <div class="stp" data-s="4"><span class="n">4</span>Signing</div><span class="arw">›</span>
+      <div class="stp" data-s="5"><span class="n">5</span>Done</div>
+    </div>
+
+    <div class="mbody">
+      <!-- STEP 1 -->
+      <div class="step show" data-step="1">
+        <h4>Choose a document template</h4>
+        <p class="lead">These come from ILIA's Document / Signature-Flow catalog. Pick the template to send for signing.</p>
+        <div id="tpllist">
+          <div class="tpl" onclick="pickTpl(this,'Premium Finance Loan Acknowledgement')"><div class="ti">📄</div><div><div class="tn">Premium Finance Loan Acknowledgement</div><div class="td">Client acknowledges loan terms &amp; collateral</div></div><div class="chk">✓</div></div>
+          <div class="tpl" onclick="pickTpl(this,'Policy Delivery Receipt')"><div class="ti">📬</div><div><div class="tn">Policy Delivery Receipt</div><div class="td">Confirms receipt of the delivered policy</div></div><div class="chk">✓</div></div>
+          <div class="tpl" onclick="pickTpl(this,'1040 / Tax Authorization')"><div class="ti">🧾</div><div><div class="tn">1040 / Tax Authorization</div><div class="td">Authorizes income verification</div></div><div class="chk">✓</div></div>
+          <div class="tpl" onclick="pickTpl(this,'GWT Giftor Consent Form')"><div class="ti">🎁</div><div><div class="tn">GWT Giftor Consent Form</div><div class="td">Greatest Wealth Transfer giftor consent</div></div><div class="chk">✓</div></div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step" data-step="2">
+        <h4>Review the data ILIA will merge</h4>
+        <p class="lead">These fields are required by <b id="tplname2">the template</b>. ILIA fills them from the case record — no re-typing.</p>
+        <div class="autobar">
+          <div class="txt"><b>Auto-populate from ILIA</b> — pull this case's data into the template fields.</div>
+          <button class="btn primary" id="autobtn" onclick="autoFill()">⚡ Auto-populate</button>
+        </div>
+        <div class="fields" id="fields">
+          <div class="fld" data-k="Client name" data-v="Anthony Politi"><div class="fk">Client name <span class="src">from ILIA</span></div><div class="fv">—</div></div>
+          <div class="fld" data-k="Client email" data-v="a.politi@example.com"><div class="fk">Client email <span class="src">from ILIA</span></div><div class="fv">—</div></div>
+          <div class="fld" data-k="Date of birth" data-v="04 / 18 / 1979"><div class="fk">Date of birth <span class="src">from ILIA</span></div><div class="fv">—</div></div>
+          <div class="fld" data-k="Policy number" data-v="3f59606b-…-1b35d0"><div class="fk">Policy number <span class="src">from ILIA</span></div><div class="fv">—</div></div>
+          <div class="fld" data-k="Carrier" data-v="Allianz Life"><div class="fk">Carrier <span class="src">from ILIA</span></div><div class="fv">—</div></div>
+          <div class="fld" data-k="Product type" data-v="Greatest Wealth Transfer"><div class="fk">Product type <span class="src">from ILIA</span></div><div class="fv">—</div></div>
+          <div class="fld" data-k="Face amount" data-v="$1,250,000"><div class="fk">Face amount <span class="src">from ILIA</span></div><div class="fv">—</div></div>
+          <div class="fld" data-k="Agent of record" data-v="Donna Politi"><div class="fk">Agent of record <span class="src">from ILIA</span></div><div class="fv">—</div></div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step" data-step="3">
+        <h4>Confirm recipient &amp; send</h4>
+        <p class="lead">ILIA fills the template, then sends it to the client through DocuSign for email signing.</p>
+        <div class="recipient">
+          <div class="rt">Signer</div>
+          <div class="rchip"><div class="rav">AP</div><div><div class="rn">Anthony Politi</div><div class="re">a.politi@example.com · signs via DocuSign email</div></div></div>
+        </div>
+        <div class="recipient">
+          <div class="rt">Document</div>
+          <div class="rchip"><div class="rav">📄</div><div><div class="rn" id="tplname3">—</div><div class="re">Pre-filled with 8 case fields from ILIA</div></div></div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step" data-step="4">
+        <h4>Signing in progress</h4>
+        <p class="lead">DocuSign envelope created. Track the status as the client signs.</p>
+        <div class="track" id="track">
+          <div class="trow done"><div class="tl"><div class="td2">✓</div></div><div class="tc"><div class="ti">Envelope sent</div><div class="ts">Emailed to a.politi@example.com</div></div></div>
+          <div class="trow cur" data-t="delivered"><div class="tl"><div class="conn"></div><div class="td2">2</div></div><div class="tc"><div class="ti">Delivered — client opened</div><div class="ts">Waiting for client…</div></div></div>
+          <div class="trow" data-t="signed"><div class="tl"><div class="conn"></div><div class="td2">3</div></div><div class="tc"><div class="ti">Signed by client</div><div class="ts">—</div></div></div>
+          <div class="trow" data-t="recorded"><div class="tl"><div class="conn"></div><div class="td2">4</div></div><div class="tc"><div class="ti">Signed PDF recorded to Documents tab</div><div class="ts">—</div></div></div>
+        </div>
+        <span class="env">DocuSign envelope: a1b2c3d4-sign-4f21-env</span>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step" data-step="5">
+        <div class="done-wrap">
+          <div class="big">✓</div>
+          <h4>Signed &amp; recorded</h4>
+          <p>The signed <b id="tplname5">document</b> is now in this case's Documents tab, marked <b>Completed</b>. Close to see it in the list.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mfoot">
+      <span class="back" id="backbtn" onclick="back()" style="visibility:hidden">‹ Back</span>
+      <span class="sp"></span>
+      <span class="hint" id="hint">Select a template to continue</span>
+      <button class="btn primary" id="nextbtn" onclick="next()" disabled>Continue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var state={step:1,tpl:null,filled:false};
+
+  function openModal(){document.getElementById('scrim').classList.add('open');}
+  function closeModal(){document.getElementById('scrim').classList.remove('open');}
+
+  function pickTpl(el,name){
+    document.querySelectorAll('.tpl').forEach(function(t){t.classList.remove('sel')});
+    el.classList.add('sel');
+    state.tpl=name;
+    document.getElementById('tplname2').textContent=name;
+    document.getElementById('tplname3').textContent=name;
+    document.getElementById('tplname5').textContent=name;
+    enableNext('Continue to review data');
+  }
+
+  function autoFill(){
+    document.querySelectorAll('#fields .fld').forEach(function(f){
+      f.classList.add('filled');
+      f.querySelector('.fv').textContent=f.getAttribute('data-v');
+    });
+    state.filled=true;
+    document.getElementById('autobtn').textContent='✓ Populated';
+    document.getElementById('autobtn').disabled=true;
+    enableNext('Continue to recipient');
+  }
+
+  function enableNext(hint){
+    var b=document.getElementById('nextbtn');b.disabled=false;
+    document.getElementById('hint').textContent=hint||'';
+  }
+  function disableNext(hint){
+    document.getElementById('nextbtn').disabled=true;
+    document.getElementById('hint').textContent=hint||'';
+  }
+
+  function gotoStep(n){
+    state.step=n;
+    document.querySelectorAll('.step').forEach(function(s){s.classList.toggle('show',+s.getAttribute('data-step')===n)});
+    // stepper
+    document.querySelectorAll('.stp').forEach(function(s){
+      var sv=+s.getAttribute('data-s');s.classList.remove('on','ok');
+      if(sv<n)s.classList.add('ok');else if(sv===n)s.classList.add('on');
+    });
+    document.getElementById('backbtn').style.visibility=(n>1&&n<5)?'visible':'hidden';
+    var nb=document.getElementById('nextbtn');
+    // per-step button + gating
+    if(n===1){nb.textContent='Continue';state.tpl?enableNext('Continue to review data'):disableNext('Select a template to continue');}
+    if(n===2){nb.textContent='Continue';state.filled?enableNext('Continue to recipient'):disableNext('Click Auto-populate to continue');}
+    if(n===3){nb.textContent='🖊️ Send for Signature';enableNext('Sends the DocuSign envelope');}
+    if(n===4){nb.textContent='Simulate client signing';enableNext('Advance the signing status');}
+    if(n===5){nb.textContent='Close & view document';enableNext('');}
+  }
+
+  function next(){
+    if(state.step===3){ // sending
+      gotoStep(4);return;
+    }
+    if(state.step===4){ // advance signing tracker
+      advanceSigning();return;
+    }
+    if(state.step===5){ // finish → add doc row
+      recordDoc();closeModal();return;
+    }
+    gotoStep(state.step+1);
+  }
+  function back(){ if(state.step>1&&state.step<5) gotoStep(state.step-1); }
+
+  var signStage=0; // 0=delivered pending
+  function advanceSigning(){
+    var rows=document.querySelectorAll('#track .trow');
+    if(signStage===0){ // delivered done, signed current
+      rows[1].classList.remove('cur');rows[1].classList.add('done');rows[1].querySelector('.ts').textContent='Opened just now';
+      rows[2].classList.add('cur');rows[2].querySelector('.ts').textContent='Client applying signature…';
+      document.getElementById('nextbtn').textContent='Confirm signature complete';
+      signStage=1;return;
+    }
+    if(signStage===1){ // signed done, recorded
+      rows[2].classList.remove('cur');rows[2].classList.add('done');rows[2].querySelector('.ts').textContent='Signed · '+new Date().toLocaleDateString();
+      rows[3].classList.remove('cur');rows[3].classList.add('done');rows[3].querySelector('.ts').textContent='Written back via DocuSign webhook';
+      gotoStep(5);signStage=2;return;
+    }
+  }
+
+  function recordDoc(){
+    if(document.getElementById('signedrow'))return;
+    var tb=document.getElementById('doctable');
+    var tr=document.createElement('tr');
+    tr.className='fresh';tr.id='signedrow';
+    tr.innerHTML='<td class="docname">'+(state.tpl||'Signed Document')+' <span class="pill done">Signed</span></td>'+
+      '<td>Signature</td><td>PDF</td><td>'+new Date().toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}).replace(/\//g,'-')+'</td>'+
+      '<td>Client via DocuSign</td><td><a class="act">View</a>⬇</td>';
+    tb.appendChild(tr);
+    tr.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+
+  function resetAll(){
+    closeModal();
+    state={step:1,tpl:null,filled:false};signStage=0;
+    document.querySelectorAll('.tpl').forEach(function(t){t.classList.remove('sel')});
+    document.querySelectorAll('#fields .fld').forEach(function(f){f.classList.remove('filled');f.querySelector('.fv').textContent='—';});
+    var ab=document.getElementById('autobtn');ab.textContent='⚡ Auto-populate';ab.disabled=false;
+    // reset tracker
+    var rows=document.querySelectorAll('#track .trow');
+    rows.forEach(function(r,i){r.classList.remove('done','cur');});
+    rows[0].classList.add('done');rows[1].classList.add('cur');
+    rows[1].querySelector('.ts').textContent='Waiting for client…';
+    rows[2].querySelector('.ts').textContent='—';rows[3].querySelector('.ts').textContent='—';
+    var sr=document.getElementById('signedrow');if(sr)sr.remove();
+    gotoStep(1);
+  }
+</script>
+</body>
+</html>
