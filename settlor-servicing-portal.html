@@ -462,7 +462,8 @@ i.dw-ss{background:#6f4bd8!important;color:#fff;border-color:#6f4bd8!important;f
     <button data-w="entity" aria-pressed="true">Entity signer · 3 policies</button>
     <button data-w="family" aria-pressed="false">Individual settlor · 3 family policies</button>
     <button data-w="individual" aria-pressed="false">Individual settlor · 1 policy</button>
-    <button data-w="insured" aria-pressed="false" title="Daniel is the insured on KZ-104233. Maria (his spouse) is the settlor and authorized signer. NIW turned on Daniel’s servicing access.">Insured (not settlor) · Daniel</button>
+    <button data-w="insured" aria-pressed="false" title="Daniel is the insured on KZ-104233. Maria (his spouse) is the settlor and authorized signer. NIW turned on Daniel’s servicing access.">Insured · signer is a person (Daniel)</button>
+    <button data-w="insuredEnt" aria-pressed="false" title="Sofia is the insured on KZ-104890. The settlor is Reyes Family Holdings LLC; its authorized signer is Laura Chen (CFO). NIW turned on Sofia’s servicing access.">Insured · signer is an entity (Sofia)</button>
   </div>
   <button class="embadge" onclick="openEmails()">✉ Email table <b>60</b></button>
   <button class="embadge dwbadge" onclick="openDocWf()">⇢ Doc Workflow</button>
@@ -512,9 +513,14 @@ var PEOPLE = {
         sign:[{id:"s6",type:"insreq",what:"Approve: legal name change requested by Daniel Reyes", due:"Nov 10, 2026", from:"Daniel Reyes", fromRole:"insured", submitted:"Oct 27, 2026"},{id:"s4",type:"dbr",what:"Death Benefit Reduction election + Hold Harmless", due:"Dec 15, 2026"}]}
     ]},
   /* Insured who is NOT the settlor, with servicing access turned on by NIW. Sees ILIA's client portal for their one policy. */
-  insured: {first:"Daniel", last:"Reyes", title:"Insured", settlor:"Maria Reyes", kind:"insured", rel:"Insured", signerName:"Maria Reyes", signerRel:"spouse", email:"daniel.reyes@example.com",
+  insured: {first:"Daniel", last:"Reyes", title:"Insured", settlor:"Maria Reyes", kind:"insured", rel:"Insured", signerName:"Maria Reyes", signerRel:"spouse", settlorKind:"individual", email:"daniel.reyes@example.com",
     policies:[
       {id:"KZ-104233", own:true, insured:"Daniel Reyes", product:"Kai-Zen · National Life (LSW)", tranche:79, inforce:true, year:3, paid:true, growth:"5.25%", ndb:"$1,584,955.77", cv:"$96,760.82", anniv:"11/03/2026", sign:[]}
+    ]},
+  /* Insured who is NOT the settlor; the settlor is an ENTITY. Only the entity pays, so the insured sees payment details but can't pay. */
+  insuredEnt: {first:"Sofia", last:"Reyes", title:"Insured", settlor:"Reyes Family Holdings LLC", kind:"insured", rel:"Insured", signerName:"Laura Chen", signerRel:"CFO", settlorKind:"entity", email:"sofia.reyes@example.com",
+    policies:[
+      {id:"KZ-104890", own:true, insured:"Sofia Reyes", product:"Kai-Zen · Allianz", tranche:81, inforce:true, year:2, paid:false, growth:"4.80%", ndb:"$1,120,400.00", cv:"$41,205.10", anniv:"02/14/2027", contrib:"Contribution due Feb 14, 2027", sign:[]}
     ]}
 };
 
@@ -571,7 +577,12 @@ function screenTag(s){ return ""; /* menu tags removed 11/2 */
 /* ---------- State ---------- */
 var who="entity", view="home", pol=null;
 function P(){return PEOPLE[who];}
-function isIns(){return who==="insured";}
+function insPayCard(){return '<div class="icard"><p class="s1"><strong>Manage Payments</strong></p><p class="cap">Payments for this policy are made by <b>'+esc(P().settlor)+'</b>, the settlor. You can see what’s due and the payment history here.</p><p class="ilx-dec">Insured, settlor is an entity: <b>no Make Payment</b>. Only the entity pays (through its authorized signer, '+esc(P().signerName)+'). When the settlor is a person, both the insured and the signer can pay.</p></div>';}
+function isIns(){return P().kind==="insured";}
+function insEnt(){return isIns()&&P().settlorKind==="entity";}
+/* "Settlor: Maria Reyes (spouse)" / "Settlor: Reyes Family Holdings LLC · signer Laura Chen (CFO)" */
+function insSettlorLine(){var p=P(); return insEnt()?'Settlor: '+p.settlor+' · signer '+p.signerName+' ('+p.signerRel+')':'Settlor: '+p.signerName+' ('+p.signerRel+')';}
+function insSignerWho(){var p=P(); return insEnt()?'the authorized signer for '+p.settlor+' (the settlor)':'the settlor and authorized signer';}
 var IREQ={}; /* insured request state per flow: wait | proc | done | declined */
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
 function last4(id){return id.replace(/\D/g,"").slice(-4);}
@@ -606,7 +617,7 @@ function ni(id,label,tag){return '<button class="ni" data-nav="'+id+'"'+(view===
 
 /* ---------- Main views ---------- */
 function whoCard(){var p=P(), ent=p.kind==="entity";
-  if(isIns()) return '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>Settlor: '+esc(p.signerName)+' ('+esc(p.signerRel)+')</small><span class="rb">Insured</span></div>';
+  if(isIns()) return '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+esc(insSettlorLine())+'</small><span class="rb">Insured</span></div>';
   return '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+(ent?esc(p.title)+' · '+esc(p.settlor):esc(p.rel))+'</small>'+
     (ent?'':'<span class="rb s">Settlor</span> ')+'<span class="rb">Authorized Signer</span></div>';}
 function hero(title,text){return '<section class="hero"><div class="hero-tx"><div class="bar"></div><h1>'+title+'</h1><p>'+text+'</p></div>'+whoCard()+'</section>';}
@@ -663,7 +674,7 @@ function render(){
   else if(view==="faq"){ m+=hero("FAQs and Guides","Answers written for settlors: what you’re signing, why, and what happens next."); m+=specPanel("faq","FAQs and Guides","Kai-Zen FAQs written for the insured."); }
   else if(view==="contact"){ m+=hero("Contact Us","niw.info@simplicitygroup.com · 800-294-9940 ext. 807"); m+=specPanel("contact","Contact Us and Feedback","Same."); }
   else if(pol&&pol.own){
-    if(isIns()) m+=insDev(view)+'<div class="viewbar insv" role="status"><span class="vb-ic" aria-hidden="true">👤</span><span class="vb-tx">Your policy · ending '+last4(pol.id)+' · <b>'+esc(p.signerName)+'</b> (settlor) is the authorized signer. Changes you request go to '+esc(p.signerName.split(" ")[0])+' to approve and sign.</span></div>';
+    if(isIns()) m+=insDev(view)+'<div class="viewbar insv" role="status"><span class="vb-ic" aria-hidden="true">👤</span><span class="vb-tx">Your policy · ending '+last4(pol.id)+' · <b>'+esc(p.signerName)+'</b> is '+esc(insSignerWho())+'. Changes you request go to '+esc(p.signerName.split(" ")[0])+' to approve and sign.'+(insEnt()?' Payments are made by '+esc(p.settlor)+'.':'')+'</span></div>';
     else m+='<div class="viewbar own" role="status"><span class="vb-ic" aria-hidden="true">👤</span><span class="vb-tx">Viewing <b>your own policy</b> (you’re the insured) · Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+' · '+esc(pol.product)+'</span><button class="btn sm" data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button></div>';
     var octx='<div class="ctxline"><b>Your own policy</b> · You’re the insured · Policy ending '+last4(pol.id)+' · '+esc(pol.product)+' · Policy year '+pol.year+'</div>';
     var OWN_T={dash:"Your policy",pay:"Payments",docs:"Documents",ar:"Annual Review",perf:"Current Performance",ins:"Insured Details & Changes",claims:"Claims & Distributions"};
@@ -702,14 +713,14 @@ function render(){
    Client view (roles 5/6): admin-only cards and buttons are not shown. Sample data only. */
 
 function ilxWho(){var p=P(), ent=p.kind==="entity";
-  if(isIns()) return '<div class="ilx-who"><b>'+esc(p.first+" "+p.last)+'</b><small>Settlor: '+esc(p.signerName)+' ('+esc(p.signerRel)+')</small><span class="rb">Insured</span></div>';
+  if(isIns()) return '<div class="ilx-who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+esc(insSettlorLine())+'</small><span class="rb">Insured</span></div>';
   return '<div class="ilx-who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+(ent?esc(p.title)+' · '+esc(p.settlor):esc(p.rel))+'</small>'+(ent?'':'<span class="rb s">Settlor</span> ')+'<span class="rb">Authorized Signer</span></div>';}
 function ilxHead(h,sub,h3){return '<div class="ilx-head"><div class="ilx-ht">'+(h3?'<h3 class="ih3">'+h+'</h3>':'<h2 class="ih2">'+h+'</h2>')+'<p class="sub1">'+sub+'</p></div>'+ilxWho()+'</div>';}
 function ilxSel(pol){var opts=P().policies.filter(function(x){return x.inforce;});
   return '<div class="ilx-sel"><p class="b1"><strong>Select policy to view details</strong></p><label class="ilx-out"><span>Policy Number</span><select id="ilxPol">'+opts.map(function(x){return '<option value="'+x.id+'"'+(x.id===pol.id?' selected':'')+'>'+esc(x.id)+(x.own?'':' · '+esc(x.insured))+'</option>';}).join("")+'</select></label></div>';}
 function ilxTable(cols,rows,empty){return '<div class="ilx-tw"><table class="ilx-t"><thead><tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join("")+'</tr></thead><tbody>'+(rows.length?rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join("")+'</tr>';}).join(""):'<tr><td colspan="'+cols.length+'" class="cap">'+empty+'</td></tr>')+'</tbody></table></div>';}
 function ilxTabs(key,labels){return '<div class="ilx-tabs" role="tablist">'+labels.map(function(l,i){return '<button role="tab" aria-selected="'+(tabState[key]===i)+'" data-tab="'+key+'" data-ti="'+i+'">'+l+'</button>';}).join("")+'</div>';}
-function ilxGate(pol,k,html){ if(pol.own) return html; var c=choice[k];
+function ilxGate(pol,k,html){ if(k==="payA"&&insEnt()) return insPayCard(); if(pol.own) return html; var c=choice[k];
   if(c==="Yes") return html; if(c==="Not decided") return '<span class="ilx-tbd">'+html+' <span class="tag t-ask">To decide</span></span>'; return ''; }
 function wfA(pol,k){if(isIns()&&/^(legal|pers|ben)$/.test(k)) return 'data-wf="'+k+'"'; return pol.own?'data-act="mock"':'data-wf="'+k+'"';}
 /* ---------- Authorized signer action workflows (associated policies) ----------
@@ -767,8 +778,9 @@ function insAlert(k,r){var sn=P().signerName, fn=sn.split(" ")[0], s=IREQ[k];
   if(s==="done") return '<div class="ilx-alert idone"><b>Request complete</b><span>'+esc(r.what)+' · completed Nov 10, 2026.</span></div>';
   if(s==="declined") return '<div class="ilx-alert idecl"><b>Request not approved</b><span>'+esc(sn)+' didn’t approve your request ('+esc(r.what)+'). Nothing changed on your policy. Questions? Contact '+esc(fn)+' or NIW at 800-294-9940 ext. 807.</span><span class="cap">Open question (D3): do we show the signer’s reason?</span></div>';
   return "";}
-function insDev(v){if(v!=="ins") return "";
-  return '<div class="devbar'+(devOpen?' open':'')+'"><button class="devb-hd" data-dev="toggle" aria-expanded="'+devOpen+'"><span class="devb-tag">DEV NOTES</span><span>Insured who <b>isn’t the settlor</b> viewing <b>Insured Details &amp; Changes</b></span><span class="devb-ch" aria-hidden="true">'+(devOpen?'▲':'▼')+'</span></button>'+(devOpen?'<div class="devb-bd"><div class="devb-g"><div><h5>Same as ILIA today</h5><ul><li>Every screen, card and field of the client Servicing Portal for their own policy</li><li>Edit Legal Name, Edit Personal Details, Edit Beneficiaries buttons</li></ul></div><div><h5>Different</h5><ul><li>No signature step for the insured: the last step is “Review and send for approval”</li><li>The request goes to the authorized signer’s Signing Section (Servicing Settlor (Authorized Signer) Portal), tagged “Requested by the insured”</li><li>New state before “Your Request is Processing”: “Waiting for authorized signer approval”</li><li>Declined state: “Request not approved”</li></ul></div><div><h5>Emails</h5><ul><li>#57 to the signer · #58–59 to the insured · #60 declined (open)</li></ul></div></div><p class="devb-ft">Applies when the policy’s settlor is someone else and NIW turned on the insured’s servicing access (Case Details). Tracker: PORTAL-IMPACTS.md section D.</p></div>':'')+'</div>';}
+function insDev(v){if(v==="pay") return '<div class="devbar"><div class="devb-hd" style="cursor:default"><span class="devb-tag">DEV NOTES</span><span>Insured who isn’t the settlor viewing <b>Payments</b>: '+(insEnt()?'settlor is an <b>entity</b>, so <b>no Make Payment</b> (details and history only). Only the entity pays.':'settlor is a <b>person</b>, so the insured <b>can pay</b> as today (the signer can pay too).')+'</span></div></div>';
+  if(v!=="ins") return "";
+  return '<div class="devbar'+(devOpen?' open':'')+'"><button class="devb-hd" data-dev="toggle" aria-expanded="'+devOpen+'"><span class="devb-tag">DEV NOTES</span><span>Insured who <b>isn’t the settlor</b> viewing <b>Insured Details &amp; Changes</b></span><span class="devb-ch" aria-hidden="true">'+(devOpen?'▲':'▼')+'</span></button>'+(devOpen?'<div class="devb-bd"><div class="devb-g"><div><h5>Same as ILIA today</h5><ul><li>Every screen, card and field of the client Servicing Portal for their own policy</li><li>Edit Legal Name, Edit Personal Details, Edit Beneficiaries buttons</li><li>Payments: can pay when the settlor is a person; when the settlor is an entity, no Make Payment (only the entity pays)</li></ul></div><div><h5>Different</h5><ul><li>No signature step for the insured: the last step is “Review and send for approval”</li><li>The request goes to the authorized signer’s Signing Section (Servicing Settlor (Authorized Signer) Portal), tagged “Requested by the insured”</li><li>New state before “Your Request is Processing”: “Waiting for authorized signer approval”</li><li>Declined state: “Request not approved”</li></ul></div><div><h5>Emails</h5><ul><li>#57 to the signer · #58–59 to the insured · #60 declined (open)</li></ul></div></div><p class="devb-ft">Applies when the policy’s settlor is someone else and NIW turned on the insured’s servicing access (Case Details). Tracker: PORTAL-IMPACTS.md section D.</p></div>':'')+'</div>';}
 var WF={
   payinfo:{title:"Make Payment", gate:"payA", info:function(){return '<div class="wf-ok"><span style="background:#ff9800">!</span><h4>Payments by the authorized signer are being designed</h4></div>'+
       '<p>We’ve decided the authorized signer <b>can</b> pay contributions on the policies they sign for. <b>How</b> it works still needs Kyle, our payments SME, before this button goes live.</p>'+
@@ -926,7 +938,7 @@ function openWf(k){wf={k:k,i:0,v:{},done:null}; renderWf();}
 function closeWf(){wf=null;document.getElementById("wfRoot").innerHTML="";}
 function wfSteps(){var st=WF[wf.k].steps(wf.v,pol); if(!isIns()) return st;
   return st.map(function(x){ if(!x.b.some(function(b){return b.sign;})) return x;
-    return {t:"Review and send for approval", b:x.b.filter(function(b){return !b.sign;}).concat([{info:'<div class="insroute"><b>'+esc(P().signerName)+' approves this, not you.</b><span>'+esc(P().signerName)+' is the settlor and authorized signer on your policy. When you send this request, '+esc(P().signerName.split(" ")[0])+' gets an email and approves and signs it in DocuSign. NIW starts work only after that.</span></div>'},{confirm:"ok2",text:"Send this request to "+esc(P().signerName)+" for approval."}])};});}
+    return {t:"Review and send for approval", b:x.b.filter(function(b){return !b.sign;}).concat([{info:'<div class="insroute"><b>'+esc(P().signerName)+' approves this, not you.</b><span>'+esc(P().signerName)+' is '+esc(insSignerWho())+' on your policy. When you send this request, '+esc(P().signerName.split(" ")[0])+' gets an email and approves and signs it in DocuSign. NIW starts work only after that.</span></div>'},{confirm:"ok2",text:"Send this request to "+esc(P().signerName)+" for approval."}])};});}
 function wfBlockOk(b){var v=wf.v;
   if(b.choice) return !!v[b.choice]; if(b.fields) return b.fields.every(function(x){return v[x[0]];}); if(b.file) return !!v[b.file];
   if(b.confirm) return !!v[b.confirm]; if(b.sign) return !!v[b.sign]; return true;}
@@ -1556,7 +1568,7 @@ var DOCWF=[
   {k:"pay",name:"Make Payment",screen:"Payments",doc:"No signed document. ePay shows an on-screen “I authorize NIW to debit…” click-through.",
     flows:{own:{status:"none",steps:[["I","Pays by check, wire or ePay (click-through authorization)"],["N","Marks it received"]],mails:"Payment receipt (exists)"},
       signer:{status:"none",steps:[["S","Pays like a giftor (GWT model). Logged “Paid by Authorized Signer”"],["N","Marks it received"]],mails:"Receipt to the payer · agent + IMO notices"},
-      insured:{status:"none",steps:[["I","Pays as today. No signer approval (confirm in D4)"]],mails:"Receipt (exists)"}}},
+      insured:{status:"none",steps:[["I","<b>Settlor is a person:</b> the insured can pay as today, and so can the signer. No approval needed"],["I","<b>Settlor is an entity:</b> the insured sees what’s due and the payment history, but has <b>no Make Payment</b>. Only the entity pays, through its authorized signer"]],mails:"Receipt to whoever paid"}}},
   {k:"upload",name:"Upload a document",screen:"Documents",doc:"No signing. Upload only (insured: Personal Documents; signer: Settlor Documents).",
     flows:{own:{status:"none",steps:[["I","Uploads a personal document"]],mails:"—"},
       signer:{status:"none",steps:[["S","Uploads a Settlor Document (trust certification, entity resolution, ID)"],["N","Approves it or marks Needs attention"]],mails:"#8 NIW · #9 approved · #10 needs attention"},
