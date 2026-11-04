@@ -355,6 +355,10 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:13px;z-index:30}
 @media (prefers-reduced-motion:no-preference){.drawer{animation:pop .18s ease-out}@keyframes pop{from{transform:translate(-50%,-48%)}to{transform:translate(-50%,-50%)}}}
+.cl-pop{position:fixed;right:20px;bottom:20px;z-index:70;width:min(440px,calc(100% - 32px));background:#fff;border:1px solid #c5d6f7;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.cl-hd{display:flex;align-items:center;justify-content:space-between}
+.cl-url{display:block;background:#f3f6fc;border:1px solid #dbe4f5;border-radius:6px;padding:6px 8px;font-size:12px;word-break:break-all}
+.cl-l{margin:0;padding-left:18px}.cl-l li{margin:2px 0}
 </style>
 
 <div class="mockbar">
@@ -435,6 +439,7 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 <div id="linkRoot"></div>
 <div id="inviteRoot"></div>
 <div id="sgRoot"></div>
+<div id="clRoot"></div>
 <div id="gaRoot"></div>
 <div id="emRoot"></div>
 <div id="toastRoot"></div>
@@ -491,6 +496,15 @@ function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return
 function mask(v,keep){if(!v)return "—";return v.replace(/\d(?=[\d-]{0,})/g,"•").slice(0,v.length-keep)+v.slice(-keep);}
 function today(){return "Oct 28, 2026";}
 function log(what){st.activity.unshift({who:"Jamin A.",what:what,when:today()});}
+/* Copy invite link: the same one-time link ILIA put in the invite email. Only while the invite is pending (sent / opened).
+   Resend makes a new link and the old one stops working; once the account is created the link is gone and so is the button. Sample URL only. */
+function inviteTok(o){if(!o.tok){var c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",t="";for(var k=0;k<10;k++)t+=c[Math.floor(Math.random()*c.length)];o.tok=t;}return o.tok;}
+function copyInvite(o,name){var url="https://app.ilia.example/create-password?invite="+inviteTok(o), email=o.email||(o.first||"").toLowerCase()+"."+(o.last||"").toLowerCase()+"@example.com";
+  try{navigator.clipboard.writeText(url).catch(function(){});}catch(e){}
+  log("Copied the invite link for "+name);
+  document.getElementById("clRoot").innerHTML='<div class="cl-pop" role="status"><div class="cl-hd"><b>Invite link copied</b><button class="btn sm" data-cl="x" aria-label="Close">✕</button></div><code class="cl-url">'+esc(url)+'</code><ul class="cl-l"><li>Send it only to <b>'+esc(name)+'</b> at <b>'+esc(email)+'</b>. It’s their personal link.</li><li>Same link as the invite email. <b>Resend</b> makes a new one and this one stops working.</li><li>It stops working, and Copy link goes away, once they create their account.</li></ul><p class="note" style="margin:0">Logged in the client’s activity history. Sample link.</p></div>';
+  clearTimeout(window.__cl); window.__cl=setTimeout(function(){document.getElementById("clRoot").innerHTML="";},9000);}
+document.addEventListener("click",function(ev){if(ev.target.closest('[data-cl="x"]'))document.getElementById("clRoot").innerHTML="";});
 function toast(msg){var r=document.getElementById("toastRoot");r.innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>';clearTimeout(window.__t);window.__t=setTimeout(function(){r.innerHTML="";},2400);}
 
 function setupHTML(){
@@ -531,7 +545,7 @@ function tracker(invite,d,advAct,i){
 function signerStatus(s){return invPill(s.access,s.invite,s.d,"No portal access");}
 function signerRow(s,i){
   var act = s.invite==="none" ? '<button class="btn sm primary" data-act="inviteModal" data-i="'+i+'">Invite Authorized Signer to Servicing Portal</button>'
-    : s.access&&(s.invite==="sent"||s.invite==="opened") ? '<button class="btn sm" data-act="resend" data-i="'+i+'">Resend invite</button>' : '';
+    : s.access&&(s.invite==="sent"||s.invite==="opened") ? '<button class="btn sm" data-act="copyLink" data-i="'+i+'" title="Copy this person’s invite link to send it yourself. Removed once they create their account.">🔗 Copy link</button><button class="btn sm" data-act="resend" data-i="'+i+'">Resend invite</button>' : '';
   var conf = confirmKey==="s"+i ? '<div class="confirm"><span>Turn off portal access for <b>'+esc(s.first+" "+s.last)+'</b>? They will no longer see or sign documents for any linked policy. No email is sent. You can turn it back on later.</span><button class="btn sm danger" data-act="sOffYes" data-i="'+i+'">Turn off access</button><button class="btn sm" data-act="cancel">Cancel</button></div>' : "";
   return '<div class="arow"><div class="who"><div class="nm">'+esc(s.first+" "+s.last)+' <span class="note">· '+esc(s.title)+'</span></div><div class="meta">'+esc(s.email)+' · '+esc(s.phone)+'</div></div>'+
     '<div class="acc"><span class="acc-l">Servicing Settlor (Authorized Signer) Portal Access</span>'+sw(!!s.access,"sToggle",i,"Servicing Settlor (Authorized Signer) Portal Access for "+s.first+" "+s.last)+'</div>'+
@@ -549,7 +563,7 @@ function policiesHTML(){
   var rows = st.policies.map(function(p,i){
     var accCell, statCell, actCell="";
     if(isSigner(p)){accCell='<span class="note">Has access as a signer</span>';statCell='<span class="pill p-active">Active</span>';}
-    else {accCell=sw(!!p.insAccess,"pToggle",i,"Servicing Portal Access for "+p.first+" "+p.last);statCell=insStatus(p);if(p.insAccess&&(p.insInvite==="sent"||p.insInvite==="opened"))actCell='<button class="btn link sm" data-act="pResend" data-i="'+i+'">Resend</button>';if(p.insAccess&&NEXT[p.insInvite])actCell+='<button class="btn link sm mocklink" data-act="pAdv" data-i="'+i+'" title="Mock only: simulate what the insured does next">Mock: next ›</button>';}
+    else {accCell=sw(!!p.insAccess,"pToggle",i,"Servicing Portal Access for "+p.first+" "+p.last);statCell=insStatus(p);if(p.insAccess&&(p.insInvite==="sent"||p.insInvite==="opened"))actCell='<button class="btn link sm" data-act="pCopyLink" data-i="'+i+'" title="Copy this insured’s invite link. Removed once they create their account.">🔗 Copy link</button><button class="btn link sm" data-act="pResend" data-i="'+i+'">Resend</button>';if(p.insAccess&&NEXT[p.insInvite])actCell+='<button class="btn link sm mocklink" data-act="pAdv" data-i="'+i+'" title="Mock only: simulate what the insured does next">Mock: next ›</button>';}
     var unlink = p.self?'':'<button class="btn link sm" data-act="unlink" data-i="'+i+'">Unlink</button>';
     var conf = confirmKey==="p"+i ? '<tr><td colspan="7"><div class="confirm" style="background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)"><span>Give <b>'+esc(p.first+" "+p.last)+'</b> portal access to policy <span class="mono">'+esc(p.policy)+'</span>? We will email them an invite. They will see this policy only.</span><button class="btn sm primary" data-act="pOnYes" data-i="'+i+'">Give access &amp; send invite</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>'
       : confirmKey==="u"+i ? '<tr><td colspan="7"><div class="confirm"><span>Unlink <span class="mono">'+esc(p.policy)+'</span> from this settlor? The policy goes back to <b>“the insured is the settlor”</b>, so <b>'+esc(p.first+" "+p.last)+'</b> becomes its authorized signer. If the settlor should be someone else, open that policy’s Case Details and use Edit settlor instead.</span><button class="btn sm danger" data-act="unlinkYes" data-i="'+i+'">Unlink</button><button class="btn sm" data-act="cancel">Cancel</button></div></td></tr>' : '';
@@ -690,12 +704,14 @@ document.getElementById("view").addEventListener("click",function(ev){
   else if(a==="ceOpen"){openCe();return;}
   else if(a==="csOpen"){openCs();return;}
   else if(a==="mockInforce"){insInforce=!insInforce;}
-  else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
+  else if(a==="copyLink"){copyInvite(s,nm(s));return;}
+  else if(a==="pCopyLink"){copyInvite(pp,nm(pp));return;}
+  else if(a==="resend"){s.invite="sent";s.d={sent:"Oct 28"};s.tok=null;log("Resent settlor portal invite to "+nm(s)+" (new link)");toast("Invite resent to "+s.email);}
   else if(a==="sAdv"||a==="pAdv"){var o=a==="sAdv"?s:pp, key=a==="sAdv"?"invite":"insInvite", nx=NEXT[o[key]]; o[key]=nx; o.d=o.d||{}; o.d[nx==="active"?"login":nx]="Oct 28";
     var words={opened:"Opened the portal invite email",created:"Created their portal account",active:"Logged in to the portal"}; st.activity.unshift({who:nm(o),what:words[nx],when:today()}); toast(nm(o)+": "+words[nx].toLowerCase());}
   else if(a==="pToggle"){ if(pp.insAccess){pp.insAccess=false;log("Turned off "+nm(pp)+"’s portal access to "+pp.policy);toast("Access turned off");} else openGa({mode:"give",first:pp.first,last:pp.last,policy:pp.policy,invited:pp.insInvite!=="none",signer:st.signers[0]?st.signers[0].first+" "+st.signers[0].last:""},function(){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 28"};}log("Gave "+nm(pp)+" portal access to "+pp.policy+(pp.insInvite==="sent"?" and sent an invite":""));render();toast("Access on. Invite emailed to "+pp.first+".");}); }
   else if(a==="pOnYes"){pp.insAccess=true;if(pp.insInvite==="none"){pp.insInvite="sent";pp.d={sent:"Oct 28"};}confirmKey="";log("Gave "+nm(pp)+" portal access to "+pp.policy+" and sent an invite");toast("Access on. Invite emailed to "+pp.first+".");}
-  else if(a==="pResend"){pp.insInvite="sent";pp.d={sent:"Oct 28"};log("Resent portal invite to "+nm(pp));toast("Invite resent");}
+  else if(a==="pResend"){pp.insInvite="sent";pp.d={sent:"Oct 28"};pp.tok=null;log("Resent portal invite to "+nm(pp));toast("Invite resent");}
   else if(a==="openLink"){openLink();return;}
   else if(a==="unlink"){confirmKey="u"+i;}
   else if(a==="unlinkYes"){st.policies.splice(i,1);confirmKey="";log("Unlinked policy "+pp.policy+"; settlor set back to the insured ("+nm(pp)+")");toast("Policy unlinked");}
