@@ -600,13 +600,14 @@ function renderNav(){
   var h='<div class="logo"><b>ilia</b><span>SERVICING</span></div><div class="logo-id">Settlor - Authorized Signer</div>'+
     '<div class="navsec">My work</div>'+
     ni("home","My Policies", p.policies.length>1?'<span class="tag t-view">'+p.policies.length+'</span>':'')+
-    ni("sign","Signing Section", n?'<span class="tag t-cnt">'+n+'</span>':'');
+    (pol?'':ni("sign","Signing Section (All policies)", n?'<span class="tag t-cnt">'+n+'</span>':''));
+  var pn=pol?pending(pol).length:0, signHere=pol?ni("sign","Signing Section ("+esc(pol.insured)+")", pn?'<span class="tag t-cnt">'+pn+'</span>':''):'';
   if(pol&&pol.own){
-    h+='<div class="navsec">Your policy</div>'+
+    h+='<div class="navsec">Your policy</div>'+signHere+
       ni("dash","Policy Dashboard","")+ni("pay","Payments","")+ni("docs","Documents","")+ni("ar","Annual Review","")+
       ni("perf","Current Performance","")+ni("ins","Insured Details &amp; Changes","")+ni("claims","Claims &amp; Distributions","");
   } else if(pol){
-    h+='<div class="navsec">This policy</div>'+
+    h+='<div class="navsec">This policy</div>'+signHere+
       ni("dash","Policy Dashboard",screenTag("dash"))+ni("pay","Payments",screenTag("pay"))+ni("docs","Documents",screenTag("docs"))+ni("ar","Annual Review",screenTag("ar"))+
       ni("perf","Current Performance",screenTag("perf"))+ni("ins","Insured Details &amp; Changes",screenTag("ins"))+ni("claims","Claims & Distributions",screenTag("claims"));
   }
