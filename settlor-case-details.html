@@ -642,7 +642,7 @@ function render(){
   var v=document.getElementById("view"), h=st.type==="insured"?setupHTML():setupHTML().replace(/^<div class="setup">[\s\S]*?<\/div><div class="signer-banner">/,'<div class="signer-banner">');
   document.querySelector(".card").classList.add("ilia");
   if(st.type==="insured"){
-    v.innerHTML='<div class="ilia-sd"><h3 class="ilia-h">Settlor Details <span class="isins">Is the insured</span><button class="btn sm cs-btn" data-act="csOpen" title="ILIA has the insured as the settlor, but the trust documents name someone else">⇄ Settlor isn’t the insured</button></h3><div class="ilia-grid">'+
+    v.innerHTML='<div class="ilia-sd"><h3 class="ilia-h">Settlor Details <span class="isins">Is the insured - authorized signer</span><button class="btn sm cs-btn" data-act="csOpen" title="ILIA has the insured as the settlor, but the trust documents name someone else">⇄ Settlor isn’t the insured</button></h3><div class="ilia-grid">'+
       iliaFld("Settlor First Name",POLICY.first)+iliaFld("Middle Name","")+iliaFld("Last Name",POLICY.last)+
       iliaFld("Settlor Email Address","daniel.reyes@example.com")+iliaFld("Settlor Phone Number","(214) 555-0132")+iliaFld("Settlor Social","•••-••-4417")+
       relSel("Self")+
