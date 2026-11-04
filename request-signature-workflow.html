@@ -156,8 +156,16 @@
   .recipient .rt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
   .rchip{display:flex;align-items:center;gap:11px}
   .rchip .rav{width:34px;height:34px;border-radius:50%;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700}
-  .rchip .rn{font-weight:700;font-size:13.5px}
+  .rchip .rn{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .rchip .re{font-size:12px;color:var(--muted)}
+  .rolechip{font-size:9.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:100px;background:var(--blue-soft);color:var(--blue)}
+  .rolechip.ins{background:#eef1f6;color:var(--muted)}
+  .segs{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+  .seg{padding:7px 14px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}
+  .seg+.seg{border-left:1px solid var(--line)}
+  .seg.sel{background:var(--blue);color:#fff}
+  .sgnote{margin-top:11px;background:var(--warn-soft);border:1px solid #ecd9a8;color:#8a6412;border-radius:8px;padding:9px 12px;font-size:11.5px;line-height:1.45;display:none}
+  .sgnote.show{display:block}
 
   /* signing tracker */
   .track{display:flex;flex-direction:column;gap:0;margin:8px 0 6px}
@@ -325,10 +333,15 @@
       <!-- STEP 3 -->
       <div class="step" data-step="3">
         <h4>Confirm recipient &amp; send</h4>
-        <p class="lead">ILIA fills the template, then sends it to the client through DocuSign for email signing.</p>
+        <p class="lead">ILIA routes the request to the policy's <b>signer of record</b> — the authorized signer when that isn't the insured.</p>
         <div class="recipient">
-          <div class="rt">Signer</div>
-          <div class="rchip"><div class="rav">AP</div><div><div class="rn">Anthony Politi</div><div class="re">a.politi@example.com · signs via DocuSign email</div></div></div>
+          <div class="rt">Signer of record</div>
+          <div class="segs">
+            <div class="seg sel" data-sg="auth" onclick="setSigner('auth',this)">Authorized Signer</div>
+            <div class="seg" data-sg="insured" onclick="setSigner('insured',this)">Insured</div>
+          </div>
+          <div class="rchip" style="margin-top:12px"><div class="rav" id="sgav">RP</div><div><div class="rn"><span id="sgname">Robert Politi</span> <span class="rolechip" id="sgrole">Authorized Signer</span></div><div class="re"><span id="sgemail">r.politi@example.com</span> · signs via DocuSign email</div></div></div>
+          <div class="sgnote show" id="sgnote">⚠️ This policy is tied to an <b>authorized signer who is not the insured</b> (insured: <b>Anthony Politi</b>). ILIA sends the signature request to the authorized signer of record.</div>
         </div>
         <div class="recipient">
           <div class="rt">Document</div>
@@ -341,7 +354,7 @@
         <h4>Signing in progress</h4>
         <p class="lead">DocuSign envelope created. Track the status as the client signs.</p>
         <div class="track" id="track">
-          <div class="trow done"><div class="tl"><div class="td2">✓</div></div><div class="tc"><div class="ti">Envelope sent</div><div class="ts">Emailed to a.politi@example.com</div></div></div>
+          <div class="trow done"><div class="tl"><div class="td2">✓</div></div><div class="tc"><div class="ti">Envelope sent</div><div class="ts" id="sentto">Emailed to r.politi@example.com</div></div></div>
           <div class="trow cur" data-t="delivered"><div class="tl"><div class="conn"></div><div class="td2">2</div></div><div class="tc"><div class="ti">Delivered — client opened</div><div class="ts">Waiting for client…</div></div></div>
           <div class="trow" data-t="signed"><div class="tl"><div class="conn"></div><div class="td2">3</div></div><div class="tc"><div class="ti">Signed by client</div><div class="ts">—</div></div></div>
           <div class="trow" data-t="recorded"><div class="tl"><div class="conn"></div><div class="td2">4</div></div><div class="tc"><div class="ti">Signed PDF recorded to Documents tab</div><div class="ts">—</div></div></div>
@@ -369,7 +382,26 @@
 </div>
 
 <script>
-  var state={step:1,tpl:null,filled:false};
+  var state={step:1,tpl:null,filled:false,signer:'auth'};
+  var SIGNERS={
+    auth:{name:'Robert Politi',email:'r.politi@example.com',initials:'RP',role:'Authorized Signer',roleClass:'',note:true},
+    insured:{name:'Anthony Politi',email:'a.politi@example.com',initials:'AP',role:'Insured',roleClass:'ins',note:false}
+  };
+  function setSigner(which,el){
+    state.signer=which;
+    document.querySelectorAll('.seg').forEach(function(s){s.classList.remove('sel')});
+    if(el)el.classList.add('sel');
+    refreshSigner();
+  }
+  function refreshSigner(){
+    var s=SIGNERS[state.signer];
+    document.getElementById('sgname').textContent=s.name;
+    document.getElementById('sgemail').textContent=s.email;
+    document.getElementById('sgav').textContent=s.initials;
+    var rc=document.getElementById('sgrole');rc.textContent=s.role;rc.className='rolechip '+s.roleClass;
+    document.getElementById('sgnote').classList.toggle('show',s.note);
+    document.getElementById('sentto').textContent='Emailed to '+s.email;
+  }
 
   function openModal(){document.getElementById('scrim').classList.add('open');}
   function closeModal(){document.getElementById('scrim').classList.remove('open');}
@@ -466,7 +498,9 @@
 
   function resetAll(){
     closeModal();
-    state={step:1,tpl:null,filled:false};signStage=0;
+    state={step:1,tpl:null,filled:false,signer:'auth'};signStage=0;
+    document.querySelectorAll('.seg').forEach(function(s){s.classList.toggle('sel',s.getAttribute('data-sg')==='auth')});
+    refreshSigner();
     document.querySelectorAll('.tpl').forEach(function(t){t.classList.remove('sel')});
     document.querySelectorAll('#fields .fld').forEach(function(f){f.classList.remove('filled');f.querySelector('.fv').textContent='—';});
     var ab=document.getElementById('autobtn');ab.textContent='⚡ Auto-populate';ab.disabled=false;
