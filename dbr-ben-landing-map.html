@@ -87,7 +87,7 @@
       return e.offsetParent!==null && e.textContent.trim().toLowerCase().indexOf(t)===0 && e.textContent.trim().length<70;
     });
   }
-  function blockOf(el, mode){ if(!el) return null; if(mode==='section') return el; return el.closest('td,.fld,tr,li,p,.f2') || el.parentElement; }
+  function blockOf(el, mode){ if(!el) return null; if(mode==='section') return el; return el.closest('.opt,td,.fld,tr,li,p,.f2') || el.parentElement; }
 
   // ---- highlight config ----
   var CASE_LABELS=[
@@ -106,7 +106,9 @@
     {text:'Understanding Your In-Force', mode:'section', color:SCRAP, tip:'SCRAPED — in-force crediting rate auto-fills this section.',
       title:'Understanding Your In-Force Illustration', step:'The scraped in-force crediting rate fills this whole section — the rate the projections are based on.'},
     {text:'Your Options at a Glance', mode:'section', color:SCRAP, tip:'SCRAPED — per-option comparison values (cash value, income, DB@90, low points).',
-      title:'Your Options at a Glance', step:'The per-option comparison the client sees — cash value, supplemental income, death benefit at age 90, and low points — all from your scrape.'}
+      title:'Your Options at a Glance', step:'The per-option comparison the client sees — cash value, supplemental income, death benefit at age 90, and low points — all from your scrape.'},
+    {text:'Full Planned Reduction', mode:'field', color:DERIV, tip:'DERIVED — your full / half reduction amounts fill the client’s actual election choices.',
+      title:'Election choices (Full / Half amounts)', step:'Your derived full and half reduction amounts (term_reduction_full / term_reduction_half) also populate the client’s selectable choices here. "No Term Reduction" = $0; a non-standard amount is routed to a specialist (a phone call), not a field.'}
   ];
 
   function injectInto(iframe, opts, after){
