@@ -82,7 +82,7 @@
     {code:'term_reduction_full', color:DERIV, tip:'DERIVED — the full / half reduction amounts, with the term-vs-base split.'}
   ];
 
-  function injectInto(iframe, labels, starts, ftags){
+  function injectInto(iframe, labels, starts, ftags, after){
     var doc;
     try{ doc = iframe.contentDocument || iframe.contentWindow.document; }catch(e){ return false; }
     if(!doc || !doc.body) return false;
@@ -116,17 +116,29 @@
       Array.prototype.slice.call(doc.querySelectorAll('.ftag')).filter(function(e){return e.textContent.trim()===s.code;})
         .forEach(function(el){ var b=el.closest('tr, .fld, li, p, .f2') || el.parentElement; style(b, s.color, s.tip); });
     });
+    if(after){ try{ after(doc); }catch(e){} }
     return true;
   }
 
-  function wire(iframe, labels, starts, ftags){
+  function wire(iframe, labels, starts, ftags, after){
     var tries=0;
-    function go(){ tries++; if(injectInto(iframe,labels,starts,ftags)) return; if(tries<40) setTimeout(go,150); }
+    function go(){ tries++; if(injectInto(iframe,labels,starts,ftags,after)) return; if(tries<40) setTimeout(go,150); }
     iframe.addEventListener('load', function(){ tries=0; go(); });
     go();
   }
-  wire(document.getElementById('fCase'), CASE_LABELS, CASE_STARTS, null);
-  wire(document.getElementById('fForm'), null, null, FORM_FTAGS);
+  // Case Details: make sure a DBR-eligible year is open and scrolled into view
+  function openDbrYear(doc){
+    var h=Array.prototype.slice.call(doc.querySelectorAll('.dbr-h')).filter(function(x){return x.offsetParent!==null;})[0];
+    if(!h){ // none open — open the first year that has a DBR section
+      var heads=Array.prototype.slice.call(doc.querySelectorAll('.yr-head'));
+      for(var i=0;i<heads.length;i++){ heads[i].click();
+        h=Array.prototype.slice.call(doc.querySelectorAll('.dbr-h')).filter(function(x){return x.offsetParent!==null;})[0];
+        if(h) break; else heads[i].click(); }
+    }
+    if(h){ var card=h.closest('.cd-dbr')||h.parentElement; (card||h).scrollIntoView({block:'start'}); }
+  }
+  wire(document.getElementById('fCase'), CASE_LABELS, CASE_STARTS, null, openDbrYear);
+  wire(document.getElementById('fForm'), null, null, FORM_FTAGS, null);
 
   var fCase=document.getElementById('fCase'), fForm=document.getElementById('fForm');
   var bCase=document.getElementById('btnCase'), bForm=document.getElementById('btnForm');
