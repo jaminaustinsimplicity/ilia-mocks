@@ -12,7 +12,7 @@
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);line-height:1.45}
   .wrap{max-width:1120px;margin:0 auto;padding:20px 18px 48px}
   h1{font-size:21px;margin:0 0 4px;letter-spacing:-.01em}
-  .sub{margin:0 0 4px;color:var(--muted);font-size:13px;max-width:80ch}
+  .sub{margin:0 0 4px;color:var(--muted);font-size:13px;max-width:82ch}
   .sub b{color:var(--ink)}
   .bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:16px 0 10px}
   .toggle{display:inline-flex;border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;background:var(--surface)}
@@ -25,19 +25,25 @@
   .k.scrap .sw{border-color:var(--scrap)} .k.scrap b{color:var(--scrap)}
   .k.deriv .sw{border-color:var(--deriv)} .k.deriv b{color:var(--deriv)}
   .k.ilia .sw{border-color:var(--ilia)} .k.ilia b{color:var(--ilia)}
-  .hint{font-size:12px;color:var(--muted);margin:0 0 10px}
-  .hint b{color:var(--ink)}
-  .frame-shell{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 1px 2px rgba(17,24,39,.06),0 10px 30px rgba(17,24,39,.07);overflow:hidden}
-  .frame-shell iframe{width:100%;height:78vh;min-height:620px;border:0;display:block;background:#fff}
+  .stepper{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:6px 0 0}
+  .stepper button{border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);font:700 13px var(--ff);padding:8px 15px;border-radius:8px;cursor:pointer}
+  .stepper button:hover{border-color:var(--marissa);color:var(--marissa)}
+  .stepper .count{font-size:12px;color:var(--muted);font-weight:700;margin-left:2px}
+  .stepper .tiphelp{font-size:11.5px;color:var(--muted)}
+  .infobar{display:flex;gap:11px;align-items:flex-start;margin:10px 0 2px;padding:12px 15px;border:1px solid var(--border);border-left:4px solid var(--marissa);border-radius:10px;background:var(--surface)}
+  .infobar .cat{flex:none;font:800 10px var(--ff);letter-spacing:.04em;color:#fff;background:var(--marissa);border-radius:20px;padding:3px 10px;margin-top:1px}
+  .infobar .it{font-weight:700;font-size:13.5px;display:block;margin-bottom:2px}
+  .infobar .tx{font-size:12.5px;color:var(--muted);line-height:1.45}
+  .frame-shell{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 1px 2px rgba(17,24,39,.06),0 10px 30px rgba(17,24,39,.07);overflow:hidden;margin-top:10px}
+  .frame-shell iframe{width:100%;height:72vh;min-height:560px;border:0;display:block;background:#fff}
   .frame-shell iframe.hidden{display:none}
   .foot{font-size:11.5px;color:var(--muted);margin-top:10px}
-  @media(max-width:640px){.frame-shell iframe{height:72vh}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>DBR — Where Ben's Calculator Data Lands</h1>
-  <p class="sub">The two screens that consume the scraper / estimator output. <b>Hover any highlighted field</b> to see what your service provides for it. Toggle between the client election form and the internal Case Details DBR section.</p>
+  <p class="sub">The two screens that consume the scraper / estimator output. Use <b>Prev / Next</b> to step through each field your service feeds — the info bar explains what's needed for the selected field. Toggle between the client election form and the internal Case Details DBR section.</p>
 
   <div class="bar">
     <div class="toggle" role="tablist">
@@ -51,7 +57,16 @@
     </div>
   </div>
 
-  <p class="hint">Highlighted = comes from your service. Everything unmarked is already in ILIA (feed, original design, or user-entered). <b>Hover for the per-field note.</b></p>
+  <div class="stepper">
+    <button id="prev">&#9664; Prev</button>
+    <button id="next">Next field &#9654;</button>
+    <span class="count" id="stepCount">1 / 1</span>
+    <span class="tiphelp">walk each field your service feeds — or hover any highlighted field</span>
+  </div>
+  <div class="infobar">
+    <span class="cat" id="infoCat">FIELD</span>
+    <span><span class="it" id="infoTitle">Loading the map&hellip;</span><span class="tx" id="infoText">Use Prev / Next to walk each highlighted field your service feeds.</span></span>
+  </div>
 
   <div class="frame-shell">
     <iframe id="fCase" src="dbr-yearly-breakdown.html" title="Case Details DBR section"></iframe>
@@ -63,89 +78,119 @@
 <script>
 (function(){
   var SCRAP='#0e7490', DERIV='#7a4fd6';
-  // Case Details DBR section — matched by field label text
+  function col(cat){ return cat==='DERIVED'?DERIV:SCRAP; }
+
+  // ---- ambient highlight + hover tooltip injection (shows the full picture) ----
   var CASE_LABELS=[
     {text:'In-force rate', color:SCRAP, tip:'SCRAPED — the current in-force crediting rate, pulled from the illustration.'},
-    {text:'Low point', color:SCRAP, tip:'SCRAPED — low-point cash surrender value for this option. Month = (policy year × 12) + 1, run at 0%.'},
-    {text:'Reduction amount', color:DERIV, tip:'DERIVED — your service computes this reduction amount under the 50% cap, term-rider-first.'},
+    {text:'Low point', color:SCRAP, tip:'SCRAPED — low-point cash surrender value. Month = (policy year × 12) + 1, run at 0%.'},
+    {text:'Reduction amount', color:DERIV, tip:'DERIVED — your service computes this amount under the 50% cap, term-rider-first.'},
     {text:'Low cash value', color:SCRAP, tip:'SCRAPED — low cash value from the elected illustration.'},
     {text:'Income / yr', color:SCRAP, tip:'SCRAPED — projected annual income from the illustration.'},
     {text:'Death benefit at age 90', color:SCRAP, tip:'SCRAPED — death benefit at age 90 from the illustration.'}
   ];
-  var CASE_STARTS=[
-    {starts:'Revised DBR', color:DERIV, tip:'DERIVED — the revised / allowable DBR, capped at 50% of current DB. This is the core number your service derives.'}
-  ];
-  // Election form — matched by DocuSign field-code chips (.ftag)
+  var CASE_STARTS=[{starts:'Revised DBR', color:DERIV, tip:'DERIVED — the revised/allowable DBR, capped at 50% of current DB.'}];
   var FORM_FTAGS=[
     {code:'inforce_rate', color:SCRAP, tip:'SCRAPED — in-force crediting rate; auto-fills "Understanding Your In-Force Illustration".'},
-    {code:'strategy_comparison', color:SCRAP, tip:'SCRAPED — the per-option comparison values (cash value, income, DB@90, low points) in "Your Options at a Glance".'},
-    {code:'term_reduction_full', color:DERIV, tip:'DERIVED — the full / half reduction amounts, with the term-vs-base split.'}
+    {code:'strategy_comparison', color:SCRAP, tip:'SCRAPED — per-option comparison values (cash value, income, DB@90, low points).'},
+    {code:'term_reduction_full', color:DERIV, tip:'DERIVED — the full/half reduction amounts, with the term-vs-base split.'}
   ];
 
   function injectInto(iframe, labels, starts, ftags, after){
-    var doc;
-    try{ doc = iframe.contentDocument || iframe.contentWindow.document; }catch(e){ return false; }
+    var doc; try{ doc = iframe.contentDocument || iframe.contentWindow.document; }catch(e){ return false; }
     if(!doc || !doc.body) return false;
-    if(doc.getElementById('benTip')) return true; // already done
+    if(doc.getElementById('benTip')) return true;
     var tip=doc.createElement('div'); tip.id='benTip';
     tip.style.cssText='position:fixed;z-index:99999;max-width:270px;background:#0f172a;color:#fff;font:500 12px/1.45 -apple-system,sans-serif;padding:9px 11px;border-radius:9px;box-shadow:0 10px 28px rgba(0,0,0,.35);pointer-events:none;display:none;border-left:4px solid #0e7490';
     doc.body.appendChild(tip);
     function style(b,color,tip_text){
-      if(!b || b.dataset.benHl) return false;
+      if(!b || b.dataset.benHl) return;
       b.dataset.benHl='1';
       b.style.outline='2.5px solid '+color; b.style.outlineOffset='2px'; b.style.borderRadius='8px'; b.style.cursor='help';
       b.addEventListener('mouseenter',function(){ tip.textContent=tip_text; tip.style.borderLeftColor=color; tip.style.display='block'; });
-      b.addEventListener('mousemove',function(e){
-        var vw=(iframe.contentWindow.innerWidth||800);
-        tip.style.left=Math.max(6, Math.min(e.clientX+14, vw-282))+'px';
-        tip.style.top=(e.clientY+16)+'px';
-      });
+      b.addEventListener('mousemove',function(e){ var vw=(iframe.contentWindow.innerWidth||800); tip.style.left=Math.max(6,Math.min(e.clientX+14,vw-282))+'px'; tip.style.top=(e.clientY+16)+'px'; });
       b.addEventListener('mouseleave',function(){ tip.style.display='none'; });
-      return true;
     }
-    (labels||[]).forEach(function(s){
-      Array.prototype.slice.call(doc.querySelectorAll('*')).filter(function(e){return e.children.length===0 && e.textContent.trim()===s.text;})
-        .forEach(function(el){ style(el.parentElement, s.color, s.tip); });
-    });
-    (starts||[]).forEach(function(s){
-      var cands=Array.prototype.slice.call(doc.querySelectorAll('*')).filter(function(e){return e.textContent.trim().indexOf(s.starts)===0 && e.textContent.trim().length<48;});
-      cands.sort(function(a,b){return a.textContent.length-b.textContent.length;});
-      if(cands[0]){ var b=cands[0].parentElement; while(b&&!b.querySelector('input,.cv')&&b.parentElement) b=b.parentElement; style(b,s.color,s.tip); }
-    });
-    (ftags||[]).forEach(function(s){
-      Array.prototype.slice.call(doc.querySelectorAll('.ftag')).filter(function(e){return e.textContent.trim()===s.code;})
-        .forEach(function(el){ var b=el.closest('tr, .fld, li, p, .f2') || el.parentElement; style(b, s.color, s.tip); });
-    });
+    (labels||[]).forEach(function(s){ Array.prototype.slice.call(doc.querySelectorAll('*')).filter(function(e){return e.children.length===0 && e.textContent.trim()===s.text;}).forEach(function(el){ style(el.parentElement, s.color, s.tip); }); });
+    (starts||[]).forEach(function(s){ var c=Array.prototype.slice.call(doc.querySelectorAll('*')).filter(function(e){return e.textContent.trim().indexOf(s.starts)===0 && e.textContent.trim().length<48;}); c.sort(function(a,b){return a.textContent.length-b.textContent.length;}); if(c[0]){ var b=c[0].parentElement; while(b&&!b.querySelector('input,.cv')&&b.parentElement)b=b.parentElement; style(b,s.color,s.tip);} });
+    (ftags||[]).forEach(function(s){ Array.prototype.slice.call(doc.querySelectorAll('.ftag')).filter(function(e){return e.textContent.trim()===s.code;}).forEach(function(el){ var b=el.closest('tr, .fld, li, p, .f2') || el.parentElement; style(b, s.color, s.tip); }); });
     if(after){ try{ after(doc); }catch(e){} }
     return true;
   }
-
   function wire(iframe, labels, starts, ftags, after){
     var tries=0;
     function go(){ tries++; if(injectInto(iframe,labels,starts,ftags,after)) return; if(tries<40) setTimeout(go,150); }
     iframe.addEventListener('load', function(){ tries=0; go(); });
     go();
   }
-  // Case Details: make sure a DBR-eligible year is open and scrolled into view
-  function openDbrYear(doc){
-    var h=Array.prototype.slice.call(doc.querySelectorAll('.dbr-h')).filter(function(x){return x.offsetParent!==null;})[0];
-    if(!h){ // none open — open the first year that has a DBR section
-      var heads=Array.prototype.slice.call(doc.querySelectorAll('.yr-head'));
-      for(var i=0;i<heads.length;i++){ heads[i].click();
-        h=Array.prototype.slice.call(doc.querySelectorAll('.dbr-h')).filter(function(x){return x.offsetParent!==null;})[0];
-        if(h) break; else heads[i].click(); }
-    }
-    if(h){ var card=h.closest('.cd-dbr')||h.parentElement; (card||h).scrollIntoView({block:'start'}); }
-  }
-  wire(document.getElementById('fCase'), CASE_LABELS, CASE_STARTS, null, openDbrYear);
-  wire(document.getElementById('fForm'), null, null, FORM_FTAGS, null);
 
   var fCase=document.getElementById('fCase'), fForm=document.getElementById('fForm');
+
+  // ---- stepper ----
+  var CASE_STEPS=[
+    {label:'In-force rate', cat:'SCRAPED', title:'In-force rate', text:'The current in-force crediting rate, scraped from the elected illustration. It also auto-fills the "Understanding Your In-Force Illustration" section on the client form.'},
+    {starts:'Revised DBR', cat:'DERIVED', title:'Revised DBR — allowable now', text:'The revised / allowable DBR your service derives — capped at 50% of current DB, term-rider-first. This is the core output.'},
+    {label:'Reduction amount', nth:0, cat:'DERIVED', title:'Full — reduction amount', text:'The full planned reduction amount, derived by your service (term rider first, then base; never more than 50%).'},
+    {label:'Low point', nth:0, cat:'SCRAPED', title:'Full — low point', text:'Low-point cash surrender value for the FULL option. Month = (policy year × 12) + 1, run at 0% / guaranteed.'},
+    {label:'Reduction amount', nth:1, cat:'DERIVED', title:'Half — reduction amount', text:'The half reduction amount (~50% of the planned term reduction), derived by your service.'},
+    {label:'Low point', nth:1, cat:'SCRAPED', title:'Half — low point', text:'Low-point cash surrender value for the HALF option, scraped at 0% / guaranteed.'},
+    {label:'Reduction amount', nth:2, cat:'DERIVED', title:'No reduction — amount', text:'No-reduction case ($0). Carried for comparison; your service still provides its low point.'},
+    {label:'Low point', nth:2, cat:'SCRAPED', title:'No reduction — low point', text:'Low-point cash surrender value for the NO-reduction option, scraped at 0% / guaranteed.'},
+    {label:'Low cash value', cat:'SCRAPED', title:'Low cash value', text:'Low cash value for the elected option, scraped from the illustration.'},
+    {label:'Income / yr', cat:'SCRAPED', title:'Income / yr', text:'Projected annual (supplemental) income, scraped from the illustration.'},
+    {label:'Death benefit at age 90', cat:'SCRAPED', title:'Death benefit at age 90', text:'Death benefit at age 90 for the elected option, scraped from the illustration.'}
+  ];
+  var FORM_STEPS=[
+    {ftag:'term_reduction_full', cat:'DERIVED', title:'Planned term reduction', text:'The full / half reduction amounts shown to the client — derived by your service (term-vs-base split).'},
+    {ftag:'inforce_rate', nth:0, cat:'SCRAPED', title:'In-force crediting rate', text:'Scraped in-force rate; auto-fills the "Understanding Your In-Force Illustration" paragraph.'},
+    {ftag:'strategy_comparison', cat:'SCRAPED', title:'Your Options at a Glance', text:'The per-option comparison the client sees — cash value, income, death benefit at age 90, and low points — all from your scrape.'}
+  ];
+
+  var infoCat=document.getElementById('infoCat'), infoTitle=document.getElementById('infoTitle'), infoText=document.getElementById('infoText'), stepCount=document.getElementById('stepCount');
+  var curView='case', curIdx=0, prevEl=null;
+
+  function openPanel(doc){ var hs=Array.prototype.slice.call(doc.querySelectorAll('.dbr-h')).filter(function(x){return x.offsetParent!==null;}); if(!hs[0]) return doc.body; var p=hs[0].closest('.cd-dbr')||hs[0].parentElement; while(p && !/Low cash value/.test(p.textContent) && p.parentElement) p=p.parentElement; return p||doc.body; }
+  function resolveStep(doc, scope, step){
+    if(step.label){ var els=Array.prototype.slice.call(scope.querySelectorAll('*')).filter(function(e){return e.children.length===0 && e.textContent.trim()===step.label;}); var el=els[step.nth||0]; return el?el.parentElement:null; }
+    if(step.starts){ var c=Array.prototype.slice.call(scope.querySelectorAll('*')).filter(function(e){return e.textContent.trim().indexOf(step.starts)===0 && e.textContent.trim().length<48;}); c.sort(function(a,b){return a.textContent.length-b.textContent.length;}); if(!c[0])return null; var b=c[0].parentElement; while(b&&!b.querySelector('input,.cv')&&b.parentElement)b=b.parentElement; return b; }
+    if(step.ftag){ var fs=Array.prototype.slice.call(scope.querySelectorAll('.ftag')).filter(function(e){return e.textContent.trim()===step.ftag;}); var f=fs[step.nth||0]; return f?(f.closest('tr,.fld,li,p,.f2')||f.parentElement):null; }
+    return null;
+  }
+  function emphasize(el,color){ el.style.boxShadow='0 0 0 4px '+color+'40'; el.style.background=color+'14'; try{ el.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){ el.scrollIntoView(); } }
+  function deEmphasize(el){ if(el){ el.style.boxShadow=''; el.style.background=''; } }
+
+  function goStep(idx){
+    var steps = curView==='case'?CASE_STEPS:FORM_STEPS;
+    idx = (idx%steps.length + steps.length)%steps.length; curIdx=idx;
+    var iframe = curView==='case'?fCase:fForm; var doc;
+    try{ doc=iframe.contentDocument; }catch(e){ doc=null; }
+    var step=steps[idx];
+    infoCat.textContent=step.cat; infoCat.style.background=col(step.cat);
+    infoTitle.textContent=step.title; infoText.textContent=step.text;
+    stepCount.textContent=(idx+1)+' / '+steps.length;
+    if(prevEl){ deEmphasize(prevEl); prevEl=null; }
+    if(doc){ var scope = curView==='case'?openPanel(doc):doc.body; var el=resolveStep(doc,scope,step); if(el){ emphasize(el, col(step.cat)); prevEl=el; } }
+  }
+  document.getElementById('next').addEventListener('click', function(){ goStep(curIdx+1); });
+  document.getElementById('prev').addEventListener('click', function(){ goStep(curIdx-1); });
+
+  // init after case iframe is highlighted + a DBR year is open
+  function openDbrYear(doc){
+    var h=Array.prototype.slice.call(doc.querySelectorAll('.dbr-h')).filter(function(x){return x.offsetParent!==null;})[0];
+    if(!h){ var heads=Array.prototype.slice.call(doc.querySelectorAll('.yr-head')); for(var i=0;i<heads.length;i++){ heads[i].click(); h=Array.prototype.slice.call(doc.querySelectorAll('.dbr-h')).filter(function(x){return x.offsetParent!==null;})[0]; if(h) break; else heads[i].click(); } }
+    if(curView==='case') goStep(0);
+  }
+  wire(fCase, CASE_LABELS, CASE_STARTS, null, openDbrYear);
+  wire(fForm, null, null, FORM_FTAGS, null);
+
+  // toggle
   var bCase=document.getElementById('btnCase'), bForm=document.getElementById('btnForm');
   function show(which){
-    var caseOn = which==='case';
+    curView=which; var caseOn=which==='case';
     fCase.classList.toggle('hidden', !caseOn); fForm.classList.toggle('hidden', caseOn);
     bCase.classList.toggle('active', caseOn); bForm.classList.toggle('active', !caseOn);
+    if(prevEl){ deEmphasize(prevEl); prevEl=null; }
+    goStep(0);
   }
   bCase.addEventListener('click', function(){ show('case'); });
   bForm.addEventListener('click', function(){ show('form'); });
