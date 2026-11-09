@@ -171,7 +171,9 @@
       var r=el.getBoundingClientRect();
       var cur=win.scrollY || doc.documentElement.scrollTop || doc.body.scrollTop || 0;
       var target=Math.max(0, r.top + cur - Math.min(130, win.innerHeight*0.28));
-      win.scrollTo({top:target, behavior:'smooth'});
+      try{ win.scrollTo({top:target, left:0, behavior:'smooth'}); }catch(_){ }
+      win.scrollTo(0, target);
+      if(Math.abs((win.scrollY||0)-target) > 4 && doc.scrollingElement){ doc.scrollingElement.scrollTop=target; }
     }catch(e){ try{ el.scrollIntoView({block:'center'}); }catch(_){} }
   }
   function deEmphasize(el){ if(el){ el.style.boxShadow=''; el.style.background=''; } }
