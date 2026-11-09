@@ -365,6 +365,11 @@ select.sel{appearance:auto;cursor:pointer;font-family:inherit}
 body.notes-off .notes{display:none}
 body.notes-off .nt-tab{display:block}
 @media (min-width:1181px){body.notes-off .shell{grid-template-columns:230px minmax(0,1fr)}}
+.msbadge{border:1px solid #c77700;background:#fff6e5;color:#8a4b00;border-radius:20px;padding:5px 12px;font:600 13px Roboto,sans-serif;cursor:pointer}
+.ms-why{background:#fff6e5;border:1px solid #f0c98a;border-radius:8px;padding:10px 12px;font-size:14px}
+.ms-t{width:100%;border-collapse:collapse;font-size:13.5px}.ms-t th,.ms-t td{border-bottom:1px solid #e3e6ec;padding:8px;text-align:left;vertical-align:top}.ms-t th{background:#f5f6f8}
+.ms-t td:last-child{white-space:nowrap;font-weight:600;color:#1a5d1a}
+.ms-dev{font-size:13.5px}.ms-dev ul{margin:4px 0 0;padding-left:18px}
 </style>
 
 <div class="mockbar">
@@ -376,6 +381,7 @@ body.notes-off .nt-tab{display:block}
     <button data-s="entity" aria-pressed="false">Separate · entity</button>
   </div>
   <button class="embadge" onclick="openEmails()">✉ Email table <b>16</b></button>
+  <button class="msbadge" onclick="openMs()" title="ILIA stops using the term Master Settlor">⚠ Update: “Master Settlor” → “Authorized Signer”</button>
   <span class="mocktag">Mock · sample data only · W-SETTLOR</span>
 </div>
 
@@ -450,6 +456,7 @@ body.notes-off .nt-tab{display:block}
 <div id="clRoot"></div>
 <div id="gaRoot"></div>
 <div id="emRoot"></div>
+<div id="msRoot"></div>
 <div id="toastRoot"></div>
 
 <script>
@@ -1362,6 +1369,22 @@ function openEmails(){var must=CD_EMAILS.filter(emMust), tp={}; must.forEach(fun
 document.getElementById("emRoot").addEventListener("click",function(ev){ if(ev.target.closest('[data-em="x"]')){document.getElementById("emRoot").innerHTML="";return;}
   var r=ev.target.closest("[data-emx]"); if(r){emOpen[r.dataset.emx]=!emOpen[r.dataset.emx]; openEmails();} });
 document.getElementById("emRoot").addEventListener("change",function(ev){ if(ev.target.id==="emOnly"){emOnly=ev.target.checked; openEmails();} });
+
+/* Update requirement: remove "Master Settlor" from ILIA. Labels found in niw-web-admin (staging branch), read-only review 11/9. */
+var MS_WHERE=[
+ ["Account Management","Participants list “Master Settlors”, the filter “Master Settlor Type”, search “Search Master Settlors”, page title “Master Settlors”, empty state “No Master Settlor accounts found…”","Authorized Signers"],
+ ["Add Account","Option “Master Settlor” in the account-type list, page “Add Master Settlor”, “Create New Individual Master Settlor”, “Select as Master Settlor”, “Confirm Master Settlor”, “Create Master Settlor”","Authorized Signer"],
+ ["Detail pages","“Master Settlor Details – Entity”, “Master Settlor / Individual / …”, breadcrumb “Master Settlors”, “Documents for this Master Settlor…”, error “Unable to save / load Master Settlor details”","Authorized Signer"],
+ ["Case Details · Settlor section","“+ Add Master Settlor”, “Master Settlor” field, “Master Settlor relation to the insured”, “Associated Policies Under Master Settlor”, modal “Add Master Settlor”","Settlor / Authorized Signer (this mock)"],
+ ["Linked policies table","“Current Master Settlor”, “Existing Master Settlor:”, “…remove it from the current Master Settlor relationship…”, “linked to this Master Settlor”","Authorized Signer"],
+ ["Access + invite modals","Invite “Invite Master Settlor to ILIA”, “Master Settlor Name”; Restrict and Restore access copy “…this Master Settlor’s ability to access…”","Authorized Signer"],
+ ["Add authorized signer","“Master Settlor Primary Account”","Authorized Signer account"]];
+function openMs(){
+  var body='<div class="ms-why"><b>Why:</b> there is no real difference between a “settlor” and a “Master Settlor”. Every policy has a settlor, and what ILIA needs to know is <b>who the authorized signer is</b>. So ILIA stops using “Master Settlor” anywhere. The people and accounts are named <b>Authorized Signer</b>.</div>'+
+  '<table class="ms-t"><thead><tr><th>Where in ILIA admin</th><th>Today says</th><th>Becomes</th></tr></thead><tbody>'+MS_WHERE.map(function(r){return '<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>';}).join("")+'</tbody></table>'+
+  '<div class="ms-dev"><b>For dev:</b><ul><li><b>Wording only.</b> Change what users read. Routes, file names, role ids and database tables can keep their names for now, which keeps the work small.</li><li>Found by a read-only search of the admin code on the staging branch. Dev should run the same search to catch anything missed.</li><li>Jira: covered by NIWD-2726 item 1 (“Remove the term Master Settlor everywhere”), with a dedicated task to follow.</li></ul></div>';
+  document.getElementById("msRoot").innerHTML='<div class="scrim" data-ms="x"></div><div class="drawer em-dlg" role="dialog" aria-modal="true" aria-label="Update requirement"><div class="dr-hd"><h3>⚠ Update requirement · remove “Master Settlor” from ILIA</h3><button class="btn sm" data-ms="x" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft"><button class="btn primary" data-ms="x">Close</button></div></div>';}
+document.getElementById("msRoot").addEventListener("click",function(ev){ if(ev.target.closest('[data-ms="x"]')) document.getElementById("msRoot").innerHTML=""; });
 
 /* Notes panel collapse (for demos). Remembered per browser. */
 function setNotes(on){document.body.classList.toggle("notes-off",!on); try{localStorage.setItem("cdNotesOff",on?"0":"1");}catch(e){}}
