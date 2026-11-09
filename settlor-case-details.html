@@ -386,6 +386,13 @@ body.notes-off .nt-tab{display:block}
 .hr-oq{margin-top:12px}
 .hr-dec ul li{color:#14632b}
 @media (max-width:760px){.hr-row{grid-template-columns:1fr}}
+.hr-dlg{width:min(720px,calc(100% - 32px))}
+.hr-steps{display:flex;gap:16px;font-size:13px;color:#6b7280;margin-bottom:12px}.hr-steps .on{color:#2f6fed;font-weight:700}.hr-steps .done{color:#1a7f37}
+.hr-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.hr-in input{border:0;outline:0;font:15px Roboto,sans-serif;width:100%;background:transparent;padding:0}
+.hr-rev{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.hr-rev>div{border:1px solid #e3e6ec;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;font-size:13.5px}
+.hr-chk{display:flex;gap:8px;align-items:flex-start;border:1px solid #dbe4f5;background:#f6f9ff;border-radius:8px;padding:10px 12px;margin-top:8px;font-size:13.5px}
+@media (max-width:600px){.hr-grid,.hr-rev{grid-template-columns:1fr}}
 </style>
 
 <div class="mockbar">
@@ -476,6 +483,7 @@ body.notes-off .nt-tab{display:block}
 <div id="gaRoot"></div>
 <div id="emRoot"></div>
 <div id="msRoot"></div>
+<div id="hrRoot"></div>
 <div id="toastRoot"></div>
 
 <script>
@@ -624,16 +632,50 @@ function hrHTML(){var L=st.ent.hr||[], g=st.signers[0];
     '<p class="note" style="margin:-4px 0 10px">One person at '+esc(st.ent.name)+' who needs to <b>see</b> the policies, like an HR rep. New ILIA user type: an <b>HR user</b> tied to this entity, with its own login. <b>View only:</b> can’t sign, approve, pay or upload. Every form still goes to '+(g?esc(g.first+" "+g.last):'the authorized signer')+'.</p>';
   if(!L.length) h+='<div class="hr-empty">No HR user yet. Click <b>+ Add HR user</b> to add one (sample).</div>';
   else h+='<div class="hr-list">'+L.map(function(u,i){var st2=!u.access?'<span class="pill p-off">No portal access</span>':u.invite==="sent"?'<span class="pill p-sent">Invite sent</span>':'<span class="pill p-active">Active</span>';
-    return '<div class="hr-row"><div><b>'+esc(u.first+" "+u.last)+'</b> <span class="note">· '+esc(u.title)+'</span><br><span class="note">'+esc(u.email)+'</span></div>'+
+    return '<div class="hr-row"><div><b>'+esc(u.first+" "+u.last)+'</b><br><span class="note">'+esc(u.email)+(u.phone?' · '+esc(u.phone):'')+'</span></div>'+
       '<span class="hr-role">HR user · View only</span>'+st2+
       '<span class="hr-acts"><button class="btn sm" data-act="hrToggle" data-i="'+i+'">'+(u.access?'Turn access off':'Give access + invite')+'</button>'+(u.access&&u.invite==="sent"?'<button class="btn sm mocklink" data-act="hrAdv" data-i="'+i+'" title="Mock only">Mock: accepts ›</button>':'')+'<button class="btn link sm" data-act="hrRemove" data-i="'+i+'">Remove</button></span></div>';}).join("")+'</div>';
   h+='<div class="isec hr-oq hr-dec"><h4>Decided (team, 11/9)</h4><ul class="can">'+
     '<li><b>View only for MVP.</b> No payments, uploads, signing or approvals.</li>'+
     '<li><b>Its own ILIA user type:</b> an “HR user” tied to the entity (not a second authorized signer login).</li>'+
     '<li><b>One HR user per entity</b> for now.</li>'+
-    '<li><b>Emails: the invite link only.</b> No access-off email and no copies of the signer’s emails.</li></ul></div>'+
-    '<div class="isec hr-oq"><h4>Still to decide</h4><ul class="can oq"><li>Who asks NIW to add, change or remove the HR user: the authorized signer only, or anyone at the entity?</li></ul></div>';
+    '<li><b>Emails: the invite link only.</b> No access-off email and no copies of the signer’s emails.</li>'+
+    '<li><b>Who asks for changes:</b> only the authorized signer asks NIW to add, change or remove the HR user, or NIW settles it in an offline conversation with the entity. Admin makes the change here.</li></ul></div>';
   return h;}
+/* Add HR user flow (admin): 1 Details (First, Last, Email, Phone) -> 2 Review -> saved. Click "Fill sample" or type. */
+var hrf=null;
+function openHr(){hrf={step:1,v:{first:"",last:"",email:"",phone:""},invite:true,ok:false};renderHr();}
+function closeHr(){hrf=null;document.getElementById("hrRoot").innerHTML="";}
+function hrValid(){var v=hrf.v;return v.first.trim()&&v.last.trim()&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email.trim())&&v.phone.trim();}
+function renderHr(){if(!hrf)return;var v=hrf.v,g=st.signers[0],ent=st.ent.name,bd,ft;
+  var stp='<div class="hr-steps"><span class="'+(hrf.step===1?'on':'done')+'">1 · HR user details</span><span class="'+(hrf.step===2?'on':'')+'">2 · Review</span></div>';
+  if(hrf.step===1){
+    var fld=function(k,l,t){return '<label class="mf has hr-in"><span class="mf-l">'+l+' *</span><input data-hrv="'+k+'" type="'+(t||'text')+'" value="'+esc(v[k])+'" autocomplete="off"></label>';};
+    bd=stp+'<p class="note" style="margin:0 0 12px">The HR user is tied to <b>'+esc(ent)+'</b> and can <b>view</b> its policies in the Servicing - HR portal. They can’t sign, approve, pay or upload.</p>'+
+      '<div class="hr-grid">'+fld("first","First Name")+fld("last","Last Name")+fld("email","Email Address","email")+fld("phone","Phone Number","tel")+'</div>'+
+      '<button class="btn sm mockadv" style="margin-top:10px;margin-left:0" data-hr="fill">Fill sample</button>';
+    ft='<button class="btn" data-hr="x">Cancel</button><button class="btn primary" data-hr="next"'+(hrValid()?'':' disabled')+'>Review ›</button>';
+  } else {
+    bd=stp+'<div class="hr-rev"><div><small class="note">HR user</small><b>'+esc(v.first+" "+v.last)+'</b><span>'+esc(v.email)+' · '+esc(v.phone)+'</span></div><div><small class="note">Tied to</small><b>'+esc(ent)+'</b><span>Authorized signer: '+(g?esc(g.first+" "+g.last):'—')+'</span></div></div>'+
+      '<div class="isec"><h4>What happens</h4><ul class="can"><li>ILIA creates an <b>HR user</b> for '+esc(ent)+' (view only). One per entity.</li><li>They see the same policies as the authorized signer in <b>Servicing - HR ('+esc(ent)+')</b>, with no action buttons and no Action Items.</li><li>Forms and approvals still go only to '+(g?esc(g.first):'the authorized signer')+'.</li><li>They can change their own email and password in their profile (top right).</li></ul></div>'+
+      '<label class="hr-chk"><input type="checkbox" data-hr="inv"'+(hrf.invite?' checked':'')+'> Give portal access now and email the invite (#61). <span class="note">Otherwise access stays off until you turn it on.</span></label>'+
+      '<label class="hr-chk"><input type="checkbox" data-hr="ok"'+(hrf.ok?' checked':'')+'> The authorized signer asked for this, or NIW agreed it with '+esc(ent)+'.</label>';
+    ft='<button class="btn" data-hr="back">← Back</button><span style="flex:1"></span><button class="btn" data-hr="x">Cancel</button><button class="btn primary" data-hr="save"'+(hrf.ok?'':' disabled')+'>Add HR user</button>';
+  }
+  document.getElementById("hrRoot").innerHTML='<div class="scrim" data-hr="x"></div><div class="drawer hr-dlg" role="dialog" aria-modal="true" aria-label="Add HR user"><div class="dr-hd"><h3>Add HR user · '+esc(ent)+'</h3><button class="btn sm" data-hr="x" aria-label="Close">✕</button></div><div class="dr-bd">'+bd+'</div><div class="dr-ft">'+ft+'</div></div>';}
+document.addEventListener("click",function(ev){var b=ev.target.closest("[data-hr]");if(!b||!hrf)return;var k=b.dataset.hr;
+  if(k==="x"){closeHr();return;}
+  if(k==="fill"){var smp=HR_SAMPLE[0];hrf.v={first:smp.first,last:smp.last,email:smp.email,phone:"(214) 555-0190"};}
+  if(k==="next"&&hrValid())hrf.step=2;
+  if(k==="back")hrf.step=1;
+  if(k==="inv")hrf.invite=b.checked;
+  if(k==="ok")hrf.ok=b.checked;
+  if(k==="save"&&hrf.ok){var v=hrf.v,u={first:v.first.trim(),last:v.last.trim(),title:"HR",email:v.email.trim(),phone:v.phone.trim(),access:hrf.invite,invite:hrf.invite?"sent":"none"};
+    st.ent.hr=[u];log("Added HR user "+u.first+" "+u.last+" (view only) to "+st.ent.name+(u.access?" and emailed the invite":""));
+    closeHr();render();toast(u.access?"HR user added. Invite emailed to "+u.first+" (#61).":"HR user added. Access is off until you turn it on.");return;}
+  renderHr();});
+document.addEventListener("input",function(ev){var k=ev.target.dataset&&ev.target.dataset.hrv;if(!k||!hrf)return;hrf.v[k]=ev.target.value;
+  var nb=document.querySelector('[data-hr="next"]');if(nb)nb.disabled=!hrValid();});
 function entSignerHTML(){
   var g=st.signers[0];
   var head='<div class="sec-t" style="margin-top:20px"><span>Entity authorized signer</span>'+(g?'<span class="sg-acts"><button class="btn sm" data-act="sgChange">⇄ Change authorized signer</button></span>':'')+'</div>'+
@@ -743,7 +785,7 @@ document.getElementById("view").addEventListener("click",function(ev){
   if(a==="ssn"){ssnShown=!ssnShown;}
   if(a==="addSigner"){var ns=clone(SAMPLE.signers[1]);ns.access=false;ns.invite="none";ns.d={};st.signers=[ns];log("Authorized signer added: "+ns.first+" "+ns.last+", "+ns.title);toast("Authorized signer added");}
   else if(a==="cancel"){confirmKey="";}
-  else if(a==="hrAdd"){st.ent.hr=st.ent.hr||[];var hn=HR_SAMPLE[st.ent.hr.length];if(hn){var u=clone(hn);u.access=false;u.invite="none";st.ent.hr.push(u);log("Added HR user "+u.first+" "+u.last+" (view only) to "+st.ent.name);toast("HR user added. Give access to send the invite.");}}
+  else if(a==="hrAdd"){openHr();return;}
   else if(a==="hrToggle"){var u=st.ent.hr[i];if(u.access){u.access=false;log("Turned off portal access for HR user "+nm(u));toast("Access turned off. No email (HR users only get the invite).");}else{u.access=true;u.invite=u.invite==="accepted"?"accepted":"sent";log("Gave HR user "+nm(u)+" view-only portal access"+(u.invite==="sent"?" and sent an invite":""));toast(u.invite==="sent"?"Invite emailed to "+u.first+" (#61).":"Access restored. No email.");}}
   else if(a==="hrAdv"){st.ent.hr[i].invite="accepted";log("HR user "+nm(st.ent.hr[i])+" created an account");}
   else if(a==="hrRemove"){var u=st.ent.hr.splice(i,1)[0];log("Removed HR user "+nm(u));toast("HR user removed");}

@@ -454,6 +454,9 @@ i.dw-ss{background:#6f4bd8!important;color:#fff;border-color:#6f4bd8!important;f
 .cn-l{margin:8px 0 0;padding-left:20px}.cn-l li{margin:0 0 9px;font-size:14px}.cn-l b{display:block}.cn-l span{color:#555;font-size:13.5px}
 .logo-id{font-size:12px;font-weight:600;color:#4b2fa8;margin:-10px 0 8px 12px;letter-spacing:.01em}
 .sg-sep{border-top:1px solid #d9dee8;margin:12px 0 4px}
+.viewbar.hrv{background:#f3efff;border-color:#c9b8f5;color:#3b2585}
+.hr-vo{display:inline-block;font-size:12px;font-weight:600;color:#6b7280;background:#f1f3f6;border:1px dashed #c9cfda;border-radius:12px;padding:3px 10px}
+body.is-hr [data-wf],body.is-hr [data-act="signdoc"]{display:none !important}
 </style>
 
 <div class="mockbar">
@@ -463,6 +466,7 @@ i.dw-ss{background:#6f4bd8!important;color:#fff;border-color:#6f4bd8!important;f
     <button data-w="entity" aria-pressed="true">Entity signer · 3 policies</button>
     <button data-w="family" aria-pressed="false">Individual settlor · 3 family policies</button>
     <button data-w="individual" aria-pressed="false">Individual settlor · 1 policy</button>
+    <button data-w="hr" aria-pressed="false" title="Priya is the HR user for Reyes Family Holdings LLC. View only: she sees the entity’s policies but can’t sign, approve, pay or upload.">HR user · view only (Priya)</button>
     <button data-w="insured" aria-pressed="false" title="Daniel is the insured on KZ-104233. Maria (his spouse) is the settlor and authorized signer. NIW turned on Daniel’s servicing access.">Insured · signer is a person (Daniel)</button>
     <button data-w="insuredEnt" aria-pressed="false" title="Sofia is the insured on KZ-104890. The settlor is Reyes Family Holdings LLC; its authorized signer is Laura Chen (CFO). NIW turned on Sofia’s servicing access.">Insured · signer is an entity (Sofia)</button>
   </div>
@@ -577,6 +581,12 @@ function screenTag(s){ return ""; /* menu tags removed 11/2 */
 
 /* ---------- State ---------- */
 var who="entity", view="home", pol=null;
+PEOPLE.hr=Object.assign({},PEOPLE.entity,{first:"Priya",last:"Shah",title:"HR Manager",email:"p.shah@reyesholdings.example",hr:true});
+/* HR user (decided 11/9): new ILIA user type tied to an entity settlor. One per entity. VIEW ONLY: no signing, approving, paying or uploading.
+   Only email: the invite. Portal label: "Servicing - HR (entity name)". Profile (top right) lets them change their own email and password. */
+function hrDev(){return '<div class="devbar"><div class="devb-hd" style="cursor:default"><span class="devb-tag">DEV NOTES</span><span><b>HR user</b> (new user type, tied to the entity): same screens as the entity’s authorized signer, but <b>every action button is hidden</b> (shows “View only”), no Action Items, no signing list. Label under the logo: “Servicing - HR (entity name)”. Profile top right: change own email + password (existing My Account flow). Emails: invite only (#61).</span></div></div>';}
+function isHR(){return !!P().hr;}
+function hrSigner(){return PEOPLE.entity.first+" "+PEOPLE.entity.last;}
 function P(){return PEOPLE[who];}
 function insPayCard(){return '<div class="icard"><p class="s1"><strong>Manage Payments</strong></p><p class="cap">Payments for this policy are made by <b>'+esc(P().settlor)+'</b>, the settlor. You can see what’s due and the payment history here.</p><p class="ilx-dec">Insured, settlor is an entity: <b>no Make Payment</b>. Only the entity pays (through its authorized signer, '+esc(P().signerName)+'). When the settlor is a person, both the insured and the signer can pay.</p></div>';}
 function isIns(){return P().kind==="insured";}
@@ -598,11 +608,11 @@ function renderNav(){
   if(isIns()){ document.getElementById("nav").innerHTML='<div class="logo"><b>ilia</b><span>SERVICING</span></div><div class="navsec">Your policy</div>'+
       ni("dash","Policy Dashboard","")+ni("pay","Payments","")+ni("docs","Documents","")+ni("ar","Annual Review","")+ni("perf","Current Performance","")+ni("ins","Insured Details &amp; Changes",Object.keys(IREQ).some(function(k){return IREQ[k]==="wait";})?'<span class="tag t-wait">Waiting</span>':'')+ni("claims","Claims &amp; Distributions","")+
       '<div class="navsec">Help</div>'+ni("faq","FAQs and Guides","")+ni("contact","Contact Us",""); return; }
-  var h='<div class="logo"><b>ilia</b><span>SERVICING</span></div><div class="logo-id">Settlor - Authorized Signer</div>'+
+  var h='<div class="logo"><b>ilia</b><span>SERVICING</span></div><div class="logo-id">'+(isHR()?'Servicing - HR ('+esc(p.settlor)+')':'Settlor - Authorized Signer')+'</div>'+
     '<div class="navsec">My work</div>'+
     ni("home","My Policies", p.policies.length>1?'<span class="tag t-view">'+p.policies.length+'</span>':'')+
-    (pol?'':ni("sign","Action Items (All policies)", n?'<span class="tag t-cnt">'+n+'</span>':''));
-  var pn=pol?pending(pol).length:0, signHere=pol?ni("sign","Action Items ("+esc(pol.insured)+")", pn?'<span class="tag t-cnt">'+pn+'</span>':''):'';
+    (pol||isHR()?'':ni("sign","Action Items (All policies)", n?'<span class="tag t-cnt">'+n+'</span>':''));
+  var pn=pol?pending(pol).length:0, signHere=pol&&!isHR()?ni("sign","Action Items ("+esc(pol.insured)+")", pn?'<span class="tag t-cnt">'+pn+'</span>':''):'';
   if(pol&&pol.own){
     h+='<div class="navsec">Your policy</div>'+signHere+
       ni("dash","Policy Dashboard","")+ni("pay","Payments","")+ni("docs","Documents","")+ni("ar","Annual Review","")+
@@ -620,6 +630,7 @@ function ni(id,label,tag){return '<button class="ni" data-nav="'+id+'"'+(view===
 /* ---------- Main views ---------- */
 function whoCard(){var p=P(), ent=p.kind==="entity";
   if(isIns()) return '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+esc(insSettlorLine())+'</small><span class="rb">Insured</span></div>';
+  if(isHR()) return '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+esc(p.title)+' · '+esc(p.settlor)+'</small><span class="rb">HR user · View only</span></div>';
   return '<div class="who"><b>'+esc(p.first+" "+p.last)+'</b><small>'+(ent?esc(p.title)+' · '+esc(p.settlor):esc(p.rel))+'</small>'+
     (ent?'':'<span class="rb s">Settlor</span> ')+'<span class="rb">Authorized Signer</span></div>';}
 function hero(title,text){return '<section class="hero"><div class="hero-tx"><div class="bar"></div><h1>'+title+'</h1><p>'+text+'</p></div>'+whoCard()+'</section>';}
@@ -628,7 +639,7 @@ function policyCard(p){
   return '<button class="pcard'+(p.own?' own':'')+'" '+(p.inforce?'data-pick="'+p.id+'"':'disabled')+'>'+
     (p.own?'<span class="ownb">Your policy</span>':'')+
     '<div class="top"><div><div class="nm">'+esc(p.insured)+(p.own?' <span class="note" style="font-weight:400">(you)</span>':'')+'</div><div class="sub">'+(p.own?'You’re the insured':'Insured')+' · '+esc(p.product)+'</div></div>'+(p.inforce?'<span class="pill p-ok">In force</span>':'<span class="pill p-neu">Not yet in force</span>')+'</div>'+
-    '<div class="meta"><span class="pill p-neu">Policy ending '+last4(p.id)+'</span><span class="pill p-neu">Tranche '+p.tranche+'</span>'+(s?'<span class="pill p-bad">'+s+' to sign</span>':'')+'</div>'+
+    '<div class="meta"><span class="pill p-neu">Policy ending '+last4(p.id)+'</span><span class="pill p-neu">Tranche '+p.tranche+'</span>'+(s&&!isHR()?'<span class="pill p-bad">'+s+' to sign</span>':'')+'</div>'+
     (p.inforce?'<span class="go">View policy →</span>':'<span class="note">Available here once the policy is in force.</span>')+'</button>';
 }
 function futTag(it){return /^(dbr|hh)$/.test(it.type)?' <span class="futtag" title="DBR election and Hold Harmless renewal are not in ILIA servicing today. Sample of a future DBR-project document.">Future · DBR project</span>':"";}
@@ -646,8 +657,14 @@ function specPanel(screen,title,today){
 }
 function render(){
   var p=P(), ent=p.kind==="entity", m="";
+  document.body.classList.toggle("is-hr",isHR()); if(isHR()&&view==="sign"){view="home";pol=null;}
   if(view==="home"){
     var sigs=allSign(), live=p.policies.filter(function(x){return x.inforce;}).length;
+    if(isHR()){
+      m+=hero("Welcome, "+esc(p.first),"You have <b>view-only</b> access to <b>"+esc(p.settlor)+"</b>’s policies as its HR user. Choose a policy to see its details and documents. Forms and approvals go to "+esc(hrSigner())+", the authorized signer.");
+      m+='<div class="viewbar hrv" role="status"><span class="vb-ic" aria-hidden="true">👁</span><span class="vb-tx"><b>HR user · view only.</b> No signing, approving, paying or uploading. Access changes go through the authorized signer ('+esc(hrSigner())+') or an offline conversation with NIW.</span></div>';
+      m+='<h2 class="h2">'+esc(p.settlor)+' policies</h2><div class="cards">'+p.policies.map(policyCard).join("")+'</div>'+hrDev();
+    } else {
     m+=hero("Welcome, "+esc(p.first),
       (ent?"You’re the authorized signer for <b>"+esc(p.settlor)+"</b>. ":"You’re the settlor and authorized signer for these policies. ")+(p.policies.some(function(x){return x.own;})?"Your own policy, where you’re the insured, is listed first. ":"")+
       "Choose a policy to see its details and documents. Anything that needs your signature is listed below.");
@@ -657,6 +674,7 @@ function render(){
     m+='<h2 class="h2">Your policies</h2><div class="cards">'+ordered.map(policyCard).join("")+'</div>';
     m+='<div class="panel"><h2 class="h2" style="margin-bottom:6px">Waiting for your signature <span class="note">'+sigs.length+' total</span></h2>'+sigList(sigs,true)+'</div>'+doneList(allDone());
     m+=openQ("home")+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("home","My Policies home","Lands on one policy’s dashboard with its values and a policy dropdown.")+'</details>';
+    }
   }
   else if(view==="sign"){
     m+=hero("Action Items","Everything NIW needs you to do as the authorized signer, across all your policies. Today these are forms to sign, each opening in DocuSign. Other actions, like a payment, can show here too as needed.");
@@ -670,7 +688,7 @@ function render(){
     document.getElementById("nav").innerHTML=""; renderRail(); return;
   }
   else if(view==="profile"){
-    m+=hero("My Account","Your own contact details and password. NIW uses these to send you forms to sign.");
+    m+=hero("My Account",isHR()?"Your own contact details and password. Change your email here; you’ll confirm it from the new address.":"Your own contact details and password. NIW uses these to send you forms to sign.");
     m+=profPanel(p,ent)+pwPanel()+'<details class="dtab"><summary>Decision table for this page</summary>'+specPanel("profile","My Account","")+'</details>';
   }
   else if(view==="faq"){ m+=hero("FAQs and Guides","Answers written for settlors: what you’re signing, why, and what happens next."); m+=specPanel("faq","FAQs and Guides","Kai-Zen FAQs written for the insured."); }
@@ -692,7 +710,7 @@ function render(){
   else if(pol){
     var ctx='';
     m+=devBar(view);
-    m+='<div class="viewbar" role="status"><span class="vb-ic" aria-hidden="true">👁</span><span class="vb-tx">Viewing <b>'+esc(pol.insured)+'’s policy</b> (insured) · Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+' · '+esc(pol.product)+(pol.year?' · Policy year '+pol.year:'')+' · You’re the '+(ent?'authorized signer for '+esc(p.settlor):'settlor and authorized signer')+'</span><button class="btn sm" data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button></div>';
+    m+='<div class="viewbar" role="status"><span class="vb-ic" aria-hidden="true">👁</span><span class="vb-tx">Viewing <b>'+esc(pol.insured)+'’s policy</b> (insured) · Policy ending '+last4(pol.id)+' · Tranche '+pol.tranche+' · '+esc(pol.product)+(pol.year?' · Policy year '+pol.year:'')+' · '+(isHR()?'You’re the <b>HR user</b> for '+esc(p.settlor)+' · <b>view only</b>':'You’re the '+(ent?'authorized signer for '+esc(p.settlor):'settlor and authorized signer'))+'</span><button class="btn sm" data-nav="home">'+(p.policies.length>1?'⇄ Switch policy':'← Back to My Policies')+'</button></div>';
     m+=iliaScreen(view,pol,p);
     if(view==="dash"){
       if(false) m+=ctx+'<div class="kpis">'+
@@ -722,7 +740,7 @@ function ilxSel(pol){var opts=P().policies.filter(function(x){return x.inforce;}
   return '<div class="ilx-sel"><p class="b1"><strong>Select policy to view details</strong></p><label class="ilx-out"><span>Policy Number</span><select id="ilxPol">'+opts.map(function(x){return '<option value="'+x.id+'"'+(x.id===pol.id?' selected':'')+'>'+esc(x.id)+(x.own?'':' · '+esc(x.insured))+'</option>';}).join("")+'</select></label></div>';}
 function ilxTable(cols,rows,empty){return '<div class="ilx-tw"><table class="ilx-t"><thead><tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join("")+'</tr></thead><tbody>'+(rows.length?rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join("")+'</tr>';}).join(""):'<tr><td colspan="'+cols.length+'" class="cap">'+empty+'</td></tr>')+'</tbody></table></div>';}
 function ilxTabs(key,labels){return '<div class="ilx-tabs" role="tablist">'+labels.map(function(l,i){return '<button role="tab" aria-selected="'+(tabState[key]===i)+'" data-tab="'+key+'" data-ti="'+i+'">'+l+'</button>';}).join("")+'</div>';}
-function ilxGate(pol,k,html){ if(k==="payA"&&insEnt()) return insPayCard(); if(pol.own) return html; var c=choice[k];
+function ilxGate(pol,k,html){ if(isHR()) return '<span class="hr-vo" title="HR users can view only">View only</span>'; if(k==="payA"&&insEnt()) return insPayCard(); if(pol.own) return html; var c=choice[k];
   if(c==="Yes") return html; if(c==="Not decided") return '<span class="ilx-tbd">'+html+' <span class="tag t-ask">To decide</span></span>'; return ''; }
 function wfA(pol,k){if(isIns()&&/^(legal|pers|ben)$/.test(k)) return 'data-wf="'+k+'"'; return pol.own?'data-act="mock"':'data-wf="'+k+'"';}
 /* ---------- Authorized signer action workflows (associated policies) ----------
@@ -1263,14 +1281,14 @@ function topbar(){
 /* My details: view, then Edit -> click a field to swap in a sample change (no typing) -> Save / Cancel */
 var prof=null, emailPending="";
 var PROF_FIELDS=[["first","First name"],["last","Last name"],["email","Email (username)"],["phone","Mobile phone"],["addr","Mailing address"]];
-var PROF_SAMPLE={
+var PROF_SAMPLE={hr:{first:"Priya",last:"Shah-Patel",email:"priya.shah@reyesholdings.example",phone:"(214) 555-0191",addr:"2200 Ross Ave, Suite 900, Dallas, TX 75201"},
   entity:{first:"Lauren",last:"Chen-Park",email:"laura.chen@reyesholdings.example",phone:"(555) 214-9001",addr:"220 Congress Ave, Austin, TX 78701"},
   family:{first:"Rob",last:"Alvarez Jr.",email:"robert.alvarez@example.com",phone:"(555) 330-7712",addr:"48 Bayview Dr, Tampa, FL 33602"},
   individual:{first:"María",last:"Reyes-Ortiz",email:"m.reyes@example.com",phone:"(555) 402-1188",addr:"9 Willow Ln, Denver, CO 80205"}};
-var PROF_BASE={entity:{phone:"(555) 214-8830",addr:"100 Main St, Austin, TX 78701"},family:{phone:"(555) 330-2045",addr:"12 Harbor St, Tampa, FL 33606"},individual:{phone:"(555) 402-5531",addr:"310 Elm St, Denver, CO 80203"}};
-function profVal(p,k){return p[k]!=null?p[k]:PROF_BASE[who][k];}
+var PROF_BASE={hr:{phone:"(214) 555-0190",addr:"2200 Ross Ave, Suite 900, Dallas, TX 75201"},entity:{phone:"(555) 214-8830",addr:"100 Main St, Austin, TX 78701"},family:{phone:"(555) 330-2045",addr:"12 Harbor St, Tampa, FL 33606"},individual:{phone:"(555) 402-5531",addr:"310 Elm St, Denver, CO 80203"}};
+function profVal(p,k){return p[k]!=null?p[k]:((PROF_BASE[who]||{})[k]||"");}
 function profPanel(p,ent){
-  var role='<div><small class="note">'+(ent?'Signs for':'Role')+'</small><div>'+(ent?esc(p.settlor):'Settlor · '+esc(p.rel))+'</div></div>';
+  var role='<div><small class="note">'+(isHR()?'HR user for':ent?'Signs for':'Role')+'</small><div>'+(isHR()?esc(p.settlor)+' · view only':ent?esc(p.settlor):'Settlor · '+esc(p.rel))+'</div></div>';
   var pend=emailPending?'<p class="note pendnote">We sent a confirmation link to <b>'+esc(emailPending)+'</b>. Until it’s confirmed, forms and log in still use <b>'+esc(p.email)+'</b>.</p>':'';
   if(!prof){
     return '<div class="panel"><div class="kpis">'+PROF_FIELDS.map(function(f){var v=f[0]==="first"?null:profVal(p,f[0]);
