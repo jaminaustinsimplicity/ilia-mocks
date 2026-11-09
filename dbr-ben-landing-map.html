@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ben Landing Map</title>
+<style>
+  :root{--bg:#eef1f6;--surface:#fff;--ink:#151c2a;--muted:#5b6675;--border:#dde3ec;--border-strong:#c5cddb;
+    --scrap:#0e7490;--deriv:#7a4fd6;--ilia:#94a3b8;--marissa:#2f45c5;
+    --ff:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);line-height:1.45}
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 18px 48px}
+  h1{font-size:21px;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{margin:0 0 4px;color:var(--muted);font-size:13px;max-width:80ch}
+  .sub b{color:var(--ink)}
+  .bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:16px 0 10px}
+  .toggle{display:inline-flex;border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;background:var(--surface)}
+  .toggle button{border:none;background:var(--surface);color:var(--muted);font-family:inherit;font-size:13px;font-weight:700;padding:9px 16px;cursor:pointer;border-right:1px solid var(--border-strong)}
+  .toggle button:last-child{border-right:none}
+  .toggle button.active{background:var(--marissa);color:#fff}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);align-items:center}
+  .legend .k{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+  .legend .sw{width:14px;height:14px;border-radius:4px;border:2px solid}
+  .k.scrap .sw{border-color:var(--scrap)} .k.scrap b{color:var(--scrap)}
+  .k.deriv .sw{border-color:var(--deriv)} .k.deriv b{color:var(--deriv)}
+  .k.ilia .sw{border-color:var(--ilia)} .k.ilia b{color:var(--ilia)}
+  .hint{font-size:12px;color:var(--muted);margin:0 0 10px}
+  .hint b{color:var(--ink)}
+  .frame-shell{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 1px 2px rgba(17,24,39,.06),0 10px 30px rgba(17,24,39,.07);overflow:hidden}
+  .frame-shell iframe{width:100%;height:78vh;min-height:620px;border:0;display:block;background:#fff}
+  .frame-shell iframe.hidden{display:none}
+  .foot{font-size:11.5px;color:var(--muted);margin-top:10px}
+  @media(max-width:640px){.frame-shell iframe{height:72vh}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>DBR — Where Ben's Calculator Data Lands</h1>
+  <p class="sub">The two screens that consume the scraper / estimator output. <b>Hover any highlighted field</b> to see what your service provides for it. Toggle between the client election form and the internal Case Details DBR section.</p>
+
+  <div class="bar">
+    <div class="toggle" role="tablist">
+      <button id="btnCase" class="active">Case Details — DBR section</button>
+      <button id="btnForm">DBR election form</button>
+    </div>
+    <div class="legend">
+      <span class="k scrap"><span class="sw"></span><b>Scraped</b> from illustration</span>
+      <span class="k deriv"><span class="sw"></span><b>Derived</b> (50% cap, term-first)</span>
+      <span class="k ilia"><span class="sw"></span>ILIA / feed (not Ben)</span>
+    </div>
+  </div>
+
+  <p class="hint">Highlighted = comes from your service. Everything unmarked is already in ILIA (feed, original design, or user-entered). <b>Hover for the per-field note.</b></p>
+
+  <div class="frame-shell">
+    <iframe id="fCase" src="dbr-yearly-breakdown.html" title="Case Details DBR section"></iframe>
+    <iframe id="fForm" src="dbr-election-form.html" title="DBR election form" class="hidden"></iframe>
+  </div>
+  <p class="foot">Living reference for NIWD-2624. Open items to confirm with Judy: who owns the 50% cap &amp; term/base split, and whether scraper = estimator = one service.</p>
+</div>
+
+<script>
+(function(){
+  var SCRAP='#0e7490', DERIV='#7a4fd6';
+  // Case Details DBR section — matched by field label text
+  var CASE_LABELS=[
+    {text:'In-force rate', color:SCRAP, tip:'SCRAPED — the current in-force crediting rate, pulled from the illustration.'},
+    {text:'Low point', color:SCRAP, tip:'SCRAPED — low-point cash surrender value for this option. Month = (policy year × 12) + 1, run at 0%.'},
+    {text:'Reduction amount', color:DERIV, tip:'DERIVED — your service computes this reduction amount under the 50% cap, term-rider-first.'},
+    {text:'Low cash value', color:SCRAP, tip:'SCRAPED — low cash value from the elected illustration.'},
+    {text:'Income / yr', color:SCRAP, tip:'SCRAPED — projected annual income from the illustration.'},
+    {text:'Death benefit at age 90', color:SCRAP, tip:'SCRAPED — death benefit at age 90 from the illustration.'}
+  ];
+  var CASE_STARTS=[
+    {starts:'Revised DBR', color:DERIV, tip:'DERIVED — the revised / allowable DBR, capped at 50% of current DB. This is the core number your service derives.'}
+  ];
+  // Election form — matched by DocuSign field-code chips (.ftag)
+  var FORM_FTAGS=[
+    {code:'inforce_rate', color:SCRAP, tip:'SCRAPED — in-force crediting rate; auto-fills "Understanding Your In-Force Illustration".'},
+    {code:'strategy_comparison', color:SCRAP, tip:'SCRAPED — the per-option comparison values (cash value, income, DB@90, low points) in "Your Options at a Glance".'},
+    {code:'term_reduction_full', color:DERIV, tip:'DERIVED — the full / half reduction amounts, with the term-vs-base split.'}
+  ];
+
+  function injectInto(iframe, labels, starts, ftags){
+    var doc;
+    try{ doc = iframe.contentDocument || iframe.contentWindow.document; }catch(e){ return false; }
+    if(!doc || !doc.body) return false;
+    if(doc.getElementById('benTip')) return true; // already done
+    var tip=doc.createElement('div'); tip.id='benTip';
+    tip.style.cssText='position:fixed;z-index:99999;max-width:270px;background:#0f172a;color:#fff;font:500 12px/1.45 -apple-system,sans-serif;padding:9px 11px;border-radius:9px;box-shadow:0 10px 28px rgba(0,0,0,.35);pointer-events:none;display:none;border-left:4px solid #0e7490';
+    doc.body.appendChild(tip);
+    function style(b,color,tip_text){
+      if(!b || b.dataset.benHl) return false;
+      b.dataset.benHl='1';
+      b.style.outline='2.5px solid '+color; b.style.outlineOffset='2px'; b.style.borderRadius='8px'; b.style.cursor='help';
+      b.addEventListener('mouseenter',function(){ tip.textContent=tip_text; tip.style.borderLeftColor=color; tip.style.display='block'; });
+      b.addEventListener('mousemove',function(e){
+        var vw=(iframe.contentWindow.innerWidth||800);
+        tip.style.left=Math.max(6, Math.min(e.clientX+14, vw-282))+'px';
+        tip.style.top=(e.clientY+16)+'px';
+      });
+      b.addEventListener('mouseleave',function(){ tip.style.display='none'; });
+      return true;
+    }
+    (labels||[]).forEach(function(s){
+      Array.prototype.slice.call(doc.querySelectorAll('*')).filter(function(e){return e.children.length===0 && e.textContent.trim()===s.text;})
+        .forEach(function(el){ style(el.parentElement, s.color, s.tip); });
+    });
+    (starts||[]).forEach(function(s){
+      var cands=Array.prototype.slice.call(doc.querySelectorAll('*')).filter(function(e){return e.textContent.trim().indexOf(s.starts)===0 && e.textContent.trim().length<48;});
+      cands.sort(function(a,b){return a.textContent.length-b.textContent.length;});
+      if(cands[0]){ var b=cands[0].parentElement; while(b&&!b.querySelector('input,.cv')&&b.parentElement) b=b.parentElement; style(b,s.color,s.tip); }
+    });
+    (ftags||[]).forEach(function(s){
+      Array.prototype.slice.call(doc.querySelectorAll('.ftag')).filter(function(e){return e.textContent.trim()===s.code;})
+        .forEach(function(el){ var b=el.closest('tr, .fld, li, p, .f2') || el.parentElement; style(b, s.color, s.tip); });
+    });
+    return true;
+  }
+
+  function wire(iframe, labels, starts, ftags){
+    var tries=0;
+    function go(){ tries++; if(injectInto(iframe,labels,starts,ftags)) return; if(tries<40) setTimeout(go,150); }
+    iframe.addEventListener('load', function(){ tries=0; go(); });
+    go();
+  }
+  wire(document.getElementById('fCase'), CASE_LABELS, CASE_STARTS, null);
+  wire(document.getElementById('fForm'), null, null, FORM_FTAGS);
+
+  var fCase=document.getElementById('fCase'), fForm=document.getElementById('fForm');
+  var bCase=document.getElementById('btnCase'), bForm=document.getElementById('btnForm');
+  function show(which){
+    var caseOn = which==='case';
+    fCase.classList.toggle('hidden', !caseOn); fForm.classList.toggle('hidden', caseOn);
+    bCase.classList.toggle('active', caseOn); bForm.classList.toggle('active', !caseOn);
+  }
+  bCase.addEventListener('click', function(){ show('case'); });
+  bForm.addEventListener('click', function(){ show('form'); });
+})();
+</script>
+</body>
+</html>
