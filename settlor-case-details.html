@@ -370,6 +370,21 @@ body.notes-off .nt-tab{display:block}
 .ms-t{width:100%;border-collapse:collapse;font-size:13.5px}.ms-t th,.ms-t td{border-bottom:1px solid #e3e6ec;padding:8px;text-align:left;vertical-align:top}.ms-t th{background:#f5f6f8}
 .ms-t td:last-child{white-space:nowrap;font-weight:600;color:#1a5d1a}
 .ms-dev{font-size:13.5px}.ms-dev ul{margin:4px 0 0;padding-left:18px}
+.enbadge{border:1px solid #1a7f37;background:#eefaf1;color:#14632b;border-radius:20px;padding:5px 12px;font:600 13px Roboto,sans-serif;cursor:pointer}
+.enbadge[aria-pressed="true"]{background:#1a7f37;color:#fff}
+.tabs-en span{font-size:12.5px;letter-spacing:.04em}
+.en-card{background:#fff;border:1px solid #e3e6ec;border-radius:10px;padding:14px 16px;margin:0 0 12px}
+.en-hd{display:flex;justify-content:space-between;font-size:19px;color:#1b1b1b;margin-bottom:12px}
+.en-info{border:1px solid #3cb878;border-radius:6px;padding:12px 14px;color:#1b1b1b;font-size:14px;margin-bottom:12px}
+.en-view{background:#eefaf1;border-left:4px solid #1a7f37;border-radius:6px;padding:10px 12px;font-size:13.5px;margin-bottom:10px}
+.hr-empty{border:1px dashed #c9cfda;border-radius:8px;padding:12px;font-size:13.5px;color:#4b5563}
+.hr-list{display:flex;flex-direction:column;gap:8px}
+.hr-row{display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:center;border:1px solid #e3e6ec;border-radius:8px;padding:10px 12px;font-size:13.5px}
+.hr-role{font-size:12px;font-weight:600;color:#4b2fa8;background:#f3efff;border-radius:12px;padding:3px 9px;white-space:nowrap}
+.hr-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.p-off{color:#6b7280;background:#f1f3f6}
+.hr-oq{margin-top:12px}
+@media (max-width:760px){.hr-row{grid-template-columns:1fr}}
 </style>
 
 <div class="mockbar">
@@ -381,6 +396,7 @@ body.notes-off .nt-tab{display:block}
     <button data-s="entity" aria-pressed="false">Separate · entity</button>
   </div>
   <button class="embadge" onclick="openEmails()">✉ Email table <b>16</b></button>
+  <button class="enbadge" id="enBadge" onclick="setWhere(where==='enroll'?'case':'enroll')" aria-pressed="false" title="The same settlor section also goes on Enrollment Details, for the agent">📍 Also on: Enrollment Details (agent)</button>
   <button class="msbadge" onclick="openMs()" title="ILIA stops using the term Master Settlor">⚠ Update: “Master Settlor” → “Authorized Signer”</button>
   <span class="mocktag">Mock · sample data only · W-SETTLOR</span>
 </div>
@@ -393,15 +409,17 @@ body.notes-off .nt-tab{display:block}
   </nav>
 
   <main class="main">
-    <div class="crumb">Account Management › Clients › <b>Client Details</b></div>
+    <div class="crumb" id="crumb">Account Management › Clients › <b>Client Details</b></div>
     <div class="clienthd"><h1 id="clientName">Daniel Reyes</h1><span class="chip">Policy KZ-104233</span><span class="chip">Tranche 79</span></div>
-    <div class="tabs"><span>Profile</span><span class="on">Case Details</span><span>Documents</span><span>Payments</span><span>Notes</span></div>
-    <div class="ghost-sec"><span>Trust Details</span><span>▸</span></div>
+    <div class="tabs" id="tabs"><span>Profile</span><span class="on">Case Details</span><span>Documents</span><span>Payments</span><span>Notes</span></div>
+    <div class="ghost-sec" id="ghTrust"><span>Trust Details</span><span>▸</span></div>
+    <div id="enrollTop"></div>
     <section class="card" aria-labelledby="settlorH">
       <div class="card-hd"><h2 id="settlorH">Settlor &amp; Authorized Signer</h2><button class="btn primary" id="editBtn">✎ Edit settlor</button></div>
       <div class="card-bd" id="view"></div>
     </section>
-    <div class="ghost-sec" style="margin-top:12px"><span>Beneficiaries</span><span>▸</span></div>
+    <div class="ghost-sec" style="margin-top:12px" id="ghBen"><span>Beneficiaries</span><span>▸</span></div>
+    <div id="enrollAfter"></div>
   </main>
 
   <aside class="notes" aria-label="Review notes">
@@ -597,6 +615,23 @@ function clientHTML(){
     iliaFld("Client Email Address","daniel.reyes@example.com")+iliaFld("Client Phone Number","(214) 555-0132")+iliaFld("Client Social","•••-••-4417")+
     relSel(rel)+'</div></div>';
 }
+/* Other people at the entity (e.g. an HR rep) who log in to the entity's Servicing Settlor (Authorized Signer) Portal.
+   Proposed MVP: view only. They can't sign, approve or pay; every form still goes to the ONE authorized signer. */
+var HR_SAMPLE=[{first:"Priya",last:"Shah",title:"HR Manager",email:"p.shah@reyesholdings.example"},{first:"Marcus",last:"Lee",title:"Benefits Coordinator",email:"m.lee@reyesholdings.example"}];
+function hrHTML(){var L=st.ent.hr||[], g=st.signers[0];
+  var h='<div class="sec-t" style="margin-top:22px"><span>Other entity users <span class="note" style="font-weight:400">· e.g. HR rep · view only</span></span><span class="sg-acts">'+(L.length<HR_SAMPLE.length?'<button class="btn sm" data-act="hrAdd" title="Click to add a sample HR rep">+ Add HR rep</button>':'')+'</span></div>'+
+    '<p class="note" style="margin:-4px 0 10px">People at '+esc(st.ent.name)+' who need to <b>see</b> the policies, like an HR rep. They log in to the same Servicing Settlor (Authorized Signer) Portal with their own ILIA login. <b>They can’t sign, approve or pay.</b> Every form still goes to '+(g?esc(g.first+" "+g.last):'the authorized signer')+'.</p>';
+  if(!L.length) h+='<div class="hr-empty">No other users yet. Click <b>+ Add HR rep</b> to add one (sample).</div>';
+  else h+='<div class="hr-list">'+L.map(function(u,i){var st2=!u.access?'<span class="pill p-off">No portal access</span>':u.invite==="sent"?'<span class="pill p-sent">Invite sent</span>':'<span class="pill p-active">Active</span>';
+    return '<div class="hr-row"><div><b>'+esc(u.first+" "+u.last)+'</b> <span class="note">· '+esc(u.title)+'</span><br><span class="note">'+esc(u.email)+'</span></div>'+
+      '<span class="hr-role">HR rep · View only</span>'+st2+
+      '<span class="hr-acts"><button class="btn sm" data-act="hrToggle" data-i="'+i+'">'+(u.access?'Turn access off':'Give access + invite')+'</button>'+(u.access&&u.invite==="sent"?'<button class="btn sm mocklink" data-act="hrAdv" data-i="'+i+'" title="Mock only">Mock: accepts ›</button>':'')+'<button class="btn link sm" data-act="hrRemove" data-i="'+i+'">Remove</button></span></div>';}).join("")+'</div>';
+  h+='<div class="isec hr-oq"><h4>Still to decide</h4><ul class="can oq">'+
+    '<li>Can an HR rep take <b>any</b> action (make a payment, upload a document), or is it view only for MVP?</li>'+
+    '<li>Does an HR rep need its own ILIA user type, an “HR user” tied to the entity, instead of a second Servicing Settlor (Authorized Signer) Portal login?</li>'+
+    '<li>Is there a limit on how many HR reps an entity can have? Who asks NIW to add or remove one?</li>'+
+    '<li>Which emails do HR reps get: none, the invite only, or copies of what the signer gets?</li></ul></div>';
+  return h;}
 function entSignerHTML(){
   var g=st.signers[0];
   var head='<div class="sec-t" style="margin-top:20px"><span>Entity authorized signer</span>'+(g?'<span class="sg-acts"><button class="btn sm" data-act="sgChange">⇄ Change authorized signer</button></span>':'')+'</div>'+
@@ -691,7 +726,7 @@ function render(){
       '<div class="mf has sel'+(ed.hasOwnProperty("ent.etype")?" dirty":"")+'"><span class="mf-l">Entity Type</span><select id="entType" class="mf-s" aria-label="Entity Type">'+ENTITY_TYPES.map(function(o){return '<option'+(o===edCur("ent.etype")?' selected':'')+'>'+esc(o)+'</option>';}).join("")+'</select></div>'+
       secretFld("EIN / Tax ID",e.ein)+
       edFld("Address","ent.addr",true)+
-      '</div>'+entSignerHTML()+'<div id="edBar" class="edbar" hidden></div></div><hr class="divider">'+
+      '</div>'+entSignerHTML()+hrHTML()+'<div id="edBar" class="edbar" hidden></div></div><hr class="divider">'+
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
   }
   var relBadge = st.type==="entity" ? "Entity" : (st.ind.relation==="Other" ? (st.ind.otherRelation||"Other") : st.ind.relation);
@@ -706,6 +741,10 @@ document.getElementById("view").addEventListener("click",function(ev){
   if(a==="ssn"){ssnShown=!ssnShown;}
   if(a==="addSigner"){var ns=clone(SAMPLE.signers[1]);ns.access=false;ns.invite="none";ns.d={};st.signers=[ns];log("Authorized signer added: "+ns.first+" "+ns.last+", "+ns.title);toast("Authorized signer added");}
   else if(a==="cancel"){confirmKey="";}
+  else if(a==="hrAdd"){st.ent.hr=st.ent.hr||[];var hn=HR_SAMPLE[st.ent.hr.length];if(hn){var u=clone(hn);u.access=false;u.invite="none";st.ent.hr.push(u);log("Added HR rep "+u.first+" "+u.last+" (view only) to "+st.ent.name);toast("HR rep added. Give access to send an invite.");}}
+  else if(a==="hrToggle"){var u=st.ent.hr[i];if(u.access){u.access=false;log("Turned off portal access for HR rep "+nm(u));toast("Access turned off. "+u.first+" gets an access-off email.");}else{u.access=true;u.invite=u.invite==="accepted"?"accepted":"sent";log("Gave HR rep "+nm(u)+" view-only portal access"+(u.invite==="sent"?" and sent an invite":""));toast(u.invite==="sent"?"Invite emailed to "+u.first+".":"Access restored.");}}
+  else if(a==="hrAdv"){st.ent.hr[i].invite="accepted";log("HR rep "+nm(st.ent.hr[i])+" created an account");}
+  else if(a==="hrRemove"){var u=st.ent.hr.splice(i,1)[0];log("Removed HR rep "+nm(u));toast("HR rep removed");}
   else if(a==="sToggle"){
     if(s.access){ if(s.invite==="none"){s.access=false;log("Turned off portal access for "+nm(s));toast("Access turned off");} else confirmKey="s"+i; }
     else { s.access=true; if(s.invite!=="none"){log("Restored portal access for "+nm(s));toast("Access restored. "+s.first+" gets an access-restored email.");} else {log("Turned on portal access for "+nm(s));toast("Access on. Send the invite when ready.");} }
@@ -1369,6 +1408,27 @@ function openEmails(){var must=CD_EMAILS.filter(emMust), tp={}; must.forEach(fun
 document.getElementById("emRoot").addEventListener("click",function(ev){ if(ev.target.closest('[data-em="x"]')){document.getElementById("emRoot").innerHTML="";return;}
   var r=ev.target.closest("[data-emx]"); if(r){emOpen[r.dataset.emx]=!emOpen[r.dataset.emx]; openEmails();} });
 document.getElementById("emRoot").addEventListener("change",function(ev){ if(ev.target.id==="emOnly"){emOnly=ev.target.checked; openEmails();} });
+
+/* Where the settlor section shows: admin Case Details (default) or Enrollment Details, where the agent fills it in during enrollment.
+   Same section, same rules, nothing else on Enrollment Details changes. */
+var where="case", TABS_CASE=null;
+function setWhere(w){where=w; var en=w==="enroll";
+  if(TABS_CASE===null) TABS_CASE=document.getElementById("tabs").innerHTML;
+  document.getElementById("enBadge").setAttribute("aria-pressed",en);
+  document.getElementById("enBadge").innerHTML=en?'← Back to admin Case Details':'📍 Also on: Enrollment Details (agent)';
+  document.getElementById("crumb").innerHTML=en?'Clients › Daniel Reyes › <b>Enrollment Details</b> <span class="note">(agent and admin)</span>':'Account Management › Clients › <b>Client Details</b>';
+  document.getElementById("tabs").innerHTML=en?["Client Profile","Participant Status","Enrollment Details","My Action Items","Illustrations","Documents","Notes","Giftor Details","Case Details"].map(function(t){return '<span'+(t==="Enrollment Details"?' class="on"':'')+'>'+t.toUpperCase()+'</span>';}).join(""):TABS_CASE;
+  document.getElementById("tabs").classList.toggle("tabs-en",en);
+  document.getElementById("ghTrust").style.display=en?"none":""; document.getElementById("ghBen").style.display=en?"none":"";
+  document.getElementById("enrollTop").innerHTML=en?'<div class="en-card"><div class="en-hd"><span>Identity Verification, Address and Contributions</span><span>▴</span></div><div class="en-info">ⓘ Pre-fill any fields for the client to verify during enrollment.</div>'+
+     '<div class="en-view"><b>Enrollment Details · agents and admins.</b> New: the <b>Settlor / Authorized Signer</b> section, placed above Citizenship Details. It is the <b>same section</b> admins use in Case Details (same fields, buttons and rules). The agent fills it in while the client enrolls, and admin can still change it later in Case Details. Nothing else on this screen changes.</div>'+
+     '<div class="isec"><h4>Still to decide</h4><ul class="can oq"><li>Who answers “who is the settlor?” first: the <b>client</b> as an ILIA question in enrollment, or the <b>agent</b> here? (Proposed: the agent sets it here; the client only sees it if we add an enrollment question.)</li>'+
+     '<li>Should the client enrollment flow ask “Are you the settlor of the trust?” with Yes / No, and on No collect the settlor’s name and email?</li>'+
+     '<li>Can the agent send the authorized signer invite from here, or only admin (after enrollment closes)?</li>'+
+     '<li>What can the agent change after enrollment is submitted: nothing, or the same as admin?</li></ul></div></div>':'';
+  document.getElementById("enrollAfter").innerHTML=en?'<div class="ghost-sec" style="margin-top:12px"><span>Citizenship Details</span><span>▸</span></div><div class="ghost-sec" style="margin-top:8px"><span>Address · Contributions · Save Changes</span><span>▸</span></div>':'';
+  log(en?"Viewing the agent’s Enrollment Details":"Back to admin Case Details");
+  window.scrollTo(0,0);}
 
 /* Update requirement: remove "Master Settlor" from ILIA. Labels found in niw-web-admin (staging branch), read-only review 11/9. */
 var MS_WHERE=[
