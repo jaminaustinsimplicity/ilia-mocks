@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ILIA · Symetra Banner → Resources Workflow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --blue:#2f6fed; --blue-d:#245ad0; --blue-soft:#e8f0fe;
+    --ink:#2b3442; --muted:#6b7686; --faint:#9aa4b2;
+    --line:#e4e8ee; --bg:#f4f6f9; --surface:#fff;
+    --hero1:#1e63b7; --hero2:#2f86d8;
+    --sans:"Segoe UI",Roboto,system-ui,-apple-system,Helvetica,Arial,sans-serif;
+    --serif:"Georgia","Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px}
+  a{color:var(--blue);text-decoration:none;cursor:pointer}
+
+  #startover{position:fixed;left:0;top:46%;z-index:60;background:var(--ink);color:#fff;border:none;
+    font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:.03em;padding:12px 10px;
+    border-radius:0 10px 10px 0;cursor:pointer;writing-mode:vertical-rl;transform:rotate(180deg);box-shadow:0 3px 12px rgba(0,0,0,.22)}
+  #startover:hover{background:#000}
+  .proto{position:fixed;right:14px;bottom:12px;z-index:60;background:#fff7e6;border:1px solid #d9a93a;
+    color:#9a6b14;font-size:11px;font-weight:700;padding:5px 11px;border-radius:100px;letter-spacing:.03em}
+
+  /* top bar */
+  .topbar{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;
+    padding:0 22px;gap:14px;position:sticky;top:0;z-index:30}
+  .burger{font-size:20px;color:var(--muted);cursor:pointer;margin-right:4px}
+  .logo{display:flex;align-items:flex-end;gap:9px}
+  .logo .word{font-weight:800;font-size:26px;color:#1f3a6e;letter-spacing:-.02em;line-height:.8;position:relative}
+  .logo .word .dots{position:absolute;left:2px;bottom:-7px;display:flex;gap:4px}
+  .logo .word .dots i{width:6px;height:6px;border-radius:50%}
+  .logo .sub{font-size:8.5px;line-height:1.25;color:#5a6b86;max-width:120px;font-weight:600}
+  .logo .sub b{color:var(--blue);font-weight:800;letter-spacing:.08em}
+  .welcome{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--ink);font-size:14px}
+  .welcome b{font-weight:700}
+  .welcome .bell{color:var(--muted);font-size:17px}
+  .welcome .pic{width:26px;height:26px;border-radius:50%;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;color:var(--blue);font-weight:700;font-size:12px}
+
+  .shell{display:grid;grid-template-columns:238px 1fr}
+  @media (max-width:900px){.shell{grid-template-columns:1fr}.side{display:none}}
+  .side{background:#fff;border-right:1px solid var(--line);min-height:calc(100vh - 60px);padding:12px 10px}
+  .navi{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:8px;color:var(--ink);font-size:14px;cursor:pointer;margin-bottom:2px}
+  .navi .i{width:18px;text-align:center;color:var(--muted)}
+  .navi:hover{background:#f3f5f9}
+  .navi.active{background:var(--blue-soft);color:var(--blue);font-weight:700}
+  .navi.active .i{color:var(--blue)}
+
+  .main{padding:22px 26px 80px;min-width:0}
+
+  /* ---------- BANNER ---------- */
+  .promo{position:relative;border-radius:12px;overflow:hidden;margin-bottom:18px;
+    background:linear-gradient(100deg,#15171c 0%,#202833 48%,#2a3340 100%);
+    box-shadow:0 6px 20px rgba(20,28,40,.18);min-height:150px;display:flex}
+  .promo::after{content:"";position:absolute;inset:0;background:
+    radial-gradient(900px 200px at 18% 120%, rgba(90,120,160,.25), transparent 60%);pointer-events:none}
+  .promo .pl{flex:1;padding:22px 26px;position:relative;z-index:2;max-width:70%}
+  .promo .lockup{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+  .promo .kz{font-family:var(--serif);font-style:italic;font-weight:700;color:#fff;font-size:24px;letter-spacing:-.01em}
+  .promo .plus{color:#9fb4c9;font-size:18px}
+  .promo .sym{color:#fff;font-weight:800;letter-spacing:.14em;font-size:18px}
+  .promo h3{color:#fff;font-size:20px;margin:0 0 6px;font-weight:700;line-height:1.15;text-wrap:balance}
+  .promo p{color:#c6d0dc;font-size:12.5px;margin:0 0 14px;line-height:1.45;max-width:46ch}
+  .promo .cta{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;border:none;
+    font-family:inherit;font-weight:700;font-size:13.5px;padding:11px 20px;border-radius:7px;cursor:pointer;
+    box-shadow:0 3px 10px rgba(47,111,237,.4)}
+  .promo .cta:hover{background:var(--blue-d)}
+  .promo .pr{flex:1;position:relative;z-index:1;opacity:.5;
+    background:linear-gradient(120deg,transparent,rgba(120,150,180,.18)),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 12px, transparent 12px 24px)}
+  .promo .pill{position:absolute;top:12px;left:26px;font-size:9px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;color:#13202e;background:#7fd0e0;padding:2px 8px;border-radius:100px;z-index:3}
+  .promo .xbtn{position:absolute;top:10px;right:12px;z-index:4;color:#cdd6e0;cursor:pointer;font-size:18px;
+    width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .promo .xbtn:hover{background:rgba(255,255,255,.12);color:#fff}
+  @media (max-width:720px){.promo .pl{max-width:100%}.promo .pr{display:none}}
+
+  .bannernote{font-size:11px;color:var(--faint);margin:-8px 0 16px;font-style:italic}
+
+  /* ---------- HERO (Welcome) ---------- */
+  .hero{background:linear-gradient(110deg,var(--hero1),var(--hero2));border-radius:12px;padding:26px 30px;color:#fff;position:relative;overflow:hidden;margin-bottom:26px}
+  .hero::after{content:"";position:absolute;right:0;bottom:0;top:0;width:55%;
+    background:repeating-linear-gradient(120deg, rgba(255,255,255,.05) 0 2px, transparent 2px 26px);opacity:.5}
+  .hero .tick{width:54px;height:4px;border-radius:3px;background:linear-gradient(90deg,#e8573f,#2f9e63,#2f6fed);margin-bottom:10px}
+  .hero h1{font-family:var(--serif);font-size:38px;margin:0 0 10px;font-weight:700}
+  .hero p{max-width:560px;font-size:14.5px;line-height:1.5;margin:0 0 20px;opacity:.95}
+  .hero .acts{display:flex;gap:14px;flex-wrap:wrap;position:relative;z-index:2}
+  .hero .pillbtn{background:#fff;color:var(--ink);border-radius:100px;padding:12px 26px;font-weight:700;font-size:13.5px;cursor:pointer;box-shadow:0 0 0 2px rgba(120,220,160,.4)}
+
+  .sectlabel{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--faint);margin:0 0 14px}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  @media (max-width:1150px){.cards{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.cards{grid-template-columns:1fr}}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:26px 20px;text-align:center}
+  .card .ci{width:62px;height:62px;border-radius:14px;background:#f1f4f8;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px}
+  .card h4{margin:0 0 7px;font-size:15px}
+  .card p{margin:0;font-size:12px;color:var(--muted);line-height:1.45}
+
+  /* ---------- RESOURCES VIEW ---------- */
+  .rtitle{font-size:24px;font-weight:700;margin:6px 0 18px}
+  .deepchip{display:inline-flex;align-items:center;gap:7px;background:var(--blue-soft);color:var(--blue);
+    font-size:12px;font-weight:700;padding:6px 13px;border-radius:100px;margin:0 0 16px;opacity:0;transition:opacity .3s}
+  .deepchip.show{opacity:1}
+  .acc{border:1px solid var(--line);border-radius:4px;margin-bottom:10px;background:#fff;overflow:hidden;box-shadow:0 1px 2px rgba(20,28,40,.04)}
+  .acc.hot{box-shadow:0 0 0 2px var(--blue);border-color:var(--blue)}
+  .accsum{display:flex;align-items:center;padding:16px 20px;cursor:pointer;font-weight:700;font-size:16px}
+  .accsum .chev{margin-left:auto;color:var(--muted);transition:transform .2s}
+  .acc.open .accsum .chev{transform:rotate(180deg)}
+  .accbody{display:none;border-top:1px solid var(--line)}
+  .acc.open .accbody{display:block}
+  table{width:100%;border-collapse:collapse}
+  thead th{text-align:left;padding:13px 20px;font-size:14px;background:#edf3f8;color:var(--ink);font-weight:700}
+  tbody td{padding:16px 20px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}
+  tbody tr:last-child td{border-bottom:none}
+  td.cat{width:32%;font-weight:600;color:var(--ink)}
+  .doclink{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .doclink:last-child{margin-bottom:0}
+  .doclink .pdf{color:#c0392b;font-weight:800;font-size:10px;border:1px solid #e3b3ac;border-radius:3px;padding:1px 4px;background:#fdecea}
+  .doclink .ext{color:var(--blue)}
+
+  .view{display:none}
+  .view.show{display:block}
+</style>
+</head>
+<body>
+
+<button id="startover" onclick="startOver()">↺ Start over</button>
+<div class="proto">PROTOTYPE · banner art is placeholder for Marketing's final creative</div>
+
+<!-- top bar -->
+<div class="topbar">
+  <span class="burger">☰</span>
+  <div class="logo">
+    <div class="word">ilia<div class="dots"><i style="background:#2f6fed"></i><i style="background:#2f9e63"></i><i style="background:#e8573f"></i><i style="background:#e0a52f"></i></div></div>
+    <div class="sub">Interactive Learning Information Assistant<br><b>AGENT</b></div>
+  </div>
+  <div class="welcome"><span class="bell">🔔</span> Welcome! <b>Test Agent</b> <span class="pic">T</span></div>
+</div>
+
+<div class="shell">
+  <!-- sidebar -->
+  <nav class="side">
+    <div class="navi active" data-nav="dashboard" onclick="goDashboard()"><span class="i">🏠</span> Agent Dashboard</div>
+    <div class="navi"><span class="i">👥</span> My Groups</div>
+    <div class="navi"><span class="i">📄</span> Client Management</div>
+    <div class="navi"><span class="i">🔗</span> Agent Links</div>
+    <div class="navi"><span class="i">☰</span> Action Items</div>
+    <div class="navi"><span class="i">🔔</span> ilia Notifications</div>
+    <div class="navi"><span class="i">📅</span> Events &amp; Webinars</div>
+    <div class="navi"><span class="i">🌐</span> Agent Training</div>
+    <div class="navi"><span class="i">▶️</span> Marketing Materials</div>
+    <div class="navi"><span class="i">📇</span> Lead Management</div>
+    <div class="navi"><span class="i">💳</span> Client Payment Options</div>
+    <div class="navi"><span class="i">💲</span> Tranche Dates</div>
+    <div class="navi" data-nav="resources" onclick="goResources(false)"><span class="i">📚</span> Resources and Training</div>
+  </nav>
+
+  <!-- main -->
+  <div class="main">
+
+    <!-- ===== DASHBOARD VIEW ===== -->
+    <div class="view show" id="view-dashboard">
+
+      <!-- NEW BANNER -->
+      <div class="promo" id="promo">
+        <span class="pill">New carrier</span>
+        <span class="xbtn" title="Dismiss" onclick="closeBanner(event)">✕</span>
+        <div class="pl">
+          <div class="lockup"><span class="kz">Kai-Zen®</span><span class="plus">+</span><span class="sym">SYMETRA</span></div>
+          <h3>Symetra joins the Kai-Zen® carrier lineup</h3>
+          <p>Expand your toolkit with a cost-efficient carrier chassis built for real-world durability. See product specs, rates, and sales support.</p>
+          <button class="cta" onclick="goResources(true)">Explore the Product →</button>
+        </div>
+        <div class="pr"></div>
+      </div>
+      <div class="bannernote">↑ Placeholder for Marketing's finalized banner graphic. The <b>“Explore the Product”</b> button is a real clickable CTA — click it.</div>
+
+      <!-- Welcome hero -->
+      <div class="hero">
+        <div class="tick"></div>
+        <h1>Welcome&nbsp; Test Agent</h1>
+        <p>This is your personal dashboard for viewing and managing your ilia clients. You can get started by selecting an option below or from the main navigation.</p>
+        <div class="acts">
+          <div class="pillbtn">Create New Invitation</div>
+          <div class="pillbtn">Client Presentation</div>
+          <div class="pillbtn">Agent Training</div>
+        </div>
+      </div>
+
+      <div class="sectlabel">PORTAL PAGES</div>
+      <div class="cards">
+        <div class="card"><div class="ci">📝</div><h4>Client Enrollment Prep</h4><p>Information and documents required by client to complete their application.</p></div>
+        <div class="card"><div class="ci">🗂️</div><h4>Client Management</h4><p>Your client lists for follow up marketing and reporting.</p></div>
+        <div class="card"><div class="ci">✅</div><h4>Action Items</h4><p>List of your action items to complete on behalf of client.</p></div>
+        <div class="card"><div class="ci">✏️</div><h4>Client Payment Options</h4><p>Manage how your clients pay for their coverage.</p></div>
+      </div>
+    </div>
+
+    <!-- ===== RESOURCES VIEW ===== -->
+    <div class="view" id="view-resources">
+      <div class="rtitle">Index Options and Strategies</div>
+      <div class="deepchip" id="deepchip">↳ Opened from the “Explore the Product” banner — Symetra expanded</div>
+
+      <div class="acc" id="acc-allianz">
+        <div class="accsum" onclick="toggleAcc('acc-allianz')">Allianz <span class="chev">▾</span></div>
+        <div class="accbody">
+          <table><thead><tr><th>Category</th><th>Resources</th></tr></thead><tbody>
+            <tr><td class="cat">Product Information</td><td><div class="doclink"><span class="pdf">PDF</span><a>Life Accumulator Agent Guide</a></div></td></tr>
+            <tr><td class="cat">Index Information</td><td><div class="doclink"><span class="pdf">PDF</span><a>Allocation Buckets</a></div><div class="doclink"><span class="ext">↗</span><a>Allianz Rates</a></div></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-nlg">
+        <div class="accsum" onclick="toggleAcc('acc-nlg')">National Life Group <span class="chev">▾</span></div>
+        <div class="accbody">
+          <table><thead><tr><th>Category</th><th>Resources</th></tr></thead><tbody>
+            <tr><td class="cat">Product Information</td><td><div class="doclink"><span class="pdf">PDF</span><a>SummitLife Agent Guide</a></div></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-symetra">
+        <div class="accsum" onclick="toggleAcc('acc-symetra')">Symetra <span class="chev">▾</span></div>
+        <div class="accbody">
+          <table><thead><tr><th>Category</th><th>Resources</th></tr></thead><tbody>
+            <tr><td class="cat">Product Information</td><td><div class="doclink"><span class="pdf">PDF</span><a>Accumulator Ascent IUL Brochure</a></div></td></tr>
+            <tr><td class="cat">Index Information</td><td>
+              <div class="doclink"><span class="pdf">PDF</span><a>What's Behind the "I" in IUL</a></div>
+              <div class="doclink"><span class="pdf">PDF</span><a>Symetra Rates</a></div>
+            </td></tr>
+            <tr><td class="cat">Sales Support</td><td><div class="doclink"><span class="pdf">PDF</span><a>Supplemental Income Plan</a></div></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function setNav(key){
+    document.querySelectorAll('.navi').forEach(function(n){
+      n.classList.toggle('active', n.getAttribute('data-nav')===key);
+    });
+  }
+  function showView(id){
+    document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('show', v.id===id)});
+    window.scrollTo(0,0);
+  }
+
+  function goDashboard(){
+    setNav('dashboard');showView('view-dashboard');
+  }
+
+  function collapseAll(){
+    ['acc-allianz','acc-nlg','acc-symetra'].forEach(function(id){
+      document.getElementById(id).classList.remove('open','hot');
+    });
+  }
+
+  function goResources(deep){
+    setNav('resources');showView('view-resources');
+    collapseAll();
+    var chip=document.getElementById('deepchip');
+    if(deep){
+      // deep-link behavior: open + highlight + scroll to Symetra
+      var sym=document.getElementById('acc-symetra');
+      sym.classList.add('open','hot');
+      chip.classList.add('show');
+      setTimeout(function(){ sym.scrollIntoView({behavior:'smooth',block:'center'}); },120);
+      setTimeout(function(){ sym.classList.remove('hot'); },2600);
+    } else {
+      // default nav behavior: everything collapsed, no scroll
+      chip.classList.remove('show');
+    }
+  }
+
+  function toggleAcc(id){
+    document.getElementById(id).classList.toggle('open');
+  }
+
+  function closeBanner(e){
+    e.stopPropagation();
+    document.getElementById('promo').style.display='none';
+    document.querySelector('.bannernote').style.display='none';
+  }
+
+  function startOver(){
+    document.getElementById('promo').style.display='';
+    document.querySelector('.bannernote').style.display='';
+    collapseAll();
+    document.getElementById('deepchip').classList.remove('show');
+    goDashboard();
+  }
+</script>
+</body>
+</html>
