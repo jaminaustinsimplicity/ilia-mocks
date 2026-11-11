@@ -414,6 +414,7 @@ body.notes-off .nt-tab{display:block}
 .en-save{display:flex;justify-content:flex-end;align-items:center;gap:12px;border-top:1px solid #e3e6ec;padding-top:12px}
 .en-saved{color:#1a7f37;font-weight:600;font-size:13.5px;margin-right:auto}
 .en-dec ul li{color:#14632b}
+.rel-pick select,.rel-oth input{border:0;outline:0;font:15px Roboto,sans-serif;width:100%;background:transparent;padding:0}
 </style>
 
 <div class="mockbar">
@@ -535,6 +536,21 @@ var POLICY_POOL = [
 var insInforce = true; /* mock control for the "settlor is the insured" example */
 /* Same options as ILIA's SettlorDetails.tsx enum (Self / Spouse / Other). Self is Step 1 here. */
 var REL = ["Spouse","Other"];
+/* rel is stored as "Spouse", "Other" or "Other: <text>" */
+function relOk(r){return r==="Spouse"||/^Other: \S/.test(r||"");}
+function relPick(scope,r){r=r||""; var sel=/^Other/.test(r)?"Other":r, oth=r.replace(/^Other:? ?/,"");
+  return '<label class="mf has sel rel-pick"><span class="mf-l">Settlor Relation to Insured</span><select class="mf-s" data-rel="'+scope+'" aria-label="Settlor Relation to Insured"><option value=""'+(sel?'':' selected')+'>Select</option><option'+(sel==="Spouse"?' selected':'')+'>Spouse</option><option'+(sel==="Other"?' selected':'')+'>Other</option></select></label>'+
+    (sel==="Other"?'<label class="mf has rel-oth"><span class="mf-l">Other Relation *</span><input data-relo="'+scope+'" value="'+esc(oth)+'" placeholder="e.g. Brother" autocomplete="off"></label>':'');}
+function relSet(scope,v){var o=scope==="cs"?cs.v:scope==="sg"?sg.v:scope==="en"?enr.v:null; if(o) o.rel=v;}
+function relRedraw(scope){if(scope==="cs"&&cs)renderCs(); else if(scope==="sg"&&sg)renderSg(); else if(scope==="en"&&enr)renderEnr();}
+document.addEventListener("change",function(ev){var t=ev.target;
+  if(t.dataset&&t.dataset.rel){relSet(t.dataset.rel,t.value==="Other"?"Other":t.value); relRedraw(t.dataset.rel);}
+  else if(t.dataset&&t.dataset.relo){var v=t.value.trim(); relSet(t.dataset.relo,v?"Other: "+v:"Other"); relRedraw(t.dataset.relo);}});
+document.addEventListener("input",function(ev){var t=ev.target; if(t.dataset&&t.dataset.relo){var v=t.value.trim(); relSet(t.dataset.relo,v?"Other: "+v:"Other");}});
+function sepRelHTML(o){var sel=o.relation==="Other"?"Other":o.relation;
+  return '<div class="mf has sel"><span class="mf-l">Settlor Relation to Insured</span><select id="sepRel" class="mf-s" aria-label="Settlor Relation to Insured">'+["Spouse","Other"].map(function(x){return '<option'+(x===sel?' selected':'')+'>'+x+'</option>';}).join("")+'</select></div>'+
+    (o.relation==="Other"?iliaFld("Other Relation",o.otherRelation||"—"):'');}
+document.addEventListener("change",function(ev){if(ev.target.id!=="sepRel"||!st||!st.ind)return; st.ind.relation=ev.target.value; if(ev.target.value==="Other"&&!st.ind.otherRelation)st.ind.otherRelation="Brother"; log("Settlor relation changed to "+relText(st.ind)); render();});
 function relText(o){return o.relation==="Other" ? "Other: "+(o.otherRelation||"—") : o.relation;}
 
 function clone(o){return JSON.parse(JSON.stringify(o));}
@@ -779,7 +795,7 @@ function render(){
       '<p class="note" style="margin:-4px 0 14px">Same person, new details? Click a field and update it. A <b>different person</b> is now the settlor? Use <b>Change authorized signer</b>.</p><div class="ilia-grid">'+
       edFld("Settlor First Name","in.first")+iliaFld("Middle Name","")+edFld("Last Name","in.last")+
       edFld("Settlor Email Address","in.email")+edFld("Settlor Phone Number","in.phone")+secretFld("Settlor Social",s.ssn)+
-      iliaFld("Settlor Relation to Insured",relText(s))+edFld("Date of Birth","in.dob")+
+      sepRelHTML(s)+edFld("Date of Birth","in.dob")+
       edFld("Address","in.addr",true)+
       '</div>'+pastHTML()+'<div id="edBar" class="edbar" hidden></div></div><hr class="divider">'+
       signersHTML("Authorized signer &amp; portal access")+'<hr class="divider">'+policiesHTML();
@@ -1065,9 +1081,10 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape"&&iv)closeInv
 
 /* ---------- Change authorized signer (a different person). Same person = edit the fields in place. ---------- */
 var sg=null;
-var SG_F=[["first","First name"],["last","Last name"],["title","Title"],["email","Email address"],["phone","Phone number"]];
-var IN_F=[["first","First name"],["last","Last name"],["email","Email address"],["phone","Phone number"],["rel","Relation to insured"],["dob","Date of birth"],["ssn","Social Security number"],["addr","Address"]];
-var IN_NEW={first:"Carlos",last:"Reyes",email:"carlos.reyes@example.com",phone:"(214) 555-0186",rel:"Other: Brother",dob:"07/22/1975",ssn:"623-55-1904",addr:"812 Gaston Ave, Dallas, TX 75214"};
+var SG_F=[["first","Authorized Signer First Name"],["last","Last Name"],["title","Title"],["email","Email Address"],["phone","Phone Number"]];
+var IN_F=[["first","Settlor First Name"],["middle","Middle Name"],["last","Last Name"],["email","Settlor Email Address"],["phone","Settlor Phone Number"],["rel","Settlor Relation to Insured"],["dob","Date of Birth"],["ssn","Settlor Social"],["addr","Address"]];
+var OPT_F={middle:1};   /* Middle Name is optional, as in ILIA today */
+var IN_NEW={middle:"Luis",first:"Carlos",last:"Reyes",email:"carlos.reyes@example.com",phone:"(214) 555-0186",rel:"Other: Brother",dob:"07/22/1975",ssn:"623-55-1904",addr:"812 Gaston Ave, Dallas, TX 75214"};
 /* 11/9 decision: rare settlor / signer / entity changes are handled MANUALLY. No guided multi-step flow:
    one screen = attach the trust document (required) + update the details + confirm + save. Access default, invite and emails still apply. */
 function manualIntro(what){return '<div class="mu-intro"><b>Manual update · rare.</b> '+what+' NIW gets the signed trust document first, attaches it here, updates the details and saves. No guided flow (decided 11/9).</div>';}
@@ -1092,9 +1109,9 @@ function renderSg(){
   var g=st.signers[0], isEnt=st.type==="entity", hasAcct=g.invite!=="none", nPol=st.policies.length+' polic'+(st.policies.length===1?'y':'ies'), F=sgFields(); var allPol=st.policies.length===1?'this policy':'all '+nPol;
   var forWho = isEnt ? esc(st.ent.name) : 'the policy';
   var role = isEnt ? 'authorized signer' : 'settlor and authorized signer';
-  var filled=F.every(function(f){return sg.v[f[0]];});
+  var filled=F.every(function(f){return OPT_F[f[0]]||(f[0]==="rel"?relOk(sg.v.rel):sg.v[f[0]]);});
   if(sg.step==="form"){
-    var nf='<div class="ilia-grid sg-grid">'+F.map(function(f){return sgFld("nfill",f[0],f[1],sg.v[f[0]]);}).join("")+'</div>';
+    var nf='<div class="ilia-grid sg-grid">'+F.filter(function(f){return f[0]!=="rel";}).map(function(f){return sgFld("nfill",f[0],f[1],sg.v[f[0]]);}).join("")+(isEnt?'':relPick("sg",sg.v.rel))+[""].join("")+'</div>';
     var body1=manualIntro(isEnt?'A different person will sign for '+forWho+'.':'A different person becomes the settlor.')+manualDoc("sg",sg,isEnt?"Entity resolution - new authorized signer.pdf":"Trust amendment - new settlor.pdf")+
       '<div class="isec"><h4>2 · Replace the '+role+(isEnt?' for '+forWho:'')+'</h4><p class="note" style="margin:0">'+
         (isEnt ? 'Use this when a <b>different person</b> will sign for '+forWho+'. Each settlor has one authorized signer, so the new person replaces <b>'+esc(g.first+" "+g.last)+'</b>.'
@@ -1122,7 +1139,7 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   if(a==="ok"){sg.ok=!sg.ok;}
   if(a==="mails"){sg.mails=!sg.mails;}
   if(a==="doc"){sg.doc=!sg.doc;}
-  if(a==="saveChange"&&sg.ok&&sg.doc&&sgFields().every(function(f){return sg.v[f[0]];})){ ed={};
+  if(a==="saveChange"&&sg.ok&&sg.doc&&sgFields().every(function(f){return OPT_F[f[0]]||(f[0]==="rel"?relOk(sg.v.rel):sg.v[f[0]]);})){ ed={};
     var nv=sg.v, isEnt=st.type==="entity", hadAcct=g.invite!=="none";
     st.pastSigners=(st.pastSigners||[]); st.pastSigners.unshift({name:g.first+" "+g.last,title:isEnt?g.title:"Settlor & Authorized Signer ("+relText(st.ind)+")",until:today(),by:"Jamin A."});
     if(isEnt){ st.signers=[{first:nv.first,last:nv.last,title:nv.title,email:nv.email,phone:nv.phone,access:false,invite:"none",d:{}}]; }
@@ -1146,7 +1163,7 @@ var CE_EXISTING={name:"Northgate Dental Group PC", etype:"Corporation", ein:"82-
   policies:[{first:"Ryan",last:"Patel",policy:"KZ-106020",tranche:84,inforce:true,insAccess:false,insInvite:"none"},{first:"Amy",last:"Nguyen",policy:"KZ-106118",tranche:85,inforce:true,insAccess:false,insInvite:"none"}], more:3};
 var CE_NEW={etype:"Trust (Irrevocable)", name:"Reyes Family Irrevocable Trust", ein:"87-5512034", addr:"2200 Ross Ave, Suite 900, Dallas, TX 75201"};
 var CE_NEW_SG={first:"Elena",last:"Reyes",title:"Trustee",email:"elena.reyes@example.com",phone:"(214) 555-0115"};
-var CE_F=[["name","Entity name"],["ein","EIN / Tax ID"],["addr","Address"]], CE_SF=[["first","First name"],["last","Last name"],["title","Title"],["email","Email address"],["phone","Phone number"]];
+var CE_F=[["name","Entity Name"],["ein","EIN / Tax ID"],["addr","Address"]], CE_SF=[["first","Authorized Signer First Name"],["last","Last Name"],["title","Title"],["email","Email Address"],["phone","Phone Number"]];
 function openCe(){ce={step:"pick", src:"", v:{etype:"",name:"",ein:"",addr:""}, sgMode:"keep", sv:{first:"",last:"",title:"",email:"",phone:""}, scope:"all", ok:false, mails:false}; renderCe();}
 function closeCe(){ce=null;document.getElementById("sgRoot").innerHTML="";}
 function ceShell(title,body,foot){document.getElementById("sgRoot").innerHTML='<div class="scrim" data-ce="close"></div><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="ceH"><div class="dr-hd"><h3 id="ceH">'+title+'</h3><button class="btn sm" data-ce="close" aria-label="Close">✕</button></div><div class="dr-bd">'+body+'</div><div class="dr-ft">'+foot+'</div></div>';}
@@ -1168,7 +1185,7 @@ function renderCe(){
         '<button class="cecard'+(ce.src==="new"?' on':'')+'" data-ce="src" data-v="new"><b>A new entity</b><span class="note">Enter the entity’s details and choose its authorized signer.</span></button></div></div>';
     if(ce.src==="existing") body+='<div class="isec"><h4>Existing settlor record</h4><div class="sgcur cepick"><b>'+esc(CE_EXISTING.name)+'</b> · '+esc(CE_EXISTING.etype)+' · EIN '+esc(mask(CE_EXISTING.ein,4))+'<br><span class="note">Authorized signer: '+esc(CE_EXISTING.signer.first+" "+CE_EXISTING.signer.last+", "+CE_EXISTING.signer.title)+' (has portal access) · '+(CE_EXISTING.policies.length+CE_EXISTING.more)+' policies already linked</span></div><p class="note" style="margin:0">Sample search result. In ILIA this is a search by entity name or EIN.</p></div>';
     if(ce.src==="new"){
-      body+='<div class="isec"><h4>New entity</h4><div class="note" style="margin-bottom:2px">Entity type</div><div class="etypes">'+ENTITY_TYPES.map(function(t){return '<button class="chip'+(ce.v.etype===t?' on':'')+'" data-ce="etype" data-v="'+esc(t)+'">'+esc(t)+'</button>';}).join("")+'</div>'+
+      body+='<div class="isec"><h4>Settlor details · entity</h4><div class="note" style="margin-bottom:2px">Entity type</div><div class="etypes">'+ENTITY_TYPES.map(function(t){return '<button class="chip'+(ce.v.etype===t?' on':'')+'" data-ce="etype" data-v="'+esc(t)+'">'+esc(t)+'</button>';}).join("")+'</div>'+
         '<div class="ilia-grid sg-grid">'+CE_F.map(function(f){return ceFld("v",f[0],f[1],ce.v[f[0]]);}).join("")+'</div></div>'+
         '<div class="isec"><h4>Authorized signer for the new entity</h4><div class="cechoice">'+
           '<button class="cecard'+(ce.sgMode==="keep"?' on':'')+'" data-ce="sgmode" data-v="keep"><b>Keep '+esc(g.first+" "+g.last)+'</b><span class="note">Same person signs for the new entity. Their portal access carries over.</span></button>'+
@@ -1223,7 +1240,7 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape"&&ce)closeCe(
 
 /* ---------- Settlor isn't the insured: admin sets a separate settlor (individual or entity) on a policy where ILIA has the insured as settlor ---------- */
 var cs=null;
-var CS_IND={first:"Maria",last:"Reyes",email:"maria.reyes@example.com",phone:"(214) 555-0148",rel:"Spouse",dob:"03/14/1979",ssn:"512-44-4821",addr:"4410 Oak Lawn Ave, Dallas, TX 75219"};
+var CS_IND={middle:"Elena",first:"Maria",last:"Reyes",email:"maria.reyes@example.com",phone:"(214) 555-0148",rel:"Spouse",dob:"03/14/1979",ssn:"512-44-4821",addr:"4410 Oak Lawn Ave, Dallas, TX 75219"};
 var CS_RELS=["Spouse","Other: Brother","Other: Business partner"];
 var CS_EXISTING_SG={first:"Laura",last:"Chen",title:"Chief Financial Officer",email:"l.chen@reyesholdings.example",phone:"(214) 555-0177",access:true,invite:"active",d:{sent:"Sep 12",opened:"Sep 12",created:"Sep 13",login:"Oct 24"}};
 var CS_IN_F=IN_F.filter(function(f){return f[0]!=="rel";});
@@ -1234,7 +1251,7 @@ function csFld(grp,k,label,val){var w=(k==="addr"||k==="email")?' style="grid-co
   return val ? '<button class="mf has sgf" data-cs="fill" data-g="'+grp+'" data-k="'+k+'"'+w+'><span class="mf-l">'+label+'</span><span class="mf-v">'+esc(shown)+'</span></button>'
              : '<button class="mf mf-add" data-cs="fill" data-g="'+grp+'" data-k="'+k+'"'+w+'>'+label+'<small>Click to add sample</small></button>';}
 function csSrc(g){return g==="v"?CS_IND:g==="ev"?CE_NEW:CE_NEW_SG;}
-function csReady(){ if(cs.kind==="individual") return CS_IN_F.every(function(f){return cs.v[f[0]];})&&cs.v.rel;
+function csReady(){ if(cs.kind==="individual") return CS_IN_F.every(function(f){return OPT_F[f[0]]||cs.v[f[0]];})&&relOk(cs.v.rel);
   if(cs.kind==="entity"){ if(cs.src==="existing") return true; if(cs.src!=="new") return false;
     return cs.ev.etype&&CE_F.every(function(f){return cs.ev[f[0]];})&&CE_SF.every(function(f){return cs.sv[f[0]];});}
   return false;}
@@ -1252,8 +1269,8 @@ function renderCs(){
         '<button class="cecard'+(cs.kind==="individual"?' on':'')+'" data-cs="kind" data-v="individual"><b>An individual</b><span class="note">A person other than the insured, for example a spouse or parent. They are also the authorized signer.</span></button>'+
         '<button class="cecard'+(cs.kind==="entity"?' on':'')+'" data-cs="kind" data-v="entity"><b>An entity</b><span class="note">A trust, LLC, corporation or other entity. It has one authorized signer.</span></button></div></div>';
     if(cs.kind==="individual"){
-      body+='<div class="isec"><h4>Relation to the insured</h4><div class="etypes">'+CS_RELS.map(function(r){return '<button class="chip'+(cs.v.rel===r?' on':'')+'" data-cs="rel" data-v="'+esc(r)+'">'+esc(r)+'</button>';}).join("")+'</div></div>'+
-        '<div class="isec"><h4>Settlor &amp; authorized signer</h4><div class="ilia-grid sg-grid">'+CS_IN_F.map(function(f){return csFld("v",f[0],f[1],cs.v[f[0]]);}).join("")+'</div>'+
+      body+=
+        '<div class="isec"><h4>Settlor details · individual (Authorized Signer)</h4><div class="ilia-grid sg-grid">'+CS_IN_F.map(function(f){return csFld("v",f[0],f[1],cs.v[f[0]]);}).join("")+relPick("cs",cs.v.rel)+'</div>'+
         '<button class="btn link sm" data-cs="fillall" style="align-self:flex-start">Fill all with sample</button></div>';
     }
     if(cs.kind==="entity"){
@@ -1261,9 +1278,9 @@ function renderCs(){
         '<button class="cecard'+(cs.src==="existing"?' on':'')+'" data-cs="src" data-v="existing"><b>An entity already in ILIA</b><span class="note">Link this policy to an existing settlor record. Its authorized signer comes with it.</span></button>'+
         '<button class="cecard'+(cs.src==="new"?' on':'')+'" data-cs="src" data-v="new"><b>A new entity</b><span class="note">Enter the entity’s details and its authorized signer.</span></button></div></div>';
       if(cs.src==="existing") body+='<div class="isec"><h4>Existing settlor record</h4><div class="sgcur cepick"><b>'+esc(SAMPLE.ent.name)+'</b> · '+esc(SAMPLE.ent.etype)+' · EIN '+esc(mask(SAMPLE.ent.ein,4))+'<br><span class="note">Authorized signer: '+esc(CS_EXISTING_SG.first+" "+CS_EXISTING_SG.last+", "+CS_EXISTING_SG.title)+' (has portal access) · '+POLICY_POOL.slice(0,2).length+' policies already linked</span></div><p class="note" style="margin:0">Sample search result. In ILIA this is a search by entity name or EIN.</p></div>';
-      if(cs.src==="new") body+='<div class="isec"><h4>New entity</h4><div class="note" style="margin-bottom:2px">Entity type</div><div class="etypes">'+ENTITY_TYPES.map(function(t){return '<button class="chip'+(cs.ev.etype===t?' on':'')+'" data-cs="etype" data-v="'+esc(t)+'">'+esc(t)+'</button>';}).join("")+'</div>'+
+      if(cs.src==="new") body+='<div class="isec"><h4>Settlor details · entity</h4><div class="note" style="margin-bottom:2px">Entity type</div><div class="etypes">'+ENTITY_TYPES.map(function(t){return '<button class="chip'+(cs.ev.etype===t?' on':'')+'" data-cs="etype" data-v="'+esc(t)+'">'+esc(t)+'</button>';}).join("")+'</div>'+
           '<div class="ilia-grid sg-grid">'+CE_F.map(function(f){return csFld("ev",f[0],f[1],cs.ev[f[0]]);}).join("")+'</div></div>'+
-        '<div class="isec"><h4>Authorized signer for the entity</h4><div class="ilia-grid sg-grid">'+CE_SF.map(function(f){return csFld("sv",f[0],f[1],cs.sv[f[0]]);}).join("")+'</div>'+
+        '<div class="isec"><h4>Entity authorized signer</h4><div class="ilia-grid sg-grid">'+CE_SF.map(function(f){return csFld("sv",f[0],f[1],cs.sv[f[0]]);}).join("")+'</div>'+
         '<button class="btn link sm" data-cs="fillall" style="align-self:flex-start">Fill all with sample</button></div>';
     }
     if(cs.kind&&(cs.kind==="individual"||cs.src)) body+='<div class="isec cs-acc"><h4>'+esc(POLICY.first)+'’s own Servicing Portal access to this policy</h4><div class="cechoice">'+
@@ -1487,14 +1504,14 @@ function setWhere(w){where=w; var en=w==="enroll";
    Agent or admin fills it; the client confirms it in their trust documents (second envelope). Same record as Case Details.
    Not here: portal access, invites, HR user (Case Details, after the policy is in force). */
 var enr=null;
-var EN_IN=[["first","First name"],["last","Last name"],["email","Email address"],["phone","Phone number"],["dob","Date of birth"],["ssn","Social Security number"],["addr","Address"]];
-var EN_EN=[["name","Entity name"],["ein","EIN / Tax ID"],["addr","Address"]];
-var EN_SG=[["first","First name"],["last","Last name"],["title","Title"],["email","Email address"],["phone","Phone number"]];
-function enrNew(){enr={q:"",kind:"",v:{first:"",last:"",email:"",phone:"",dob:"",ssn:"",addr:"",rel:""},ev:{etype:"",name:"",ein:"",addr:""},sv:{first:"",last:"",title:"",email:"",phone:""},saved:false};}
+var EN_IN=[["first","Settlor First Name"],["middle","Middle Name"],["last","Last Name"],["email","Settlor Email Address"],["phone","Settlor Phone Number"],["dob","Date of Birth"],["ssn","Settlor Social"],["addr","Address"]];
+var EN_EN=[["name","Entity Name"],["ein","EIN / Tax ID"],["addr","Address"]];
+var EN_SG=[["first","Authorized Signer First Name"],["last","Last Name"],["title","Title"],["email","Email Address"],["phone","Phone Number"]];
+function enrNew(){enr={q:"",kind:"",v:{first:"",middle:"",last:"",email:"",phone:"",dob:"",ssn:"",addr:"",rel:""},ev:{etype:"",name:"",ein:"",addr:""},sv:{first:"",last:"",title:"",email:"",phone:""},saved:false};}
 function enrReady(){if(enr.q==="yes")return true; if(enr.q!=="no"||!enr.kind)return false;
-  if(enr.kind==="individual")return EN_IN.every(function(f){return enr.v[f[0]].trim();})&&enr.v.rel;
+  if(enr.kind==="individual")return EN_IN.every(function(f){return OPT_F[f[0]]||(enr.v[f[0]]||"").trim();})&&relOk(enr.v.rel);
   return enr.ev.etype&&EN_EN.every(function(f){return enr.ev[f[0]].trim();})&&EN_SG.every(function(f){return enr.sv[f[0]].trim();});}
-function enrFld(g,k,l){var wide=(k==="addr"||k==="email")?' style="grid-column:span 2"':'';return '<label class="mf has en-in"'+wide+'><span class="mf-l">'+l+'</span><input data-enf="'+g+'.'+k+'" value="'+esc(enr[g][k])+'" autocomplete="off"></label>';}
+function enrFld(g,k,l){var wide=(k==="addr"||k==="email")?' style="grid-column:span 2"':'';return '<label class="mf has en-in"'+wide+'><span class="mf-l">'+l+'</span><input data-enf="'+g+'.'+k+'"'+(k==="ssn"?' type="password"':'')+' value="'+esc(enr[g][k])+'" autocomplete="off"></label>';}
 function renderEnr(){var el=document.getElementById("enSettlor"); if(!el||!enr)return; var ins=POLICY.first+" "+POLICY.last;
   var yn=function(v,l){return '<button class="en-yn'+(enr.q===v?' on':'')+'" data-en="q" data-v="'+v+'" aria-pressed="'+(enr.q===v)+'">'+l+'</button>';};
   var h='<div class="en-set"><h3 class="en-h">Settlor Details</h3>'+
@@ -1505,12 +1522,12 @@ function renderEnr(){var el=document.getElementById("enSettlor"); if(!el||!enr)r
       '<button class="en-yn'+(enr.kind==="individual"?' on':'')+'" data-en="kind" data-v="individual">An individual</button>'+
       '<button class="en-yn'+(enr.kind==="entity"?' on':'')+'" data-en="kind" data-v="entity">An entity</button></div></div>';
     if(enr.kind==="individual"){
-      h+='<div class="en-sub">Settlor (also the authorized signer)</div><div class="en-q"><span class="note">Relation to the insured</span><div class="en-yns">'+CS_RELS.concat(["Other"]).filter(function(r,i,a){return a.indexOf(r)===i;}).map(function(r){return '<button class="chip'+(enr.v.rel===r?' on':'')+'" data-en="rel" data-v="'+esc(r)+'">'+esc(r.replace(/^Other: /,"Other · "))+'</button>';}).join("")+'</div></div>'+
-        '<div class="ilia-grid">'+EN_IN.map(function(f){return enrFld("v",f[0],f[1]);}).join("")+'</div>';}
+      h+='<div class="en-sub">Settlor details · individual (Authorized Signer)</div>'+
+        '<div class="ilia-grid">'+EN_IN.map(function(f){return enrFld("v",f[0],f[1]);}).join("")+relPick("en",enr.v.rel)+'</div>';}
     if(enr.kind==="entity"){
-      h+='<div class="en-sub">Entity</div><div class="ilia-grid"><label class="mf has sel en-in"><span class="mf-l">Entity Type</span><select data-enf="ev.etype" class="mf-s"><option value="">Choose…</option>'+ENTITY_TYPES.map(function(t){return '<option'+(enr.ev.etype===t?' selected':'')+'>'+esc(t)+'</option>';}).join("")+'</select></label>'+
+      h+='<div class="en-sub">Settlor details · entity</div><div class="ilia-grid"><label class="mf has sel en-in"><span class="mf-l">Entity Type</span><select data-enf="ev.etype" class="mf-s"><option value="">Choose…</option>'+ENTITY_TYPES.map(function(t){return '<option'+(enr.ev.etype===t?' selected':'')+'>'+esc(t)+'</option>';}).join("")+'</select></label>'+
         EN_EN.map(function(f){return enrFld("ev",f[0],f[1]);}).join("")+'</div>'+
-        '<div class="en-sub">The entity’s one authorized signer</div><div class="ilia-grid">'+EN_SG.map(function(f){return enrFld("sv",f[0],f[1]);}).join("")+'</div>';}
+        '<div class="en-sub">Entity authorized signer</div><div class="ilia-grid">'+EN_SG.map(function(f){return enrFld("sv",f[0],f[1]);}).join("")+'</div>';}
     if(enr.kind) h+='<button class="btn sm mockadv" style="margin:6px 0 0;align-self:flex-start" data-en="fill">Fill sample</button>';
   }
   var ready=enrReady();
@@ -1526,7 +1543,7 @@ function renderEnr(){var el=document.getElementById("enSettlor"); if(!el||!enr)r
 function enrSave(){var p=thisPolicy(), old=st.activity||[];
   if(enr.q==="yes"){st=scenarios.insured();st.activity=old;}
   else if(enr.kind==="individual"){var v=enr.v, other=/^Other/.test(v.rel), m=v.addr.match(/^(.*), (.*), ([A-Z]{2}) (\d{5})$/)||[0,v.addr,"","",""];
-    st={type:"individual", ind:{first:v.first,last:v.last,email:v.email,phone:v.phone,ssn:v.ssn,dob:v.dob,relation:other?"Other":v.rel,otherRelation:other?v.rel.replace(/^Other:? ?/,""):"",street:m[1],city:m[2],state:m[3],zip:m[4]}, ent:null,
+    st={type:"individual", ind:{first:v.first,middle:v.middle,last:v.last,email:v.email,phone:v.phone,ssn:v.ssn,dob:v.dob,relation:other?"Other":v.rel,otherRelation:other?v.rel.replace(/^Other:? ?/,""):"",street:m[1],city:m[2],state:m[3],zip:m[4]}, ent:null,
       signers:[{first:v.first,last:v.last,title:"Settlor & Authorized Signer",email:v.email,phone:v.phone,access:false,invite:"none",d:{},isSettlor:true}], policies:[p], activity:old, pastSigners:[]};}
   else {var e=enr.ev, m2=e.addr.match(/^(.*), (.*), ([A-Z]{2}) (\d{5})$/)||[0,e.addr,"","",""];
     st={type:"entity", ind:null, ent:{name:e.name,etype:e.etype,ein:e.ein,addr:e.addr,street:m2[1],city:m2[2],state:m2[3],zip:m2[4]},
@@ -1538,7 +1555,7 @@ document.addEventListener("click",function(ev){var t=ev.target.closest("[data-en
   if(k==="q"){enr.q=t.dataset.v; if(enr.q==="yes")enr.kind="";}
   if(k==="kind")enr.kind=t.dataset.v;
   if(k==="rel")enr.v.rel=enr.v.rel===t.dataset.v?"":t.dataset.v;
-  if(k==="fill"){ if(enr.kind==="individual"){EN_IN.forEach(function(f){enr.v[f[0]]=CS_IND[f[0]];}); enr.v.rel=CS_IND.rel;}
+  if(k==="fill"){ if(enr.kind==="individual"){EN_IN.forEach(function(f){enr.v[f[0]]=CS_IND[f[0]]||"";}); enr.v.rel=CS_IND.rel;}
     else {for(var k1 in CE_NEW)enr.ev[k1]=CE_NEW[k1]; for(var k2 in CE_NEW_SG)enr.sv[k2]=CE_NEW_SG[k2];} }
   if(k==="save"){ if(enrReady()) enrSave(); return; }
   enr.saved=false; renderEnr();});
