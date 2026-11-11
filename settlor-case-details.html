@@ -399,6 +399,21 @@ body.notes-off .nt-tab{display:block}
 .mu-drop:hover{background:#eef4ff}
 .mu-file{display:flex;justify-content:space-between;align-items:center;border:1px solid #b7e1c3;background:#f2fbf4;border-radius:8px;padding:10px 12px;font-size:13.5px}
 .mu-oq{margin:6px 0 0}
+.en-set{display:flex;flex-direction:column;gap:12px;border-top:1px solid #e3e6ec;padding-top:14px;margin-top:4px}
+.en-h{margin:0;font-size:18px;font-weight:700}
+.en-q{display:flex;flex-direction:column;gap:6px;font-size:14.5px}
+.en-req{font-size:11px;font-weight:700;color:#b42318;background:#fdecec;border-radius:10px;padding:2px 8px;vertical-align:middle}
+.en-yns{display:flex;gap:0;flex-wrap:wrap}
+.en-yn{border:1px solid #c9cfda;background:#fff;color:#4b5563;font:600 13px Roboto,sans-serif;padding:10px 18px;cursor:pointer;text-transform:uppercase;letter-spacing:.03em}
+.en-yn+.en-yn{border-left:0}.en-yn:first-child{border-radius:4px 0 0 4px}.en-yn:last-child{border-radius:0 4px 4px 0}
+.en-yn.on{background:#2f6fed;border-color:#2f6fed;color:#fff}
+.en-yns .chip{margin:0 6px 6px 0}
+.en-ok{background:#eefaf1;border:1px solid #b7e1c3;border-radius:8px;padding:10px 12px;font-size:14px}
+.en-sub{font-weight:700;font-size:14px;margin-top:4px}
+.en-in input,.en-in select{border:0;outline:0;font:15px Roboto,sans-serif;width:100%;background:transparent;padding:0}
+.en-save{display:flex;justify-content:flex-end;align-items:center;gap:12px;border-top:1px solid #e3e6ec;padding-top:12px}
+.en-saved{color:#1a7f37;font-weight:600;font-size:13.5px;margin-right:auto}
+.en-dec ul li{color:#14632b}
 </style>
 
 <div class="mockbar">
@@ -428,7 +443,7 @@ body.notes-off .nt-tab{display:block}
     <div class="tabs" id="tabs"><span>Profile</span><span class="on">Case Details</span><span>Documents</span><span>Payments</span><span>Notes</span></div>
     <div class="ghost-sec" id="ghTrust"><span>Trust Details</span><span>▸</span></div>
     <div id="enrollTop"></div>
-    <section class="card" aria-labelledby="settlorH">
+    <section class="card" id="cdCard" aria-labelledby="settlorH">
       <div class="card-hd"><h2 id="settlorH">Settlor &amp; Authorized Signer</h2><button class="btn primary" id="editBtn">✎ Edit settlor</button></div>
       <div class="card-bd" id="view"></div>
     </section>
@@ -1459,15 +1474,78 @@ function setWhere(w){where=w; var en=w==="enroll";
   document.getElementById("tabs").innerHTML=en?["Client Profile","Participant Status","Enrollment Details","My Action Items","Illustrations","Documents","Notes","Giftor Details","Case Details"].map(function(t){return '<span'+(t==="Enrollment Details"?' class="on"':'')+'>'+t.toUpperCase()+'</span>';}).join(""):TABS_CASE;
   document.getElementById("tabs").classList.toggle("tabs-en",en);
   document.getElementById("ghTrust").style.display=en?"none":""; document.getElementById("ghBen").style.display=en?"none":"";
-  document.getElementById("enrollTop").innerHTML=en?'<div class="en-card"><div class="en-hd"><span>Identity Verification, Address and Contributions</span><span>▴</span></div><div class="en-info">ⓘ Pre-fill any fields for the client to verify during enrollment.</div>'+
-     '<div class="en-view"><b>Enrollment Details · agents and admins.</b> New: the <b>Settlor / Authorized Signer</b> section, placed above Citizenship Details. It is the <b>same section</b> admins use in Case Details (same fields, buttons and rules). The agent fills it in while the client enrolls, and admin can still change it later in Case Details. Nothing else on this screen changes.</div>'+
-     '<div class="isec"><h4>Still to decide</h4><ul class="can oq"><li>Who answers “who is the settlor?” first: the <b>client</b> as an ILIA question in enrollment, or the <b>agent</b> here? (Proposed: the agent sets it here; the client only sees it if we add an enrollment question.)</li>'+
-     '<li>Should the client enrollment flow ask “Are you the settlor of the trust?” with Yes / No, and on No collect the settlor’s name and email?</li>'+
-     '<li>Can the agent send the authorized signer invite from here, or only admin (after enrollment closes)?</li>'+
-     '<li>What can the agent change after enrollment is submitted: nothing, or the same as admin?</li></ul></div></div>':'';
+  document.getElementById("cdCard").style.display=en?"none":"";
+  if(en&&!enr) enrNew();
+  document.getElementById("enrollTop").innerHTML=en?'<div class="en-card"><div class="en-hd"><span>Identity Verification, Address and Contributions</span><span>▴</span></div><div class="en-info">ⓘ Pre-fill any fields for the client to verify during enrollment.</div><div id="enSettlor"></div></div>':'';
+  if(en) renderEnr();
   document.getElementById("enrollAfter").innerHTML=en?'<div class="ghost-sec" style="margin-top:12px"><span>Citizenship Details</span><span>▸</span></div><div class="ghost-sec" style="margin-top:8px"><span>Address · Contributions · Save Changes</span><span>▸</span></div>':'';
   log(en?"Viewing the agent’s Enrollment Details":"Back to admin Case Details");
   window.scrollTo(0,0);}
+
+/* ---------- Settlor Details on Enrollment Details (decided 11/9 + 11/11) ----------
+   One question first: "Is the settlor the insured?" (starts blank, must be answered). Yes = done (~90%). No = individual or entity, then fields.
+   Agent or admin fills it; the client confirms it in their trust documents (second envelope). Same record as Case Details.
+   Not here: portal access, invites, HR user (Case Details, after the policy is in force). */
+var enr=null;
+var EN_IN=[["first","First name"],["last","Last name"],["email","Email address"],["phone","Phone number"],["dob","Date of birth"],["ssn","Social Security number"],["addr","Address"]];
+var EN_EN=[["name","Entity name"],["ein","EIN / Tax ID"],["addr","Address"]];
+var EN_SG=[["first","First name"],["last","Last name"],["title","Title"],["email","Email address"],["phone","Phone number"]];
+function enrNew(){enr={q:"",kind:"",v:{first:"",last:"",email:"",phone:"",dob:"",ssn:"",addr:"",rel:""},ev:{etype:"",name:"",ein:"",addr:""},sv:{first:"",last:"",title:"",email:"",phone:""},saved:false};}
+function enrReady(){if(enr.q==="yes")return true; if(enr.q!=="no"||!enr.kind)return false;
+  if(enr.kind==="individual")return EN_IN.every(function(f){return enr.v[f[0]].trim();})&&enr.v.rel;
+  return enr.ev.etype&&EN_EN.every(function(f){return enr.ev[f[0]].trim();})&&EN_SG.every(function(f){return enr.sv[f[0]].trim();});}
+function enrFld(g,k,l){var wide=(k==="addr"||k==="email")?' style="grid-column:span 2"':'';return '<label class="mf has en-in"'+wide+'><span class="mf-l">'+l+'</span><input data-enf="'+g+'.'+k+'" value="'+esc(enr[g][k])+'" autocomplete="off"></label>';}
+function renderEnr(){var el=document.getElementById("enSettlor"); if(!el||!enr)return; var ins=POLICY.first+" "+POLICY.last;
+  var yn=function(v,l){return '<button class="en-yn'+(enr.q===v?' on':'')+'" data-en="q" data-v="'+v+'" aria-pressed="'+(enr.q===v)+'">'+l+'</button>';};
+  var h='<div class="en-set"><h3 class="en-h">Settlor Details</h3>'+
+    '<div class="en-q"><span><b>Is the settlor the insured?</b> <span class="en-req">Required</span></span><div class="en-yns">'+yn("yes","Yes")+yn("no","No")+'</div>'+(enr.q?'':'<span class="note">No answer is picked for you. Check the trust documents.</span>')+'</div>';
+  if(enr.q==="yes") h+='<div class="en-ok">✓ The insured, <b>'+esc(ins)+'</b>, is the settlor and authorized signer. Nothing else to fill in.</div>';
+  if(enr.q==="no"){
+    h+='<div class="en-q"><b>Who is the settlor?</b><div class="en-yns">'+
+      '<button class="en-yn'+(enr.kind==="individual"?' on':'')+'" data-en="kind" data-v="individual">An individual</button>'+
+      '<button class="en-yn'+(enr.kind==="entity"?' on':'')+'" data-en="kind" data-v="entity">An entity</button></div></div>';
+    if(enr.kind==="individual"){
+      h+='<div class="en-sub">Settlor (also the authorized signer)</div><div class="en-q"><span class="note">Relation to the insured</span><div class="en-yns">'+CS_RELS.concat(["Other"]).filter(function(r,i,a){return a.indexOf(r)===i;}).map(function(r){return '<button class="chip'+(enr.v.rel===r?' on':'')+'" data-en="rel" data-v="'+esc(r)+'">'+esc(r.replace(/^Other: /,"Other · "))+'</button>';}).join("")+'</div></div>'+
+        '<div class="ilia-grid">'+EN_IN.map(function(f){return enrFld("v",f[0],f[1]);}).join("")+'</div>';}
+    if(enr.kind==="entity"){
+      h+='<div class="en-sub">Entity</div><div class="ilia-grid"><label class="mf has sel en-in"><span class="mf-l">Entity Type</span><select data-enf="ev.etype" class="mf-s"><option value="">Choose…</option>'+ENTITY_TYPES.map(function(t){return '<option'+(enr.ev.etype===t?' selected':'')+'>'+esc(t)+'</option>';}).join("")+'</select></label>'+
+        EN_EN.map(function(f){return enrFld("ev",f[0],f[1]);}).join("")+'</div>'+
+        '<div class="en-sub">The entity’s one authorized signer</div><div class="ilia-grid">'+EN_SG.map(function(f){return enrFld("sv",f[0],f[1]);}).join("")+'</div>';}
+    if(enr.kind) h+='<button class="btn sm mockadv" style="margin:6px 0 0;align-self:flex-start" data-en="fill">Fill sample</button>';
+  }
+  var ready=enrReady();
+  h+='<div class="en-save">'+(enr.saved?'<span class="en-saved">✓ Saved · the same settlor now shows in Case Details</span>':'<span class="note">'+(ready?'Ready to save.':!enr.q?'Answer the question to continue.':enr.q==="no"&&!enr.kind?'Choose individual or entity.':'Fill every field.')+'</span>')+'<button class="btn primary" data-en="save"'+(ready?'':' disabled')+'>Save Changes</button></div>';
+  h+='<div class="isec en-dec"><h4>Decided (11/9, 11/11)</h4><ul class="can">'+
+    '<li>Settlor details are collected here in <b>Enrollment Details</b>, not at the agent invite.</li>'+
+    '<li>The question <b>starts blank</b>, so someone has to answer it. ILIA no longer assumes the insured is the settlor.</li>'+
+    '<li>The <b>agent (or admin) fills it in</b>. The client confirms it in their trust documents (second envelope). No new client screen for MVP.</li>'+
+    '<li><b>Not here:</b> portal access, invites and the HR user. Those stay in Case Details, after the policy is in force.</li>'+
+    '<li>Same record as Case Details: change it in one place and it shows in the other.</li></ul></div>'+
+    '<div class="isec"><h4>Still to decide</h4><ul class="can oq"><li>Which entity fields are required at enrollment, and which entity forms go in the trust documents? Judy to confirm (entity forms, 11/9).</li></ul></div></div>';
+  el.innerHTML=h;}
+function enrSave(){var p=thisPolicy(), old=st.activity||[];
+  if(enr.q==="yes"){st=scenarios.insured();st.activity=old;}
+  else if(enr.kind==="individual"){var v=enr.v, other=/^Other/.test(v.rel), m=v.addr.match(/^(.*), (.*), ([A-Z]{2}) (\d{5})$/)||[0,v.addr,"","",""];
+    st={type:"individual", ind:{first:v.first,last:v.last,email:v.email,phone:v.phone,ssn:v.ssn,dob:v.dob,relation:other?"Other":v.rel,otherRelation:other?v.rel.replace(/^Other:? ?/,""):"",street:m[1],city:m[2],state:m[3],zip:m[4]}, ent:null,
+      signers:[{first:v.first,last:v.last,title:"Settlor & Authorized Signer",email:v.email,phone:v.phone,access:false,invite:"none",d:{},isSettlor:true}], policies:[p], activity:old, pastSigners:[]};}
+  else {var e=enr.ev, m2=e.addr.match(/^(.*), (.*), ([A-Z]{2}) (\d{5})$/)||[0,e.addr,"","",""];
+    st={type:"entity", ind:null, ent:{name:e.name,etype:e.etype,ein:e.ein,addr:e.addr,street:m2[1],city:m2[2],state:m2[3],zip:m2[4]},
+      signers:[{first:enr.sv.first,last:enr.sv.last,title:enr.sv.title,email:enr.sv.email,phone:enr.sv.phone,access:false,invite:"none",d:{}}], policies:[p], activity:old, pastSigners:[]};}
+  [].forEach.call(document.getElementById("scen").children,function(x){x.setAttribute("aria-pressed",x.dataset.s===st.type?"true":"false");});
+  log("Enrollment Details: settlor saved ("+(enr.q==="yes"?"the insured":enr.kind)+")"); enr.saved=true; ed={}; render(); renderEnr();
+  toast("Saved. Case Details shows the same settlor.");}
+document.addEventListener("click",function(ev){var t=ev.target.closest("[data-en]"); if(!t||!enr)return; var k=t.dataset.en;
+  if(k==="q"){enr.q=t.dataset.v; if(enr.q==="yes")enr.kind="";}
+  if(k==="kind")enr.kind=t.dataset.v;
+  if(k==="rel")enr.v.rel=enr.v.rel===t.dataset.v?"":t.dataset.v;
+  if(k==="fill"){ if(enr.kind==="individual"){EN_IN.forEach(function(f){enr.v[f[0]]=CS_IND[f[0]];}); enr.v.rel=CS_IND.rel;}
+    else {for(var k1 in CE_NEW)enr.ev[k1]=CE_NEW[k1]; for(var k2 in CE_NEW_SG)enr.sv[k2]=CE_NEW_SG[k2];} }
+  if(k==="save"){ if(enrReady()) enrSave(); return; }
+  enr.saved=false; renderEnr();});
+document.addEventListener("input",function(ev){var k=ev.target.dataset&&ev.target.dataset.enf; if(!k||!enr)return; var p=k.split("."); enr[p[0]][p[1]]=ev.target.value; enr.saved=false;
+  if(ev.target.tagName==="SELECT"){renderEnr();return;}
+  var sv=document.querySelector('#enSettlor [data-en="save"]'); if(sv) sv.disabled=!enrReady();});
+document.addEventListener("change",function(ev){if(ev.target.dataset&&ev.target.dataset.enf==="ev.etype"&&enr){enr.ev.etype=ev.target.value;renderEnr();}});
 
 /* Update requirement: remove "Master Settlor" from ILIA. Labels found in niw-web-admin (staging branch), read-only review 11/9. */
 var MS_WHERE=[
