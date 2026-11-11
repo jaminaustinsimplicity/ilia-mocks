@@ -48,6 +48,8 @@
   .navi:hover{background:#f3f5f9}
   .navi.active{background:var(--blue-soft);color:var(--blue);font-weight:700}
   .navi.active .i{color:var(--blue)}
+  .navi.dim{opacity:.36;cursor:default;pointer-events:none}
+  .navi.live:not(.active)::after{content:"›";margin-left:auto;color:var(--blue);font-weight:800;font-size:17px;line-height:1}
 
   .main{padding:22px 26px 80px;min-width:0}
 
@@ -130,19 +132,19 @@
 <div class="shell">
   <!-- sidebar -->
   <nav class="side">
-    <div class="navi active" data-nav="dashboard" onclick="goDashboard()"><span class="i">🏠</span> Agent Dashboard</div>
-    <div class="navi"><span class="i">👥</span> My Groups</div>
-    <div class="navi"><span class="i">📄</span> Client Management</div>
-    <div class="navi"><span class="i">🔗</span> Agent Links</div>
-    <div class="navi"><span class="i">☰</span> Action Items</div>
-    <div class="navi"><span class="i">🔔</span> ilia Notifications</div>
-    <div class="navi"><span class="i">📅</span> Events &amp; Webinars</div>
-    <div class="navi"><span class="i">🌐</span> Agent Training</div>
-    <div class="navi"><span class="i">▶️</span> Marketing Materials</div>
-    <div class="navi"><span class="i">📇</span> Lead Management</div>
-    <div class="navi"><span class="i">💳</span> Client Payment Options</div>
-    <div class="navi"><span class="i">💲</span> Tranche Dates</div>
-    <div class="navi" data-nav="resources" onclick="goResources(false)"><span class="i">📚</span> Resources and Training</div>
+    <div class="navi live active" data-nav="dashboard" onclick="goDashboard()"><span class="i">🏠</span> Agent Dashboard</div>
+    <div class="navi dim"><span class="i">👥</span> My Groups</div>
+    <div class="navi dim"><span class="i">📄</span> Client Management</div>
+    <div class="navi dim"><span class="i">🔗</span> Agent Links</div>
+    <div class="navi dim"><span class="i">☰</span> Action Items</div>
+    <div class="navi dim"><span class="i">🔔</span> ilia Notifications</div>
+    <div class="navi dim"><span class="i">📅</span> Events &amp; Webinars</div>
+    <div class="navi dim"><span class="i">🌐</span> Agent Training</div>
+    <div class="navi dim"><span class="i">▶️</span> Marketing Materials</div>
+    <div class="navi dim"><span class="i">📇</span> Lead Management</div>
+    <div class="navi dim"><span class="i">💳</span> Client Payment Options</div>
+    <div class="navi dim"><span class="i">💲</span> Tranche Dates</div>
+    <div class="navi live" data-nav="resources" onclick="goResources(false)"><span class="i">📚</span> Resources and Training</div>
   </nav>
 
   <!-- main -->
