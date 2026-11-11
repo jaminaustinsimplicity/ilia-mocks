@@ -51,32 +51,19 @@
 
   .main{padding:22px 26px 80px;min-width:0}
 
-  /* ---------- BANNER ---------- */
-  .promo{position:relative;border-radius:12px;overflow:hidden;margin-bottom:18px;
-    background:linear-gradient(100deg,#15171c 0%,#202833 48%,#2a3340 100%);
-    box-shadow:0 6px 20px rgba(20,28,40,.18);min-height:150px;display:flex}
-  .promo::after{content:"";position:absolute;inset:0;background:
-    radial-gradient(900px 200px at 18% 120%, rgba(90,120,160,.25), transparent 60%);pointer-events:none}
-  .promo .pl{flex:1;padding:22px 26px;position:relative;z-index:2;max-width:70%}
-  .promo .lockup{display:flex;align-items:center;gap:12px;margin-bottom:9px}
-  .promo .kz{font-family:var(--serif);font-style:italic;font-weight:700;color:#fff;font-size:24px;letter-spacing:-.01em}
-  .promo .plus{color:#9fb4c9;font-size:18px}
-  .promo .sym{color:#fff;font-weight:800;letter-spacing:.14em;font-size:18px}
-  .promo h3{color:#fff;font-size:20px;margin:0 0 6px;font-weight:700;line-height:1.15;text-wrap:balance}
-  .promo p{color:#c6d0dc;font-size:12.5px;margin:0 0 14px;line-height:1.45;max-width:46ch}
-  .promo .cta{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;border:none;
-    font-family:inherit;font-weight:700;font-size:13.5px;padding:11px 20px;border-radius:7px;cursor:pointer;
-    box-shadow:0 3px 10px rgba(47,111,237,.4)}
-  .promo .cta:hover{background:var(--blue-d)}
-  .promo .pr{flex:1;position:relative;z-index:1;opacity:.5;
-    background:linear-gradient(120deg,transparent,rgba(120,150,180,.18)),
-    repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 12px, transparent 12px 24px)}
-  .promo .pill{position:absolute;top:12px;left:26px;font-size:9px;font-weight:800;letter-spacing:.08em;
-    text-transform:uppercase;color:#13202e;background:#7fd0e0;padding:2px 8px;border-radius:100px;z-index:3}
-  .promo .xbtn{position:absolute;top:10px;right:12px;z-index:4;color:#cdd6e0;cursor:pointer;font-size:18px;
-    width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-  .promo .xbtn:hover{background:rgba(255,255,255,.12);color:#fff}
-  @media (max-width:720px){.promo .pl{max-width:100%}.promo .pr{display:none}}
+  /* ---------- BANNER (Marketing's real image) ---------- */
+  .promo{position:relative;border-radius:12px;overflow:hidden;margin-bottom:8px;
+    box-shadow:0 6px 20px rgba(20,28,40,.18);cursor:pointer;line-height:0}
+  .promo img{display:block;width:100%;height:auto}
+  /* clickable CTA overlaid exactly over the image's baked-in "Agent and ADC Resources" button */
+  .promo .cta{position:absolute;left:15.2%;top:71.5%;width:28.2%;height:18%;
+    background:#1b77c0;color:#fff;border:none;border-radius:999px;cursor:pointer;
+    font-family:inherit;font-weight:800;letter-spacing:.01em;font-size:clamp(8px,1.25vw,17px);
+    display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 2px 7px rgba(0,0,0,.22)}
+  .promo .cta:hover{background:#13629f}
+  .promo .xbtn{position:absolute;top:9px;right:11px;z-index:4;color:#fff;cursor:pointer;font-size:16px;
+    width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(15,20,28,.42)}
+  .promo .xbtn:hover{background:rgba(15,20,28,.72)}
 
   .bannernote{font-size:11px;color:var(--faint);margin:-8px 0 16px;font-style:italic}
 
@@ -128,7 +115,7 @@
 <body>
 
 <button id="startover" onclick="startOver()">↺ Start over</button>
-<div class="proto">PROTOTYPE · banner art is placeholder for Marketing's final creative</div>
+<div class="proto">PROTOTYPE · real banner from Marketing · sample data</div>
 
 <!-- top bar -->
 <div class="topbar">
@@ -165,18 +152,12 @@
     <div class="view show" id="view-dashboard">
 
       <!-- NEW BANNER -->
-      <div class="promo" id="promo">
-        <span class="pill">New carrier</span>
+      <div class="promo" id="promo" onclick="goResources(true)" title="Explore the Product">
         <span class="xbtn" title="Dismiss" onclick="closeBanner(event)">✕</span>
-        <div class="pl">
-          <div class="lockup"><span class="kz">Kai-Zen®</span><span class="plus">+</span><span class="sym">SYMETRA</span></div>
-          <h3>Symetra joins the Kai-Zen® carrier lineup</h3>
-          <p>Expand your toolkit with a cost-efficient carrier chassis built for real-world durability. See product specs, rates, and sales support.</p>
-          <button class="cta" onclick="goResources(true)">Explore the Product →</button>
-        </div>
-        <div class="pr"></div>
+        <img src="symetra-banner.jpg" alt="Symetra joins the Kai-Zen carrier lineup">
+        <button class="cta" onclick="event.stopPropagation(); goResources(true)">Explore the Product →</button>
       </div>
-      <div class="bannernote">↑ Placeholder for Marketing's finalized banner graphic. The <b>“Explore the Product”</b> button is a real clickable CTA — click it.</div>
+      <div class="bannernote">↑ Marketing's finalized banner. The <b>“Explore the Product”</b> button is overlaid and clickable — it stands in for the image's “Agent and ADC Resources” button, which Marketing would relabel. Click it.</div>
 
       <!-- Welcome hero -->
       <div class="hero">
