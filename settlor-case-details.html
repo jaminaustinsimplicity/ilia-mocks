@@ -393,6 +393,11 @@ body.notes-off .nt-tab{display:block}
 .hr-rev{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.hr-rev>div{border:1px solid #e3e6ec;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;font-size:13.5px}
 .hr-chk{display:flex;gap:8px;align-items:flex-start;border:1px solid #dbe4f5;background:#f6f9ff;border-radius:8px;padding:10px 12px;margin-top:8px;font-size:13.5px}
 @media (max-width:600px){.hr-grid,.hr-rev{grid-template-columns:1fr}}
+.mu-intro{background:#fff6e5;border:1px solid #f0c98a;border-radius:8px;padding:10px 12px;font-size:13.5px}
+.mu-req{font-size:11px;font-weight:700;color:#b42318;background:#fdecec;border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.mu-drop{display:flex;flex-direction:column;gap:2px;align-items:flex-start;width:100%;text-align:left;border:2px dashed #9db7ea;background:#f6f9ff;border-radius:8px;padding:14px;cursor:pointer;font:14px Roboto,sans-serif;color:#1b1b1b}
+.mu-drop:hover{background:#eef4ff}
+.mu-file{display:flex;justify-content:space-between;align-items:center;border:1px solid #b7e1c3;background:#f2fbf4;border-radius:8px;padding:10px 12px;font-size:13.5px}
 </style>
 
 <div class="mockbar">
@@ -1047,6 +1052,17 @@ var sg=null;
 var SG_F=[["first","First name"],["last","Last name"],["title","Title"],["email","Email address"],["phone","Phone number"]];
 var IN_F=[["first","First name"],["last","Last name"],["email","Email address"],["phone","Phone number"],["rel","Relation to insured"],["dob","Date of birth"],["ssn","Social Security number"],["addr","Address"]];
 var IN_NEW={first:"Carlos",last:"Reyes",email:"carlos.reyes@example.com",phone:"(214) 555-0186",rel:"Other: Brother",dob:"07/22/1975",ssn:"623-55-1904",addr:"812 Gaston Ave, Dallas, TX 75214"};
+/* 11/9 decision: rare settlor / signer / entity changes are handled MANUALLY. No guided multi-step flow:
+   one screen = attach the trust document (required) + update the details + confirm + save. Access default, invite and emails still apply. */
+function manualIntro(what){return '<div class="mu-intro"><b>Manual update · rare.</b> '+what+' NIW gets the signed trust document first, attaches it here, updates the details and saves. No guided flow (decided 11/9).</div>';}
+function manualDoc(fl,o,name){return '<div class="isec mu-doc"><h4>1 · Trust document <span class="mu-req">Required</span></h4>'+
+  (o.doc?'<div class="mu-file"><span>📄 <b>'+esc(name)+'</b> <span class="note">· attached · goes to the client’s Documents</span></span><button class="btn link sm" data-'+fl+'="doc">Remove</button></div>'
+        :'<button class="mu-drop" data-'+fl+'="doc"><b>📎 Attach the signed trust document</b><span class="note">Click to attach a sample: '+esc(name)+'</span></button>')+'</div>';}
+function manualSave(fl,o,ready,items,confirmTx){return (ready?'<div class="isec"><h4>What happens when you save</h4><ul class="can">'+items.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul></div>'+
+  '<button class="confirmchk" role="checkbox" aria-checked="'+!!o.ok+'" data-'+fl+'="ok"><span class="cbx" aria-hidden="true">'+(o.ok?'✓':'')+'</span><span>'+confirmTx+'</span></button>':'');}
+function manualFoot(fl,o,ready,act,label){var can=ready&&o.doc&&o.ok;
+  return (can?'':'<span class="note" style="margin-right:auto">'+(!o.doc?'Attach the trust document.':!ready?'Fill every field.':'Tick the confirmation to save.')+'</span>')+'<button class="btn" data-'+fl+'="close">Cancel</button><button class="btn primary" data-'+fl+'="'+act+'"'+(can?'':' disabled')+'>'+label+'</button>';}
+var VOID_RULE='Forms already out for signature: if the change starts on the <b>second envelope</b>, NIW voids it and restarts the trust documents. Earlier steps keep going (decided 11/9).';
 function sgFields(){return st.type==="entity"?SG_F:IN_F;}
 function openSg(){var v={}; sgFields().forEach(function(f){v[f[0]]="";}); sg={ok:false, docs:false, step:"form", v:v, mails:false}; renderSg();}
 function closeSg(){sg=null;document.getElementById("sgRoot").innerHTML="";}
@@ -1062,13 +1078,22 @@ function renderSg(){
   var filled=F.every(function(f){return sg.v[f[0]];});
   if(sg.step==="form"){
     var nf='<div class="ilia-grid sg-grid">'+F.map(function(f){return sgFld("nfill",f[0],f[1],sg.v[f[0]]);}).join("")+'</div>';
-    var body1='<div class="isec"><h4>Replace the '+role+(isEnt?' for '+forWho:'')+'</h4><p class="note" style="margin:0">'+
+    var body1=manualIntro(isEnt?'A different person will sign for '+forWho+'.':'A different person becomes the settlor.')+manualDoc("sg",sg,isEnt?"Entity resolution - new authorized signer.pdf":"Trust amendment - new settlor.pdf")+
+      '<div class="isec"><h4>2 · Replace the '+role+(isEnt?' for '+forWho:'')+'</h4><p class="note" style="margin:0">'+
         (isEnt ? 'Use this when a <b>different person</b> will sign for '+forWho+'. Each settlor has one authorized signer, so the new person replaces <b>'+esc(g.first+" "+g.last)+'</b>.'
                : 'Use this when a <b>different person</b> becomes the settlor. For an individual, the settlor is also the authorized signer, so the new person replaces <b>'+esc(g.first+" "+g.last)+'</b> in both roles.')+
         ' Same person with new details? Cancel and click into the fields instead.</p></div>'+
       '<div class="isec"><h4>Current '+role+'</h4><div class="sgcur"><b>'+esc(g.first+" "+g.last)+'</b> · '+esc(isEnt?g.title:relText(st.ind)+' of the insured')+'<br><span class="note">'+esc(g.email)+' · '+esc(g.phone)+' · '+(hasAcct?'has portal access':'not invited to the portal')+'</span></div></div>'+
       '<div class="isec"><h4>New '+role+'</h4>'+nf+'<button class="btn link sm" data-sg="nall" style="align-self:flex-start">Fill all with sample</button></div>';
-    sgShell("Change authorized signer",body1,(filled?'':'<span class="note" style="margin-right:auto">Fill every field to continue.</span>')+'<button class="btn" data-sg="close">Cancel</button><button class="btn primary" data-sg="next"'+(filled?'':' disabled')+'>Review change</button>');
+    var nv=sg.v;
+    body1+=manualSave("sg",sg,filled,[
+      '<b>'+esc(nv.first+" "+nv.last)+'</b> becomes the '+role+' on '+allPol+'. New forms go to '+esc(nv.email)+'.',
+      esc(nv.first)+' starts with no portal access. <b>Invite</b> and <b>Copy link</b> show once you save.',
+      esc(g.first)+(hasAcct?' loses portal access right away and is emailed “You’re no longer the '+role+'” (#49).':' was never invited, so there’s no access to end.'),
+      VOID_RULE,
+      esc(g.first+" "+g.last)+' stays in the history as a past '+(isEnt?'signer':'settlor')+'.'],
+      isEnt?'I confirmed the attached document shows '+esc(st.ent.name)+' named <b>'+esc(nv.first+" "+nv.last)+'</b> as its authorized signer.':'I confirmed the attached trust document names <b>'+esc(nv.first+" "+nv.last)+'</b> as the new settlor.');
+    sgShell("Change authorized signer",body1,manualFoot("sg",sg,filled,"saveChange","Save new "+role));
     return;
   }
   var nv=sg.v, sub=function(o,isNew){return isEnt?o.title:(isNew?o.rel.replace(/^Other: /,""):relText(st.ind))+" of the insured";};
@@ -1092,7 +1117,8 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   if(a==="back"){sg.step="form";}
   if(a==="ok"){sg.ok=!sg.ok;}
   if(a==="mails"){sg.mails=!sg.mails;}
-  if(a==="saveChange"&&sg.ok){ ed={};
+  if(a==="doc"){sg.doc=!sg.doc;}
+  if(a==="saveChange"&&sg.ok&&sg.doc&&sgFields().every(function(f){return sg.v[f[0]];})){ ed={};
     var nv=sg.v, isEnt=st.type==="entity", hadAcct=g.invite!=="none";
     st.pastSigners=(st.pastSigners||[]); st.pastSigners.unshift({name:g.first+" "+g.last,title:isEnt?g.title:"Settlor & Authorized Signer ("+relText(st.ind)+")",until:today(),by:"Jamin A."});
     if(isEnt){ st.signers=[{first:nv.first,last:nv.last,title:nv.title,email:nv.email,phone:nv.phone,access:false,invite:"none",d:{}}]; }
@@ -1101,7 +1127,7 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
       st.ind={first:nv.first,last:nv.last,email:nv.email,phone:nv.phone,ssn:nv.ssn,dob:nv.dob,relation:other?"Other":nv.rel,otherRelation:other?nv.rel.replace(/^Other: /,""):"",street:m[1],city:m[2],state:m[3],zip:m[4]};
       st.signers=[{first:nv.first,last:nv.last,title:"Settlor & Authorized Signer",email:nv.email,phone:nv.phone,access:false,invite:"none",d:{},isSettlor:true}];
     }
-    log("Changed "+(isEnt?"authorized signer":"settlor and authorized signer")+" from "+g.first+" "+g.last+" to "+nv.first+" "+nv.last);
+    log("Trust document attached; changed "+(isEnt?"authorized signer":"settlor and authorized signer")+" from "+g.first+" "+g.last+" to "+nv.first+" "+nv.last);
     closeSg(); render(); toast(nv.first+" "+nv.last+" is now the "+(isEnt?"authorized signer":"settlor and authorized signer")+"."+(hadAcct?" "+g.first+"’s portal access ended.":"")+" Invite "+nv.first+" when ready.");
     return;}
   var keep=(document.querySelector("#sgRoot .dr-bd")||{}).scrollTop||0; renderSg();
@@ -1150,7 +1176,15 @@ function renderCe(){
         '<button class="cecard'+(ce.scope==="all"?' on':'')+'" data-ce="scope" data-v="all"><b>All '+nPol+' linked to '+esc(e.name)+'</b><span class="note">The whole settlor record moves.</span></button>'+
         '<button class="cecard'+(ce.scope==="this"?' on':'')+'" data-ce="scope" data-v="this"'+(n===1?' disabled':'')+'><b>Only this policy</b><span class="note">'+(thisP?esc(thisP.first+" "+thisP.last)+' · '+esc(thisP.policy)+'. ':'')+esc(e.name)+' keeps the other '+(n-1)+'.</span></button></div></div>';
     var ready=ce.src&&ceReady();
-    ceShell("Change entity",body,(ready?'':'<span class="note" style="margin-right:auto">'+(ce.src?'Fill every field to continue.':'Choose the new settlor.')+'</span>')+'<button class="btn" data-ce="close">Cancel</button><button class="btn primary" data-ce="next"'+(ready?'':' disabled')+'>Review change</button>');
+    body=manualIntro('A different entity becomes the settlor.')+manualDoc("ce",ce,"Trust amendment - new settlor entity.pdf")+body;
+    if(ready){var tn=ceTarget().name, ns=ceNewSigner(), mv=ce.scope==="all"?st.policies.length:1;
+      body+=manualSave("ce",ce,ready,[
+        (mv===1?'This policy moves':'All '+mv+' policies move')+' to <b>'+esc(tn)+'</b>.',
+        'Authorized signer: <b>'+esc((ns.first||"")+" "+(ns.last||""))+'</b>'+(ce.src==="existing"?' (already has portal access).':ce.sgMode==="keep"?' (same person, no change).':'. Starts with no portal access; <b>Invite</b> and <b>Copy link</b> show once you save.'),
+        'Emails: the signer is told the settlor changed (#51 / #52); a removed signer gets #53.',
+        VOID_RULE],
+        'I confirmed the attached trust document names <b>'+esc(tn)+'</b> as the new settlor.');}
+    ceShell("Change entity",body,manualFoot("ce",ce,ready,"save","Save new entity"));
     return;
   }
   var t=ceTarget(), ns=ceNewSigner(), sameSigner=ce.src==="new"&&ce.sgMode==="keep", hasAcct=g&&g.invite!=="none";
@@ -1186,7 +1220,8 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   if(a==="back"){ce.step="pick";}
   if(a==="ok"){ce.ok=!ce.ok;}
   if(a==="mails"){ce.mails=!ce.mails;}
-  if(a==="save"&&ce.ok){
+  if(a==="doc"){ce.doc=!ce.doc;}
+  if(a==="save"&&ce.ok&&ce.doc&&ce.src&&ceReady()){
     var e=st.ent, g=st.signers[0], tg=ceTarget(), ns=ceNewSigner(), sameSigner=ce.src==="new"&&ce.sgMode==="keep";
     var moving=ce.scope==="all"?st.policies:st.policies.filter(function(p){return p.self;});
     st.pastSigners=(st.pastSigners||[]); st.pastSigners.unshift({name:e.name,title:"Entity settlor ("+e.etype+"), signer "+g.first+" "+g.last,until:today(),by:"Jamin A."});
@@ -1228,7 +1263,7 @@ function csTarget(){
 function renderCs(){
   var ins=POLICY.first+" "+POLICY.last;
   if(cs.step==="pick"){
-    var body='<div class="isec"><h4>Set a separate settlor</h4><p class="note" style="margin:0">Use this when ILIA has <b>'+esc(ins)+'</b> (the insured) as the settlor, but the trust documents name <b>someone else</b>. The new settlor’s authorized signer takes over signing for this policy.</p></div>'+
+    var body=manualIntro('Use this when ILIA has <b>'+esc(ins)+'</b> (the insured) as the settlor, but the trust documents name <b>someone else</b>.')+manualDoc("cs",cs,"Trust amendment - new settlor.pdf")+
       '<div class="isec"><h4>Settlor today</h4><div class="sgcur"><b>'+esc(ins)+'</b> · the insured · Relation: Self<br><span class="note">Signs in the client Servicing Portal · policy '+esc(POLICY.policy)+'</span></div></div>'+
       '<div class="isec"><h4>Who is the settlor?</h4><div class="cechoice">'+
         '<button class="cecard'+(cs.kind==="individual"?' on':'')+'" data-cs="kind" data-v="individual"><b>An individual</b><span class="note">A person other than the insured, for example a spouse or parent. They are also the authorized signer.</span></button>'+
@@ -1253,7 +1288,16 @@ function renderCs(){
         '<button class="cecard'+(cs.ins==="keep"?' on':'')+'" data-cs="ins" data-v="keep"><b>Keep access</b><span class="note">'+esc(POLICY.first)+' can still view the policy and request changes in the client portal. Approvals and signing move to the new signer.</span></button></div>'+
         '<p class="cs-warn">⚠ Make sure '+esc(POLICY.first)+' is allowed access to servicing before you select <b>Keep access</b>. The trust documents decide who may see the policy.</p></div>';
     var ready=csReady();
-    csShell("Settlor isn’t the insured",body,(ready?'':'<span class="note" style="margin-right:auto">'+(!cs.kind?'Choose who the settlor is.':cs.kind==="entity"&&!cs.src?'Choose the entity.':'Fill every field to continue.')+'</span>')+'<button class="btn" data-cs="close">Cancel</button><button class="btn primary" data-cs="next"'+(ready?'':' disabled')+'>Review change</button>');
+    if(ready){var t=csTarget(), ng=t.signer;
+      body+=manualSave("cs",cs,ready,[
+        'New forms for this policy go to <b>'+esc(ng.first+" "+ng.last)+'</b>, not '+esc(POLICY.first)+'.',
+        t.hasAcct?esc(ng.first)+' already has portal access, so the policy shows in their portal.':esc(ng.first)+' starts with no portal access. <b>Invite</b> and <b>Copy link</b> show once you save.',
+        esc(POLICY.first)+'’s own portal access to this policy: <b>'+(cs.ins==="off"?'turned off':'kept')+'</b>.',
+        'Emails: '+esc(POLICY.first)+' (the insured) is told the settlor changed (#56)'+(t.hasAcct?'; '+esc(ng.first)+' gets “New policies added” (#55)':'; '+esc(ng.first)+' gets nothing until you send the invite')+'.',
+        VOID_RULE,
+        esc(ins)+' stays in the history as the past settlor.'],
+        'I confirmed the attached trust document names <b>'+esc(t.name)+'</b> as the settlor of this policy, not the insured.');}
+    csShell("Settlor isn’t the insured",body,manualFoot("cs",cs,ready,"save","Save settlor"));
     return;
   }
   var t=csTarget(), ng=t.signer, isEnt=cs.kind==="entity";
@@ -1285,7 +1329,7 @@ function csSave(){
   else {var e=cs.ev, m2=e.addr.match(/^(.*), (.*), ([A-Z]{2}) (\d{5})$/)||[0,e.addr,"","",""];
     st={type:"entity", ind:null, ent:{name:e.name,etype:e.etype,ein:e.ein,addr:e.addr,street:m2[1],city:m2[2],state:m2[3],zip:m2[4]},
       signers:[{first:cs.sv.first,last:cs.sv.last,title:cs.sv.title,email:cs.sv.email,phone:cs.sv.phone,access:false,invite:"none",d:{}}], policies:[p], activity:old, pastSigners:past};}
-  log("Settlor changed from the insured ("+POLICY.first+" "+POLICY.last+") to "+t.name+(cs.src==="existing"?" (existing record)":"")+(cs.ins==="off"?"; insured portal access turned off":""));
+  log("Trust document attached; settlor changed from the insured ("+POLICY.first+" "+POLICY.last+") to "+t.name+(cs.src==="existing"?" (existing record)":"")+(cs.ins==="off"?"; insured portal access turned off":""));
   [].forEach.call(document.getElementById("scen").children,function(x){x.setAttribute("aria-pressed",x.dataset.s===st.type?"true":"false");});
   var ng=t.signer, had=t.hasAcct; closeCs(); ed={}; confirmKey=""; render(); window.scrollTo(0,0);
   var card=document.querySelector(".sa-card"); if(card){card.classList.add("cs-flash"); setTimeout(function(){card.classList.remove("cs-flash");},2600);}
@@ -1305,7 +1349,8 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   if(a==="back"){cs.step="pick";}
   if(a==="ok"){cs.ok=!cs.ok;}
   if(a==="mails"){cs.mails=!cs.mails;}
-  if(a==="save"&&cs.ok){csSave();return;}
+  if(a==="doc"){cs.doc=!cs.doc;}
+  if(a==="save"&&cs.ok&&cs.doc&&csReady()){csSave();return;}
   var keep=(document.querySelector("#sgRoot .dr-bd")||{}).scrollTop||0; renderCs();
   var bd=document.querySelector("#sgRoot .dr-bd"); if(bd) bd.scrollTop=keep;
 });
