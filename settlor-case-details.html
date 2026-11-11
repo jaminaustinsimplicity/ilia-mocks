@@ -398,6 +398,7 @@ body.notes-off .nt-tab{display:block}
 .mu-drop{display:flex;flex-direction:column;gap:2px;align-items:flex-start;width:100%;text-align:left;border:2px dashed #9db7ea;background:#f6f9ff;border-radius:8px;padding:14px;cursor:pointer;font:14px Roboto,sans-serif;color:#1b1b1b}
 .mu-drop:hover{background:#eef4ff}
 .mu-file{display:flex;justify-content:space-between;align-items:center;border:1px solid #b7e1c3;background:#f2fbf4;border-radius:8px;padding:10px 12px;font-size:13.5px}
+.mu-oq{margin:6px 0 0}
 </style>
 
 <div class="mockbar">
@@ -1055,14 +1056,15 @@ var IN_NEW={first:"Carlos",last:"Reyes",email:"carlos.reyes@example.com",phone:"
 /* 11/9 decision: rare settlor / signer / entity changes are handled MANUALLY. No guided multi-step flow:
    one screen = attach the trust document (required) + update the details + confirm + save. Access default, invite and emails still apply. */
 function manualIntro(what){return '<div class="mu-intro"><b>Manual update · rare.</b> '+what+' NIW gets the signed trust document first, attaches it here, updates the details and saves. No guided flow (decided 11/9).</div>';}
-function manualDoc(fl,o,name){return '<div class="isec mu-doc"><h4>1 · Trust document <span class="mu-req">Required</span></h4>'+
+function manualDoc(fl,o,name){return '<div class="isec mu-doc"><h4>1 · Signed trust document <span class="mu-req">Required</span></h4>'+
   (o.doc?'<div class="mu-file"><span>📄 <b>'+esc(name)+'</b> <span class="note">· attached · goes to the client’s Documents</span></span><button class="btn link sm" data-'+fl+'="doc">Remove</button></div>'
-        :'<button class="mu-drop" data-'+fl+'="doc"><b>📎 Attach the signed trust document</b><span class="note">Click to attach a sample: '+esc(name)+'</span></button>')+'</div>';}
+        :'<button class="mu-drop" data-'+fl+'="doc"><b>📎 Attach the signed trust document</b><span class="note">Click to attach a sample: '+esc(name)+'</span></button>')+
+  '<ul class="can oq mu-oq"><li>Which document exactly? For example a trust amendment for a person, or a company resolution for an entity. Judy to confirm (entity forms, 11/9).</li></ul></div>';}
 function manualSave(fl,o,ready,items,confirmTx){return (ready?'<div class="isec"><h4>What happens when you save</h4><ul class="can">'+items.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul></div>'+
   '<button class="confirmchk" role="checkbox" aria-checked="'+!!o.ok+'" data-'+fl+'="ok"><span class="cbx" aria-hidden="true">'+(o.ok?'✓':'')+'</span><span>'+confirmTx+'</span></button>':'');}
 function manualFoot(fl,o,ready,act,label){var can=ready&&o.doc&&o.ok;
   return (can?'':'<span class="note" style="margin-right:auto">'+(!o.doc?'Attach the trust document.':!ready?'Fill every field.':'Tick the confirmation to save.')+'</span>')+'<button class="btn" data-'+fl+'="close">Cancel</button><button class="btn primary" data-'+fl+'="'+act+'"'+(can?'':' disabled')+'>'+label+'</button>';}
-var VOID_RULE='Forms already out for signature: if the change starts on the <b>second envelope</b>, NIW voids it and restarts the trust documents. Earlier steps keep going (decided 11/9).';
+var VOID_RULE='Forms already out for signature with the old person: NIW <b>voids them and resends to the new signer by hand</b>. Trust documents: if the change starts on the <b>second envelope</b>, NIW voids it and restarts the trust documents; earlier steps keep going (decided 11/9, 11/11).';
 function sgFields(){return st.type==="entity"?SG_F:IN_F;}
 function openSg(){var v={}; sgFields().forEach(function(f){v[f[0]]="";}); sg={ok:false, docs:false, step:"form", v:v, mails:false}; renderSg();}
 function closeSg(){sg=null;document.getElementById("sgRoot").innerHTML="";}
@@ -1096,25 +1098,12 @@ function renderSg(){
     sgShell("Change authorized signer",body1,manualFoot("sg",sg,filled,"saveChange","Save new "+role));
     return;
   }
-  var nv=sg.v, sub=function(o,isNew){return isEnt?o.title:(isNew?o.rel.replace(/^Other: /,""):relText(st.ind))+" of the insured";};
-  var mails = (hasAcct? mailHTML(g.email,"You’re no longer the "+role+" on your ILIA policies","<p>Hi "+esc(g.first)+",</p><p>NIW updated "+(isEnt?esc(st.ent.name)+"’s":"the")+" records. <b>"+esc(nv.first+" "+nv.last)+"</b> is now the "+role+" for "+nPol+", and your Servicing Settlor (Authorized Signer) Portal access has ended.</p><p>Questions? Contact niw.info@simplicitygroup.com or 800-294-9940 ext. 807.</p>")+'<p class="note" style="margin:0 0 8px">Sent because their access ends (access emails, decided 11/4).</p>' : '')+
-    '<p class="note" style="margin:0">'+esc(nv.first)+' gets <b>no email yet</b>. Their invite goes out only when you click <b>Invite Authorized Signer to Servicing Portal</b>.</p>';
-  var body2='<div class="sgswap"><div class="sgcol out"><span class="note">Removing</span><b>'+esc(g.first+" "+g.last)+'</b><span>'+esc(sub(g,false))+'</span><span class="note">'+esc(g.email)+'</span></div><span class="sgarrow" aria-hidden="true">→</span><div class="sgcol in"><span class="note">New '+role+'</span><b>'+esc(nv.first+" "+nv.last)+'</b><span>'+esc(sub(nv,true))+'</span><span class="note">'+esc(nv.email)+'</span></div></div>'+
-    '<div class="isec"><h4>What happens to '+esc(g.first)+'</h4><ul class="can"><li>No longer the '+role+' on '+allPol+'.</li>'+(hasAcct?'<li>Servicing Settlor (Authorized Signer) Portal access ends right away.</li>':'<li>Was never invited to the portal, so there’s no access to end.</li>')+'<li>Kept in the history as a past '+(isEnt?'signer':'settlor')+'.</li></ul></div>'+
-    '<div class="isec"><h4>What happens for '+esc(nv.first)+'</h4><ul class="can"><li>Becomes the '+role+' on '+allPol+'. New forms go to '+esc(nv.email)+'.</li><li>Starts with <b>no portal access</b>. The <b>Invite Authorized Signer to Servicing Portal</b> button shows once you save.</li>'+(isEnt?'':'<li>Relation badge changes to <b>'+esc(nv.rel.replace(/^Other: /,""))+'</b>.</li>')+'</ul></div>'+
-    '<div class="isec"><h4>Emails this sends</h4>'+(sg.mails?mails:'')+'<button class="btn link sm" data-sg="mails" style="align-self:flex-start">'+(sg.mails?'Hide':'Show')+' emails</button></div>'+
-    '<div class="isec"><h4>Still to decide</h4><ul class="can oq"><li>Forms already waiting on '+esc(g.first)+': cancel and resend to '+esc(nv.first)+' automatically, or an admin chooses each one?</li>'+
-      (isEnt?'<li>Do we need proof (for example a company resolution) before changing an entity’s signer?</li>':'<li>Changing an individual settlor can be a <b>legal change to the trust</b>. What document does NIW need first (Chris / Judy)?</li>')+'</ul></div>'+
-    '<button class="confirmchk" role="checkbox" aria-checked="'+sg.ok+'" data-sg="ok"><span class="cbx" aria-hidden="true">'+(sg.ok?'✓':'')+'</span><span>'+(isEnt?'I confirmed '+esc(st.ent.name)+' has named <b>'+esc(nv.first+" "+nv.last)+'</b> as its new authorized signer.':'I confirmed the trust documents name <b>'+esc(nv.first+" "+nv.last)+'</b> as the new settlor.')+'</span></button>';
-  sgShell("Review: change "+role,body2,(sg.ok?'':'<span class="note">Tick the confirmation to save.</span>')+'<button class="btn" data-sg="back" style="margin-right:auto">← Back</button><button class="btn" data-sg="close">Cancel</button><button class="btn primary" data-sg="saveChange"'+(sg.ok?'':' disabled')+'>Change '+role+'</button>');
 }
 document.getElementById("sgRoot").addEventListener("click",function(ev){
   var t=ev.target.closest("[data-sg]"); if(!t||!sg)return; var a=t.dataset.sg, g=st.signers[0];
   if(a==="close"){closeSg();return;}
   if(a==="nfill"){var k2=t.dataset.k; sg.v[k2]= sg.v[k2] ? "" : sgNew()[k2];}
   if(a==="nall"){var n=sgNew(); sgFields().forEach(function(f){sg.v[f[0]]=n[f[0]];});}
-  if(a==="next"){sg.step="confirm";sg.ok=false;}
-  if(a==="back"){sg.step="form";}
   if(a==="ok"){sg.ok=!sg.ok;}
   if(a==="mails"){sg.mails=!sg.mails;}
   if(a==="doc"){sg.doc=!sg.doc;}
@@ -1187,25 +1176,6 @@ function renderCe(){
     ceShell("Change entity",body,manualFoot("ce",ce,ready,"save","Save new entity"));
     return;
   }
-  var t=ceTarget(), ns=ceNewSigner(), sameSigner=ce.src==="new"&&ce.sgMode==="keep", hasAcct=g&&g.invite!=="none";
-  var moving=ce.scope==="all"?st.policies:st.policies.filter(function(p){return p.self;});
-  var mvList='<ul class="signsfor">'+moving.map(function(p){return '<li><b>'+esc(p.first+" "+p.last)+'</b> <span class="note">(insured)</span> · <span class="mono">'+esc(p.policy)+'</span></li>';}).join("")+'</ul>';
-  var mails = sameSigner
-      ? (hasAcct?mailHTML(g.email,"The settlor on your ILIA policies changed","<p>Hi "+esc(g.first)+",</p><p>NIW updated the records. You’re now the authorized signer for <b>"+esc(t.name)+"</b> on "+moving.length+" polic"+(moving.length===1?"y":"ies")+". Nothing changes about how you log in.</p>"):'<p class="note" style="margin:0">'+esc(g.first)+' hasn’t been invited to the portal, so no email is sent.</p>')
-      : (hasAcct?mailHTML(g.email,"You’re no longer the authorized signer on these ILIA policies","<p>Hi "+esc(g.first)+",</p><p>NIW updated the records. "+moving.length+" polic"+(moving.length===1?"y":"ies")+" moved from "+esc(e.name)+" to <b>"+esc(t.name)+"</b>, and your access to "+(moving.length===1?"it":"them")+" has ended.</p>")+'<p class="note" style="margin:0 0 8px">Sent because their access ends (access emails, decided 11/4).</p>':'')+
-        (ce.src==="existing" ? mailHTML(ns.email,"New policies added to your ILIA Servicing Settlor (Authorized Signer) Portal","<p>Hi "+esc(ns.first)+",</p><p>"+moving.length+" polic"+(moving.length===1?"y is":"ies are")+" now linked to <b>"+esc(t.name)+"</b>. You’ll see "+(moving.length===1?"it":"them")+" next time you log in.</p>")
-                             : '<p class="note" style="margin:0">'+esc(ns.first)+' gets <b>no email yet</b>. Their invite goes out only when you click <b>Invite Authorized Signer to Servicing Portal</b>.</p>');
-  var body2='<div class="sgswap"><div class="sgcol out"><span class="note">Current settlor</span><b>'+esc(e.name)+'</b><span>'+esc(e.etype)+'</span><span class="note">Signer: '+esc(g.first+" "+g.last)+'</span></div><span class="sgarrow" aria-hidden="true">→</span><div class="sgcol in"><span class="note">New settlor'+(ce.src==="existing"?' (existing record)':'')+'</span><b>'+esc(t.name)+'</b><span>'+esc(t.etype)+'</span><span class="note">Signer: '+esc(ns.first+" "+ns.last)+'</span></div></div>'+
-    '<div class="isec"><h4>Policies that move ('+moving.length+')</h4>'+mvList+(ce.scope==="this"?'<p class="note" style="margin:0">'+esc(e.name)+' keeps its other '+(st.policies.length-1)+' polic'+(st.policies.length-1===1?'y':'ies')+' and its signer.</p>':'<p class="note" style="margin:0">'+esc(e.name)+' has no policies left. Its record stays in ILIA for history.</p>')+'</div>'+
-    '<div class="isec"><h4>Authorized signer and portal access</h4><ul class="can">'+
-      (sameSigner ? '<li><b>'+esc(g.first+" "+g.last)+'</b> stays the signer. Portal access carries over; their portal shows '+esc(t.name)+'.</li>'
-        : ce.src==="existing" ? '<li><b>'+esc(ns.first+" "+ns.last)+'</b> ('+esc(t.name)+'’s signer) becomes the signer for these policies. They already have portal access, so the policies appear in their portal.</li><li>'+esc(g.first)+'’s access to these policies ends'+(ce.scope==="this"?'; they keep the other '+(st.policies.length-1)+'.':'.')+'</li>'
-        : '<li><b>'+esc(ns.first+" "+ns.last)+'</b> becomes the signer and starts with <b>no portal access</b>. The Invite button shows once you save.</li><li>'+esc(g.first)+'’s access to these policies ends'+(ce.scope==="this"?'; they keep the other '+(st.policies.length-1)+'.':'.')+'</li>')+
-      '<li>Each insured’s own portal access doesn’t change.</li><li>'+esc(e.name)+' is kept in the history as a past settlor.</li></ul></div>'+
-    '<div class="isec"><h4>Emails this sends</h4>'+(ce.mails?mails:'')+'<button class="btn link sm" data-ce="mails" style="align-self:flex-start">'+(ce.mails?'Hide':'Show')+' emails</button></div>'+
-    '<div class="isec"><h4>Still to decide</h4><ul class="can oq"><li>Changing the settlor entity is a <b>legal change to the trust</b>. What document does NIW need first (Chris / Judy)?</li><li>Forms already waiting on '+esc(g.first)+' for these policies: cancel and resend, or an admin chooses each one?</li>'+(ce.scope==="this"?'<li>Should moving one policy be allowed, or must the whole settlor record move together?</li>':'')+'</ul></div>'+
-    '<button class="confirmchk" role="checkbox" aria-checked="'+ce.ok+'" data-ce="ok"><span class="cbx" aria-hidden="true">'+(ce.ok?'✓':'')+'</span><span>I confirmed the trust documents name <b>'+esc(t.name)+'</b> as the new settlor for '+(moving.length===1?'this policy':'these '+moving.length+' policies')+'.</span></button>';
-  ceShell("Review: change entity",body2,(ce.ok?'':'<span class="note">Tick the confirmation to save.</span>')+'<button class="btn" data-ce="back" style="margin-right:auto">← Back</button><button class="btn" data-ce="close">Cancel</button><button class="btn primary" data-ce="save"'+(ce.ok?'':' disabled')+'>Change entity</button>');
 }
 document.getElementById("sgRoot").addEventListener("click",function(ev){
   var t=ev.target.closest("[data-ce]"); if(!t||!ce)return; var a=t.dataset.ce;
@@ -1216,8 +1186,6 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   if(a==="etype"){ce.v.etype=ce.v.etype===t.dataset.v?"":t.dataset.v;}
   if(a==="fill"){var grp=t.dataset.g,k=t.dataset.k,src=grp==="v"?CE_NEW:CE_NEW_SG; ce[grp][k]=ce[grp][k]?"":src[k];}
   if(a==="fillall"){for(var k1 in CE_NEW)ce.v[k1]=CE_NEW[k1]; if(ce.sgMode==="new")for(var k3 in CE_NEW_SG)ce.sv[k3]=CE_NEW_SG[k3];}
-  if(a==="next"){ce.step="review";ce.ok=false;}
-  if(a==="back"){ce.step="pick";}
   if(a==="ok"){ce.ok=!ce.ok;}
   if(a==="mails"){ce.mails=!ce.mails;}
   if(a==="doc"){ce.doc=!ce.doc;}
@@ -1300,22 +1268,6 @@ function renderCs(){
     csShell("Settlor isn’t the insured",body,manualFoot("cs",cs,ready,"save","Save settlor"));
     return;
   }
-  var t=csTarget(), ng=t.signer, isEnt=cs.kind==="entity";
-  var mails=(t.hasAcct ? mailHTML(ng.email,"New policies added to your ILIA Servicing Settlor (Authorized Signer) Portal","<p>Hi "+esc(ng.first)+",</p><p>1 policy is now linked to <b>"+esc(t.name)+"</b>. You’ll see it in your portal the next time you log in.</p>")+'<p class="note" style="margin:0 0 8px">Same email as #52 (Change entity).</p>'
-                       : '<p class="note" style="margin:0 0 8px">'+esc(ng.first)+' gets <b>no email yet</b>. Their invite goes out only when you click <b>Invite Authorized Signer to Servicing Portal</b> (#41).</p>')+
-    '<p class="note" style="margin:0">'+esc(POLICY.first)+' (the insured) gets one email, “The settlor on your policy has changed” (#56), '+(cs.ins==="off"?'saying their access has ended. No separate access-off email.':'saying they can still view the policy and request changes.')+'</p>';
-  var body2='<div class="sgswap"><div class="sgcol out"><span class="note">Settlor today</span><b>'+esc(ins)+'</b><span>The insured · Self</span><span class="note">Signs in the client portal</span></div><span class="sgarrow" aria-hidden="true">→</span><div class="sgcol in"><span class="note">New settlor</span><b>'+esc(t.name)+'</b><span>'+esc(t.sub)+'</span><span class="note">Signer: '+esc(ng.first+" "+ng.last)+'</span></div></div>'+
-    '<div class="isec"><h4>What changes on this policy</h4><ul class="can">'+
-      '<li>Settlor Details switch to the <b>Settlor / Authorized Signer</b> section with a <b>'+esc(isEnt?"Entity":t.sub.replace(/ of the insured$/,""))+'</b> badge.</li>'+
-      '<li>New forms for this policy go to <b>'+esc(ng.first+" "+ng.last)+'</b> ('+esc(ng.email)+'), not '+esc(POLICY.first)+'.</li>'+
-      (t.hasAcct ? '<li>'+esc(ng.first)+' already has Servicing Settlor (Authorized Signer) Portal access, so the policy shows in their portal next time they log in.</li><li>The policy joins '+esc(t.name)+'’s other '+POLICY_POOL.slice(0,2).length+' linked policies.</li>'
-                 : '<li>'+esc(ng.first)+' starts with <b>no portal access</b>. The <b>Invite Authorized Signer to Servicing Portal</b> button shows once you save.</li>')+
-      '<li>'+esc(POLICY.first)+'’s client portal access to this policy: <b>'+(cs.ins==="off"?'turned off':'kept')+'</b>. You can change it later under Policies linked to this settlor.</li>'+
-      '<li>'+esc(ins)+' is kept in the history as the past settlor.</li></ul></div>'+
-    '<div class="isec"><h4>Emails this sends</h4>'+(cs.mails?mails:'')+'<button class="btn link sm" data-cs="mails" style="align-self:flex-start">'+(cs.mails?'Hide':'Show')+' emails</button></div>'+
-    '<div class="isec"><h4>Still to decide</h4><ul class="can oq"><li>Changing the settlor is a <b>legal change to the trust</b>. What document does NIW need first (Chris / Judy)?</li><li>Forms already out for signature with '+esc(POLICY.first)+' on this policy: void and resend to '+esc(ng.first)+', or let them finish?</li><li>Should the insured get an email that the settlor changed?</li></ul></div>'+
-    '<button class="confirmchk" role="checkbox" aria-checked="'+cs.ok+'" data-cs="ok"><span class="cbx" aria-hidden="true">'+(cs.ok?'✓':'')+'</span><span>I confirmed the trust documents name <b>'+esc(t.name)+'</b> as the settlor of this policy, not the insured.</span></button>';
-  csShell("Review: settlor isn’t the insured",body2,(cs.ok?'':'<span class="note">Tick the confirmation to save.</span>')+'<button class="btn" data-cs="back" style="margin-right:auto">← Back</button><button class="btn" data-cs="close">Cancel</button><button class="btn primary" data-cs="save"'+(cs.ok?'':' disabled')+'>Set new settlor</button>');
 }
 function csSave(){
   var t=csTarget(), p=thisPolicy(), old=st.activity||[];
@@ -1345,8 +1297,6 @@ document.getElementById("sgRoot").addEventListener("click",function(ev){
   if(a==="etype"){cs.ev.etype=cs.ev.etype===t.dataset.v?"":t.dataset.v;}
   if(a==="fill"){var g=t.dataset.g,k=t.dataset.k; cs[g][k]=cs[g][k]?"":csSrc(g)[k];}
   if(a==="fillall"){ if(cs.kind==="individual"){for(var k1 in CS_IND)cs.v[k1]=CS_IND[k1];} else {for(var k2 in CE_NEW)cs.ev[k2]=CE_NEW[k2]; for(var k3 in CE_NEW_SG)cs.sv[k3]=CE_NEW_SG[k3];} }
-  if(a==="next"){cs.step="review";cs.ok=false;}
-  if(a==="back"){cs.step="pick";}
   if(a==="ok"){cs.ok=!cs.ok;}
   if(a==="mails"){cs.mails=!cs.mails;}
   if(a==="doc"){cs.doc=!cs.doc;}
