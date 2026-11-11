@@ -55,7 +55,7 @@
 
   /* ---------- BANNER (Marketing's real image) ---------- */
   .promo{position:relative;border-radius:12px;overflow:hidden;margin-bottom:8px;
-    box-shadow:0 6px 20px rgba(20,28,40,.18);cursor:pointer;line-height:0}
+    box-shadow:0 6px 20px rgba(20,28,40,.18);line-height:0}
   .promo img{display:block;width:100%;height:auto}
   /* clickable CTA overlaid exactly over the image's baked-in "Agent and ADC Resources" button */
   .promo .cta{position:absolute;left:15.2%;top:71.5%;width:28.2%;height:18%;
@@ -154,10 +154,10 @@
     <div class="view show" id="view-dashboard">
 
       <!-- NEW BANNER -->
-      <div class="promo" id="promo" onclick="goResources(true)" title="Explore the Product">
+      <div class="promo" id="promo">
         <span class="xbtn" title="Dismiss" onclick="closeBanner(event)">✕</span>
         <img src="symetra-banner.jpg" alt="Symetra joins the Kai-Zen carrier lineup">
-        <button class="cta" onclick="event.stopPropagation(); goResources(true)">Explore the Product →</button>
+        <button class="cta" onclick="goResources(true)">Explore the Product →</button>
       </div>
       <div class="bannernote">↑ Marketing's finalized banner. The <b>“Explore the Product”</b> button is overlaid and clickable — it stands in for the image's “Agent and ADC Resources” button, which Marketing would relabel. Click it.</div>
 
