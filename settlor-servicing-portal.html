@@ -457,6 +457,7 @@ i.dw-ss{background:#6f4bd8!important;color:#fff;border-color:#6f4bd8!important;f
 .viewbar.hrv{background:#f3efff;border-color:#c9b8f5;color:#3b2585}
 .hr-vo{display:inline-block;font-size:12px;font-weight:600;color:#6b7280;background:#f1f3f6;border:1px dashed #c9cfda;border-radius:12px;padding:3px 10px}
 body.is-hr [data-wf],body.is-hr [data-act="signdoc"]{display:none !important}
+.oq-dec{margin-top:8px;font-size:13.5px}.oq-dec summary{cursor:pointer;color:#14632b;font-weight:600}.oq-dec ul{margin:6px 0 0;padding-left:18px}.oq-dec li{color:#14632b;margin:2px 0}
 </style>
 
 <div class="mockbar">
@@ -1261,17 +1262,29 @@ function spark(){return '<svg viewBox="0 0 300 90" class="spark" role="img" aria
 
 /* Open questions under each screen */
 var OPENQ={
-  sign:["Insured-started requests: when an insured who isn’t the settlor has portal access and requests a change (legal name, personal details, beneficiaries…), it lands here for the authorized signer to approve and sign. If the signer declines, is the insured told why? Is there a deadline before the request expires?","Who signs next after the authorized signer: always the trustee (Provident), then NIW review, then the carrier? Does the bank countersign DBR changes?","Does the insured get a copy of what the authorized signer signed, or a notice that it was signed?","Reminders: how often should ILIA remind the signer before the due date, and who is told if it passes?","If the signer declines to sign (for example a DBR election), what happens? A decline still needs a record.","Should the signer be able to download every signed copy here, or only see its status?"],
-  home:["One person can be the authorized signer on several policies, for example a parent for each child’s policy. Is the relationship to the insured recorded per policy (Parent / Spouse / Other) or once per settlor?","If an authorized signer has many policies (10 or more), should the home add search, or group the policies by family?","Should a policy that isn’t in force yet show on the home (greyed out), or stay hidden until it’s in force?"],
-  dash:["Should the authorized signer see every value card (net death benefit and cash value), or fewer?","Should the dashboard keep the quick-link tiles (Plan Documents, Annual Review, Insured Details, Claims…), filtered to what the authorized signer can use?","When a policy isn’t in force yet, should the authorized signer see a “coming soon” card for it, or nothing?"],
-  pay:["Can the authorized signer make contribution payments from the portal? ILIA’s Kai-Zen FAQ and wire instructions already allow funds from the insured’s <b>or the settlor’s</b> personal account.","Entity settlors: today’s rule says personal accounts only, not business or trust accounts. Can an LLC or other entity pay, or must it always be a person?","If the authorized signer pays by ePay, do they save their own bank account in ILIA, kept separate from the insured’s?","Should the authorized signer see Bank Leverage (bank loan amounts) in the history?","Who gets contribution-due reminders and payment receipts: the insured, the signer, or both?","Monthly recurring ePay: if the insured set it up, can the signer see or change it?"],
-  docs:["Enrollment documents include the application with the insured’s medical and financial answers. Show a redacted version, a filtered set (policy, illustration, trust), or everything?","Replace “Personal Documents” with “Settlor Documents” (their own uploads) and hide the insured’s ID, utility bill and residence documents?","What can an authorized signer upload (trust, entity or ID documents), and who at NIW reviews it?","Add a “Signed by me” tab so the signer can find everything they’ve signed? Should the insured see those documents too?"],
-  ar:["The Annual Review tile is admin-only today. Is Annual Review live for insureds yet? Should authorized signers get it at the same time?","It shows bank loan amounts and interest. Is that OK for the authorized signer? (The trust owns the policy.)","Can the authorized signer download the carrier annual statement?","If NIW holds annual review calls, is the authorized signer invited, the insured, or both?"],
-  perf:["Allocation changes today are a carrier PDF the client emails to NIW, with no signing in ILIA. For a separate settlor, should the signer fill out and sign that form instead of the insured?","Index allocation cards only show for admins today. Show them to the authorized signer?","Allianz “Lock at X%”: can the signer request a lock?","If policy performance moves to “Monitor” or “Check-In”, who is told: insured, signer, or both?"],
-  ins:["ILIA’s FAQ says the settlor decides the beneficiaries, but today the insured edits and signs beneficiary changes. For a separate settlor, who requests and signs: the signer, the insured, or both?","Which insured details can the authorized signer see? Proposal: name, masked date of birth, city and state only.","Confirm: legal name and personal detail changes stay with the insured (insured signs).","If the insured has no portal access, how do they change their own details? By calling NIW?"],
-  claims:["Who can request a distribution on a trust-owned policy: the signer, the insured, or both? (Per the FAQ, surrender funds go to the insured or settlor.)","Death claims usually come from the trustee and beneficiaries. Should the authorized signer portal offer “Claim Request” at all?","Today a request is a free-text box with no signature. Should a settlor’s request require their DocuSign signature?","Who is notified and approves: the trustee (Provident) or NIW operations?"]
+  sign:["<b>Trustee step (Mohit, E6):</b> does Provident sign in the same DocuSign envelope, right after the authorized signer?"],
+  pay:["<b>Entity settlors:</b> ILIA’s rule today is personal accounts only. Can an entity pay the employer contribution from a business or trust account?"],
+  docs:["<b>Enrollment documents:</b> the application includes the insured’s medical and financial answers. Should the authorized signer see a redacted version, only the policy and illustration, or none?"],
+  ar:["<b>Annual Review:</b> it’s admin-only in ILIA today. Show it to authorized signers at the same time it goes live for insureds?"],
+  perf:["<b>Allocation changes (asking Judy + Marissa):</b> can the authorized signer request an allocation change and sign it, or does it stay the carrier form emailed to NIW?"],
+  ins:["<b>Insured details the signer sees:</b> proposal is name, masked date of birth, city and state only. Confirm."],
+  claims:["<b>Claims and distributions (asking Judy + Marissa):</b> who can start them (signer, insured or both), and do distribution funds go to the trust?"]
 };
-function openQ(s){var q=OPENQ[s]; if(!q) return ""; return '<div class="oq"><h3>Open questions for this screen</h3><ol>'+q.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol></div>';}
+/* What was answered (shown under each screen so reviewers see it's settled) */
+var DECIDED_Q={
+  sign:["Insured-started requests go to the signer’s Action Items; the signer approves and signs (11/2).","The insured is emailed about their own requests (#58, #59, #60).","The signer can decline; the insured sees “Not approved” (11/2).","Signed copies: “View signed copy” on each finished item.","Reminders: DocuSign’s existing reminder settings (no new ILIA rule for MVP).","DocuSign first; the form builder comes in Phase 2 (11/16)."],
+  home:["The relation to the insured is kept per settlor record.","Policies not yet in force show greyed out and can’t be opened.","No search or grouping for MVP."],
+  dash:["Policy screens mirror ILIA client servicing as-is (value cards and quick links), with signer gating."],
+  pay:["The signer can make payments (GWT giftor model). Settlor is an entity: the insured can pay client contributions (11/4).","Receipt goes to whoever paid.","The signer uses their own saved payment method; the insured’s recurring ePay is view only for the signer.","Bank leverage shows as in ILIA today."],
+  docs:["“Settlor Documents” replaces Personal Documents for the signer; the insured’s ID and residence documents are hidden.","The signer can upload trust, entity and ID documents; NIW reviews them (emails #8–#10).","Signed items: “View signed copy” in Action Items."],
+  ar:["Bank loan amounts show as in ILIA today (the trust owns the policy). Annual review calls are out of scope."],
+  perf:["Index allocation cards stay admin-only, as today. Performance notices go to the insured, as today."],
+  ins:["Legal name, personal details and beneficiary changes: the signer can request and sign them. An insured with access requests; the signer approves and signs (11/2).","An insured without portal access calls NIW, as today."],
+  claims:["Until answered, claims and distributions stay as ILIA works today (request emailed to NIW)."]
+};
+function openQ(s){var q=OPENQ[s]||[], d=DECIDED_Q[s]||[]; if(!q.length&&!d.length) return "";
+  return '<div class="oq">'+(q.length?'<h3>Open questions for this screen</h3><ol>'+q.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol>':'<h3>No open questions for this screen</h3>')+
+    (d.length?'<details class="oq-dec"><summary>Decided for this screen ('+d.length+')</summary><ul>'+d.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul></details>':'')+'</div>';}
 
 /* ---------- Top bar: Welcome + profile menu (matches ILIA today) ---------- */
 var acctOpen=false, pw={cur:"",nw:"",cf:""};
