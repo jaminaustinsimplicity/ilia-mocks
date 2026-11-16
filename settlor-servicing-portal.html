@@ -565,8 +565,8 @@ var DECISIONS = [
 ];
 var choice = {}, notes = {}, rowLock = {}, saved = {locked:false, savedAt:null};
 /* Jamin's answers, 11/2/2026 (from his locked decision panel). Not decided = still open. */
-var ANSWERS={home:"Yes",sign:"Yes",profile:"Yes",dash:"View only",payV:"View only",payA:"Yes",payB:"No",docsP:"Yes",docsI:"No",docsU:"Yes",ar:"View only",perfV:"View only",perfA:"Not decided",insV:"View only",insE:"Yes",benA:"Yes",clV:"View only",clA:"Not decided",faq:"Yes",cont:"Yes"};
-var ANOTES={payA:"Need this task to include Kyle, the SME on how payments work.",perfA:"The authorized signer is the one who triggers this request.",insV:"No one signs this. The request triggers the workflow, so this screen needs an option for the authorized signer to request an allocation change; then decide what workflow that triggers.",insE:"Because they are the ones who sign off on these requests.",clA:"The authorized signer does this for all policies. Need to turn this off for the insured on associated policies that have servicing access."};
+var ANSWERS={home:"Yes",sign:"Yes",profile:"Yes",dash:"View only",payV:"View only",payA:"Yes",payB:"No",docsP:"Yes",docsI:"No",docsU:"Yes",ar:"View only",perfV:"View only",perfA:"Yes",insV:"View only",insE:"Yes",benA:"Yes",clV:"View only",clA:"Yes",faq:"Yes",cont:"Yes"};
+var ANOTES={payA:"Need this task to include Kyle, the SME on how payments work.",perfA:"Decided 11/16: the authorized signer requests the allocation change and signs it.",insV:"No one signs this. The request triggers the workflow, so this screen needs an option for the authorized signer to request an allocation change; then decide what workflow that triggers.",insE:"Because they are the ones who sign off on these requests.",clA:"Decided 11/16: the authorized signer or the insured can start a claim or a distribution request. Distribution funds go to the trust."};
 DECISIONS.forEach(function(g){g.items.forEach(function(d){choice[d.k]=ANSWERS[d.k]||d.rec; notes[d.k]=ANOTES[d.k]||"";});});
 function dec(k){for(var i=0;i<DECISIONS.length;i++)for(var j=0;j<DECISIONS[i].items.length;j++)if(DECISIONS[i].items[j].k===k)return DECISIONS[i].items[j];}
 
@@ -745,7 +745,7 @@ function ilxTable(cols,rows,empty){return '<div class="ilx-tw"><table class="ilx
 function ilxTabs(key,labels){return '<div class="ilx-tabs" role="tablist">'+labels.map(function(l,i){return '<button role="tab" aria-selected="'+(tabState[key]===i)+'" data-tab="'+key+'" data-ti="'+i+'">'+l+'</button>';}).join("")+'</div>';}
 function ilxGate(pol,k,html){ if(isHR()) return '<span class="hr-vo" title="HR users can view only">View only</span>'; if(k==="payA"&&insEnt()) return insPayCard(); if(pol.own) return html; var c=choice[k];
   if(c==="Yes") return html; if(c==="Not decided") return '<span class="ilx-tbd">'+html+' <span class="tag t-ask">To decide</span></span>'; return ''; }
-function wfA(pol,k){if(isIns()&&/^(legal|pers|ben)$/.test(k)) return 'data-wf="'+k+'"'; return pol.own?'data-act="mock"':'data-wf="'+k+'"';}
+function wfA(pol,k){if(isIns()&&/^(legal|pers|ben|claim|dist)$/.test(k)) return 'data-wf="'+k+'"'; return pol.own?'data-act="mock"':'data-wf="'+k+'"';}
 /* ---------- Authorized signer action workflows (associated policies) ----------
    Each button opens a step-by-step modal: enter (click-to-fill sample) -> review -> sign (when a signature is needed) -> done.
    Done screens say what happens next and who is emailed. Flows for "To decide" items are marked Proposed. */
@@ -867,19 +867,19 @@ var WF={
   dist:{title:"Distribution Request", gate:"clA", steps:function(v){return [
       {t:"Distribution",b:[{choice:"dtype",label:"Type",opts:["Policy loan","Partial withdrawal"]},{fields:[["amt","Amount","$25,000.00"]]}]},
       {t:"Review",b:[{review:1}]}];},
-    done:function(v){return {head:"Distribution request sent",body:'<p>NIW confirms the loan is paid off and contacts you with the next steps.</p>',
+    done:function(v){return {head:"Distribution request sent",body:'<p>NIW confirms the loan is paid off and contacts you with the next steps. Funds go to the trust.</p>',
       emails:[[signerName()+" (you)","Request received"],["NIW servicing team","New distribution request"]],alertT:"Your Request is Processing",alertB:esc(v.dtype)+" of "+esc(v.amt)+" · requested by you on Nov 2, 2026"};}}
 };
 /* What happens after each signer action: [who acts, what happens, [[email to, subject], ...], open question?]
    Shown on the Done screen of every flow so the full process and its emails are documented in the mock. */
-function insProc(k,v){var p=P(), sg=p.signerName+" (authorized signer)", me=p.first+" "+p.last+" (you, the insured)", niw="NIW servicing team", what={legal:"legal name change",pers:(v.what||"personal details").toLowerCase()+" change",ben:"beneficiary change"}[k];
-  return [["You (insured)","Send the "+what+" request. Insured Details shows “Waiting for authorized signer approval”.",[[sg,"#57 Request from Daniel Reyes needs your approval"],[me,"#58 Your request was sent to "+p.signerName+" for approval"]]],
+function insProc(k,v){var p=P(), sg=p.signerName+" (authorized signer)", me=p.first+" "+p.last+" (you, the insured)", niw="NIW servicing team", what={legal:"legal name change",pers:(v.what||"personal details").toLowerCase()+" change",ben:"beneficiary change",claim:"claim",dist:"distribution"}[k];
+  return [["You (insured)","Send the "+what+" request. "+(/claim|dist/.test(k)?"Claims & Distributions":"Insured Details")+" shows “Waiting for authorized signer approval”.",[[sg,"#57 Request from Daniel Reyes needs your approval"],[me,"#58 Your request was sent to "+p.signerName+" for approval"]]],
     ["Authorized signer","Reviews the request in the Servicing Settlor (Authorized Signer) Portal (Action Items, tagged “Requested by the insured”) and approves and signs it in DocuSign, or declines it.",[[me,"#59 "+p.signerName+" approved your request"],[me,"#60 Your request wasn’t approved (if declined · open question)"]]],
-    ["NIW","Starts work only after the signer’s signature. Insured Details shows “Your Request is Processing”.",[[niw,"New "+what+" request (signed by the authorized signer)"]]],
-    [k==="pers"?"ILIA":"NIW → carrier",k==="pers"?"Change saved.":"Sends the change to the carrier. Carrier confirms; ILIA updates the page.",[[me,"Your request is complete"],[sg,"Request complete (copy)"]]],
+    ["NIW","Starts work only after the signer’s signature. "+(/claim|dist/.test(k)?"Claims & Distributions":"Insured Details")+" shows “Your Request is Processing”.",[[niw,"New "+what+" request (signed by the authorized signer)"]]],
+    [k==="pers"?"ILIA":"NIW → carrier",k==="pers"?"Change saved.":k==="dist"?"Sends the signed forms to the carrier. The carrier sends the funds to the trust.":k==="claim"?"Works the claim with the carrier; status updates on Claims & Distributions.":"Sends the change to the carrier. Carrier confirms; ILIA updates the page.",[[me,"Your request is complete"],[sg,"Request complete (copy)"]]],
     ["Open","",[],"If the signer declines, is the insured told why? Does an unapproved request expire? (D3)"],
-    ["Open","",[],"Which requests need the signer’s approval: legal name, personal details, beneficiaries… allocation, claims, distributions? (D4)"]];}
-function PROC(k,v,pol){ if(isIns()&&/^(legal|pers|ben)$/.test(k)) return insProc(k,v);var me=signerName()+" (authorized signer)", ins=pol.insured+" (insured)", niw="NIW servicing team", first=pol.insured.split(" ")[0];
+    ["Open","",[],"Which requests need the signer’s approval: legal name, personal details, beneficiaries, claims, distributions (11/16: claims + distributions follow the same rule)? (D4)"]];}
+function PROC(k,v,pol){ if(isIns()&&/^(legal|pers|ben|claim|dist)$/.test(k)) return insProc(k,v);var me=signerName()+" (authorized signer)", ins=pol.insured+" (insured)", niw="NIW servicing team", first=pol.insured.split(" ")[0];
   var P={
     pay:[["Authorized signer","Submits the "+(v.method||"payment")+". ILIA logs it on the policy as “Paid by "+signerName()+" (Authorized Signer)”, status Pending.",[[me,"Payment received — receipt"],["Agent","Payment notice (same as giftor payments)"],["IMO","Payment notice (same as giftor payments)"]]],
       ["NIW payments",v.method==="Single ePay Payment"?"ePay clears in 3–5 business days.":"NIW marks it received when the "+(v.method==="Wire Transfer"?"wire":"check")+" arrives.",[]],
@@ -905,17 +905,14 @@ function PROC(k,v,pol){ if(isIns()&&/^(legal|pers|ben)$/.test(k)) return insProc
       ["NIW","Prepares the carrier’s allocation change form and sends it for signature. It shows in Action Items.",[[me,"Please sign: allocation change form (DocuSign)"]]],
       ["Authorized signer","Signs the form.",[]],
       ["NIW → carrier","Sends the signed form to the carrier.",[]],
-      ["Carrier / ILIA","Carrier confirms. Current Performance shows the new allocation.",[[me,"Allocation change complete"]]],
-      ["Open","",[],"Still to decide: can the signer request and sign allocation changes?"]],
+      ["Carrier / ILIA","Carrier confirms. Current Performance shows the new allocation.",[[me,"Allocation change complete"]]]],
     claim:[["Authorized signer","Submits the claim request ("+(v.ctype||"")+").",[[me,"Request received"],[niw,"New claim request"]]],
       ["NIW","Sends the correct claim document to fill out and sign. It shows in Action Items.",[[me,"Please complete: claim document (DocuSign)"]]],
       ["NIW specialist","Contacts the signer to complete the claim with the carrier.",[]],
-      ["Carrier / ILIA","Claim processed; status updates on Claims & Distributions.",[[me,"Claim update"]]],
-      ["Open","",[],"Still to decide: does the signer start claims? If yes, turn this off for the insured on associated policies."]],
+      ["Carrier / ILIA","Claim processed; status updates on Claims & Distributions.",[[me,"Claim update"]]]],
     dist:[["Authorized signer","Submits the "+(v.dtype||"distribution").toLowerCase()+" request.",[[me,"Request received"],[niw,"New distribution request"]]],
       ["NIW","Confirms the bank loan is paid off, then sends the distribution forms. They show in Action Items.",[[me,"Please sign: distribution forms (DocuSign)"]]],
-      ["Carrier","Processes the distribution and sends the funds.",[[me,"Distribution processed"]]],
-      ["Open","",[],"Still to decide: does the signer start distributions? Where do the funds go (to the trust)?"]]
+      ["Carrier","Processes the distribution and sends the funds to the trust.",[[me,"Distribution processed"]]]]
   };
   return P[k]||[];}
 function acctProc(steps,head){document.getElementById("wfRoot").innerHTML='<div class="wf-ov" data-acp="x"></div><div class="wf-dlg" role="dialog" aria-modal="true"><div class="wf-hd"><h3>My Account</h3><button class="wf-x" data-acp="x" aria-label="Close">✕</button></div><div class="wf-bd"><div class="wf-ok"><span>✓</span><h4>'+head+'</h4></div>'+procHTML(steps)+'</div><div class="wf-ft"><button class="ibtn" data-acp="x">Done</button></div></div>';}
@@ -1130,7 +1127,7 @@ function iliaScreenRaw(view,pol,p){
       '<div class="icard" style="margin-top:40px"><div class="ilx-2 w57"><div><p class="s1"><strong><u>Kai-Zen Risks &amp; Considerations</u></strong></p><p class="b2 blue"><strong>Policy Risks</strong></p><p class="cap">Index returns can be lower than illustrated, which affects cash value growth.</p><p class="b2 blue"><strong>Leverage Risks</strong></p><p class="cap">Bank loan interest can rise above policy growth.</p><p class="b2 blue"><strong>How to Protect Yourself</strong></p><p class="cap">Review your annual statement and keep contributions current.</p><p class="cap">Contact your agent or email info@kaizenplan.com for additional information…</p></div>'+
         '<div><p class="s1"><strong>Policy Performance</strong></p><div class="ilx-call good"><p class="b2">Your policy is performing within expected range.</p></div>'+ilxTable(["Policy Year","Policy Growth Rate Earned","Bank Interest Rate","Spread"],rows,"")+
         '<p class="s1" style="margin-top:20px"><strong>Loan to Value</strong></p><p class="b2">Loan to value compares your bank loan balance to your policy’s cash value.</p><div class="ilx-ltv"><span>Current Loan to Value:</span><strong>42.10%</strong><span class="g">Good</span></div><p class="cap">Current Status - Good : Your loan is well covered by your cash value.</p></div></div></div>'+
-      '<div class="icard" style="margin-top:40px"><p class="s1"><strong>Allocation Changes</strong>'+ilxGate(pol,"perfA",'<button class="ilx-tbtn" '+wfA(pol,"alloc")+'>'+(pol.own?'Change My Allocations':'Request Allocation Change')+'</button>')+'</p>'+wfAlert(pol,"alloc")+(pol.own?'':'<p class="ilx-dec">Still to decide: the authorized signer triggers allocation change requests. What workflow does a request start?</p>')+'<p class="cap">You may make an allocation change request at any time…</p><p class="cap">To make an allocation change request, you will need the following:</p><p class="cap" style="padding-left:20px">1. The carrier’s allocation change form<br>2. Your policy number<br>3. Your signature</p><p class="cap">…email it to niw.info@simplicitygroup.com to be processed.</p></div></section>';
+      '<div class="icard" style="margin-top:40px"><p class="s1"><strong>Allocation Changes</strong>'+ilxGate(pol,"perfA",'<button class="ilx-tbtn" '+wfA(pol,"alloc")+'>'+(pol.own?'Change My Allocations':'Request Allocation Change')+'</button>')+'</p>'+wfAlert(pol,"alloc")+(pol.own?'':'<p class="ilx-dec">Decided 11/16: the authorized signer requests the allocation change and signs it. Replaces today’s carrier form emailed to NIW.</p>')+'<p class="cap">You may make an allocation change request at any time…</p><p class="cap">To make an allocation change request, you will need the following:</p><p class="cap" style="padding-left:20px">1. The carrier’s allocation change form<br>2. Your policy number<br>3. Your signature</p><p class="cap">…email it to niw.info@simplicitygroup.com to be processed.</p></div></section>';
   }
   if(view==="ins"){
     var fld=function(l,v,w){return '<label class="ilx-dis'+(w?' w':'')+'"><span>'+l+'</span><input disabled value="'+esc(v)+'"></label>';};
@@ -1147,7 +1144,7 @@ function iliaScreenRaw(view,pol,p){
   if(view==="claims"){
     return '<section class="ilx">'+ilxHead("Claims and Distributions","Here you can make an insurance claim or take a policy distribution. This action is available once loan is paid off.")+
       '<div class="ilx-w9"><div class="icard p30 ilx-cl"><div><p class="s1"><strong>Make a Claim Request</strong></p><p class="b1">Select a claim type below and we will send you the correct document to fill out. Once your claim has been submitted, one of our NIW specialists will contact you to complete the process or to get any additional information from you. If you have questions please contact us at niw.info@simplicitygroup.com or call 800-294-9940 ext-216.</p></div><div class="ilx-clr"><span class="ilx-big" aria-hidden="true">📋</span>'+ilxGate(pol,"clA",'<button class="ibtn" '+wfA(pol,"claim")+'>Claim Request</button>')+'</div></div>'+wfAlert(pol,"claim")+
-      '<div class="icard p30 ilx-cl" style="margin-top:25px"><div><p class="s1"><strong>Distribution Request</strong></p><p class="b1">Once your loan has been paid off you are eligible to start taking distributions. Please contact us at niw.info@simplicitygroup.com or call 800-294-9940 ext-216 if you have any questions.</p></div><div class="ilx-clr"><span class="ilx-big" aria-hidden="true">💵</span>'+ilxGate(pol,"clA",'<button class="ibtn sm" '+wfA(pol,"dist")+'>Make Distributions Request</button>')+'</div></div>'+wfAlert(pol,"dist")+(pol.own?'':'<p class="ilx-dec">Still to decide: the authorized signer starts these for all their policies. If so, turn this off for the insured on associated policies that have servicing access.</p>')+'</div></section>';
+      '<div class="icard p30 ilx-cl" style="margin-top:25px"><div><p class="s1"><strong>Distribution Request</strong></p><p class="b1">Once your loan has been paid off you are eligible to start taking distributions. Please contact us at niw.info@simplicitygroup.com or call 800-294-9940 ext-216 if you have any questions.</p></div><div class="ilx-clr"><span class="ilx-big" aria-hidden="true">💵</span>'+ilxGate(pol,"clA",'<button class="ibtn sm" '+wfA(pol,"dist")+'>Make Distributions Request</button>')+'</div></div>'+wfAlert(pol,"dist")+(pol.own?'':'<p class="ilx-dec">Decided 11/16: the authorized signer <b>or</b> the insured can start a claim or a distribution request. Distribution funds go to the trust.</p>')+'</div></section>';
   }
   return "";
 }
@@ -1266,9 +1263,7 @@ var OPENQ={
   pay:["<b>Entity settlors:</b> ILIA’s rule today is personal accounts only. Can an entity pay the employer contribution from a business or trust account?"],
   docs:["<b>Enrollment documents:</b> the application includes the insured’s medical and financial answers. Should the authorized signer see a redacted version, only the policy and illustration, or none?"],
   ar:["<b>Annual Review:</b> it’s admin-only in ILIA today. Show it to authorized signers at the same time it goes live for insureds?"],
-  perf:["<b>Allocation changes (asking Judy + Marissa):</b> can the authorized signer request an allocation change and sign it, or does it stay the carrier form emailed to NIW?"],
-  ins:["<b>Insured details the signer sees:</b> proposal is name, masked date of birth, city and state only. Confirm."],
-  claims:["<b>Claims and distributions (asking Judy + Marissa):</b> who can start them (signer, insured or both), and do distribution funds go to the trust?"]
+  ins:["<b>Insured details the signer sees:</b> proposal is name, masked date of birth, city and state only. Confirm."]
 };
 /* What was answered (shown under each screen so reviewers see it's settled) */
 var DECIDED_Q={
@@ -1278,9 +1273,9 @@ var DECIDED_Q={
   pay:["The signer can make payments (GWT giftor model). Settlor is an entity: the insured can pay client contributions (11/4).","Receipt goes to whoever paid.","The signer uses their own saved payment method; the insured’s recurring ePay is view only for the signer.","Bank leverage shows as in ILIA today."],
   docs:["“Settlor Documents” replaces Personal Documents for the signer; the insured’s ID and residence documents are hidden.","The signer can upload trust, entity and ID documents; NIW reviews them (emails #8–#10).","Signed items: “View signed copy” in Action Items."],
   ar:["Bank loan amounts show as in ILIA today (the trust owns the policy). Annual review calls are out of scope."],
-  perf:["Index allocation cards stay admin-only, as today. Performance notices go to the insured, as today."],
+  perf:["Allocation changes: the authorized signer requests and signs them; replaces the carrier form emailed to NIW (11/16).","Index allocation cards stay admin-only, as today. Performance notices go to the insured, as today."],
   ins:["Legal name, personal details and beneficiary changes: the signer can request and sign them. An insured with access requests; the signer approves and signs (11/2).","An insured without portal access calls NIW, as today."],
-  claims:["Until answered, claims and distributions stay as ILIA works today (request emailed to NIW)."]
+  claims:["Claims: the authorized signer or the insured can start one (11/16).","Distributions: the authorized signer or the insured can request one; funds go to the trust (11/16).","An insured’s claim or distribution request goes to the signer to approve and sign (same rule as 11/2)."]
 };
 function openQ(s){var q=OPENQ[s]||[], d=DECIDED_Q[s]||[]; if(!q.length&&!d.length) return "";
   return '<div class="oq">'+(q.length?'<h3>Open questions for this screen</h3><ol>'+q.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol>':'<h3>No open questions for this screen</h3>')+
